@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0d0d0d;
+  --color-page: #f7f6ee;
+  --color-cream: #fff9f2;
+  --color-sand: #f5ecd8;
+  --color-pink: #eba0ff;
+  --color-lime: #d0ffa4;
+  --color-cyan: #7df9ff;
+  --color-brand-blue: #006ee9;
+  --color-periwinkle: #8c8ffa;
+  --color-sun: #ffde4d;
+  --color-butter: #ffe66d;
+  --color-folder: #9e80fc;
+  --color-lavender: #edddfc;
+  --color-peach: #ffefdc;
+  --color-muted: #5f5f5f;
+}
+
+@theme inline {
+  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-nav: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-shojumaru), ui-serif, serif;
+  --font-script: var(--font-aladin), ui-serif, serif;
+  --font-condensed: var(--font-barlow-condensed), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+}
+
+@layer components {
+  /* Purple hero background with a square grid. */
+  .hero-grid {
+    background-color: #4f52ec;
+    background-image:
+      linear-gradient(to bottom, rgb(55 60 110 / 0.35) 1px, transparent 1px),
+      linear-gradient(to right, rgb(55 60 110 / 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, #4f52ec 0%, #8083f7 50%, #c69afc 100%);
+    background-size:
+      30.6px 30.6px,
+      30.6px 30.6px,
+      100% 100%;
+  }
+
+  /* Solid white or yellow letters with a block shadow to the bottom left (hero headline). */
+  .text-block-shadow {
+    text-shadow:
+      -1px 1px 0 var(--color-ink),
+      -2px 2px 0 var(--color-ink),
+      -3px 3px 0 var(--color-ink),
+      -4px 4px 0 var(--color-ink),
+      -5px 5px 0 var(--color-ink),
+      -6px 6px 0 var(--color-ink);
+  }
+
+  /* White outlined letters with a block shadow (section headings). */
+  .text-outline-shadow {
+    color: #fff;
+    -webkit-text-stroke: 3px var(--color-ink);
+    paint-order: stroke fill;
+    text-shadow:
+      -1px 1px 0 var(--color-ink),
+      -2px 2px 0 var(--color-ink),
+      -3px 3px 0 var(--color-ink),
+      -4px 4px 0 var(--color-ink),
+      -5px 5px 0 var(--color-ink);
+  }
+
+  /* White outlined letters without a shadow (the "Practice, learn, grow" heading). */
+  .text-outline {
+    color: #fff;
+    -webkit-text-stroke: 3px var(--color-ink);
+    paint-order: stroke fill;
+  }
+
+  /* Bordered element with a hard black shadow, used for buttons, tags and cards. */
+  .hard-shadow {
+    border: 2px solid var(--color-ink);
+    box-shadow: 5px 5px 0 var(--color-ink);
+  }
+
+  .hard-shadow-sm {
+    border: 2px solid var(--color-ink);
+    box-shadow: 3px 3px 0 var(--color-ink);
+  }
+
+  /* The hero's students-and-card visual is laid out at desktop size and scaled to fit. */
+  .hero-visual {
+    --visual-scale: 0.5;
+    width: calc(612px * var(--visual-scale));
+    height: calc(575px * var(--visual-scale));
+
+    @media (width >= 40rem) {
+      --visual-scale: 0.95;
+    }
+    @media (width >= 64rem) {
+      --visual-scale: 0.68;
+    }
+    @media (width >= 80rem) {
+      --visual-scale: 0.86;
+    }
+    @media (width >= 90rem) {
+      --visual-scale: 1;
+    }
+  }
+
+  /* Scalloped pink edge under the stats bar. */
+  .scallop-edge {
+    height: 36px;
+    background:
+      radial-gradient(
+          circle at 50% 0,
+          var(--color-pink) 21px,
+          #6b5aa6 21.5px 22.5px,
+          transparent 23px
+        )
+        0 13px / 45px 23px repeat-x,
+      linear-gradient(var(--color-pink), var(--color-pink)) 0 0 / 100% 13px no-repeat;
+  }
+}

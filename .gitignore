@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environment files (keep the examples)
+.env
+.env.*
+!.env.example
+
+# Node / Next.js (the frontend also has its own .gitignore)
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+
+# OS and editors
+.DS_Store
+.idea/
+
+# Logs
+*.log

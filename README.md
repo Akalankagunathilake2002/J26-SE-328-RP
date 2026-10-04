@@ -32,14 +32,20 @@ ready they are for a role, and recommends what to learn next.
 
 ## Components
 
+Only the Auth Service, the frontend and the API gateway exist so far. The Shared Skill Knowledge
+service has a folder with its plan (README only); C01–C04 get their folders under `services/`
+when development starts.
+
 | Component | Folder | What it does |
 |---|---|---|
-| C01 Industry Skill Extraction | `services/c01-industry-skill-extraction/` | Extracts the skills industry roles require and produces an industry skill profile for each role, with each skill's importance and required proficiency. |
-| C02 Student Skill Profile | `services/c02-student-skill-profile/` | Builds an evidence-based profile of a student's skills: their proficiency, how confident the evidence is, and where the evidence came from. |
-| C03 Skill Gap Analysis and Career Readiness | `services/c03-skill-gap-readiness/` | Compares an industry skill profile with a student skill profile, identifies skill gaps, measures career readiness and decides learning priorities. |
-| C04 Learning Skill Tree | `services/c04-learning-skill-tree/` | Turns the learning priorities from C03 into a learning path for the student. |
-| Shared Skill Knowledge | `services/shared-skill-knowledge/` | The single source of canonical skills, roles, aliases and verified skill relationships for all components. |
+| C01 Industry Skill Extraction | planned: `services/c01-industry-skill-extraction/` | Extracts the skills industry roles require and produces an industry skill profile for each role, with each skill's importance and required proficiency. |
+| C02 Student Skill Profile | planned: `services/c02-student-skill-profile/` | Builds an evidence-based profile of a student's skills: their proficiency, how confident the evidence is, and where the evidence came from. |
+| C03 Skill Gap Analysis and Career Readiness | planned: `services/c03-skill-gap-readiness/` | Compares an industry skill profile with a student skill profile, identifies skill gaps, measures career readiness and decides learning priorities. |
+| C04 Learning Skill Tree | planned: `services/c04-learning-skill-tree/` | Turns the learning priorities from C03 into a learning path for the student. |
+| Shared Skill Knowledge | `services/shared-skill-knowledge/` (plan only) | The single source of canonical skills, roles, aliases and verified skill relationships for all components. |
+| Auth Service | `services/auth-service/` | User accounts: registration, login and the current user. Issues signed access tokens. |
 | Frontend | `frontend/` | The web application for the system. |
+| API Gateway | `infrastructure/gateway/` | The single entry point to the backend services. Routes `/auth/…` to the Auth Service; each new service gets a route here. |
 
 ## Shared skill knowledge
 
@@ -75,27 +81,48 @@ Similarity between skill embeddings alone never does.
 ## Technology
 
 - **Backend services:** Python, FastAPI, Pydantic
-- **Frontend:** Next.js, TypeScript
-- **Architecture:** microservices, one folder per service in a single repository
-- **Planned:** PostgreSQL for storage, RabbitMQ for messaging between services, Docker
+- **Frontend:** Next.js, TypeScript, Tailwind CSS
+- **Database:** PostgreSQL, one database per service
+- **Architecture:** microservices behind an Nginx API gateway, one folder per service in a single repository, run with Docker Compose
+- **Planned:** RabbitMQ for messaging between services
 
 ## Repository structure
 
 ```text
 ├── frontend/                            Next.js + TypeScript web application
-├── services/
-│   ├── c01-industry-skill-extraction/
-│   ├── c02-student-skill-profile/
-│   ├── c03-skill-gap-readiness/
-│   ├── c04-learning-skill-tree/
-│   └── shared-skill-knowledge/
+├── services/                            One folder per backend microservice
+│   ├── auth-service/                    Working
+│   └── shared-skill-knowledge/          Plan only (README); C01–C04 are added here when built
 ├── shared/                              Contracts shared between services (schemas, message formats)
-├── infrastructure/                      Docker, database and messaging setup
+├── infrastructure/                      Docker Compose, API gateway (gateway/nginx.conf), database setup
 ├── docs/                                Architecture and research documentation
 └── scripts/                             Development and setup scripts
 ```
 
+## Running locally
+
+Start PostgreSQL, the backend services and the API gateway with Docker:
+
+```bash
+docker compose -f infrastructure/docker-compose.yml up --build
+```
+
+Then start the frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+| What | Where |
+|---|---|
+| Web app | http://localhost:3000 |
+| API gateway (single entry point to all services) | http://localhost:8080 |
+| Auth Service, through the gateway | http://localhost:8080/auth/… (API docs at `/auth/docs`) |
+| PostgreSQL | `localhost:5433`, user `skillbridge`, password `skillbridge` (local development only) |
+
 ## Status
 
-The project is at an early stage. The repository structure is in place, but no service has
-been implemented yet.
+The project is at an early stage. The home page, login and registration work end to end with the
+Auth Service. C01–C04 and the Shared Skill Knowledge service are not implemented yet.
