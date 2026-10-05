@@ -101,9 +101,12 @@ Similarity between skill embeddings alone never does.
 
 ## Running locally
 
-Start PostgreSQL, the backend services and the API gateway with Docker:
+Start PostgreSQL, the backend services and the API gateway with Docker. Ports, the database
+password and the token secret live in `infrastructure/.env`. The first time, create it from the
+example and fill in `POSTGRES_PASSWORD` and `JWT_SECRET` (the example shows how to generate them):
 
 ```bash
+cp infrastructure/.env.example infrastructure/.env   # Windows: copy infrastructure\.env.example infrastructure\.env
 docker compose -f infrastructure/docker-compose.yml up --build
 ```
 
@@ -120,7 +123,7 @@ npm run dev
 | Web app | http://localhost:3000 |
 | API gateway (single entry point to all services) | http://localhost:8080 |
 | Auth Service, through the gateway | http://localhost:8080/auth/… (API docs at `/auth/docs`) |
-| PostgreSQL | `localhost:5433`, user `skillbridge`, password `skillbridge` (local development only) |
+| PostgreSQL | `localhost:15432`, user and password from `infrastructure/.env` |
 
 ## Status
 

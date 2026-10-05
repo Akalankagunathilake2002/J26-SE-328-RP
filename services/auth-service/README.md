@@ -17,7 +17,7 @@ user. Passwords are hashed with Argon2; logins return a signed JWT access token.
 | Environment variable | Default |
 |---|---|
 | `DATABASE_URL` | `postgresql+asyncpg://skillbridge:skillbridge@localhost:5432/auth_db` |
-| `JWT_SECRET` | none — required, at least 32 characters |
+| `JWT_SECRET` | none — required, at least 32 characters (set in `infrastructure/.env`) |
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `60` |
 
 Tables are created on startup. Add migrations (e.g. Alembic) before changing the schema.
@@ -32,7 +32,8 @@ docker compose -f infrastructure/docker-compose.yml up --build
 
 The service is reached through the API gateway at http://localhost:8080/auth/… (API docs at
 http://localhost:8080/auth/docs). Inside Docker it listens on port 8006; that port is not published.
-PostgreSQL is reachable from your machine on port 5433 (`skillbridge` / `skillbridge`, database `auth_db`).
+PostgreSQL is reachable from your machine on port 15432 (database `auth_db`); the user and
+password are in `infrastructure/.env`.
 
 ## Tests
 

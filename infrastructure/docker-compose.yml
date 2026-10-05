@@ -4,8 +4,8 @@
 # The API gateway (http://localhost:8080) is the only entry point to the backend services;
 # the services themselves are not published on your machine.
 #
-# The default credentials and secret are for local development only. Override them with
-# environment variables (or an infrastructure/.env file) anywhere else.
+# Ports, credentials and the token secret come from infrastructure/.env (copy .env.example and
+# fill in the secrets). Compose stops with an error if a required secret is missing.
 
 name: skill-bridge
 
@@ -14,10 +14,10 @@ services:
     image: postgres:16
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-skillbridge}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-skillbridge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}
       POSTGRES_DB: auth_db  # each service gets its own database; auth-service uses auth_db
     ports:
-      - "${POSTGRES_HOST_PORT:-5433}:5432"  # host port for local tools (5432 is often taken)
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-15432}:5432"  # only reachable from this computer
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -29,8 +29,8 @@ services:
   auth-service:
     build: ../services/auth-service
     environment:
-      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-skillbridge}:${POSTGRES_PASSWORD:-skillbridge}@postgres:5432/auth_db
-      JWT_SECRET: ${JWT_SECRET:-local-development-secret-change-me-0123456789}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-skillbridge}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}@postgres:5432/auth_db
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in infrastructure/.env}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-60}
     depends_on:
       postgres:
