@@ -8,6 +8,7 @@
 | name | String | Preferred name |
 | description | Text | Description |
 | skill_type | String | Category of concept (knowledge, skill/competence, Software) or empty |
+| concept_kind | String | Differentiates PROGRAMMING_LANGUAGE, SOFTWARE_OR_TOOL, etc. |
 | review_status | String | Current review status (PENDING_REVIEW, APPROVED) |
 
 ## external_ids

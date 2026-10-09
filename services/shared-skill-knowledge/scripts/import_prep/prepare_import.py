@@ -88,6 +88,7 @@ def main():
             'name': r['preferred_name'],
             'description': r.get('description', ''),
             'skill_type': '',
+            'concept_kind': 'ROLE',
             'review_status': review_status
         })
         
@@ -142,6 +143,7 @@ def main():
             'name': r['preferred_name'],
             'description': r.get('description', ''),
             'skill_type': '',
+            'concept_kind': 'ROLE',
             'review_status': review_status
         })
         
@@ -192,18 +194,38 @@ def main():
         
         if not s.get('skill_type'):
             review_required.append({
+                'review_category': 'MISSING_TYPE',
                 'entity_type': 'SKILL',
                 'entity_id': s_id,
                 'issue': 'Missing skill_type',
                 'source': 'ESCO'
             })
+
+        concept_kind = 'OTHER_SKILL'
+        name_lower = s['preferred_name'].lower()
+        desc_lower = s.get('description', '').lower()
+        skill_type = s.get('skill_type', '')
+
+        if 'programming paradigms in' in desc_lower or '(computer programming)' in name_lower:
+            concept_kind = 'PROGRAMMING_LANGUAGE'
+        elif name_lower in ['c', 'c++', 'c#', 'java', 'javascript', 'python', 'ruby', 'go', 'rust', 'typescript', 'php', 'swift', 'kotlin']:
+            concept_kind = 'PROGRAMMING_LANGUAGE'
+        elif 'programming paradigm' in desc_lower or any(x in name_lower for x in ['object-oriented programming', 'logic programming', 'concurrent programming', 'scripting programming', 'automatic programming']):
+            concept_kind = 'PROGRAMMING_PARADIGM'
+        elif name_lower == 'computer programming' or 'web programming' in name_lower or ('programming' in name_lower and 'use ' in name_lower):
+            concept_kind = 'PROGRAMMING_SKILL'
+        elif 'framework' in name_lower or 'library' in name_lower or skill_type == 'Software':
+            concept_kind = 'SOFTWARE_OR_TOOL'
+        elif skill_type == 'knowledge':
+            concept_kind = 'KNOWLEDGE'
             
         canonical_entities.append({
             'id': s_id,
             'entity_type': 'SKILL',
             'name': s['preferred_name'],
             'description': s.get('description', ''),
-            'skill_type': s.get('skill_type', ''),
+            'skill_type': skill_type,
+            'concept_kind': concept_kind,
             'review_status': review_status
         })
         
@@ -252,12 +274,24 @@ def main():
         s_id = generate_id("SK", f"ONET_SKILL_{s['source_id']}")
         review_status = 'PENDING_REVIEW' if s.get('review_status') != 'APPROVED' else 'APPROVED'
         
+        concept_kind = 'OTHER_SKILL'
+        name_lower = s['preferred_name'].lower()
+        skill_type = s.get('skill_type', '')
+        
+        if name_lower == 'computer programming':
+            concept_kind = 'PROGRAMMING_SKILL'
+        elif 'programming' in name_lower:
+            concept_kind = 'PROGRAMMING_SKILL'
+        elif skill_type == 'knowledge':
+            concept_kind = 'KNOWLEDGE'
+            
         canonical_entities.append({
             'id': s_id,
             'entity_type': 'SKILL',
             'name': s['preferred_name'],
             'description': s.get('description', ''),
-            'skill_type': s.get('skill_type', ''),
+            'skill_type': skill_type,
+            'concept_kind': concept_kind,
             'review_status': review_status
         })
         
@@ -300,6 +334,7 @@ def main():
             'name': s['technology_example'],
             'description': f"Software product/technology in category: {s['preferred_name']}",
             'skill_type': 'Software',
+            'concept_kind': 'SOFTWARE_OR_TOOL',
             'review_status': review_status
         })
         
@@ -344,6 +379,31 @@ def main():
 
     
 
+
+    # Scrub bad aliases
+    pl_names = set(re.sub(r'\(computer programming\)', '', ce['name'].lower()).strip() for ce in canonical_entities if ce.get('concept_kind') == 'PROGRAMMING_LANGUAGE')
+    pl_names.update(['c', 'c++', 'c#', 'java', 'python', 'javascript', 'ruby', 'go', 'rust', 'typescript', 'php', 'swift', 'kotlin'])
+    
+    clean_ad = []
+    for ad in aliases_and_domains:
+        if ad['record_type'] == 'ALIAS':
+            ce = next((c for c in canonical_entities if c['id'] == ad['canonical_entity_id']), None)
+            if ce:
+                ce_name_clean = re.sub(r'\(computer programming\)', '', ce['name'].lower()).strip()
+                alias_clean = ad['value'].lower().strip()
+                
+                # Rule 1: computer programming shouldn't have PLs as aliases
+                if ce_name_clean == 'computer programming':
+                    if alias_clean in pl_names or (len(alias_clean) < 20 and 'programming' not in alias_clean and 'code' not in alias_clean and 'comput' not in alias_clean):
+                        continue
+                        
+                # Rule 2: C, C++, C# cross-mapping prevention
+                if ce_name_clean in ['c', 'c++', 'c#'] and alias_clean in ['c', 'c++', 'c#']:
+                    if ce_name_clean != alias_clean:
+                        continue
+        clean_ad.append(ad)
+    aliases_and_domains = clean_ad
+
     # Conflict Detection
     name_map = {}
     alias_map = {}
@@ -386,7 +446,7 @@ def main():
                         })
 
     print("Saving CSVs...")
-    save_csv(canonical_entities, os.path.join(out_dir, "canonical_entities.csv"), ['id', 'entity_type', 'name', 'description', 'skill_type', 'review_status'])
+    save_csv(canonical_entities, os.path.join(out_dir, "canonical_entities.csv"), ['id', 'entity_type', 'name', 'description', 'skill_type', 'concept_kind', 'review_status'])
     save_csv(external_ids, os.path.join(out_dir, "external_ids.csv"), ['id', 'canonical_entity_id', 'source_system', 'external_id', 'source_version'])
     save_csv(aliases_and_domains, os.path.join(out_dir, "aliases_and_domains.csv"), ['id', 'canonical_entity_id', 'record_type', 'value', 'is_verified'])
     save_csv(review_required, os.path.join(out_dir, "review_required.csv"), ['review_category', 'entity_type', 'entity_id', 'issue', 'source'])
@@ -457,6 +517,7 @@ def main():
 | name | String | Preferred name |
 | description | Text | Description |
 | skill_type | String | Category of concept (knowledge, skill/competence, Software) or empty |
+| concept_kind | String | Differentiates PROGRAMMING_LANGUAGE, SOFTWARE_OR_TOOL, etc. |
 | review_status | String | Current review status (PENDING_REVIEW, APPROVED) |
 
 ## external_ids
