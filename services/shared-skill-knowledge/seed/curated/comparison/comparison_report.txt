@@ -1,0 +1,24 @@
+ESCO-O*NET Comparison Report
+============================
+
+Role Comparison Summary:
+- Exact matches: 0
+- Alternative matches: 10
+- Fuzzy matches: 6
+- Unmatched ESCO roles: 4
+- Unmatched O*NET roles: 5
+
+Skill/Knowledge Comparison Summary:
+- Exact matches: 2
+- Alternative matches: 0
+- Fuzzy matches: 0
+- Unmatched ESCO skills: 728
+- Unmatched O*NET skills: 45
+- Missing ESCO types: 2
+- Conflicting Domains: 0
+
+Technology/Software Comparison Summary:
+- Exact matches: 19
+- Alternative matches: 11
+- Fuzzy matches: 172
+- Unmatched O*NET technologies: 911

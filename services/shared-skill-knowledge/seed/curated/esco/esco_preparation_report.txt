@@ -1,0 +1,26 @@
+ESCO Data Preparation Report
+============================
+
+Roles Summary:
+- Source occupations read: 3043
+- Candidate roles generated: 19
+- Duplicate role URIs detected: 4
+- Roles by domain:
+  * IT: 8
+  * HR: 5
+  * BUSINESS: 6
+  * NONE: 0
+- Review status (Roles): Approved=0, Excluded=0, Pending/Review=19
+
+Skills Summary:
+- Source skills read: 13960
+- Skills associated with selected roles: 729
+- Unique skill URIs selected: 729
+- Missing skill references: 0
+- Missing skill types: 2
+- Duplicate skill URIs detected: 1
+- Associations (Essential): 509
+- Associations (Optional): 642
+- Review status (Skills): Approved=0, Excluded=0, Pending/Review=729
+
+Errors/Warnings: None

@@ -1,0 +1,3 @@
+match_id,esco_uri,esco_name,esco_skill_type,esco_domain,onet_source_id,onet_name,onet_skill_type,onet_domain,match_method,match_score,domain_conflict,review_status,review_notes
+http://data.europa.eu/esco/skill/4339176e-3acd-4f7f-a5d9-445bee3d23f2::2.A.1.e,http://data.europa.eu/esco/skill/4339176e-3acd-4f7f-a5d9-445bee3d23f2,mathematics,knowledge,BUSINESS,2.A.1.e,Mathematics,Skill (Essential),,EXACT,1.0,NO,PENDING_REVIEW,
+http://data.europa.eu/esco/skill/4339176e-3acd-4f7f-a5d9-445bee3d23f2::2.C.4.a,http://data.europa.eu/esco/skill/4339176e-3acd-4f7f-a5d9-445bee3d23f2,mathematics,knowledge,BUSINESS,2.C.4.a,Mathematics,Knowledge,,EXACT,1.0,NO,PENDING_REVIEW,

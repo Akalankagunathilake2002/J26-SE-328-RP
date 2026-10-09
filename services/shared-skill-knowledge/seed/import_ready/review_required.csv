@@ -1,0 +1,442 @@
+review_category,entity_type,entity_id,issue,source
+,SKILL,SK-000180,Missing skill_type,ESCO
+,SKILL,SK-000278,Missing skill_type,ESCO
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/04f39bfa-bc03-4480-98bc-b18ce4fe4b4b::11-3031.00,Unresolved ALTERNATIVE match between ESCO 'accounting manager' and ONET 'Financial Managers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/068370e0-9c27-4814-87d0-44fbb3140815::13-1071.00,Unresolved ALTERNATIVE match between ESCO 'recruitment consultant' and ONET 'Human Resources Specialists',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/106f79e4-6264-45f1-9e7a-297435cd684b::15-1253.00,Unresolved ALTERNATIVE match between ESCO 'software tester' and ONET 'Software Quality Assurance Analysts and Testers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/1fce1be0-bf52-449b-9a2b-3f2cc710290a::13-1141.00,"Unresolved ALTERNATIVE match between ESCO 'compensation analyst' and ONET 'Compensation, Benefits, and Job Analysis Specialists'",COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/2079755f-d809-49e6-8037-4de6180e54c0::15-2051.00,Unresolved ALTERNATIVE match between ESCO 'data engineer' and ONET 'Data Scientists',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/258e46f9-0075-4a2e-adae-1ff0477e0f30::15-2051.00,Unresolved FUZZY match between ESCO 'data scientist' and ONET 'Data Scientists',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/57af9090-55b4-4911-b2d0-86db01c00b02::15-1252.00,Unresolved ALTERNATIVE match between ESCO 'embedded systems software developer' and ONET 'Software Developers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/60082a99-d8ef-4e84-9290-78902681b6ed::13-1111.00,Unresolved ALTERNATIVE match between ESCO 'business analyst' and ONET 'Management Analysts',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/6fcf4638-e7c7-4978-9302-9a7b63a3d57c::11-2021.00,Unresolved FUZZY match between ESCO 'marketing manager' and ONET 'Marketing Managers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/a6e8a6bf-9209-4d19-a131-a8b6431e0f75::11-3121.00,Unresolved ALTERNATIVE match between ESCO 'talent acquisition manager' and ONET 'Human Resources Managers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/bea99fea-0383-4c63-b944-70d4799de2c5::11-2021.00,Unresolved FUZZY match between ESCO 'project manager' and ONET 'Marketing Managers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/bea99fea-0383-4c63-b944-70d4799de2c5::15-1299.09,Unresolved FUZZY match between ESCO 'project manager' and ONET 'Information Technology Project Managers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/c40a2919-48a9-40ea-b506-1f34f693496d::15-1254.00,Unresolved ALTERNATIVE match between ESCO 'web developer' and ONET 'Web Developers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/d3edb8f8-3a06-47a0-8fb9-9b212c006aa2::15-2051.00,Unresolved ALTERNATIVE match between ESCO 'data analyst' and ONET 'Data Scientists',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/f605bcd2-90b6-45a0-a558-d05016d68a77::11-3121.00,Unresolved FUZZY match between ESCO 'human resources manager' and ONET 'Human Resources Managers',COMPARISON
+ROLE_MATCH,ROLE,http://data.europa.eu/esco/occupation/fe0fa514-b48d-4a53-9757-a283c0baacf0::13-1111.00,Unresolved FUZZY match between ESCO 'ICT business analyst' and ONET 'Management Analysts',COMPARISON
+SKILL_MATCH,SKILL,http://data.europa.eu/esco/skill/4339176e-3acd-4f7f-a5d9-445bee3d23f2::2.A.1.e,Unresolved EXACT match between ESCO 'mathematics' and ONET 'Mathematics',COMPARISON
+SKILL_MATCH,SKILL,http://data.europa.eu/esco/skill/4339176e-3acd-4f7f-a5d9-445bee3d23f2::2.C.4.a,Unresolved EXACT match between ESCO 'mathematics' and ONET 'Mathematics',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Adobe ActionScript,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Adobe ActionScript',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Cassandra,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Cassandra',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Hadoop,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Hadoop',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/e46291c7-52b9-4174-bd59-178884861038::2.E.6.d::Apache Hadoop,Unresolved ALTERNATIVE match between ESCO 'Hadoop' and ONET 'Apache Hadoop',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Hive,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Hive',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Pig,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Pig',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Solr,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Solr',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/234aeb8d-56c3-4531-9193-1c5e6a8d16cb::2.E.4.f::Apple Keynote,Unresolved FUZZY match between ESCO 'use presentation software' and ONET 'Apple Keynote',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/65e58886-bd1e-4c5b-8ca5-8d9b353c8aa1::2.E.4.f::Apple Keynote,Unresolved FUZZY match between ESCO 'data visualisation software' and ONET 'Apple Keynote',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/4c016b68-4116-468c-9dc6-42710c239e4a::2.E.7.b::C,Unresolved EXACT match between ESCO 'C#' and ONET 'C',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::C,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'C',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/b633eb55-8f1f-4ae6-ab4c-2022ffe2cb7f::2.E.7.b::C,Unresolved EXACT match between ESCO 'C++' and ONET 'C',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/e5d1f825-60ed-4bdd-872a-e748c387f777::2.E.7.h::Cascading style sheets CSS,Unresolved FUZZY match between ESCO 'CSS' and ONET 'Cascading style sheets CSS',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Elasticsearch,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Elasticsearch',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/81633a44-f1db-4a01-a940-804c6905e330::2.E.4.d::Evernote,Unresolved FUZZY match between ESCO 'use word processing software' and ONET 'Evernote',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/81633a44-f1db-4a01-a940-804c6905e330::2.E.4.d::Google Docs,Unresolved FUZZY match between ESCO 'use word processing software' and ONET 'Google Docs',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c::2.E.16.b::Google Meet,Unresolved ALTERNATIVE match between ESCO 'video conferencing tool' and ONET 'Google Meet',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/234aeb8d-56c3-4531-9193-1c5e6a8d16cb::2.E.4.f::Google Slides,Unresolved FUZZY match between ESCO 'use presentation software' and ONET 'Google Slides',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/65e58886-bd1e-4c5b-8ca5-8d9b353c8aa1::2.E.4.f::Google Slides,Unresolved FUZZY match between ESCO 'data visualisation software' and ONET 'Google Slides',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/3cd569a2-4f88-4c1e-9995-8dce8c5e51a7::2.E.7.h::JavaScript,Unresolved EXACT match between ESCO 'JavaScript' and ONET 'JavaScript',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c::2.E.16.b::LogMeIn GoToMeeting,Unresolved ALTERNATIVE match between ESCO 'video conferencing tool' and ONET 'LogMeIn GoToMeeting',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c::2.E.16.c::LogMeIn GoToWebinar,Unresolved FUZZY match between ESCO 'video conferencing tool' and ONET 'LogMeIn GoToWebinar',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/234aeb8d-56c3-4531-9193-1c5e6a8d16cb::2.E.4.f::Mentimeter,Unresolved FUZZY match between ESCO 'use presentation software' and ONET 'Mentimeter',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/65e58886-bd1e-4c5b-8ca5-8d9b353c8aa1::2.E.4.f::Mentimeter,Unresolved FUZZY match between ESCO 'data visualisation software' and ONET 'Mentimeter',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Azure software,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Azure software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/1973c966-f236-40c9-b2d4-5d71a89019be::2.E.4.i::Microsoft Excel,Unresolved FUZZY match between ESCO 'use spreadsheets software' and ONET 'Microsoft Excel',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/234aeb8d-56c3-4531-9193-1c5e6a8d16cb::2.E.4.f::Microsoft PowerPoint,Unresolved FUZZY match between ESCO 'use presentation software' and ONET 'Microsoft PowerPoint',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/65e58886-bd1e-4c5b-8ca5-8d9b353c8aa1::2.E.4.f::Microsoft PowerPoint,Unresolved FUZZY match between ESCO 'data visualisation software' and ONET 'Microsoft PowerPoint',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/8369ede5-4200-4a44-be2e-bc60ef959259::2.E.7.b::Microsoft Visual Basic,Unresolved FUZZY match between ESCO 'Microsoft Visual C++' and ONET 'Microsoft Visual Basic',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Visual Basic,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Visual Basic',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Visual Basic for Applications VBA,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Visual Basic for Applications VBA',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Visual Basic Scripting Edition VBScript,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Visual Basic Scripting Edition VBScript',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/81633a44-f1db-4a01-a940-804c6905e330::2.E.4.d::Microsoft Word,Unresolved FUZZY match between ESCO 'use word processing software' and ONET 'Microsoft Word',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::NoSQL,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'NoSQL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Oracle PL/SQL,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Oracle PL/SQL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/4350c38d-0fe9-4ca7-bab9-40ed7f72b04f::2.E.7.h::PHP,Unresolved EXACT match between ESCO 'PHP' and ONET 'PHP',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/51586df8-1c46-4b47-8583-773cb63bf00b::2.E.7.e::R,Unresolved EXACT match between ESCO 'R' and ONET 'R',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/0ccdfe98-f845-4598-84a1-3dca66e9d9a3::2.E.7.b::Ruby,Unresolved ALTERNATIVE match between ESCO 'Ruby (computer programming)' and ONET 'Ruby',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Ruby,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Ruby',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/69f0167e-75d9-46cf-847f-72a592880ebb::2.E.2.b::SAP software,Unresolved FUZZY match between ESCO 'STAF' and ONET 'SAP software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/1110c92f-3059-445a-9436-0f4200d365f5::2.E.9.d::SAS,Unresolved FUZZY match between ESCO 'Sass' and ONET 'SAS',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/69f0167e-75d9-46cf-847f-72a592880ebb::2.E.2.a::Tax software,Unresolved FUZZY match between ESCO 'STAF' and ONET 'Tax software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Teradata Database,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Teradata Database',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d9eaf831-9348-4330-a83e-b7c099cdc8f6::2.E.6.d::Teradata Database,Unresolved EXACT match between ESCO 'Teradata Database' and ONET 'Teradata Database',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/6d289e8b-2cc1-4eda-ab1f-ad1090ef98f0::2.E.4.g::WordPress,Unresolved EXACT match between ESCO 'WordPress' and ONET 'WordPress',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c::2.E.16.b::Zoom,Unresolved ALTERNATIVE match between ESCO 'video conferencing tool' and ONET 'Zoom',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/1973c966-f236-40c9-b2d4-5d71a89019be::2.E.4.i::Moody's KMV FAMAS,Unresolved FUZZY match between ESCO 'use spreadsheets software' and ONET 'Moody's KMV FAMAS',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/e437eba1-3e22-41f2-8703-741e94785cba::2.E.1.c::Lawson Human Resource Management,Unresolved FUZZY match between ESCO 'human resource management' and ONET 'Lawson Human Resource Management',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/1973c966-f236-40c9-b2d4-5d71a89019be::2.E.4.i::IBM Lotus 1-2-3,Unresolved FUZZY match between ESCO 'use spreadsheets software' and ONET 'IBM Lotus 1-2-3',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/81633a44-f1db-4a01-a940-804c6905e330::2.E.4.d::Nuvosoft Rwiz,Unresolved FUZZY match between ESCO 'use word processing software' and ONET 'Nuvosoft Rwiz',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ba1b0441-a6b8-4e57-8ccc-871012f63e42::2.E.8.b::Training software,Unresolved FUZZY match between ESCO 'trading software' and ONET 'Training software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c::2.E.16.b::Cisco Webex,Unresolved ALTERNATIVE match between ESCO 'video conferencing tool' and ONET 'Cisco Webex',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c::2.E.16.b::FaceTime,Unresolved ALTERNATIVE match between ESCO 'video conferencing tool' and ONET 'FaceTime',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/81633a44-f1db-4a01-a940-804c6905e330::2.E.4.d::3M Post-it App,Unresolved FUZZY match between ESCO 'use word processing software' and ONET '3M Post-it App',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/b4dc6e4f-dc7d-445f-8ce2-d7b9d225e282::2.E.7.h::AJAX,Unresolved EXACT match between ESCO 'AJAX' and ONET 'AJAX',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Apache Ant,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Apache Ant',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Apache Kafka,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Apache Kafka',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/0d168770-4d9c-4096-b048-a6577818d306::2.E.7.b::Apache Maven,Unresolved EXACT match between ESCO 'Apache Maven' and ONET 'Apache Maven',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Apache Maven,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Apache Maven',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/4c016b68-4116-468c-9dc6-42710c239e4a::2.E.7.e::C#,Unresolved EXACT match between ESCO 'C#' and ONET 'C#',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/b633eb55-8f1f-4ae6-ab4c-2022ffe2cb7f::2.E.7.e::C#,Unresolved EXACT match between ESCO 'C++' and ONET 'C#',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/4c016b68-4116-468c-9dc6-42710c239e4a::2.E.7.e::C++,Unresolved EXACT match between ESCO 'C#' and ONET 'C++',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/b633eb55-8f1f-4ae6-ab4c-2022ffe2cb7f::2.E.7.e::C++,Unresolved EXACT match between ESCO 'C++' and ONET 'C++',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Common business oriented language COBOL,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Common business oriented language COBOL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Eclipse IDE,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Eclipse IDE',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Go,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Go',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/a4e31589-3632-4926-91d0-15b889c90b9b::2.E.11.e::IBM WebSphere,Unresolved EXACT match between ESCO 'IBM WebSphere' and ONET 'IBM WebSphere',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/6b6a9252-2ed7-4862-a02f-1578f4a532ea::2.E.7.b::Integrated development environment IDE software,Unresolved FUZZY match between ESCO 'Eclipse (integrated development environment software)' and ONET 'Integrated development environment IDE software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Integrated development environment IDE software,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Integrated development environment IDE software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft .NET Framework,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft .NET Framework',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/81633a44-f1db-4a01-a940-804c6905e330::2.E.4.d::Microsoft OneNote,Unresolved FUZZY match between ESCO 'use word processing software' and ONET 'Microsoft OneNote',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft PowerShell,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft PowerShell',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Visual Studio,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Visual Studio',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::MongoDB,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'MongoDB',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/401eb8d8-6daa-4f8b-90ad-60afc71eb4f8::2.E.7.e::Perl,Unresolved EXACT match between ESCO 'Perl' and ONET 'Perl',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/6417a4cc-6f61-4459-a114-761a7fa0279d::2.E.7.a::Puppet,Unresolved ALTERNATIVE match between ESCO 'Puppet (tools for software configuration management)' and ONET 'Puppet',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/e5a6e1e0-1b07-4432-83ba-77d593b2cb47::2.E.6.i::Quest Erwin Data Modeler,Unresolved FUZZY match between ESCO 'SAS Data Management' and ONET 'Quest Erwin Data Modeler',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Relational database management software,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Relational database management software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ffddfc7c-a9dd-449f-9e96-882dc447c8b6::2.E.7.e::Scala,Unresolved EXACT match between ESCO 'Scala' and ONET 'Scala',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c::2.E.16.c::Slido interaction software,Unresolved FUZZY match between ESCO 'video conferencing tool' and ONET 'Slido interaction software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/0a9acb6b-1139-4be9-b431-3a80a959f2f4::2.E.12.a::Access management software,Unresolved FUZZY match between ESCO 'Agile project management' and ONET 'Access management software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Amazon DynamoDB,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Amazon DynamoDB',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::MySQL,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'MySQL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::National Instruments LabVIEW,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'National Instruments LabVIEW',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/9973a5a2-7822-4161-99e9-95c781eb63f8::2.E.7.e::Objective C,Unresolved ALTERNATIVE match between ESCO 'Objective-C' and ONET 'Objective C',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Ada,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Ada',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Flume,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Flume',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Automated document generation software,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Automated document generation software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::CMake,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'CMake',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/65e58886-bd1e-4c5b-8ca5-8d9b353c8aa1::2.E.9.d::Data visualization software,Unresolved FUZZY match between ESCO 'data visualisation software' and ONET 'Data visualization software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Doxygen,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Doxygen',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Embarcadero JBuilder,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Embarcadero JBuilder',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Formula translation/translator FORTRAN,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Formula translation/translator FORTRAN',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::High-performance software libraries,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'High-performance software libraries',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Hugging Face,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Hugging Face',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::IBM Rational Rose XDE,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'IBM Rational Rose XDE',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Intel Integrated Performance Primitives,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Intel Integrated Performance Primitives',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::List processing language LISP,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'List processing language LISP',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/8369ede5-4200-4a44-be2e-bc60ef959259::2.E.7.e::Microsoft Visual C# .NET,Unresolved FUZZY match between ESCO 'Microsoft Visual C++' and ONET 'Microsoft Visual C# .NET',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Visual Studio.NET,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Visual Studio.NET',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::OpenAI ChatGPT,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'OpenAI ChatGPT',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Oracle Database,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Oracle Database',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Oracle Java 2 Platform Enterprise Edition J2EE,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Oracle Java 2 Platform Enterprise Edition J2EE',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/2bde42ae-e776-41c1-9ded-b07b30bfe985::2.E.7.b::Prolog,Unresolved ALTERNATIVE match between ESCO 'Prolog (computer programming)' and ONET 'Prolog',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Prolog,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Prolog',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Redis,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Redis',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Relational database management system software,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Relational database management system software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Scikit-learn,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Scikit-learn',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/8b94aa1e-89c9-459d-b3b4-1dfab8dec2df::2.E.7.b::Software libraries,Unresolved FUZZY match between ESCO 'use software libraries' and ONET 'Software libraries',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Software libraries,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Software libraries',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Source code management SCM software,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Source code management SCM software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Vector database software,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Vector database software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Verilog,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Verilog',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::A programming language APL,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'A programming language APL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::ABC Compiler,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'ABC Compiler',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Algorithmic language ALGOL,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Algorithmic language ALGOL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Amazon Kinesis,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Amazon Kinesis',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::American National Standards Institute ANSI C,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'American National Standards Institute ANSI C',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache HBase,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache HBase',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Oozie,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Oozie',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::AWK,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'AWK',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::B-Method,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'B-Method',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Beginner's all-purpose symbolic instruction code BASIC,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Beginner's all-purpose symbolic instruction code BASIC',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Bigloo Scheme,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Bigloo Scheme',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Call-processing language CPL,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Call-processing language CPL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Canu,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Canu',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Computer Associates integrated data management system CA-IDMS,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Computer Associates integrated data management system CA-IDMS',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Computer On-line Real-time Applications Language CORAL 66,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Computer On-line Real-time Applications Language CORAL 66',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Data definition language DDL,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Data definition language DDL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Data manipulation language DML,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Data manipulation language DML',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Distributed database management software,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Distributed database management software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Embedded systems development software,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Embedded systems development software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Event-driven State-machines Programming,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Event-driven State-machines Programming',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Forth,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Forth',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Gambit Scheme,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Gambit Scheme',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/1973c966-f236-40c9-b2d4-5d71a89019be::2.E.4.i::Google Sheets,Unresolved FUZZY match between ESCO 'use spreadsheets software' and ONET 'Google Sheets',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/000f1d3d-220f-4789-9c0a-cc742521fb02::2.E.7.b::Haskell,Unresolved EXACT match between ESCO 'Haskell' and ONET 'Haskell',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Haskell,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Haskell',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::IBM Rational ClearQuest,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'IBM Rational ClearQuest',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/a4e31589-3632-4926-91d0-15b889c90b9b::2.E.11.e::IBM WebSphere MQ,Unresolved FUZZY match between ESCO 'IBM WebSphere' and ONET 'IBM WebSphere MQ',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::ICON programming language,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'ICON programming language',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ffddfc7c-a9dd-449f-9e96-882dc447c8b6::2.E.7.b::ICON programming language,Unresolved FUZZY match between ESCO 'Scala' and ONET 'ICON programming language',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/e5a6e1e0-1b07-4432-83ba-77d593b2cb47::2.E.6.i::Informatica software,Unresolved FUZZY match between ESCO 'SAS Data Management' and ONET 'Informatica software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Interface definition language IDL,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Interface definition language IDL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Interstate connection ICON,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Interstate connection ICON',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::J,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'J',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::JFrog Artifactory,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'JFrog Artifactory',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Kotlin,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Kotlin',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Azure DevOps Services,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Azure DevOps Services',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft ESP SDK,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft ESP SDK',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Microsoft transact-structural query language T-SQL,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Microsoft transact-structural query language T-SQL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::MUMPS M,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'MUMPS M',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/9973a5a2-7822-4161-99e9-95c781eb63f8::2.E.7.e::Objective Caml,Unresolved FUZZY match between ESCO 'Objective-C' and ONET 'Objective Caml',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/f9a6f35b-01a7-40c9-8b61-b6ee46f97272::2.E.13.c::Operating system shells,Unresolved FUZZY match between ESCO 'operating systems' and ONET 'Operating system shells',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Oracle SQL Developer,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Oracle SQL Developer',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Pascal,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Pascal',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/e8b89eb6-51e8-4c3a-babb-88b2e110376b::2.E.7.b::Pascal,Unresolved ALTERNATIVE match between ESCO 'Pascal (computer programming)' and ONET 'Pascal',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Programming language one PL/I,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Programming language one PL/I',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Restructured extended executor REXX,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Restructured extended executor REXX',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::SAP Adaptive Server Enterprise,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'SAP Adaptive Server Enterprise',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/143769cb-b61e-47d8-a61e-eedfbec1016c::2.E.6.e::SAP Business Intelligence,Unresolved FUZZY match between ESCO 'business intelligence' and ONET 'SAP Business Intelligence',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Scheme,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Scheme',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Software development tools,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Software development tools',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::String oriented symbolic language SNOBOL,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'String oriented symbolic language SNOBOL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Structured Query Report SQR,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Structured Query Report SQR',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Symantec Visual Cafe,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Symantec Visual Cafe',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Talend Big Data Integration,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Talend Big Data Integration',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/e5a6e1e0-1b07-4432-83ba-77d593b2cb47::2.E.6.i::Talend Data Fabric,Unresolved FUZZY match between ESCO 'SAS Data Management' and ONET 'Talend Data Fabric',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/867137fb-ff1b-4ca3-99f3-cb6969aa2c68::2.E.7.e::TypeScript,Unresolved EXACT match between ESCO 'TypeScript' and ONET 'TypeScript',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Web application software,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Web application software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Web service definition language WDSL,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Web service definition language WDSL',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/449d119b-2d66-43a9-9230-7d27f16afbb6::2.E.7.b::Xcode,Unresolved EXACT match between ESCO 'Xcode' and ONET 'Xcode',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Xcode,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Xcode',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::XML Path Language XPATH,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'XML Path Language XPATH',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Amazon Data Pipeline,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Amazon Data Pipeline',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f::2.E.6.d::Apache Sqoop,Unresolved FUZZY match between ESCO 'database management systems' and ONET 'Apache Sqoop',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Apache Subversion SVN,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Apache Subversion SVN',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::CruiseControl,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'CruiseControl',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::JetBrains IntelliJ IDEA,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'JetBrains IntelliJ IDEA',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Visual SourceSafe,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Visual SourceSafe',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Windows SDK,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Windows SDK',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/1110c92f-3059-445a-9436-0f4200d365f5::2.E.7.h::Syntactically awesome style sheets SASS,Unresolved FUZZY match between ESCO 'Sass' and ONET 'Syntactically awesome style sheets SASS',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/56a10e3e-c9e7-4d39-b6f1-6013398fcb3a::2.E.4.g::Web content management system CMS software,Unresolved FUZZY match between ESCO 'use content management system software' and ONET 'Web content management system CMS software',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::AnthillPro,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'AnthillPro',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Apache Continuum,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Apache Continuum',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Apache Gump,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Apache Gump',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::easyCIS,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'easyCIS',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::ElectricCloud ElectricCommander,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'ElectricCloud ElectricCommander',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::FinalBuilder,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'FinalBuilder',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Fog Creek Software FogBugz,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Fog Creek Software FogBugz',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::IBM Rational Build Forge,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'IBM Rational Build Forge',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::JetBrains Team City,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'JetBrains Team City',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::LuntBuild,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'LuntBuild',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Microsoft Team Foundation Server,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Microsoft Team Foundation Server',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::OpenMake Software Meister,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'OpenMake Software Meister',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::OpenMake Software Mojo,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'OpenMake Software Mojo',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::pm ase QuickBuild,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'pm ase QuickBuild',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::SmartBear Software Automated Build Studio,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'SmartBear Software Automated Build Studio',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Tigris Cabie,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Tigris Cabie',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Flask,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Flask',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::Julia,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'Julia',COMPARISON
+TECHNOLOGY_MATCH,SKILL,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde::2.E.7.b::XGBoost,Unresolved FUZZY match between ESCO 'integrated development environment software' and ONET 'XGBoost',COMPARISON
+ALIAS_CONFLICT,ALIAS,RL-000022,"Alias 'financial director' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000001,"Alias 'financial director' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000022,"Alias 'accounts payable manager' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000001,"Alias 'accounts payable manager' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000022,"Alias 'accounting director' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000001,"Alias 'accounting director' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000022,"Alias 'cost accounting manager' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000001,"Alias 'cost accounting manager' is shared across multiple entities: RL-000022, RL-000001",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'job placement officer' is shared across multiple entities: RL-000025, RL-000002",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000002,"Alias 'job placement officer' is shared across multiple entities: RL-000025, RL-000002",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'software testing specialist' is shared across multiple entities: RL-000031, RL-000003",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000003,"Alias 'software testing specialist' is shared across multiple entities: RL-000031, RL-000003",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000023,"Alias 'compensation manager' is shared across multiple entities: RL-000023, RL-000004",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000004,"Alias 'compensation manager' is shared across multiple entities: RL-000023, RL-000004",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000027,"Alias 'compensation and benefits analyst' is shared across multiple entities: RL-000027, RL-000004",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000004,"Alias 'compensation and benefits analyst' is shared across multiple entities: RL-000027, RL-000004",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000027,"Alias 'compensation consultant' is shared across multiple entities: RL-000027, RL-000004",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000004,"Alias 'compensation consultant' is shared across multiple entities: RL-000027, RL-000004",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000028,"Alias 'cloud security engineer' is shared across multiple entities: RL-000028, RL-000007",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000007,"Alias 'cloud security engineer' is shared across multiple entities: RL-000028, RL-000007",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000026,"Alias 'management consultant' is shared across multiple entities: RL-000026, RL-000010",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000010,"Alias 'management consultant' is shared across multiple entities: RL-000026, RL-000010",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000026,"Alias 'business development analyst' is shared across multiple entities: RL-000026, RL-000010",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000010,"Alias 'business development analyst' is shared across multiple entities: RL-000026, RL-000010",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000011,"Alias 'marketing director' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000020,"Alias 'marketing director' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000011,"Alias 'product marketing manager' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000020,"Alias 'product marketing manager' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000011,"Alias 'marketing executive' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000020,"Alias 'marketing executive' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000011,"Alias 'market development manager' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000020,"Alias 'market development manager' is shared across multiple entities: RL-000011, RL-000020",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000028,"Alias 'cybersecurity specialist' is shared across multiple entities: RL-000028, RL-000012",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000012,"Alias 'cybersecurity specialist' is shared across multiple entities: RL-000028, RL-000012",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000013,"Alias 'talent acquisition specialist' is shared across multiple entities: RL-000013, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'talent acquisition specialist' is shared across multiple entities: RL-000013, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000013,"Alias 'talent acquisition recruiter' is shared across multiple entities: RL-000013, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'talent acquisition recruiter' is shared across multiple entities: RL-000013, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'web application developer' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000015,"Alias 'web application developer' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000015,Alias 'web developers' conflicts with preferred name of entity 'RL-000032',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'web engineer' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000015,"Alias 'web engineer' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'web specialist' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000015,"Alias 'web specialist' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'web programmer' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000015,"Alias 'web programmer' is shared across multiple entities: RL-000032, RL-000015",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'human resources director' is shared across multiple entities: RL-000018, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000016,"Alias 'human resources director' is shared across multiple entities: RL-000018, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000024,"Alias 'personnel manager' is shared across multiple entities: RL-000024, RL-000018, RL-000023, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'personnel manager' is shared across multiple entities: RL-000024, RL-000018, RL-000023, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000023,"Alias 'personnel manager' is shared across multiple entities: RL-000024, RL-000018, RL-000023, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000016,"Alias 'personnel manager' is shared across multiple entities: RL-000024, RL-000018, RL-000023, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000016,"Alias 'personnel representative' is shared across multiple entities: RL-000016, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'personnel representative' is shared across multiple entities: RL-000016, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000016,"Alias 'personnel officer' is shared across multiple entities: RL-000016, RL-000025, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'personnel officer' is shared across multiple entities: RL-000016, RL-000025, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000035,"Alias 'personnel officer' is shared across multiple entities: RL-000016, RL-000025, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000024,"Alias 'personnel director' is shared across multiple entities: RL-000024, RL-000018, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'personnel director' is shared across multiple entities: RL-000024, RL-000018, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000016,"Alias 'personnel director' is shared across multiple entities: RL-000024, RL-000018, RL-000016",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000016,"Alias 'personnel worker' is shared across multiple entities: RL-000016, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'personnel worker' is shared across multiple entities: RL-000016, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000016,"Alias 'personnel recruiter' is shared across multiple entities: RL-000016, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'personnel recruiter' is shared across multiple entities: RL-000016, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000024,"Alias 'staffing manager' is shared across multiple entities: RL-000024, RL-000018",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'staffing manager' is shared across multiple entities: RL-000024, RL-000018",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'employee benefits manager' is shared across multiple entities: RL-000018, RL-000023",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000023,"Alias 'employee benefits manager' is shared across multiple entities: RL-000018, RL-000023",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'benefits manager' is shared across multiple entities: RL-000018, RL-000023",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000023,"Alias 'benefits manager' is shared across multiple entities: RL-000018, RL-000023",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000024,"Alias 'recruitment manager' is shared across multiple entities: RL-000024, RL-000018",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'recruitment manager' is shared across multiple entities: RL-000024, RL-000018",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000024,"Alias 'industrial relations manager' is shared across multiple entities: RL-000024, RL-000018",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000018,"Alias 'industrial relations manager' is shared across multiple entities: RL-000024, RL-000018",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000020,"Alias 'bd director (business development director)' is shared across multiple entities: RL-000020, RL-000021",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000021,"Alias 'bd director (business development director)' is shared across multiple entities: RL-000020, RL-000021",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000022,Alias 'accounting manager' conflicts with preferred name of entity 'RL-000001',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000027,"Alias 'benefits coordinator' is shared across multiple entities: RL-000027, RL-000023, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000023,"Alias 'benefits coordinator' is shared across multiple entities: RL-000027, RL-000023, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000035,"Alias 'benefits coordinator' is shared across multiple entities: RL-000027, RL-000023, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000024,"Alias 'hr coordinator (human resources coordinator)' is shared across multiple entities: RL-000024, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'hr coordinator (human resources coordinator)' is shared across multiple entities: RL-000024, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000024,Alias 'talent acquisition manager' conflicts with preferred name of entity 'RL-000013',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000027,"Alias 'employment advisor' is shared across multiple entities: RL-000027, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'employment advisor' is shared across multiple entities: RL-000027, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000027,"Alias 'personnel specialist' is shared across multiple entities: RL-000027, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'personnel specialist' is shared across multiple entities: RL-000027, RL-000025",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,"Alias 'recruiting coordinator' is shared across multiple entities: RL-000025, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000035,"Alias 'recruiting coordinator' is shared across multiple entities: RL-000025, RL-000035",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000025,Alias 'recruitment consultant' conflicts with preferred name of entity 'RL-000002',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000026,Alias 'business analyst' conflicts with preferred name of entity 'RL-000010',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000026,"Alias 'healthcare consultant' is shared across multiple entities: RL-000026, RL-000027",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000027,"Alias 'healthcare consultant' is shared across multiple entities: RL-000026, RL-000027",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000027,Alias 'compensation analyst' conflicts with preferred name of entity 'RL-000004',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'cryptologist' is shared across multiple entities: RL-000029, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000028,"Alias 'cryptologist' is shared across multiple entities: RL-000029, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'information technology analyst (it analyst)' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000028,"Alias 'information technology analyst (it analyst)' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'information technology consultant (it consultant)' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000028,"Alias 'information technology consultant (it consultant)' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'systems analyst' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000028,"Alias 'systems analyst' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'technology analyst' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000028,"Alias 'technology analyst' is shared across multiple entities: RL-000031, RL-000028",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,"Alias 'applied scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'applied scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,"Alias 'machine learning data scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'machine learning data scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,"Alias 'machine learning engineer' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'machine learning engineer' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,"Alias 'machine learning scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'machine learning scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,"Alias 'machine learning software engineer' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'machine learning software engineer' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,"Alias 'research scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'research scientist' is shared across multiple entities: RL-000034, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'site reliability engineer' is shared across multiple entities: RL-000030, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000029,"Alias 'site reliability engineer' is shared across multiple entities: RL-000030, RL-000029",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'application integrator' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'application integrator' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'beta tester' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'beta tester' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'computer consultant' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'computer consultant' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,Alias 'embedded systems software developer' conflicts with preferred name of entity 'RL-000008',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'full stack developer' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'full stack developer' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'implementation specialist' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'implementation specialist' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'interface designer' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'interface designer' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'internet application developer' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'internet application developer' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'secure software assessor' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'secure software assessor' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'server engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'server engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'software systems engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'software systems engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'solution architect' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'solution architect' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'solutions architect' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'solutions architect' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'systems analyst engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'systems analyst engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'systems coordinator' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'systems coordinator' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'systems integration engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'systems integration engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'systems software specialist' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'systems software specialist' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'systems support engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'systems support engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'usability engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'usability engineer' is shared across multiple entities: RL-000031, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,"Alias 'xml developer (extensible markup language developer)' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000030,"Alias 'xml developer (extensible markup language developer)' is shared across multiple entities: RL-000032, RL-000030",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,"Alias 'data modeler' is shared across multiple entities: RL-000031, RL-000034",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,"Alias 'data modeler' is shared across multiple entities: RL-000031, RL-000034",VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000031,Alias 'software tester' conflicts with preferred name of entity 'RL-000003',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000032,Alias 'web developer' conflicts with preferred name of entity 'RL-000015',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,Alias 'data analyst' conflicts with preferred name of entity 'RL-000017',VALIDATION
+ALIAS_CONFLICT,ALIAS,RL-000034,Alias 'data engineer' conflicts with preferred name of entity 'RL-000005',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000025,"Alias 'employment legislation' is shared across multiple entities: SK-000025, SK-000443",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000443,"Alias 'employment legislation' is shared across multiple entities: SK-000025, SK-000443",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000025,Alias 'employment law' conflicts with preferred name of entity 'SK-000443',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000033,Alias 'sales strategies' conflicts with preferred name of entity 'SK-000660',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000036,Alias 'ruby' conflicts with preferred name of entity 'SK-000903',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000064,Alias 'business analytics' conflicts with preferred name of entity 'SK-000447',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000075,Alias 'google sheets' conflicts with preferred name of entity 'SK-001542',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000088,Alias 'plan events' conflicts with preferred name of entity 'SK-000480',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000092,Alias 'ada' conflicts with preferred name of entity 'SK-001409',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000092,Alias 'visual basic' conflicts with preferred name of entity 'SK-000062',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000092,Alias 'bash' conflicts with preferred name of entity 'SK-001179',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000092,Alias 'awk' conflicts with preferred name of entity 'SK-001499',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000100,Alias 'google slides' conflicts with preferred name of entity 'SK-000834',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000331,"Alias 'principles of project management' is shared across multiple entities: SK-000331, SK-000101",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000101,"Alias 'principles of project management' is shared across multiple entities: SK-000331, SK-000101",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000125,Alias 'prolog' conflicts with preferred name of entity 'SK-001466',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000144,Alias 'supervise staff' conflicts with preferred name of entity 'SK-000438',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000180,"Alias 'ict security' is shared across multiple entities: SK-000180, SK-000374",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000374,"Alias 'ict security' is shared across multiple entities: SK-000180, SK-000374",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000181,Alias 'smalltalk' conflicts with preferred name of entity 'SK-001627',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000249,Alias 'process data' conflicts with preferred name of entity 'SK-000689',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000689,"Alias 'data processing' is shared across multiple entities: SK-000689, SK-000278",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000278,"Alias 'data processing' is shared across multiple entities: SK-000689, SK-000278",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000284,Alias 'puppet' conflicts with preferred name of entity 'SK-001229',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000317,Alias 'eclipse ide' conflicts with preferred name of entity 'SK-001185',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000549,"Alias 'prince2' is shared across multiple entities: SK-000549, SK-000330",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000330,"Alias 'prince2' is shared across multiple entities: SK-000549, SK-000330",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000345,Alias 'selenium' conflicts with preferred name of entity 'SK-001236',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000378,Alias 'google docs' conflicts with preferred name of entity 'SK-000830',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000509,"Alias 'market studies' is shared across multiple entities: SK-000509, SK-000394",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000394,"Alias 'market studies' is shared across multiple entities: SK-000509, SK-000394",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000394,Alias 'market analysis' conflicts with preferred name of entity 'SK-000509',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000397,"Alias 'human resource administration' is shared across multiple entities: SK-000397, SK-000646",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000646,"Alias 'human resource administration' is shared across multiple entities: SK-000397, SK-000646",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000397,"Alias 'human resource supervision' is shared across multiple entities: SK-000397, SK-000646",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000646,"Alias 'human resource supervision' is shared across multiple entities: SK-000397, SK-000646",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000448,Alias 'sparql' conflicts with preferred name of entity 'SK-000265',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000469,"Alias 'business analysis' is shared across multiple entities: SK-000469, SK-000451",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000451,"Alias 'business analysis' is shared across multiple entities: SK-000469, SK-000451",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000469,Alias 'business analysis' conflicts with preferred name of entity 'SK-000280',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000451,Alias 'business analysis' conflicts with preferred name of entity 'SK-000280',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000452,Alias 'objective c' conflicts with preferred name of entity 'SK-001371',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000463,Alias 'git' conflicts with preferred name of entity 'SK-001189',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000476,Alias 'active listening' conflicts with preferred name of entity 'SK-000731',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000509,Alias 'market research' conflicts with preferred name of entity 'SK-000394',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000540,Alias 'sap erp' conflicts with preferred name of entity 'SK-001618',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000548,Alias 'swift' conflicts with preferred name of entity 'SK-000920',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000555,Alias 'cloud security and compliance' conflicts with preferred name of entity 'SK-000082',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000557,"Alias 'cascading style sheets' is shared across multiple entities: SK-000557, SK-000657",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000657,"Alias 'cascading style sheets' is shared across multiple entities: SK-000557, SK-000657",VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000557,Alias 'css' conflicts with preferred name of entity 'SK-000657',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000591,Alias 'python' conflicts with preferred name of entity 'SK-000899',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000647,Alias 'apache hadoop' conflicts with preferred name of entity 'SK-000792',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000662,Alias 'pascal' conflicts with preferred name of entity 'SK-001599',VALIDATION
+ALIAS_CONFLICT,ALIAS,SK-000691,Alias 'jenkins ci' conflicts with preferred name of entity 'SK-001443',VALIDATION
