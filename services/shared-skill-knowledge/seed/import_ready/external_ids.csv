@@ -1,0 +1,1905 @@
+id,canonical_entity_id,source_system,external_id,source_version
+EXT-000001,RL-000001,ESCO,http://data.europa.eu/esco/occupation/04f39bfa-bc03-4480-98bc-b18ce4fe4b4b,1.2.1
+EXT-000002,RL-000002,ESCO,http://data.europa.eu/esco/occupation/068370e0-9c27-4814-87d0-44fbb3140815,1.2.1
+EXT-000003,RL-000003,ESCO,http://data.europa.eu/esco/occupation/106f79e4-6264-45f1-9e7a-297435cd684b,1.2.1
+EXT-000004,RL-000004,ESCO,http://data.europa.eu/esco/occupation/1fce1be0-bf52-449b-9a2b-3f2cc710290a,1.2.1
+EXT-000005,RL-000005,ESCO,http://data.europa.eu/esco/occupation/2079755f-d809-49e6-8037-4de6180e54c0,1.2.1
+EXT-000006,RL-000006,ESCO,http://data.europa.eu/esco/occupation/258e46f9-0075-4a2e-adae-1ff0477e0f30,1.2.1
+EXT-000007,RL-000007,ESCO,http://data.europa.eu/esco/occupation/349ee6f6-c295-4c38-9b98-48765b55280e,1.2.1
+EXT-000008,RL-000008,ESCO,http://data.europa.eu/esco/occupation/57af9090-55b4-4911-b2d0-86db01c00b02,1.2.1
+EXT-000009,RL-000009,ESCO,http://data.europa.eu/esco/occupation/57b459d4-655c-4053-b189-3c249ce33faf,1.2.1
+EXT-000010,RL-000010,ESCO,http://data.europa.eu/esco/occupation/60082a99-d8ef-4e84-9290-78902681b6ed,1.2.1
+EXT-000011,RL-000011,ESCO,http://data.europa.eu/esco/occupation/6fcf4638-e7c7-4978-9302-9a7b63a3d57c,1.2.1
+EXT-000012,RL-000012,ESCO,http://data.europa.eu/esco/occupation/7754d570-9519-48c2-b1c9-8e165f8bca0f,1.2.1
+EXT-000013,RL-000013,ESCO,http://data.europa.eu/esco/occupation/a6e8a6bf-9209-4d19-a131-a8b6431e0f75,1.2.1
+EXT-000014,RL-000014,ESCO,http://data.europa.eu/esco/occupation/bea99fea-0383-4c63-b944-70d4799de2c5,1.2.1
+EXT-000015,RL-000015,ESCO,http://data.europa.eu/esco/occupation/c40a2919-48a9-40ea-b506-1f34f693496d,1.2.1
+EXT-000016,RL-000016,ESCO,http://data.europa.eu/esco/occupation/d3e32e5e-7f24-48e3-b939-e4f800eb62fb,1.2.1
+EXT-000017,RL-000017,ESCO,http://data.europa.eu/esco/occupation/d3edb8f8-3a06-47a0-8fb9-9b212c006aa2,1.2.1
+EXT-000018,RL-000018,ESCO,http://data.europa.eu/esco/occupation/f605bcd2-90b6-45a0-a558-d05016d68a77,1.2.1
+EXT-000019,RL-000019,ESCO,http://data.europa.eu/esco/occupation/fe0fa514-b48d-4a53-9757-a283c0baacf0,1.2.1
+EXT-000020,RL-000020,ONET,11-2021.00,08/2023
+EXT-000021,RL-000021,ONET,11-2032.00,08/2023
+EXT-000022,RL-000022,ONET,11-3031.00,08/2023
+EXT-000023,RL-000023,ONET,11-3111.00,08/2023
+EXT-000024,RL-000024,ONET,11-3121.00,08/2023
+EXT-000025,RL-000025,ONET,13-1071.00,08/2023
+EXT-000026,RL-000026,ONET,13-1111.00,08/2023
+EXT-000027,RL-000027,ONET,13-1141.00,08/2023
+EXT-000028,RL-000028,ONET,15-1212.00,08/2023
+EXT-000029,RL-000029,ONET,15-1221.00,08/2023
+EXT-000030,RL-000030,ONET,15-1252.00,08/2023
+EXT-000031,RL-000031,ONET,15-1253.00,08/2023
+EXT-000032,RL-000032,ONET,15-1254.00,08/2023
+EXT-000033,RL-000033,ONET,15-1299.09,08/2023
+EXT-000034,RL-000034,ONET,15-2051.00,08/2023
+EXT-000035,RL-000035,ONET,43-4161.00,08/2023
+EXT-000036,SK-000001,ESCO,http://data.europa.eu/esco/skill/000f1d3d-220f-4789-9c0a-cc742521fb02,1.2.1
+EXT-000037,SK-000002,ESCO,http://data.europa.eu/esco/skill/00b9a3aa-7070-4bb5-8020-f228a97cf42f,1.2.1
+EXT-000038,SK-000003,ESCO,http://data.europa.eu/esco/skill/013441c1-1f13-47e9-80c4-9a53e8e1bc05,1.2.1
+EXT-000039,SK-000004,ESCO,http://data.europa.eu/esco/skill/020918ef-4b55-47c1-8430-ab7b8f6a7377,1.2.1
+EXT-000040,SK-000005,ESCO,http://data.europa.eu/esco/skill/020b3c27-bae1-4b85-9d6f-eccee0f5ed99,1.2.1
+EXT-000041,SK-000006,ESCO,http://data.europa.eu/esco/skill/034c29fa-c3ba-45ea-b8f3-bf8e3705e386,1.2.1
+EXT-000042,SK-000007,ESCO,http://data.europa.eu/esco/skill/03a74eee-2dc6-4147-8667-5cdeb65f122d,1.2.1
+EXT-000043,SK-000008,ESCO,http://data.europa.eu/esco/skill/03ff0d53-573a-47a0-a0ad-1995815a4339,1.2.1
+EXT-000044,SK-000009,ESCO,http://data.europa.eu/esco/skill/04dcfb3b-d6ac-4044-a35f-a633d3816c28,1.2.1
+EXT-000045,SK-000010,ESCO,http://data.europa.eu/esco/skill/04f1b938-d4d4-4cb1-a863-982af76b9d93,1.2.1
+EXT-000046,SK-000011,ESCO,http://data.europa.eu/esco/skill/04fe962b-4017-4eb7-9139-7d69b6922bc9,1.2.1
+EXT-000047,SK-000012,ESCO,http://data.europa.eu/esco/skill/05fc6f8d-639c-4329-a6de-dfdd800ed091,1.2.1
+EXT-000048,SK-000013,ESCO,http://data.europa.eu/esco/skill/06d09f70-6ca8-4078-be72-4c2c2a11ee61,1.2.1
+EXT-000049,SK-000014,ESCO,http://data.europa.eu/esco/skill/06f33d6a-f7a7-4a2b-baa5-8c3c53bd1a9c,1.2.1
+EXT-000050,SK-000015,ESCO,http://data.europa.eu/esco/skill/06f46a6e-62d3-4ca0-bedb-cb4c021c14ee,1.2.1
+EXT-000051,SK-000016,ESCO,http://data.europa.eu/esco/skill/071233c4-ad2b-4f50-b79f-768d2231163e,1.2.1
+EXT-000052,SK-000017,ESCO,http://data.europa.eu/esco/skill/0760bfac-9a03-427a-ad84-ccd33a2f2ae8,1.2.1
+EXT-000053,SK-000018,ESCO,http://data.europa.eu/esco/skill/07889c08-7220-47c8-96f7-6068fbea00dc,1.2.1
+EXT-000054,SK-000019,ESCO,http://data.europa.eu/esco/skill/07e51c60-763a-4335-b4ec-70a15f66d328,1.2.1
+EXT-000055,SK-000020,ESCO,http://data.europa.eu/esco/skill/0823ccef-813f-4f22-afef-ac0d68615e8f,1.2.1
+EXT-000056,SK-000021,ESCO,http://data.europa.eu/esco/skill/08371fe9-c658-4f6a-966f-71dbb0ab683d,1.2.1
+EXT-000057,SK-000022,ESCO,http://data.europa.eu/esco/skill/089bab26-a854-40fb-8c04-5be4f693315a,1.2.1
+EXT-000058,SK-000023,ESCO,http://data.europa.eu/esco/skill/08b04e53-ed25-41a2-9f90-0b9cd939ba3d,1.2.1
+EXT-000059,SK-000024,ESCO,http://data.europa.eu/esco/skill/08fd2839-670c-4f16-8024-97437f2035ab,1.2.1
+EXT-000060,SK-000025,ESCO,http://data.europa.eu/esco/skill/08fe5910-8c4c-4679-a988-eb2ded3c4909,1.2.1
+EXT-000061,SK-000026,ESCO,http://data.europa.eu/esco/skill/09f2f811-a3fb-4de3-a70f-6420a6935575,1.2.1
+EXT-000062,SK-000027,ESCO,http://data.europa.eu/esco/skill/0a43729f-2a79-4dae-9faa-95520daae79f,1.2.1
+EXT-000063,SK-000028,ESCO,http://data.europa.eu/esco/skill/0a52bed5-fd29-45fb-aba6-e32bccfda1c1,1.2.1
+EXT-000064,SK-000029,ESCO,http://data.europa.eu/esco/skill/0a9acb6b-1139-4be9-b431-3a80a959f2f4,1.2.1
+EXT-000065,SK-000030,ESCO,http://data.europa.eu/esco/skill/0af062de-eb43-41e9-9b96-249e2cd22d26,1.2.1
+EXT-000066,SK-000031,ESCO,http://data.europa.eu/esco/skill/0b0335f3-0aa1-491e-895e-81fc8774a300,1.2.1
+EXT-000067,SK-000032,ESCO,http://data.europa.eu/esco/skill/0b144726-21c2-46ed-8d13-c03d27f61604,1.2.1
+EXT-000068,SK-000033,ESCO,http://data.europa.eu/esco/skill/0c0488b3-fca5-4deb-865b-8dc605c3d909,1.2.1
+EXT-000069,SK-000034,ESCO,http://data.europa.eu/esco/skill/0c766ca3-9364-4203-916b-fed16e4814c1,1.2.1
+EXT-000070,SK-000035,ESCO,http://data.europa.eu/esco/skill/0cc9c234-f817-4f4c-908a-4d28fe3b0f4a,1.2.1
+EXT-000071,SK-000036,ESCO,http://data.europa.eu/esco/skill/0ccdfe98-f845-4598-84a1-3dca66e9d9a3,1.2.1
+EXT-000072,SK-000037,ESCO,http://data.europa.eu/esco/skill/0cd6dcf1-5778-42a5-b685-4d01ae4a4871,1.2.1
+EXT-000073,SK-000038,ESCO,http://data.europa.eu/esco/skill/0d168770-4d9c-4096-b048-a6577818d306,1.2.1
+EXT-000074,SK-000039,ESCO,http://data.europa.eu/esco/skill/0da516ee-e70e-4384-be13-f5ff80be8127,1.2.1
+EXT-000075,SK-000040,ESCO,http://data.europa.eu/esco/skill/0daaf096-1639-461c-bf1a-bbeea77e6b67,1.2.1
+EXT-000076,SK-000041,ESCO,http://data.europa.eu/esco/skill/0de61385-de6d-4146-ba32-1cc1bc102220,1.2.1
+EXT-000077,SK-000042,ESCO,http://data.europa.eu/esco/skill/0e0c9c11-b39e-43cf-ba95-2fe646f5de64,1.2.1
+EXT-000078,SK-000043,ESCO,http://data.europa.eu/esco/skill/0e1fe34b-f4e7-4642-8c8b-5a05ac3438e5,1.2.1
+EXT-000079,SK-000044,ESCO,http://data.europa.eu/esco/skill/0e54cc0e-6cef-41ec-bd8c-e8e8778969ec,1.2.1
+EXT-000080,SK-000045,ESCO,http://data.europa.eu/esco/skill/0ee94af1-b445-4973-9c3f-459fab250342,1.2.1
+EXT-000081,SK-000046,ESCO,http://data.europa.eu/esco/skill/0ee94c0a-3716-494a-95a2-dcbab9e58be2,1.2.1
+EXT-000082,SK-000047,ESCO,http://data.europa.eu/esco/skill/0efbe2dc-2770-47ec-b8f4-d1bdff6ac0a4,1.2.1
+EXT-000083,SK-000048,ESCO,http://data.europa.eu/esco/skill/0f9f8352-0488-4a1e-9171-2c5466c17f41,1.2.1
+EXT-000084,SK-000049,ESCO,http://data.europa.eu/esco/skill/0fbaceff-df05-4ef7-b735-188dc183b56b,1.2.1
+EXT-000085,SK-000050,ESCO,http://data.europa.eu/esco/skill/0ffdb6ac-03b5-4f1c-bfcc-3d9cb874fdf9,1.2.1
+EXT-000086,SK-000051,ESCO,http://data.europa.eu/esco/skill/1110c92f-3059-445a-9436-0f4200d365f5,1.2.1
+EXT-000087,SK-000052,ESCO,http://data.europa.eu/esco/skill/11430d93-c835-48ed-8e70-285fa69c9ae6,1.2.1
+EXT-000088,SK-000053,ESCO,http://data.europa.eu/esco/skill/114c9698-c999-4369-8498-81bf641fe871,1.2.1
+EXT-000089,SK-000054,ESCO,http://data.europa.eu/esco/skill/118a9b27-1c5a-4214-b685-1a4d9e6365ea,1.2.1
+EXT-000090,SK-000055,ESCO,http://data.europa.eu/esco/skill/11bbb82e-f3cc-4734-94d5-b99fdd0a683e,1.2.1
+EXT-000091,SK-000056,ESCO,http://data.europa.eu/esco/skill/11c56452-fcec-4b00-9695-cca4728e5048,1.2.1
+EXT-000092,SK-000057,ESCO,http://data.europa.eu/esco/skill/11cbcf7f-8dc3-4c9a-9ec1-37f51b5cbc19,1.2.1
+EXT-000093,SK-000058,ESCO,http://data.europa.eu/esco/skill/11eebd42-44ab-401d-8a2c-bdb9fc9beb50,1.2.1
+EXT-000094,SK-000059,ESCO,http://data.europa.eu/esco/skill/1212ac42-2564-4fce-80e1-6ce4ea4d9bf5,1.2.1
+EXT-000095,SK-000060,ESCO,http://data.europa.eu/esco/skill/12274664-b642-4945-b88f-d7787dc3c9dd,1.2.1
+EXT-000096,SK-000061,ESCO,http://data.europa.eu/esco/skill/136e0cab-0b19-48f7-9086-745d615f416b,1.2.1
+EXT-000097,SK-000062,ESCO,http://data.europa.eu/esco/skill/13bdd41a-2a18-441f-96db-41252c519413,1.2.1
+EXT-000098,SK-000063,ESCO,http://data.europa.eu/esco/skill/13e2378e-0d10-450d-843a-b3592575826e,1.2.1
+EXT-000099,SK-000064,ESCO,http://data.europa.eu/esco/skill/143769cb-b61e-47d8-a61e-eedfbec1016c,1.2.1
+EXT-000100,SK-000065,ESCO,http://data.europa.eu/esco/skill/14464b13-19b5-4403-8c2c-09eb98e28f2f,1.2.1
+EXT-000101,SK-000066,ESCO,http://data.europa.eu/esco/skill/146eccdc-c52a-4d61-9406-3af617caa7d6,1.2.1
+EXT-000102,SK-000067,ESCO,http://data.europa.eu/esco/skill/147170ba-0141-4337-89af-b4513d745afe,1.2.1
+EXT-000103,SK-000068,ESCO,http://data.europa.eu/esco/skill/14d1e367-3efe-4ec5-86ae-eca48710ee4e,1.2.1
+EXT-000104,SK-000069,ESCO,http://data.europa.eu/esco/skill/1605025e-a179-421f-8f35-5b07d182a6b2,1.2.1
+EXT-000105,SK-000070,ESCO,http://data.europa.eu/esco/skill/16132f2b-cf61-4c53-ae8d-9023a8bab90b,1.2.1
+EXT-000106,SK-000071,ESCO,http://data.europa.eu/esco/skill/161a6c5a-593a-4977-b7b7-49c6a2a2f2a3,1.2.1
+EXT-000107,SK-000072,ESCO,http://data.europa.eu/esco/skill/16a00c69-9c74-4c37-96d7-6301d285e5ce,1.2.1
+EXT-000108,SK-000073,ESCO,http://data.europa.eu/esco/skill/171eee55-19b9-46d6-aded-33193ba8ccf1,1.2.1
+EXT-000109,SK-000074,ESCO,http://data.europa.eu/esco/skill/172020d1-e151-445b-8173-e2a5fb16fe51,1.2.1
+EXT-000110,SK-000075,ESCO,http://data.europa.eu/esco/skill/1973c966-f236-40c9-b2d4-5d71a89019be,1.2.1
+EXT-000111,SK-000076,ESCO,http://data.europa.eu/esco/skill/19a8293b-8e95-4de3-983f-77484079c389,1.2.1
+EXT-000112,SK-000077,ESCO,http://data.europa.eu/esco/skill/19bf58ed-23b8-4763-b231-d4a1e98a225d,1.2.1
+EXT-000113,SK-000078,ESCO,http://data.europa.eu/esco/skill/1b70a55d-b8a4-49fc-96c6-15ab4cff2522,1.2.1
+EXT-000114,SK-000079,ESCO,http://data.europa.eu/esco/skill/1b7c716e-af95-4cda-a42f-6479c8b139f5,1.2.1
+EXT-000115,SK-000080,ESCO,http://data.europa.eu/esco/skill/1bba98a7-92b9-450b-9235-e0c905f8f3c4,1.2.1
+EXT-000116,SK-000081,ESCO,http://data.europa.eu/esco/skill/1c08d63d-1c5e-4b9b-ad3e-f7ba7debb2d1,1.2.1
+EXT-000117,SK-000082,ESCO,http://data.europa.eu/esco/skill/1c2978b8-bb0d-4249-9c23-877571a4dffa,1.2.1
+EXT-000118,SK-000083,ESCO,http://data.europa.eu/esco/skill/1c460d2d-90c6-4fc9-ad49-febb6e15605a,1.2.1
+EXT-000119,SK-000084,ESCO,http://data.europa.eu/esco/skill/1dae8445-12e5-423a-bb26-824010e299b9,1.2.1
+EXT-000120,SK-000085,ESCO,http://data.europa.eu/esco/skill/1dd23dba-dd00-45ab-abf4-642902538317,1.2.1
+EXT-000121,SK-000086,ESCO,http://data.europa.eu/esco/skill/1e77e42a-181f-4b48-8e74-201ce50ffc29,1.2.1
+EXT-000122,SK-000087,ESCO,http://data.europa.eu/esco/skill/20a8fe89-d4eb-4698-8521-8881c13377e0,1.2.1
+EXT-000123,SK-000088,ESCO,http://data.europa.eu/esco/skill/2111dff8-f830-46ad-80ce-7885893b3134,1.2.1
+EXT-000124,SK-000089,ESCO,http://data.europa.eu/esco/skill/2136f9d2-ebb5-4c1f-aa2d-cee24417c5c7,1.2.1
+EXT-000125,SK-000090,ESCO,http://data.europa.eu/esco/skill/2180bd8c-86de-4889-8165-adac902eee9d,1.2.1
+EXT-000126,SK-000091,ESCO,http://data.europa.eu/esco/skill/21c5790c-0930-4d74-b3b0-84caf5af12ea,1.2.1
+EXT-000127,SK-000092,ESCO,http://data.europa.eu/esco/skill/21d2f96d-35f7-4e3f-9745-c533d2dd6e97,1.2.1
+EXT-000128,SK-000093,ESCO,http://data.europa.eu/esco/skill/21fecc8a-392e-49ce-ac26-fb0696ccfead,1.2.1
+EXT-000129,SK-000094,ESCO,http://data.europa.eu/esco/skill/2239694b-771a-4586-8b54-2794e361a9ae,1.2.1
+EXT-000130,SK-000095,ESCO,http://data.europa.eu/esco/skill/2245cba7-fa4f-47b8-a0cb-3a6b60d703ee,1.2.1
+EXT-000131,SK-000096,ESCO,http://data.europa.eu/esco/skill/22902bf9-cc3f-495b-811a-c441e28e23f6,1.2.1
+EXT-000132,SK-000097,ESCO,http://data.europa.eu/esco/skill/22a173f5-868c-4d82-87e6-beed500ce070,1.2.1
+EXT-000133,SK-000098,ESCO,http://data.europa.eu/esco/skill/22c3b4ff-e2e0-4b40-8f3d-17788c0df295,1.2.1
+EXT-000134,SK-000099,ESCO,http://data.europa.eu/esco/skill/2313b15d-a9a7-4830-9bcc-fd7df79d842b,1.2.1
+EXT-000135,SK-000100,ESCO,http://data.europa.eu/esco/skill/234aeb8d-56c3-4531-9193-1c5e6a8d16cb,1.2.1
+EXT-000136,SK-000101,ESCO,http://data.europa.eu/esco/skill/237db40b-4600-47c0-837f-4a2c4f3014ab,1.2.1
+EXT-000137,SK-000102,ESCO,http://data.europa.eu/esco/skill/2450c3b3-e78e-435b-b84d-e05d984e71dc,1.2.1
+EXT-000138,SK-000103,ESCO,http://data.europa.eu/esco/skill/248894d1-42dc-474f-af6e-2da52ac0c679,1.2.1
+EXT-000139,SK-000104,ESCO,http://data.europa.eu/esco/skill/24e67151-ff7e-43e2-99c0-424a758278a4,1.2.1
+EXT-000140,SK-000105,ESCO,http://data.europa.eu/esco/skill/2522a6ce-3202-4ac8-9f5b-b9cb5a3a83a1,1.2.1
+EXT-000141,SK-000106,ESCO,http://data.europa.eu/esco/skill/25b291b5-8245-4d9d-b391-86a8a31d7109,1.2.1
+EXT-000142,SK-000107,ESCO,http://data.europa.eu/esco/skill/25f0ea33-b4a2-4f31-b7b4-7d20e827b180,1.2.1
+EXT-000143,SK-000108,ESCO,http://data.europa.eu/esco/skill/26fa7a33-a426-4cd5-9792-33bf668612e1,1.2.1
+EXT-000144,SK-000109,ESCO,http://data.europa.eu/esco/skill/279a4b1d-21df-4d78-9f4d-324c73fd7536,1.2.1
+EXT-000145,SK-000110,ESCO,http://data.europa.eu/esco/skill/27ed854c-15b8-4ba2-90e9-ae888a219703,1.2.1
+EXT-000146,SK-000111,ESCO,http://data.europa.eu/esco/skill/2857540c-180b-4208-9127-e94a01871966,1.2.1
+EXT-000147,SK-000112,ESCO,http://data.europa.eu/esco/skill/28ad7c97-9fb3-4b1d-846a-654e529ab8ac,1.2.1
+EXT-000148,SK-000113,ESCO,http://data.europa.eu/esco/skill/28c5e844-72a3-49d7-af0e-810b645e947a,1.2.1
+EXT-000149,SK-000114,ESCO,http://data.europa.eu/esco/skill/29154735-107a-4daa-a050-537f7707f34e,1.2.1
+EXT-000150,SK-000115,ESCO,http://data.europa.eu/esco/skill/292549e6-08ec-456c-b008-eba7a0a68428,1.2.1
+EXT-000151,SK-000116,ESCO,http://data.europa.eu/esco/skill/2962214b-cc38-4d20-aa8b-aa120091d743,1.2.1
+EXT-000152,SK-000117,ESCO,http://data.europa.eu/esco/skill/2a2fa8e8-aaf3-4abf-a60b-af6415f1c6d4,1.2.1
+EXT-000153,SK-000118,ESCO,http://data.europa.eu/esco/skill/2a3a96a3-709e-4d60-81f6-d247d6933f13,1.2.1
+EXT-000154,SK-000119,ESCO,http://data.europa.eu/esco/skill/2ada2f9d-77f7-4ba0-9096-89ae285a65c5,1.2.1
+EXT-000155,SK-000120,ESCO,http://data.europa.eu/esco/skill/2ae4ae1a-367e-47e0-a0cc-6777be3e58d0,1.2.1
+EXT-000156,SK-000121,ESCO,http://data.europa.eu/esco/skill/2b1e2927-3542-48da-9063-02925e7562c1,1.2.1
+EXT-000157,SK-000122,ESCO,http://data.europa.eu/esco/skill/2b34764d-637c-48f5-aa70-31e15c965db6,1.2.1
+EXT-000158,SK-000123,ESCO,http://data.europa.eu/esco/skill/2b7a79e5-84d8-4880-be66-3d9bb05bea17,1.2.1
+EXT-000159,SK-000124,ESCO,http://data.europa.eu/esco/skill/2b92a5b2-6758-4ee3-9fb4-b6387a55cc8f,1.2.1
+EXT-000160,SK-000125,ESCO,http://data.europa.eu/esco/skill/2bde42ae-e776-41c1-9ded-b07b30bfe985,1.2.1
+EXT-000161,SK-000126,ESCO,http://data.europa.eu/esco/skill/2be699a7-416a-4f32-967c-4edc65027b71,1.2.1
+EXT-000162,SK-000127,ESCO,http://data.europa.eu/esco/skill/2c28fc20-8a60-4311-8899-5ef8729c05b3,1.2.1
+EXT-000163,SK-000128,ESCO,http://data.europa.eu/esco/skill/2c4e11ef-da18-4e19-816b-e6bc19e12424,1.2.1
+EXT-000164,SK-000129,ESCO,http://data.europa.eu/esco/skill/2d008d5a-b7bd-46f7-bbb1-5d70a0af9c84,1.2.1
+EXT-000165,SK-000130,ESCO,http://data.europa.eu/esco/skill/2d6d4784-0992-48e7-b100-22d7229b3f0a,1.2.1
+EXT-000166,SK-000131,ESCO,http://data.europa.eu/esco/skill/2daec0e6-f0c1-43e8-8178-aedba99130ec,1.2.1
+EXT-000167,SK-000132,ESCO,http://data.europa.eu/esco/skill/2dd6ecdf-8a08-438b-8b4b-e0374f7b523b,1.2.1
+EXT-000168,SK-000133,ESCO,http://data.europa.eu/esco/skill/2ddb1226-1117-4eb4-ae65-3a2f5a5a3c80,1.2.1
+EXT-000169,SK-000134,ESCO,http://data.europa.eu/esco/skill/2de4572a-4724-4f76-afc2-72a568a264ac,1.2.1
+EXT-000170,SK-000135,ESCO,http://data.europa.eu/esco/skill/2ecf90f1-c511-464b-b26f-598d69182c70,1.2.1
+EXT-000171,SK-000136,ESCO,http://data.europa.eu/esco/skill/2fb8480e-de3c-462b-b169-e8bbb344da68,1.2.1
+EXT-000172,SK-000137,ESCO,http://data.europa.eu/esco/skill/2ff405ec-f59c-4a7b-84b6-9776a49582c4,1.2.1
+EXT-000173,SK-000138,ESCO,http://data.europa.eu/esco/skill/300d432b-f457-4cd3-9cb1-1858c7d14954,1.2.1
+EXT-000174,SK-000139,ESCO,http://data.europa.eu/esco/skill/301bcf97-4444-461d-82a5-78f3830f9185,1.2.1
+EXT-000175,SK-000140,ESCO,http://data.europa.eu/esco/skill/31c69100-b612-4a61-8db5-fd314318854c,1.2.1
+EXT-000176,SK-000141,ESCO,http://data.europa.eu/esco/skill/324f0243-1a21-4f5c-9f71-52eebc2596ed,1.2.1
+EXT-000177,SK-000142,ESCO,http://data.europa.eu/esco/skill/327d15c8-29ff-4ad4-a4fe-6536d777a45f,1.2.1
+EXT-000178,SK-000143,ESCO,http://data.europa.eu/esco/skill/32db65d3-5ef3-43eb-9bf8-752c9cf0b22e,1.2.1
+EXT-000179,SK-000144,ESCO,http://data.europa.eu/esco/skill/339ac029-066a-4985-9f9d-b3d7c8fea0bb,1.2.1
+EXT-000180,SK-000145,ESCO,http://data.europa.eu/esco/skill/33e584f9-ff7a-4979-bfc0-5a3a374a145a,1.2.1
+EXT-000181,SK-000146,ESCO,http://data.europa.eu/esco/skill/341c4478-c976-4ff0-a102-cfd92174d873,1.2.1
+EXT-000182,SK-000147,ESCO,http://data.europa.eu/esco/skill/348b74cd-49ce-4844-8bdf-ec188b497213,1.2.1
+EXT-000183,SK-000148,ESCO,http://data.europa.eu/esco/skill/3579208e-49b3-4ce4-98e7-20e41b1ce8d4,1.2.1
+EXT-000184,SK-000149,ESCO,http://data.europa.eu/esco/skill/36ece87e-32bc-4fb5-8773-2aa5160cb93b,1.2.1
+EXT-000185,SK-000150,ESCO,http://data.europa.eu/esco/skill/37bc4dc0-1233-4008-98db-1116d0c1cfcc,1.2.1
+EXT-000186,SK-000151,ESCO,http://data.europa.eu/esco/skill/382c11ed-20d5-4ae7-b60e-15fec527fa6c,1.2.1
+EXT-000187,SK-000152,ESCO,http://data.europa.eu/esco/skill/385479b7-5da5-4367-9763-0d15b41bb65b,1.2.1
+EXT-000188,SK-000153,ESCO,http://data.europa.eu/esco/skill/38716afc-a93b-44ab-96cc-2ecf67edcf32,1.2.1
+EXT-000189,SK-000154,ESCO,http://data.europa.eu/esco/skill/387ee646-0aaa-4161-ab3b-cde87ec09fdf,1.2.1
+EXT-000190,SK-000155,ESCO,http://data.europa.eu/esco/skill/38a5c459-c591-4f76-a358-37de342bb11d,1.2.1
+EXT-000191,SK-000156,ESCO,http://data.europa.eu/esco/skill/397da142-ab35-48fe-b154-7c38f447adfb,1.2.1
+EXT-000192,SK-000157,ESCO,http://data.europa.eu/esco/skill/39e43f7c-a95e-4583-be76-bb134ccce1ae,1.2.1
+EXT-000193,SK-000158,ESCO,http://data.europa.eu/esco/skill/39f67488-cfd3-4370-8d7e-da98163102d9,1.2.1
+EXT-000194,SK-000159,ESCO,http://data.europa.eu/esco/skill/3a5231a0-8c30-48ee-b671-08e2debd4441,1.2.1
+EXT-000195,SK-000160,ESCO,http://data.europa.eu/esco/skill/3a876d1c-3dd5-45ed-9a27-47cdbee46ce7,1.2.1
+EXT-000196,SK-000161,ESCO,http://data.europa.eu/esco/skill/3be6b84a-fa78-42b9-a8df-150cdb40b9d7,1.2.1
+EXT-000197,SK-000162,ESCO,http://data.europa.eu/esco/skill/3c03ee71-4a23-448f-b79e-81fd75d27dca,1.2.1
+EXT-000198,SK-000163,ESCO,http://data.europa.eu/esco/skill/3c76296d-4bbd-44ba-8eaa-95bf275f79b7,1.2.1
+EXT-000199,SK-000164,ESCO,http://data.europa.eu/esco/skill/3cd35f5d-ce6d-4f14-9a09-53d7a28d834c,1.2.1
+EXT-000200,SK-000165,ESCO,http://data.europa.eu/esco/skill/3cd569a2-4f88-4c1e-9995-8dce8c5e51a7,1.2.1
+EXT-000201,SK-000166,ESCO,http://data.europa.eu/esco/skill/3ce1fe19-7f9e-4070-941d-651673a5693b,1.2.1
+EXT-000202,SK-000167,ESCO,http://data.europa.eu/esco/skill/3d3ee5c3-4286-457f-9f76-1704011f7e11,1.2.1
+EXT-000203,SK-000168,ESCO,http://data.europa.eu/esco/skill/3d96dc4c-d812-4015-b1f9-8307c086c595,1.2.1
+EXT-000204,SK-000169,ESCO,http://data.europa.eu/esco/skill/3e2ab38a-4519-4bef-b762-a8bf4836a775,1.2.1
+EXT-000205,SK-000170,ESCO,http://data.europa.eu/esco/skill/3e9b580d-811b-48df-a5d1-a7bdd26f901f,1.2.1
+EXT-000206,SK-000171,ESCO,http://data.europa.eu/esco/skill/3ec2e4d6-7000-4905-bf1a-c5b1679416de,1.2.1
+EXT-000207,SK-000172,ESCO,http://data.europa.eu/esco/skill/3ee090a1-9d1c-44ed-bd93-f6b7c9b68a97,1.2.1
+EXT-000208,SK-000173,ESCO,http://data.europa.eu/esco/skill/3f4dab51-572b-4e2c-85ef-3b4c3f7094e1,1.2.1
+EXT-000209,SK-000174,ESCO,http://data.europa.eu/esco/skill/3ff589b7-68df-4ea5-ae41-b395bdb2378f,1.2.1
+EXT-000210,SK-000175,ESCO,http://data.europa.eu/esco/skill/401d8d12-b56d-4c71-ac58-f791e8c085b4,1.2.1
+EXT-000211,SK-000176,ESCO,http://data.europa.eu/esco/skill/401eb8d8-6daa-4f8b-90ad-60afc71eb4f8,1.2.1
+EXT-000212,SK-000177,ESCO,http://data.europa.eu/esco/skill/4134622c-c3fb-4a41-beb6-6d58ba5107db,1.2.1
+EXT-000213,SK-000178,ESCO,http://data.europa.eu/esco/skill/415abd43-e8e5-4643-b5da-5f11307af57a,1.2.1
+EXT-000214,SK-000179,ESCO,http://data.europa.eu/esco/skill/4216e465-7baa-4884-a241-54b197bb9278,1.2.1
+EXT-000215,SK-000180,ESCO,http://data.europa.eu/esco/skill/426ceaba-6867-481c-bb6b-aee3933da7d2,1.2.1
+EXT-000216,SK-000181,ESCO,http://data.europa.eu/esco/skill/42ed3bfb-1a01-4c8b-9758-fc6438865734,1.2.1
+EXT-000217,SK-000182,ESCO,http://data.europa.eu/esco/skill/4300b453-9bcf-474c-9ee3-92ec2229720c,1.2.1
+EXT-000218,SK-000183,ESCO,http://data.europa.eu/esco/skill/4339176e-3acd-4f7f-a5d9-445bee3d23f2,1.2.1
+EXT-000219,SK-000184,ESCO,http://data.europa.eu/esco/skill/4350c38d-0fe9-4ca7-bab9-40ed7f72b04f,1.2.1
+EXT-000220,SK-000185,ESCO,http://data.europa.eu/esco/skill/438ff259-d086-4004-acda-1ec3e1631bc6,1.2.1
+EXT-000221,SK-000186,ESCO,http://data.europa.eu/esco/skill/43ae58b9-5e56-4524-b45a-b422777a0576,1.2.1
+EXT-000222,SK-000187,ESCO,http://data.europa.eu/esco/skill/43d1d56b-ce62-4fe8-8f18-35d92ec73023,1.2.1
+EXT-000223,SK-000188,ESCO,http://data.europa.eu/esco/skill/440d5784-52a5-4729-8b04-29f978bd896d,1.2.1
+EXT-000224,SK-000189,ESCO,http://data.europa.eu/esco/skill/4463a721-69f3-413d-8321-43e3af13a4f1,1.2.1
+EXT-000225,SK-000190,ESCO,http://data.europa.eu/esco/skill/44864dac-e16e-4a28-85d3-c08552f2fba3,1.2.1
+EXT-000226,SK-000191,ESCO,http://data.europa.eu/esco/skill/449d119b-2d66-43a9-9230-7d27f16afbb6,1.2.1
+EXT-000227,SK-000192,ESCO,http://data.europa.eu/esco/skill/45f1ae17-c20d-40fc-9307-7d33b6ca9213,1.2.1
+EXT-000228,SK-000193,ESCO,http://data.europa.eu/esco/skill/46ec0033-3c71-415e-bcff-b065675ba2dc,1.2.1
+EXT-000229,SK-000194,ESCO,http://data.europa.eu/esco/skill/477173ca-5fc2-406b-9122-95d92811f284,1.2.1
+EXT-000230,SK-000195,ESCO,http://data.europa.eu/esco/skill/47a49cd6-097d-457a-9f7b-c290c14930d5,1.2.1
+EXT-000231,SK-000196,ESCO,http://data.europa.eu/esco/skill/47b9bbcf-356c-4782-83a4-7f5a1b2b51a3,1.2.1
+EXT-000232,SK-000197,ESCO,http://data.europa.eu/esco/skill/484d048c-a5d1-46a5-b57f-45b69c0ac552,1.2.1
+EXT-000233,SK-000198,ESCO,http://data.europa.eu/esco/skill/484df271-bb52-49f1-8f50-f19624bf4df2,1.2.1
+EXT-000234,SK-000199,ESCO,http://data.europa.eu/esco/skill/48b68726-0fd6-4e03-a5eb-82236516ee7a,1.2.1
+EXT-000235,SK-000200,ESCO,http://data.europa.eu/esco/skill/48db96bf-3314-45c6-bad8-fdb6e20e5639,1.2.1
+EXT-000236,SK-000201,ESCO,http://data.europa.eu/esco/skill/49047409-9307-4b41-9b04-a9615f049044,1.2.1
+EXT-000237,SK-000202,ESCO,http://data.europa.eu/esco/skill/4913d0c0-133a-4c46-aac3-f5d4989a982e,1.2.1
+EXT-000238,SK-000203,ESCO,http://data.europa.eu/esco/skill/4918ec9a-0204-4935-8b09-b0112370daa8,1.2.1
+EXT-000239,SK-000204,ESCO,http://data.europa.eu/esco/skill/496932f1-0b6b-4f73-9432-d95c7ddcd43b,1.2.1
+EXT-000240,SK-000205,ESCO,http://data.europa.eu/esco/skill/49d81d86-e748-4181-84e9-106173058081,1.2.1
+EXT-000241,SK-000206,ESCO,http://data.europa.eu/esco/skill/4a193795-fa63-414e-9f2e-bfdb3924571e,1.2.1
+EXT-000242,SK-000207,ESCO,http://data.europa.eu/esco/skill/4a460161-eaea-4fe2-bd0e-164ccc635be1,1.2.1
+EXT-000243,SK-000208,ESCO,http://data.europa.eu/esco/skill/4a855abe-ac5b-4e95-ac10-3c1adceeee28,1.2.1
+EXT-000244,SK-000209,ESCO,http://data.europa.eu/esco/skill/4a92d8ce-ffd6-4da5-a50e-ef1bff5cc219,1.2.1
+EXT-000245,SK-000210,ESCO,http://data.europa.eu/esco/skill/4b2db903-cd8e-48ce-97fb-a92db4def54e,1.2.1
+EXT-000246,SK-000211,ESCO,http://data.europa.eu/esco/skill/4b3ae518-6746-4487-8d3b-4cfc063a43d0,1.2.1
+EXT-000247,SK-000212,ESCO,http://data.europa.eu/esco/skill/4b3c8605-819d-4b38-83fc-f23663e78dc9,1.2.1
+EXT-000248,SK-000213,ESCO,http://data.europa.eu/esco/skill/4b51e76e-9e8a-455f-a289-5b48246345c4,1.2.1
+EXT-000249,SK-000214,ESCO,http://data.europa.eu/esco/skill/4c016b68-4116-468c-9dc6-42710c239e4a,1.2.1
+EXT-000250,SK-000215,ESCO,http://data.europa.eu/esco/skill/4cd85845-f31c-4306-994d-e12d45114d83,1.2.1
+EXT-000251,SK-000216,ESCO,http://data.europa.eu/esco/skill/4cfc7ef6-e251-4c93-bd5e-fd6936dee11c,1.2.1
+EXT-000252,SK-000217,ESCO,http://data.europa.eu/esco/skill/4d39b27a-b34f-4c89-8d46-df844d42f728,1.2.1
+EXT-000253,SK-000218,ESCO,http://data.europa.eu/esco/skill/4d85b881-e490-4b4c-897a-2faa4ef53956,1.2.1
+EXT-000254,SK-000219,ESCO,http://data.europa.eu/esco/skill/4da4587a-fd0b-4ca2-886c-c42a1562d432,1.2.1
+EXT-000255,SK-000220,ESCO,http://data.europa.eu/esco/skill/4df7a57a-9405-4995-8e02-4ca404832247,1.2.1
+EXT-000256,SK-000221,ESCO,http://data.europa.eu/esco/skill/4e02ce5a-7321-426b-a809-6c507f30ef52,1.2.1
+EXT-000257,SK-000222,ESCO,http://data.europa.eu/esco/skill/4f5c1208-62fd-4e5a-a51e-306c06947e11,1.2.1
+EXT-000258,SK-000223,ESCO,http://data.europa.eu/esco/skill/4f6e68b2-85c8-446e-a96d-b306ec7e0091,1.2.1
+EXT-000259,SK-000224,ESCO,http://data.europa.eu/esco/skill/4fabca9a-7435-4f33-b1da-3cdb00340fdc,1.2.1
+EXT-000260,SK-000225,ESCO,http://data.europa.eu/esco/skill/501537a7-9d63-491d-ae02-09f04767ff1e,1.2.1
+EXT-000261,SK-000226,ESCO,http://data.europa.eu/esco/skill/50181a4b-1cfd-4fbd-ac9a-c1a494b9c5d0,1.2.1
+EXT-000262,SK-000227,ESCO,http://data.europa.eu/esco/skill/505e4ef3-7ce4-437d-b7b4-5c608f71c258,1.2.1
+EXT-000263,SK-000228,ESCO,http://data.europa.eu/esco/skill/5063a99f-975b-4a7c-85e3-69ecb375b4d3,1.2.1
+EXT-000264,SK-000229,ESCO,http://data.europa.eu/esco/skill/509909a2-4a8f-4ead-8ad0-968df63b77cc,1.2.1
+EXT-000265,SK-000230,ESCO,http://data.europa.eu/esco/skill/50b100ea-74fd-4706-99db-3e4ca55e51b8,1.2.1
+EXT-000266,SK-000231,ESCO,http://data.europa.eu/esco/skill/51586df8-1c46-4b47-8583-773cb63bf00b,1.2.1
+EXT-000267,SK-000232,ESCO,http://data.europa.eu/esco/skill/517f678e-001b-4985-acb4-9edc3500d74c,1.2.1
+EXT-000268,SK-000233,ESCO,http://data.europa.eu/esco/skill/518dc04d-092d-4fa1-bd82-88b7a9278ef7,1.2.1
+EXT-000269,SK-000234,ESCO,http://data.europa.eu/esco/skill/52cf3037-ab53-4806-85ed-7fd21ea7f6a1,1.2.1
+EXT-000270,SK-000235,ESCO,http://data.europa.eu/esco/skill/52e53619-fa77-4f72-b237-5e4aae784dc2,1.2.1
+EXT-000271,SK-000236,ESCO,http://data.europa.eu/esco/skill/5303169c-75d6-4751-9136-a4b88343388c,1.2.1
+EXT-000272,SK-000237,ESCO,http://data.europa.eu/esco/skill/5330b70e-16f5-43a7-a6de-18fd6a4bd063,1.2.1
+EXT-000273,SK-000238,ESCO,http://data.europa.eu/esco/skill/541cdc23-1eec-4520-81fc-3392eaf538ed,1.2.1
+EXT-000274,SK-000239,ESCO,http://data.europa.eu/esco/skill/54c9c155-9293-4329-8ed2-2e76e8b519d4,1.2.1
+EXT-000275,SK-000240,ESCO,http://data.europa.eu/esco/skill/54cdc5f2-8000-4ed8-9add-b55a4bf6c269,1.2.1
+EXT-000276,SK-000241,ESCO,http://data.europa.eu/esco/skill/54e60889-c5cc-435f-8d6d-7aefb67e993a,1.2.1
+EXT-000277,SK-000242,ESCO,http://data.europa.eu/esco/skill/550e2d00-bd89-4614-8e15-330ae5277af3,1.2.1
+EXT-000278,SK-000243,ESCO,http://data.europa.eu/esco/skill/56042303-972b-41be-9310-58467599ff7e,1.2.1
+EXT-000279,SK-000244,ESCO,http://data.europa.eu/esco/skill/561c2525-5bd8-4d86-8f45-820f4be7db93,1.2.1
+EXT-000280,SK-000245,ESCO,http://data.europa.eu/esco/skill/56a10e3e-c9e7-4d39-b6f1-6013398fcb3a,1.2.1
+EXT-000281,SK-000246,ESCO,http://data.europa.eu/esco/skill/56a7f561-1d55-43c9-9cd7-36a0a9bc6c50,1.2.1
+EXT-000282,SK-000247,ESCO,http://data.europa.eu/esco/skill/56c59e98-f133-48ad-9d01-f357a8e2c218,1.2.1
+EXT-000283,SK-000248,ESCO,http://data.europa.eu/esco/skill/56ff27ef-2565-45bf-a70c-f06d78d2a480,1.2.1
+EXT-000284,SK-000249,ESCO,http://data.europa.eu/esco/skill/57231a22-4da7-49c8-97b8-75672feadf1e,1.2.1
+EXT-000285,SK-000250,ESCO,http://data.europa.eu/esco/skill/57c3021c-defc-4a39-b60b-95db8af25c3a,1.2.1
+EXT-000286,SK-000251,ESCO,http://data.europa.eu/esco/skill/5898d99a-62a4-4e10-a2e3-0d815ce44248,1.2.1
+EXT-000287,SK-000252,ESCO,http://data.europa.eu/esco/skill/58d7a289-dafd-4363-833f-d1dc4140885e,1.2.1
+EXT-000288,SK-000253,ESCO,http://data.europa.eu/esco/skill/5a5adfe3-5afe-4a24-b9a8-cee8481995e7,1.2.1
+EXT-000289,SK-000254,ESCO,http://data.europa.eu/esco/skill/5aa57bdc-5765-435e-8fc9-99b3febdb213,1.2.1
+EXT-000290,SK-000255,ESCO,http://data.europa.eu/esco/skill/5acf6408-e084-4202-9442-ffcf0119811c,1.2.1
+EXT-000291,SK-000256,ESCO,http://data.europa.eu/esco/skill/5b26f08b-88bc-45f0-b901-530d7786466b,1.2.1
+EXT-000292,SK-000257,ESCO,http://data.europa.eu/esco/skill/5b9cde20-f1b9-4adc-bfb3-dbf70b14138d,1.2.1
+EXT-000293,SK-000258,ESCO,http://data.europa.eu/esco/skill/5bbaa0e6-0fd7-4df2-9db7-34f78b40dc34,1.2.1
+EXT-000294,SK-000259,ESCO,http://data.europa.eu/esco/skill/5be3d306-6cf1-4b49-aa1d-01651dd4ba4c,1.2.1
+EXT-000295,SK-000260,ESCO,http://data.europa.eu/esco/skill/5c606d18-6404-4047-b235-350f18e11827,1.2.1
+EXT-000296,SK-000261,ESCO,http://data.europa.eu/esco/skill/5c66ce3a-658d-43b1-9d8d-0f39be6c0f2e,1.2.1
+EXT-000297,SK-000262,ESCO,http://data.europa.eu/esco/skill/5cfd2ec5-ef34-4e3b-9397-e580b903d716,1.2.1
+EXT-000298,SK-000263,ESCO,http://data.europa.eu/esco/skill/5d74614d-32c8-4ca4-9818-6980e52424b1,1.2.1
+EXT-000299,SK-000264,ESCO,http://data.europa.eu/esco/skill/5da3c765-10a3-49eb-934c-ec401ceb1a34,1.2.1
+EXT-000300,SK-000265,ESCO,http://data.europa.eu/esco/skill/5da8018b-ae85-4cde-ad93-0394369018f3,1.2.1
+EXT-000301,SK-000266,ESCO,http://data.europa.eu/esco/skill/5ef0c719-5bcb-49f8-b8eb-824388225333,1.2.1
+EXT-000302,SK-000267,ESCO,http://data.europa.eu/esco/skill/5f0082ab-2131-49b5-94d6-a1821daf57d6,1.2.1
+EXT-000303,SK-000268,ESCO,http://data.europa.eu/esco/skill/5f1d1319-7954-4a9b-90c7-57668e3a0d4b,1.2.1
+EXT-000304,SK-000269,ESCO,http://data.europa.eu/esco/skill/5f1ebff6-98ec-411f-a1d4-0bf04bd03bdf,1.2.1
+EXT-000305,SK-000270,ESCO,http://data.europa.eu/esco/skill/5fd5c985-eaaa-47aa-8314-62359c54505a,1.2.1
+EXT-000306,SK-000271,ESCO,http://data.europa.eu/esco/skill/6014921e-1d25-4039-adc2-04852d61880e,1.2.1
+EXT-000307,SK-000272,ESCO,http://data.europa.eu/esco/skill/6053cf28-2f42-44bb-8d27-a43920128b30,1.2.1
+EXT-000308,SK-000273,ESCO,http://data.europa.eu/esco/skill/60d48be0-4260-4b2e-85b9-aedff7a9b7d9,1.2.1
+EXT-000309,SK-000274,ESCO,http://data.europa.eu/esco/skill/60efd7d3-eee4-4f7d-9373-66a54d13b3e0,1.2.1
+EXT-000310,SK-000275,ESCO,http://data.europa.eu/esco/skill/60f51172-37c0-4933-a27a-cbf55dcd7580,1.2.1
+EXT-000311,SK-000276,ESCO,http://data.europa.eu/esco/skill/611ed16b-99bf-4840-9cab-f55d1d286e0a,1.2.1
+EXT-000312,SK-000277,ESCO,http://data.europa.eu/esco/skill/6195c5f7-a4fb-425d-a3dd-c4467c4471a3,1.2.1
+EXT-000313,SK-000278,ESCO,http://data.europa.eu/esco/skill/629685b8-5f9e-4522-8cff-b3e2c4ec625a,1.2.1
+EXT-000314,SK-000279,ESCO,http://data.europa.eu/esco/skill/62bf2e21-2613-47f1-a624-fe0fc925e671,1.2.1
+EXT-000315,SK-000280,ESCO,http://data.europa.eu/esco/skill/633a3637-2c6b-40ae-ac38-289eb2a62aa6,1.2.1
+EXT-000316,SK-000281,ESCO,http://data.europa.eu/esco/skill/6345d3a4-7d1a-40a9-9a82-6ed06beffe7b,1.2.1
+EXT-000317,SK-000282,ESCO,http://data.europa.eu/esco/skill/6360a934-cc87-4954-9656-b32db20592e3,1.2.1
+EXT-000318,SK-000283,ESCO,http://data.europa.eu/esco/skill/63f0aa84-5e4c-4eb6-8e8c-876d9feedf1f,1.2.1
+EXT-000319,SK-000284,ESCO,http://data.europa.eu/esco/skill/6417a4cc-6f61-4459-a114-761a7fa0279d,1.2.1
+EXT-000320,SK-000285,ESCO,http://data.europa.eu/esco/skill/6430eb0d-c6de-46b7-a7fc-3dd2e8e62a69,1.2.1
+EXT-000321,SK-000286,ESCO,http://data.europa.eu/esco/skill/6457122e-5eed-4817-9f67-c3edb607fef6,1.2.1
+EXT-000322,SK-000287,ESCO,http://data.europa.eu/esco/skill/646d871b-4503-4dc8-a076-06d7085e4cde,1.2.1
+EXT-000323,SK-000288,ESCO,http://data.europa.eu/esco/skill/64852ade-6ae1-4760-ba4a-976bf07ca255,1.2.1
+EXT-000324,SK-000289,ESCO,http://data.europa.eu/esco/skill/64be6a06-52e8-4f5c-b64d-caa516cfa291,1.2.1
+EXT-000325,SK-000290,ESCO,http://data.europa.eu/esco/skill/64e09849-a7db-4d6b-a932-66264420eb97,1.2.1
+EXT-000326,SK-000291,ESCO,http://data.europa.eu/esco/skill/6556cbf1-d5c0-4f53-89a9-8707066069a6,1.2.1
+EXT-000327,SK-000292,ESCO,http://data.europa.eu/esco/skill/65715f7a-c791-416b-b88a-2933a1c81647,1.2.1
+EXT-000328,SK-000293,ESCO,http://data.europa.eu/esco/skill/65ca5e3c-940c-46b2-b277-aff394cfdd4c,1.2.1
+EXT-000329,SK-000294,ESCO,http://data.europa.eu/esco/skill/65e58886-bd1e-4c5b-8ca5-8d9b353c8aa1,1.2.1
+EXT-000330,SK-000295,ESCO,http://data.europa.eu/esco/skill/660060e4-c418-4049-836b-beade5f8a4a8,1.2.1
+EXT-000331,SK-000296,ESCO,http://data.europa.eu/esco/skill/66d47084-9437-48b2-819b-c4c8214ed650,1.2.1
+EXT-000332,SK-000297,ESCO,http://data.europa.eu/esco/skill/66db424f-2abe-420d-8e5b-186607266b61,1.2.1
+EXT-000333,SK-000298,ESCO,http://data.europa.eu/esco/skill/6789defa-dc57-42a8-b2ed-2b8c349aa3e2,1.2.1
+EXT-000334,SK-000299,ESCO,http://data.europa.eu/esco/skill/679e221d-4e86-49af-8e91-ae8c6fe8e5ae,1.2.1
+EXT-000335,SK-000300,ESCO,http://data.europa.eu/esco/skill/67a118f4-8a5f-48f7-8e5f-de34b9ca2c37,1.2.1
+EXT-000336,SK-000301,ESCO,http://data.europa.eu/esco/skill/67f21527-ca9d-4c76-8571-3cf74e3ce979,1.2.1
+EXT-000337,SK-000302,ESCO,http://data.europa.eu/esco/skill/683bc3e3-6ec1-4ad2-8d62-d0ac1fabbe76,1.2.1
+EXT-000338,SK-000303,ESCO,http://data.europa.eu/esco/skill/68698869-c13c-4563-adc7-118b7644f45d,1.2.1
+EXT-000339,SK-000304,ESCO,http://data.europa.eu/esco/skill/68ef0e4d-5542-4e64-84f4-752cce5a3c22,1.2.1
+EXT-000340,SK-000305,ESCO,http://data.europa.eu/esco/skill/694dc996-52f3-4afa-a802-672e19f061b7,1.2.1
+EXT-000341,SK-000306,ESCO,http://data.europa.eu/esco/skill/696e3b5b-8b61-45af-ae4c-3ab700f197ec,1.2.1
+EXT-000342,SK-000307,ESCO,http://data.europa.eu/esco/skill/69bbd53f-fbb0-4476-b4b2-ef7844464e28,1.2.1
+EXT-000343,SK-000308,ESCO,http://data.europa.eu/esco/skill/69cfc5ed-6569-4aca-a4cc-fd782ba51d9c,1.2.1
+EXT-000344,SK-000309,ESCO,http://data.europa.eu/esco/skill/69f0167e-75d9-46cf-847f-72a592880ebb,1.2.1
+EXT-000345,SK-000310,ESCO,http://data.europa.eu/esco/skill/69f23426-9279-4fe6-a283-24c2aa4c855d,1.2.1
+EXT-000346,SK-000311,ESCO,http://data.europa.eu/esco/skill/69f36674-440a-4fa0-89f9-1b70172ebb9d,1.2.1
+EXT-000347,SK-000312,ESCO,http://data.europa.eu/esco/skill/6a322874-e32f-4cd8-9683-badce67a7f73,1.2.1
+EXT-000348,SK-000313,ESCO,http://data.europa.eu/esco/skill/6a536b36-c5c7-4d10-bf67-a4fb0f8549b2,1.2.1
+EXT-000349,SK-000314,ESCO,http://data.europa.eu/esco/skill/6a609f8f-1451-4102-ad2d-62c5270e1237,1.2.1
+EXT-000350,SK-000315,ESCO,http://data.europa.eu/esco/skill/6a7792a9-888a-46ad-afc9-2c0d94c8fde6,1.2.1
+EXT-000351,SK-000316,ESCO,http://data.europa.eu/esco/skill/6b643893-0a1f-4f6c-83a1-e7eef75849b9,1.2.1
+EXT-000352,SK-000317,ESCO,http://data.europa.eu/esco/skill/6b6a9252-2ed7-4862-a02f-1578f4a532ea,1.2.1
+EXT-000353,SK-000318,ESCO,http://data.europa.eu/esco/skill/6c08403c-a5bb-4868-b8c2-b7d039c0e511,1.2.1
+EXT-000354,SK-000319,ESCO,http://data.europa.eu/esco/skill/6c870993-9341-438b-91c0-c7fe4f96d8f5,1.2.1
+EXT-000355,SK-000320,ESCO,http://data.europa.eu/esco/skill/6d289e8b-2cc1-4eda-ab1f-ad1090ef98f0,1.2.1
+EXT-000356,SK-000321,ESCO,http://data.europa.eu/esco/skill/6e66fa0f-4d3b-415e-9693-dc556eb5112a,1.2.1
+EXT-000357,SK-000322,ESCO,http://data.europa.eu/esco/skill/6eff134b-e34f-4d6e-a6e8-5e47cf2228d0,1.2.1
+EXT-000358,SK-000323,ESCO,http://data.europa.eu/esco/skill/6f1edc19-191f-4ba5-a048-ee69aff05bab,1.2.1
+EXT-000359,SK-000324,ESCO,http://data.europa.eu/esco/skill/6f8a40d6-f9ce-43ec-a72f-d4213a53f3ed,1.2.1
+EXT-000360,SK-000325,ESCO,http://data.europa.eu/esco/skill/6f8baa62-bc2b-4cc1-942b-f540c837cfa2,1.2.1
+EXT-000361,SK-000326,ESCO,http://data.europa.eu/esco/skill/6fa1c2c0-a012-4ca0-9642-e01569ba322c,1.2.1
+EXT-000362,SK-000327,ESCO,http://data.europa.eu/esco/skill/6fce8d3f-a15f-4f26-943a-d200b32f6949,1.2.1
+EXT-000363,SK-000328,ESCO,http://data.europa.eu/esco/skill/7049ac98-0368-4bb2-84d4-5366d1c0f2ac,1.2.1
+EXT-000364,SK-000329,ESCO,http://data.europa.eu/esco/skill/71057622-0cc1-4cce-b36c-b32a7071b017,1.2.1
+EXT-000365,SK-000330,ESCO,http://data.europa.eu/esco/skill/7106b5df-e017-4c28-8c40-98814db5b775,1.2.1
+EXT-000366,SK-000331,ESCO,http://data.europa.eu/esco/skill/7111b95d-0ce3-441a-9d92-4c75d05c4388,1.2.1
+EXT-000367,SK-000332,ESCO,http://data.europa.eu/esco/skill/71152876-b629-4a99-b9ea-0f25a0d07e4e,1.2.1
+EXT-000368,SK-000333,ESCO,http://data.europa.eu/esco/skill/713fb616-118e-40bc-9366-4a69879a49d5,1.2.1
+EXT-000369,SK-000334,ESCO,http://data.europa.eu/esco/skill/714eebcb-569a-4f1b-b592-28f70b59a9ba,1.2.1
+EXT-000370,SK-000335,ESCO,http://data.europa.eu/esco/skill/7159e587-c7cb-4ec0-a662-03e1dee2cccb,1.2.1
+EXT-000371,SK-000336,ESCO,http://data.europa.eu/esco/skill/71746a0b-e58d-4dc4-ad03-bd84082eae21,1.2.1
+EXT-000372,SK-000337,ESCO,http://data.europa.eu/esco/skill/7253d98c-4a6d-4e37-8b6c-accca9f4b639,1.2.1
+EXT-000373,SK-000338,ESCO,http://data.europa.eu/esco/skill/728ad40d-4a79-4b4d-b77b-a48d094d73fa,1.2.1
+EXT-000374,SK-000339,ESCO,http://data.europa.eu/esco/skill/73e7e2f4-7e5f-4e6c-86c2-3b5fbd191172,1.2.1
+EXT-000375,SK-000340,ESCO,http://data.europa.eu/esco/skill/74cb80c4-df6b-4d79-a153-cb7b3b3b6eb0,1.2.1
+EXT-000376,SK-000341,ESCO,http://data.europa.eu/esco/skill/74e49482-75e8-4637-bdb1-fff868d02f7a,1.2.1
+EXT-000377,SK-000342,ESCO,http://data.europa.eu/esco/skill/750caee5-12a0-46ba-b8aa-1e56370deaf9,1.2.1
+EXT-000378,SK-000343,ESCO,http://data.europa.eu/esco/skill/750f86d2-18be-4015-84b1-d4a26d9b2d88,1.2.1
+EXT-000379,SK-000344,ESCO,http://data.europa.eu/esco/skill/751f6baf-de47-4d67-a657-4133066703f4,1.2.1
+EXT-000380,SK-000345,ESCO,http://data.europa.eu/esco/skill/7557f0f4-b8bc-4ac0-b91e-222ab1ba744f,1.2.1
+EXT-000381,SK-000346,ESCO,http://data.europa.eu/esco/skill/75f839c2-fd9a-4ad3-8921-6e734608568d,1.2.1
+EXT-000382,SK-000347,ESCO,http://data.europa.eu/esco/skill/770d4956-b5e0-4d44-bf42-3a766b232c5d,1.2.1
+EXT-000383,SK-000348,ESCO,http://data.europa.eu/esco/skill/7814e88f-c133-4c3b-b27f-857afa145d42,1.2.1
+EXT-000384,SK-000349,ESCO,http://data.europa.eu/esco/skill/781797f4-c2c3-49a4-a80d-eb81eb4f818c,1.2.1
+EXT-000385,SK-000350,ESCO,http://data.europa.eu/esco/skill/78482aac-638e-42da-a7a9-5eefe1bffdea,1.2.1
+EXT-000386,SK-000351,ESCO,http://data.europa.eu/esco/skill/786a74d6-7ecd-44d5-ae4f-87ff02fe3dbf,1.2.1
+EXT-000387,SK-000352,ESCO,http://data.europa.eu/esco/skill/7893605c-18cc-4c68-8c22-4f969df1a673,1.2.1
+EXT-000388,SK-000353,ESCO,http://data.europa.eu/esco/skill/78a74fd1-efc6-49dc-adb1-1b0fbe35c22c,1.2.1
+EXT-000389,SK-000354,ESCO,http://data.europa.eu/esco/skill/7961413f-61d0-4722-9cd9-20a050a29899,1.2.1
+EXT-000390,SK-000355,ESCO,http://data.europa.eu/esco/skill/797a4416-0b8d-44f3-8fcd-eb10bd0be6b4,1.2.1
+EXT-000391,SK-000356,ESCO,http://data.europa.eu/esco/skill/79c36c91-28a5-44b7-ab9b-7093b2d4b21e,1.2.1
+EXT-000392,SK-000357,ESCO,http://data.europa.eu/esco/skill/79e29b8b-47d1-470d-b7b1-32506bfe7d9a,1.2.1
+EXT-000393,SK-000358,ESCO,http://data.europa.eu/esco/skill/79f24a62-7718-46e1-9b41-37be0560a5ca,1.2.1
+EXT-000394,SK-000359,ESCO,http://data.europa.eu/esco/skill/7a17d7ce-01a2-4746-bbcc-22ffe22fa16e,1.2.1
+EXT-000395,SK-000360,ESCO,http://data.europa.eu/esco/skill/7a986287-84f2-4e5d-9ab4-fd7ec424ecf3,1.2.1
+EXT-000396,SK-000361,ESCO,http://data.europa.eu/esco/skill/7ab41e7d-6f5c-49f7-858d-e6cb3070e9eb,1.2.1
+EXT-000397,SK-000362,ESCO,http://data.europa.eu/esco/skill/7b3abd38-61ae-42a4-88bb-0884784f9ee1,1.2.1
+EXT-000398,SK-000363,ESCO,http://data.europa.eu/esco/skill/7b5cce4d-c7fe-4119-b48f-70aa05391787,1.2.1
+EXT-000399,SK-000364,ESCO,http://data.europa.eu/esco/skill/7d0f5a31-96c4-4848-bbd3-0a29206925dd,1.2.1
+EXT-000400,SK-000365,ESCO,http://data.europa.eu/esco/skill/7d10fcb2-b368-48ab-996b-7c9fafcf68ed,1.2.1
+EXT-000401,SK-000366,ESCO,http://data.europa.eu/esco/skill/7d35602d-bc94-4975-aa7c-f4e8e05ce8e0,1.2.1
+EXT-000402,SK-000367,ESCO,http://data.europa.eu/esco/skill/7e1f9657-ab4e-407c-842f-b846197060e3,1.2.1
+EXT-000403,SK-000368,ESCO,http://data.europa.eu/esco/skill/7e305865-5b6d-4225-a4f7-ee5c10aaa134,1.2.1
+EXT-000404,SK-000369,ESCO,http://data.europa.eu/esco/skill/7e796b51-49d7-4e73-95af-2e7323763f15,1.2.1
+EXT-000405,SK-000370,ESCO,http://data.europa.eu/esco/skill/7ee4c2ea-b349-4bd2-81a3-ec31475d4833,1.2.1
+EXT-000406,SK-000371,ESCO,http://data.europa.eu/esco/skill/7f27f1ff-2e17-4b69-990e-c23334478313,1.2.1
+EXT-000407,SK-000372,ESCO,http://data.europa.eu/esco/skill/7ff2c668-0e86-418a-a962-4958262ee337,1.2.1
+EXT-000408,SK-000373,ESCO,http://data.europa.eu/esco/skill/802e6973-3270-4cf0-86e4-a6835caf1ba6,1.2.1
+EXT-000409,SK-000374,ESCO,http://data.europa.eu/esco/skill/8088750d-8388-4170-a76f-48354c469c44,1.2.1
+EXT-000410,SK-000375,ESCO,http://data.europa.eu/esco/skill/811acf0c-4dd7-4dda-a4fa-7ca498a95204,1.2.1
+EXT-000411,SK-000376,ESCO,http://data.europa.eu/esco/skill/811bdb9d-5bf7-4b5a-a3f5-4fc2002f6d57,1.2.1
+EXT-000412,SK-000377,ESCO,http://data.europa.eu/esco/skill/812590e4-7108-4016-baba-957dcf8213ae,1.2.1
+EXT-000413,SK-000378,ESCO,http://data.europa.eu/esco/skill/81633a44-f1db-4a01-a940-804c6905e330,1.2.1
+EXT-000414,SK-000379,ESCO,http://data.europa.eu/esco/skill/82de2df7-0d6c-42b1-94ac-b3e9a029e917,1.2.1
+EXT-000415,SK-000380,ESCO,http://data.europa.eu/esco/skill/8316979b-df5a-4dc7-98ef-61ec6a10df84,1.2.1
+EXT-000416,SK-000381,ESCO,http://data.europa.eu/esco/skill/83218cac-3599-417e-93d2-26013cdccd98,1.2.1
+EXT-000417,SK-000382,ESCO,http://data.europa.eu/esco/skill/8327754d-3990-4056-b07e-4faa49cfcd26,1.2.1
+EXT-000418,SK-000383,ESCO,http://data.europa.eu/esco/skill/833289fa-3646-4010-9d9e-93ba8c9ef2d8,1.2.1
+EXT-000419,SK-000384,ESCO,http://data.europa.eu/esco/skill/8359bd04-d2cb-4757-af1f-39a921df9efe,1.2.1
+EXT-000420,SK-000385,ESCO,http://data.europa.eu/esco/skill/8369ede5-4200-4a44-be2e-bc60ef959259,1.2.1
+EXT-000421,SK-000386,ESCO,http://data.europa.eu/esco/skill/83e97138-899a-4af8-9187-47823e875841,1.2.1
+EXT-000422,SK-000387,ESCO,http://data.europa.eu/esco/skill/85616cc4-98bf-4355-9cf1-72ff11752848,1.2.1
+EXT-000423,SK-000388,ESCO,http://data.europa.eu/esco/skill/85c11255-469f-41bd-a6d1-382bc4a87783,1.2.1
+EXT-000424,SK-000389,ESCO,http://data.europa.eu/esco/skill/85f46538-ae70-498a-bfbc-b8ddafe96c7d,1.2.1
+EXT-000425,SK-000390,ESCO,http://data.europa.eu/esco/skill/867137fb-ff1b-4ca3-99f3-cb6969aa2c68,1.2.1
+EXT-000426,SK-000391,ESCO,http://data.europa.eu/esco/skill/8696aff0-18c0-4ba6-a4d0-9a21861b3e5e,1.2.1
+EXT-000427,SK-000392,ESCO,http://data.europa.eu/esco/skill/872a1632-f1db-4feb-bb27-0a6a359b7591,1.2.1
+EXT-000428,SK-000393,ESCO,http://data.europa.eu/esco/skill/8744f28f-59a9-45af-8ef6-6944cb5a1473,1.2.1
+EXT-000429,SK-000394,ESCO,http://data.europa.eu/esco/skill/8770350e-746f-4adb-9556-18ca68104be6,1.2.1
+EXT-000430,SK-000395,ESCO,http://data.europa.eu/esco/skill/8785ccda-6f9f-4cf3-9033-fda10653d0be,1.2.1
+EXT-000431,SK-000396,ESCO,http://data.europa.eu/esco/skill/87de6e49-ca1c-42a4-8751-5ff0b991966b,1.2.1
+EXT-000432,SK-000397,ESCO,http://data.europa.eu/esco/skill/88b406d0-72e2-4087-be19-d5992d259473,1.2.1
+EXT-000433,SK-000398,ESCO,http://data.europa.eu/esco/skill/88f823da-ab17-4559-8985-69b1507675ca,1.2.1
+EXT-000434,SK-000399,ESCO,http://data.europa.eu/esco/skill/89ba58e8-a67e-4d2b-ad42-6acab25c241b,1.2.1
+EXT-000435,SK-000400,ESCO,http://data.europa.eu/esco/skill/8a43795b-bb38-4f29-91df-a6c92ad4643c,1.2.1
+EXT-000436,SK-000401,ESCO,http://data.europa.eu/esco/skill/8af372fa-7b85-4bab-ab20-3f2eb980c400,1.2.1
+EXT-000437,SK-000402,ESCO,http://data.europa.eu/esco/skill/8b0f73ff-d36b-4196-bb83-464c3a6ef07d,1.2.1
+EXT-000438,SK-000403,ESCO,http://data.europa.eu/esco/skill/8b8ed44b-5d29-4a42-a87f-a77739b5bfcd,1.2.1
+EXT-000439,SK-000404,ESCO,http://data.europa.eu/esco/skill/8b9332c7-2551-4527-9a64-a615713d8b02,1.2.1
+EXT-000440,SK-000405,ESCO,http://data.europa.eu/esco/skill/8b94aa1e-89c9-459d-b3b4-1dfab8dec2df,1.2.1
+EXT-000441,SK-000406,ESCO,http://data.europa.eu/esco/skill/8bad61b8-75f7-4bdc-b994-f7158f4b90f0,1.2.1
+EXT-000442,SK-000407,ESCO,http://data.europa.eu/esco/skill/8bc75dce-beba-40f9-93fc-66c9708ed74b,1.2.1
+EXT-000443,SK-000408,ESCO,http://data.europa.eu/esco/skill/8bdc520c-6293-4e99-bf6f-a44d5da3ebcb,1.2.1
+EXT-000444,SK-000409,ESCO,http://data.europa.eu/esco/skill/8c1ffdbd-3581-4102-bcf9-d802ded713fa,1.2.1
+EXT-000445,SK-000410,ESCO,http://data.europa.eu/esco/skill/8c4c49d4-9708-433f-8ca7-bf2c5211ee49,1.2.1
+EXT-000446,SK-000411,ESCO,http://data.europa.eu/esco/skill/8d202e22-85e9-47b1-a1e0-3296d17244cd,1.2.1
+EXT-000447,SK-000412,ESCO,http://data.europa.eu/esco/skill/8d4271ca-c9fd-40b3-875f-15f78332a49e,1.2.1
+EXT-000448,SK-000413,ESCO,http://data.europa.eu/esco/skill/8dcbcabe-09f7-4d11-940d-125af57bbc40,1.2.1
+EXT-000449,SK-000414,ESCO,http://data.europa.eu/esco/skill/8df59017-f8e3-4a48-b321-79a38c597748,1.2.1
+EXT-000450,SK-000415,ESCO,http://data.europa.eu/esco/skill/8ebb2c0a-0baa-43bf-95cf-094047c57427,1.2.1
+EXT-000451,SK-000416,ESCO,http://data.europa.eu/esco/skill/8efa6a7a-6556-4cb8-908d-59d3b5c58d2f,1.2.1
+EXT-000452,SK-000417,ESCO,http://data.europa.eu/esco/skill/8f6ed69b-29d0-4c01-81ba-f05920a185f3,1.2.1
+EXT-000453,SK-000418,ESCO,http://data.europa.eu/esco/skill/901105f8-3a08-453e-b1dc-23619e317fd3,1.2.1
+EXT-000454,SK-000419,ESCO,http://data.europa.eu/esco/skill/9013b46e-5a9b-4929-8918-fcadfdfd37ce,1.2.1
+EXT-000455,SK-000420,ESCO,http://data.europa.eu/esco/skill/902fb91c-3113-4004-9b4f-79aa86b638b7,1.2.1
+EXT-000456,SK-000421,ESCO,http://data.europa.eu/esco/skill/90398aca-82b7-4f56-8e0f-814d949162b4,1.2.1
+EXT-000457,SK-000422,ESCO,http://data.europa.eu/esco/skill/906323f4-00c4-4c3b-ab5a-8af77be3456e,1.2.1
+EXT-000458,SK-000423,ESCO,http://data.europa.eu/esco/skill/906c9e66-bdee-4f8e-93d7-88d9fcf39a0a,1.2.1
+EXT-000459,SK-000424,ESCO,http://data.europa.eu/esco/skill/9091c8e5-9357-4c29-bceb-ddb1792c22e8,1.2.1
+EXT-000460,SK-000425,ESCO,http://data.europa.eu/esco/skill/913e7e83-b8f8-4574-b1ca-1b38f3fd974a,1.2.1
+EXT-000461,SK-000426,ESCO,http://data.europa.eu/esco/skill/91816e1a-d026-4d21-9b1c-59ca5cf488de,1.2.1
+EXT-000462,SK-000427,ESCO,http://data.europa.eu/esco/skill/918f5211-b99f-4b29-9a34-6e475583ef55,1.2.1
+EXT-000463,SK-000428,ESCO,http://data.europa.eu/esco/skill/9242ad54-dc3d-41b3-9cfe-142fa8582511,1.2.1
+EXT-000464,SK-000429,ESCO,http://data.europa.eu/esco/skill/925463a7-d51f-4d5b-9f79-4d28cf30acde,1.2.1
+EXT-000465,SK-000430,ESCO,http://data.europa.eu/esco/skill/92721092-fe7c-4689-96bd-4f02385bc0e7,1.2.1
+EXT-000466,SK-000431,ESCO,http://data.europa.eu/esco/skill/929e89f9-ac69-4bcb-9eea-37257aa5aff9,1.2.1
+EXT-000467,SK-000432,ESCO,http://data.europa.eu/esco/skill/933e7ccf-5d56-46ba-aca4-857f826a6b3a,1.2.1
+EXT-000468,SK-000433,ESCO,http://data.europa.eu/esco/skill/93aaf65c-5aad-4e6f-a7ba-ce9bf7c0e6e6,1.2.1
+EXT-000469,SK-000434,ESCO,http://data.europa.eu/esco/skill/93e65de1-923c-437e-aa5b-e6002967ce71,1.2.1
+EXT-000470,SK-000435,ESCO,http://data.europa.eu/esco/skill/94dd823c-148e-4614-a6e8-99249b16357d,1.2.1
+EXT-000471,SK-000436,ESCO,http://data.europa.eu/esco/skill/9525dcdf-5085-4143-bbae-544263acd63a,1.2.1
+EXT-000472,SK-000437,ESCO,http://data.europa.eu/esco/skill/953c0b65-537a-42fe-a90b-26cd36c64361,1.2.1
+EXT-000473,SK-000438,ESCO,http://data.europa.eu/esco/skill/9601b2a8-68e4-4906-9306-a23679b8f0b0,1.2.1
+EXT-000474,SK-000439,ESCO,http://data.europa.eu/esco/skill/96550830-539b-4746-96aa-92aa4959945d,1.2.1
+EXT-000475,SK-000440,ESCO,http://data.europa.eu/esco/skill/96a6b597-fc62-487e-87f2-de5b67950a3a,1.2.1
+EXT-000476,SK-000441,ESCO,http://data.europa.eu/esco/skill/9714735d-6f60-440b-bdbc-aaf45ebcbe78,1.2.1
+EXT-000477,SK-000442,ESCO,http://data.europa.eu/esco/skill/979cf728-896f-4f2c-8fa8-2698ca0d4930,1.2.1
+EXT-000478,SK-000443,ESCO,http://data.europa.eu/esco/skill/97b713f0-b9e8-4903-8dee-7e0b4019a1c0,1.2.1
+EXT-000479,SK-000444,ESCO,http://data.europa.eu/esco/skill/97bd1c21-66b2-4b7e-ad0f-e3cda590e378,1.2.1
+EXT-000480,SK-000445,ESCO,http://data.europa.eu/esco/skill/98301d4a-2cc3-439d-8d7f-0b6ac76302bb,1.2.1
+EXT-000481,SK-000446,ESCO,http://data.europa.eu/esco/skill/988f4ac3-a37c-4b0a-a40f-4e0e56b5919e,1.2.1
+EXT-000482,SK-000447,ESCO,http://data.europa.eu/esco/skill/98a1dec3-8138-4f46-a596-5e2a83b884b9,1.2.1
+EXT-000483,SK-000448,ESCO,http://data.europa.eu/esco/skill/99207709-d076-4cce-ba38-e90d3bb28806,1.2.1
+EXT-000484,SK-000449,ESCO,http://data.europa.eu/esco/skill/993b1e23-f2de-4bd8-b33f-f86dde1c8e9d,1.2.1
+EXT-000485,SK-000450,ESCO,http://data.europa.eu/esco/skill/99474c7c-7096-4ff9-9e87-03db28727b00,1.2.1
+EXT-000486,SK-000451,ESCO,http://data.europa.eu/esco/skill/99571e68-801f-49af-a897-5f75996642e1,1.2.1
+EXT-000487,SK-000452,ESCO,http://data.europa.eu/esco/skill/9973a5a2-7822-4161-99e9-95c781eb63f8,1.2.1
+EXT-000488,SK-000453,ESCO,http://data.europa.eu/esco/skill/9979e727-3104-42e0-8f41-4af2578111ea,1.2.1
+EXT-000489,SK-000454,ESCO,http://data.europa.eu/esco/skill/99b163e8-7815-43e2-83f3-a47f3076354c,1.2.1
+EXT-000490,SK-000455,ESCO,http://data.europa.eu/esco/skill/99c4c69a-025c-464f-adda-874c7f107a31,1.2.1
+EXT-000491,SK-000456,ESCO,http://data.europa.eu/esco/skill/9a58cd26-58eb-4a1c-b1b6-64037fe9cfa1,1.2.1
+EXT-000492,SK-000457,ESCO,http://data.europa.eu/esco/skill/9af252ce-bf4d-411b-8daa-beb91df4257d,1.2.1
+EXT-000493,SK-000458,ESCO,http://data.europa.eu/esco/skill/9b9de2a4-d8af-4a7b-933a-a8334ae60067,1.2.1
+EXT-000494,SK-000459,ESCO,http://data.europa.eu/esco/skill/9be758b6-a45d-403c-8943-68390ee2c961,1.2.1
+EXT-000495,SK-000460,ESCO,http://data.europa.eu/esco/skill/9c6e951f-aa88-4890-983d-e7a6ee49f5bb,1.2.1
+EXT-000496,SK-000461,ESCO,http://data.europa.eu/esco/skill/9cf681c7-89ec-470c-b651-7fe03786f586,1.2.1
+EXT-000497,SK-000462,ESCO,http://data.europa.eu/esco/skill/9d1b08b3-ba1e-41f6-a466-1ac1e62eb5f0,1.2.1
+EXT-000498,SK-000463,ESCO,http://data.europa.eu/esco/skill/9d2e926f-53d9-41f5-98f3-19dfaa687f3f,1.2.1
+EXT-000499,SK-000464,ESCO,http://data.europa.eu/esco/skill/9d5521f9-44d7-4db4-b7ac-0ba7d389f44d,1.2.1
+EXT-000500,SK-000465,ESCO,http://data.europa.eu/esco/skill/9d59f4e5-20a5-428e-b8b3-645043500457,1.2.1
+EXT-000501,SK-000466,ESCO,http://data.europa.eu/esco/skill/9d916d7c-89b3-4084-a6d9-e2b0b3091404,1.2.1
+EXT-000502,SK-000467,ESCO,http://data.europa.eu/esco/skill/9e00c7e1-2c36-4f0c-9acc-6668f4b10928,1.2.1
+EXT-000503,SK-000468,ESCO,http://data.europa.eu/esco/skill/9e06bac6-6b91-48ca-8b7d-c1f48cdecd7c,1.2.1
+EXT-000504,SK-000469,ESCO,http://data.europa.eu/esco/skill/9e84a506-df06-4be3-874a-fa01293e3dd5,1.2.1
+EXT-000505,SK-000470,ESCO,http://data.europa.eu/esco/skill/9ef0f3a0-9ce2-4ef1-a987-0366b5cb2dbe,1.2.1
+EXT-000506,SK-000471,ESCO,http://data.europa.eu/esco/skill/9f6946f7-60aa-409a-b33d-152f244299d8,1.2.1
+EXT-000507,SK-000472,ESCO,http://data.europa.eu/esco/skill/9fc400ac-8ed2-4aff-915f-aa4f2609ec7b,1.2.1
+EXT-000508,SK-000473,ESCO,http://data.europa.eu/esco/skill/9ff9db9d-d14b-426e-83f3-e7449af6c79f,1.2.1
+EXT-000509,SK-000474,ESCO,http://data.europa.eu/esco/skill/a0bf9b9d-e53f-418c-a839-5d99eff718fe,1.2.1
+EXT-000510,SK-000475,ESCO,http://data.europa.eu/esco/skill/a0e23745-6ba4-45e2-9510-df6e71ed1230,1.2.1
+EXT-000511,SK-000476,ESCO,http://data.europa.eu/esco/skill/a17286c5-238d-4f0b-bc24-29e9121345de,1.2.1
+EXT-000512,SK-000477,ESCO,http://data.europa.eu/esco/skill/a1eef0f4-133f-464a-a8f1-68fe3e8cc1b4,1.2.1
+EXT-000513,SK-000478,ESCO,http://data.europa.eu/esco/skill/a3ce2bf7-5562-4639-9b52-fdb4850a3904,1.2.1
+EXT-000514,SK-000479,ESCO,http://data.europa.eu/esco/skill/a4881e54-6055-4e61-855a-0a56ced7cfa3,1.2.1
+EXT-000515,SK-000480,ESCO,http://data.europa.eu/esco/skill/a4b7f1be-7058-45e4-ac90-66580499187f,1.2.1
+EXT-000516,SK-000481,ESCO,http://data.europa.eu/esco/skill/a4d336a6-9ffd-402a-91cc-f359716ba4e0,1.2.1
+EXT-000517,SK-000482,ESCO,http://data.europa.eu/esco/skill/a4e31589-3632-4926-91d0-15b889c90b9b,1.2.1
+EXT-000518,SK-000483,ESCO,http://data.europa.eu/esco/skill/a4e50b95-8962-4408-81f9-f5de71461276,1.2.1
+EXT-000519,SK-000484,ESCO,http://data.europa.eu/esco/skill/a56dec32-05ef-45de-a256-ee6741f356db,1.2.1
+EXT-000520,SK-000485,ESCO,http://data.europa.eu/esco/skill/a5735dd9-2e74-4fb1-b785-50b98498fc25,1.2.1
+EXT-000521,SK-000486,ESCO,http://data.europa.eu/esco/skill/a57a54b6-2f2e-43e4-9621-b52f4a63cb08,1.2.1
+EXT-000522,SK-000487,ESCO,http://data.europa.eu/esco/skill/a584a638-a2c0-4b3c-bdf3-a64f87225be9,1.2.1
+EXT-000523,SK-000488,ESCO,http://data.europa.eu/esco/skill/a5b0cd5c-e13a-4ab3-8d93-4d242adcfb01,1.2.1
+EXT-000524,SK-000489,ESCO,http://data.europa.eu/esco/skill/a7f0fbe0-c546-4f30-8e41-34a58c64567e,1.2.1
+EXT-000525,SK-000490,ESCO,http://data.europa.eu/esco/skill/a800a15c-2d1b-4151-8bf3-b21d47f709a1,1.2.1
+EXT-000526,SK-000491,ESCO,http://data.europa.eu/esco/skill/a80fb090-63f4-4b05-83a5-2f090deb7757,1.2.1
+EXT-000527,SK-000492,ESCO,http://data.europa.eu/esco/skill/a846cb9e-c152-41e7-bd34-45e7ff941e3b,1.2.1
+EXT-000528,SK-000493,ESCO,http://data.europa.eu/esco/skill/a8797f21-1af0-4c5e-98ca-bf1442929363,1.2.1
+EXT-000529,SK-000494,ESCO,http://data.europa.eu/esco/skill/a8d24a95-47b3-4f88-92e7-06600bcd3612,1.2.1
+EXT-000530,SK-000495,ESCO,http://data.europa.eu/esco/skill/a8f2a095-9d03-43f0-980d-2b9fcc59a994,1.2.1
+EXT-000531,SK-000496,ESCO,http://data.europa.eu/esco/skill/a9640376-8d72-4a70-a4a3-7a18e2e8f3c0,1.2.1
+EXT-000532,SK-000497,ESCO,http://data.europa.eu/esco/skill/a9c205ef-365a-4ae4-b905-cb48ba761ff0,1.2.1
+EXT-000533,SK-000498,ESCO,http://data.europa.eu/esco/skill/aa7eac5f-dc9d-401a-b197-c9c455d78c95,1.2.1
+EXT-000534,SK-000499,ESCO,http://data.europa.eu/esco/skill/ab1e97ed-2319-4293-a8b7-072d2648822f,1.2.1
+EXT-000535,SK-000500,ESCO,http://data.europa.eu/esco/skill/ab927ee8-acd9-41c2-aef0-2020364a1003,1.2.1
+EXT-000536,SK-000501,ESCO,http://data.europa.eu/esco/skill/aba1f05b-f312-47d8-be71-7c574134de8f,1.2.1
+EXT-000537,SK-000502,ESCO,http://data.europa.eu/esco/skill/abdc7ac8-151f-40c6-bc1a-1e9b4b073290,1.2.1
+EXT-000538,SK-000503,ESCO,http://data.europa.eu/esco/skill/ac516e9b-8bfa-4b72-8e3e-340b0a3a51d5,1.2.1
+EXT-000539,SK-000504,ESCO,http://data.europa.eu/esco/skill/acf0a78c-f4e3-4bd9-a5cc-9cf4791b3b95,1.2.1
+EXT-000540,SK-000505,ESCO,http://data.europa.eu/esco/skill/af607e5e-4ba1-4e5f-a2a6-dc05806567c7,1.2.1
+EXT-000541,SK-000506,ESCO,http://data.europa.eu/esco/skill/af76c813-5c7f-4a08-a560-b4b70f96f3ff,1.2.1
+EXT-000542,SK-000507,ESCO,http://data.europa.eu/esco/skill/af7ae54f-4649-4c16-87c7-59ba41d4d57f,1.2.1
+EXT-000543,SK-000508,ESCO,http://data.europa.eu/esco/skill/afdb41dd-5dd5-4fbb-bf9e-e041422698b4,1.2.1
+EXT-000544,SK-000509,ESCO,http://data.europa.eu/esco/skill/b011c8b4-76e1-4bbc-8bb9-1d205e7b618a,1.2.1
+EXT-000545,SK-000510,ESCO,http://data.europa.eu/esco/skill/b01444aa-6f62-4b7d-ab30-4385a9148580,1.2.1
+EXT-000546,SK-000511,ESCO,http://data.europa.eu/esco/skill/b04f377b-ee80-4b38-aca1-19d266a23b17,1.2.1
+EXT-000547,SK-000512,ESCO,http://data.europa.eu/esco/skill/b0560439-14eb-41d1-aa53-1938efc24123,1.2.1
+EXT-000548,SK-000513,ESCO,http://data.europa.eu/esco/skill/b0a3bb25-a02f-43ed-ab1f-994fa66a424a,1.2.1
+EXT-000549,SK-000514,ESCO,http://data.europa.eu/esco/skill/b105ec9b-0857-41d6-8d07-a83e58b73d90,1.2.1
+EXT-000550,SK-000515,ESCO,http://data.europa.eu/esco/skill/b1272de4-1f5f-408b-8b26-061f2550fc72,1.2.1
+EXT-000551,SK-000516,ESCO,http://data.europa.eu/esco/skill/b16200f4-4f39-4b8b-aa9d-3568054d6bdb,1.2.1
+EXT-000552,SK-000517,ESCO,http://data.europa.eu/esco/skill/b16bcbcb-1d3f-42b3-a6a5-b91348a72b70,1.2.1
+EXT-000553,SK-000518,ESCO,http://data.europa.eu/esco/skill/b17f4305-741a-4a1c-8fe8-6f11cb3d5c0a,1.2.1
+EXT-000554,SK-000519,ESCO,http://data.europa.eu/esco/skill/b216d9a2-7d4e-4312-8d05-e375f4ab44d8,1.2.1
+EXT-000555,SK-000520,ESCO,http://data.europa.eu/esco/skill/b22e46d7-1c5f-4837-943f-7f75531acc26,1.2.1
+EXT-000556,SK-000521,ESCO,http://data.europa.eu/esco/skill/b363bb5f-2c79-40af-94da-33e06f9dee9f,1.2.1
+EXT-000557,SK-000522,ESCO,http://data.europa.eu/esco/skill/b3f22ab4-b553-439d-80a2-5b8ae6d11e0d,1.2.1
+EXT-000558,SK-000523,ESCO,http://data.europa.eu/esco/skill/b4832996-b36c-40b2-b54e-780325b2546e,1.2.1
+EXT-000559,SK-000524,ESCO,http://data.europa.eu/esco/skill/b4dc6e4f-dc7d-445f-8ce2-d7b9d225e282,1.2.1
+EXT-000560,SK-000525,ESCO,http://data.europa.eu/esco/skill/b5cb259e-83e7-48f5-950e-245d5b5fd6d0,1.2.1
+EXT-000561,SK-000526,ESCO,http://data.europa.eu/esco/skill/b633eb55-8f1f-4ae6-ab4c-2022ffe2cb7f,1.2.1
+EXT-000562,SK-000527,ESCO,http://data.europa.eu/esco/skill/b679ef35-eebf-4da8-8e45-fee6841c3214,1.2.1
+EXT-000563,SK-000528,ESCO,http://data.europa.eu/esco/skill/b78f324d-e16c-43f8-97d2-50d3a7cd1fb3,1.2.1
+EXT-000564,SK-000529,ESCO,http://data.europa.eu/esco/skill/b7c8f418-08d5-45d6-b697-ab26c6ecbfb4,1.2.1
+EXT-000565,SK-000530,ESCO,http://data.europa.eu/esco/skill/b8271c8a-cba6-4baa-80f5-6361af3f07e3,1.2.1
+EXT-000566,SK-000531,ESCO,http://data.europa.eu/esco/skill/b8656b5c-e3f0-4418-82ff-87b5f677f9e8,1.2.1
+EXT-000567,SK-000532,ESCO,http://data.europa.eu/esco/skill/b99aa3b8-0066-46b2-a027-30afae444ad8,1.2.1
+EXT-000568,SK-000533,ESCO,http://data.europa.eu/esco/skill/b9bb1f03-15e2-4079-943e-7e483b21725b,1.2.1
+EXT-000569,SK-000534,ESCO,http://data.europa.eu/esco/skill/b9bf9e17-ae47-417b-bbb1-e8b7c263ccac,1.2.1
+EXT-000570,SK-000535,ESCO,http://data.europa.eu/esco/skill/b9f16465-56a9-426b-a047-0f9f1f95ec92,1.2.1
+EXT-000571,SK-000536,ESCO,http://data.europa.eu/esco/skill/ba1b0441-a6b8-4e57-8ccc-871012f63e42,1.2.1
+EXT-000572,SK-000537,ESCO,http://data.europa.eu/esco/skill/ba9260ba-1c8d-495e-94f1-f7cab7e73cea,1.2.1
+EXT-000573,SK-000538,ESCO,http://data.europa.eu/esco/skill/bb2b4485-2bad-402f-8517-44bf7d9afff4,1.2.1
+EXT-000574,SK-000539,ESCO,http://data.europa.eu/esco/skill/bb663409-5c88-4e3a-bc16-01aa1c8ce171,1.2.1
+EXT-000575,SK-000540,ESCO,http://data.europa.eu/esco/skill/bb99af26-71ff-4dca-bde7-1eb1f6194426,1.2.1
+EXT-000576,SK-000541,ESCO,http://data.europa.eu/esco/skill/bd14968e-e409-45af-b362-3495ed7b10e0,1.2.1
+EXT-000577,SK-000542,ESCO,http://data.europa.eu/esco/skill/bd2bb675-b745-48d5-88eb-e27273781bfa,1.2.1
+EXT-000578,SK-000543,ESCO,http://data.europa.eu/esco/skill/bd698bbe-7003-4508-b422-46c2ff4d5e95,1.2.1
+EXT-000579,SK-000544,ESCO,http://data.europa.eu/esco/skill/bdf5ca62-9053-4652-b5e4-4eb95c271945,1.2.1
+EXT-000580,SK-000545,ESCO,http://data.europa.eu/esco/skill/be0ff6d8-5e61-4021-9c89-e40cf0b75cc6,1.2.1
+EXT-000581,SK-000546,ESCO,http://data.europa.eu/esco/skill/be20d05c-f6b4-4580-9fcf-f00f4baab562,1.2.1
+EXT-000582,SK-000547,ESCO,http://data.europa.eu/esco/skill/be252635-341e-4b1c-b94f-aef362b645ed,1.2.1
+EXT-000583,SK-000548,ESCO,http://data.europa.eu/esco/skill/be80acfc-b6f2-4411-9b8d-b19d9cd2556a,1.2.1
+EXT-000584,SK-000549,ESCO,http://data.europa.eu/esco/skill/bec4359e-cb92-468f-a997-8fb28e32fba9,1.2.1
+EXT-000585,SK-000550,ESCO,http://data.europa.eu/esco/skill/bf12b461-1c53-4d81-a395-8ba77f7483c4,1.2.1
+EXT-000586,SK-000551,ESCO,http://data.europa.eu/esco/skill/bf40aa7c-1e99-40bb-a718-1e1492aaf00f,1.2.1
+EXT-000587,SK-000552,ESCO,http://data.europa.eu/esco/skill/bf5d77ad-e18c-48d8-83f0-bc79c011c74a,1.2.1
+EXT-000588,SK-000553,ESCO,http://data.europa.eu/esco/skill/c0799f81-9955-463a-b071-4f1c82719aa8,1.2.1
+EXT-000589,SK-000554,ESCO,http://data.europa.eu/esco/skill/c1388df1-47bd-4fd5-8b71-dce7886ef21b,1.2.1
+EXT-000590,SK-000555,ESCO,http://data.europa.eu/esco/skill/c13fb093-5ffb-491a-b8b7-fa2d42a57e2e,1.2.1
+EXT-000591,SK-000556,ESCO,http://data.europa.eu/esco/skill/c2617b44-886a-485e-8393-bc0fc6339539,1.2.1
+EXT-000592,SK-000557,ESCO,http://data.europa.eu/esco/skill/c2999f0c-eb37-4cdf-b9b0-82107b628794,1.2.1
+EXT-000593,SK-000558,ESCO,http://data.europa.eu/esco/skill/c2cbbccf-4ffd-4626-86e7-505b39c872a0,1.2.1
+EXT-000594,SK-000559,ESCO,http://data.europa.eu/esco/skill/c32ad607-0c4d-4e34-b73f-668298f7bf13,1.2.1
+EXT-000595,SK-000560,ESCO,http://data.europa.eu/esco/skill/c3687b34-fe53-4db2-ad1b-5055a6c5b6fd,1.2.1
+EXT-000596,SK-000561,ESCO,http://data.europa.eu/esco/skill/c3a03c5a-c260-4c26-9b9a-873abb396f4d,1.2.1
+EXT-000597,SK-000562,ESCO,http://data.europa.eu/esco/skill/c3c2420c-ce9a-4371-8eed-1db479c3a562,1.2.1
+EXT-000598,SK-000563,ESCO,http://data.europa.eu/esco/skill/c3e36d05-8ae8-447f-bb2b-6f9409f85389,1.2.1
+EXT-000599,SK-000564,ESCO,http://data.europa.eu/esco/skill/c4272323-cce6-4535-ac71-4f6841f4f89a,1.2.1
+EXT-000600,SK-000565,ESCO,http://data.europa.eu/esco/skill/c4b1f326-224a-420a-b8b3-814a8f13b6cb,1.2.1
+EXT-000601,SK-000566,ESCO,http://data.europa.eu/esco/skill/c4b626c1-e71c-44ec-9f88-042766f37fcc,1.2.1
+EXT-000602,SK-000567,ESCO,http://data.europa.eu/esco/skill/c544a9f3-5945-4b54-afed-de0697852817,1.2.1
+EXT-000603,SK-000568,ESCO,http://data.europa.eu/esco/skill/c55caed2-de9e-4a25-819e-a0b0e83fba1b,1.2.1
+EXT-000604,SK-000569,ESCO,http://data.europa.eu/esco/skill/c5a135be-218d-48e6-a422-5225a576dcd8,1.2.1
+EXT-000605,SK-000570,ESCO,http://data.europa.eu/esco/skill/c5b90c0c-3af0-4c8c-a06c-cc3ced02242c,1.2.1
+EXT-000606,SK-000571,ESCO,http://data.europa.eu/esco/skill/c5d018ca-f6fa-4cc0-b209-43df46e56d48,1.2.1
+EXT-000607,SK-000572,ESCO,http://data.europa.eu/esco/skill/c5e8abde-d2ba-4e8e-a65e-720b71180666,1.2.1
+EXT-000608,SK-000573,ESCO,http://data.europa.eu/esco/skill/c6e308b4-8799-4461-a9bd-560bdecb0dbb,1.2.1
+EXT-000609,SK-000574,ESCO,http://data.europa.eu/esco/skill/c73ea1b8-e121-4f91-b8f0-dee4ee28d6ec,1.2.1
+EXT-000610,SK-000575,ESCO,http://data.europa.eu/esco/skill/c7451027-8249-405a-bb1b-342ff0f3fb3b,1.2.1
+EXT-000611,SK-000576,ESCO,http://data.europa.eu/esco/skill/c7cc6dc5-d56b-4323-8e5c-47c4022f615f,1.2.1
+EXT-000612,SK-000577,ESCO,http://data.europa.eu/esco/skill/c7d24594-0c11-4b27-9039-fe0bb903da8e,1.2.1
+EXT-000613,SK-000578,ESCO,http://data.europa.eu/esco/skill/c881ddd2-9c0e-4743-bd24-36be650493dd,1.2.1
+EXT-000614,SK-000579,ESCO,http://data.europa.eu/esco/skill/c927ec6e-9082-4b22-afd3-0c4e219eaf73,1.2.1
+EXT-000615,SK-000580,ESCO,http://data.europa.eu/esco/skill/c9e96450-421d-48af-9ee6-d9c50e29afc2,1.2.1
+EXT-000616,SK-000581,ESCO,http://data.europa.eu/esco/skill/c9f4efcd-e16a-4515-a0cb-60c6c479853d,1.2.1
+EXT-000617,SK-000582,ESCO,http://data.europa.eu/esco/skill/ca73ac82-867a-4afa-9732-834aebe896ff,1.2.1
+EXT-000618,SK-000583,ESCO,http://data.europa.eu/esco/skill/cb059032-dd34-4761-a786-98cfb9d0efe3,1.2.1
+EXT-000619,SK-000584,ESCO,http://data.europa.eu/esco/skill/cbdce1f8-affe-4013-a519-283fa8ec1f6e,1.2.1
+EXT-000620,SK-000585,ESCO,http://data.europa.eu/esco/skill/cbe2c304-1e7d-489a-97d9-a7d3e37a9db6,1.2.1
+EXT-000621,SK-000586,ESCO,http://data.europa.eu/esco/skill/cc3b901c-4d66-48f8-90b9-41883be1e1ed,1.2.1
+EXT-000622,SK-000587,ESCO,http://data.europa.eu/esco/skill/cc61f9e5-d4fc-470e-8606-1ce865ff8386,1.2.1
+EXT-000623,SK-000588,ESCO,http://data.europa.eu/esco/skill/cc7370dd-69fa-4c67-a96f-d4d135d38700,1.2.1
+EXT-000624,SK-000589,ESCO,http://data.europa.eu/esco/skill/ccb2e5f2-4279-48fd-9d85-a1db42ff1e13,1.2.1
+EXT-000625,SK-000590,ESCO,http://data.europa.eu/esco/skill/ccbd0898-e225-4abc-8992-57a23b0e2eec,1.2.1
+EXT-000626,SK-000591,ESCO,http://data.europa.eu/esco/skill/ccd0a1d9-afda-43d9-b901-96344886e14d,1.2.1
+EXT-000627,SK-000592,ESCO,http://data.europa.eu/esco/skill/ccdbd9bb-4faf-403c-a968-e8bf487f8a53,1.2.1
+EXT-000628,SK-000593,ESCO,http://data.europa.eu/esco/skill/cd50d616-1f8b-481e-983f-68d2674ff82d,1.2.1
+EXT-000629,SK-000594,ESCO,http://data.europa.eu/esco/skill/cd5efa8c-e44d-4cbc-91c6-796018dbed68,1.2.1
+EXT-000630,SK-000595,ESCO,http://data.europa.eu/esco/skill/cdd2b6cc-b4a9-42a0-824b-766f52176fd3,1.2.1
+EXT-000631,SK-000596,ESCO,http://data.europa.eu/esco/skill/cdd8b6b2-2fd9-453c-8d62-8a1dc6efcd49,1.2.1
+EXT-000632,SK-000597,ESCO,http://data.europa.eu/esco/skill/ce5b1446-b5e3-4f05-a5ac-83f2ee142a44,1.2.1
+EXT-000633,SK-000598,ESCO,http://data.europa.eu/esco/skill/ce8ae6ca-61d8-4174-b457-641de96cbff4,1.2.1
+EXT-000634,SK-000599,ESCO,http://data.europa.eu/esco/skill/cef5c0f8-1e40-4c09-b6a7-aa7811849e5d,1.2.1
+EXT-000635,SK-000600,ESCO,http://data.europa.eu/esco/skill/cf22d572-a77f-410d-83e4-3a627cc8df77,1.2.1
+EXT-000636,SK-000601,ESCO,http://data.europa.eu/esco/skill/cf532795-a1fd-43bd-8407-6e43f877e6e3,1.2.1
+EXT-000637,SK-000602,ESCO,http://data.europa.eu/esco/skill/d0c425c6-e3de-465e-923d-d4d30ec4be9b,1.2.1
+EXT-000638,SK-000603,ESCO,http://data.europa.eu/esco/skill/d0f48427-7987-4f86-b24d-709837a37fd2,1.2.1
+EXT-000639,SK-000604,ESCO,http://data.europa.eu/esco/skill/d15ba5cb-9212-4a90-85af-2c560da59925,1.2.1
+EXT-000640,SK-000605,ESCO,http://data.europa.eu/esco/skill/d207a30b-2f80-4138-9b77-f88d549b8768,1.2.1
+EXT-000641,SK-000606,ESCO,http://data.europa.eu/esco/skill/d2a9f2d0-9de7-44ce-a168-590b85234f20,1.2.1
+EXT-000642,SK-000607,ESCO,http://data.europa.eu/esco/skill/d2adb565-a865-424d-aeb5-9fbcbf2afe2a,1.2.1
+EXT-000643,SK-000608,ESCO,http://data.europa.eu/esco/skill/d2dc31f1-720c-4757-bc1b-9e563d264dcf,1.2.1
+EXT-000644,SK-000609,ESCO,http://data.europa.eu/esco/skill/d31fab87-2a7d-485c-b699-2901ca294b15,1.2.1
+EXT-000645,SK-000610,ESCO,http://data.europa.eu/esco/skill/d3286405-49f8-4e8a-8046-a4376b4e7963,1.2.1
+EXT-000646,SK-000611,ESCO,http://data.europa.eu/esco/skill/d32db06e-bd06-4415-a7ab-1b0ee68caa9a,1.2.1
+EXT-000647,SK-000612,ESCO,http://data.europa.eu/esco/skill/d38871eb-b988-495e-8fca-345677b597a8,1.2.1
+EXT-000648,SK-000613,ESCO,http://data.europa.eu/esco/skill/d3e585e9-3a73-4511-b533-90f095e5aa09,1.2.1
+EXT-000649,SK-000614,ESCO,http://data.europa.eu/esco/skill/d4199178-81a1-40dd-a8c8-0f91b0489913,1.2.1
+EXT-000650,SK-000615,ESCO,http://data.europa.eu/esco/skill/d5111703-c344-484d-bef1-9565a278166a,1.2.1
+EXT-000651,SK-000616,ESCO,http://data.europa.eu/esco/skill/d5145a9a-602e-40bf-b3e1-f04cf9c3ef86,1.2.1
+EXT-000652,SK-000617,ESCO,http://data.europa.eu/esco/skill/d53b04fb-1bbb-4a25-92f8-8ceb308d276f,1.2.1
+EXT-000653,SK-000618,ESCO,http://data.europa.eu/esco/skill/d56fc2b5-4b0a-4e7e-9bde-a33736f6ff18,1.2.1
+EXT-000654,SK-000619,ESCO,http://data.europa.eu/esco/skill/d5a59ca8-2e91-472e-8571-d12ce4478679,1.2.1
+EXT-000655,SK-000620,ESCO,http://data.europa.eu/esco/skill/d63f49de-cb72-4ce3-9553-a374a4f32f52,1.2.1
+EXT-000656,SK-000621,ESCO,http://data.europa.eu/esco/skill/d669af41-756c-48d9-a286-1443253f54b1,1.2.1
+EXT-000657,SK-000622,ESCO,http://data.europa.eu/esco/skill/d6e78d9a-deca-4bcb-b08d-011b2616758d,1.2.1
+EXT-000658,SK-000623,ESCO,http://data.europa.eu/esco/skill/d77d7685-04fb-43a4-a1ac-09a10811f646,1.2.1
+EXT-000659,SK-000624,ESCO,http://data.europa.eu/esco/skill/d7e4a9fa-cfc2-45f9-96eb-13dc6e48c86c,1.2.1
+EXT-000660,SK-000625,ESCO,http://data.europa.eu/esco/skill/d96bfb0f-e771-4fec-abca-c38f48e02318,1.2.1
+EXT-000661,SK-000626,ESCO,http://data.europa.eu/esco/skill/d9a3cb06-d6e0-4a64-88a6-9a8e11a99c93,1.2.1
+EXT-000662,SK-000627,ESCO,http://data.europa.eu/esco/skill/d9e5349e-8791-49c2-8ba4-839fdd1606c2,1.2.1
+EXT-000663,SK-000628,ESCO,http://data.europa.eu/esco/skill/d9eaf831-9348-4330-a83e-b7c099cdc8f6,1.2.1
+EXT-000664,SK-000629,ESCO,http://data.europa.eu/esco/skill/da629999-d226-4ff3-9e1a-01788132664f,1.2.1
+EXT-000665,SK-000630,ESCO,http://data.europa.eu/esco/skill/da6393d5-a53c-4863-abc7-51f36281d74e,1.2.1
+EXT-000666,SK-000631,ESCO,http://data.europa.eu/esco/skill/da930e2f-6047-4616-a598-bba8ecef3039,1.2.1
+EXT-000667,SK-000632,ESCO,http://data.europa.eu/esco/skill/dc417e19-edb4-4401-883a-2375f67a162f,1.2.1
+EXT-000668,SK-000633,ESCO,http://data.europa.eu/esco/skill/dc72ad0a-c5dc-4abd-bc0d-ca43e82162e1,1.2.1
+EXT-000669,SK-000634,ESCO,http://data.europa.eu/esco/skill/dcdd5ddf-82a6-4ac3-8edc-d4b23cae9a88,1.2.1
+EXT-000670,SK-000635,ESCO,http://data.europa.eu/esco/skill/dd7c9dfd-6e2c-46fd-aefc-369402d0200c,1.2.1
+EXT-000671,SK-000636,ESCO,http://data.europa.eu/esco/skill/ddb65832-91a7-4157-9488-719a0e2ad87b,1.2.1
+EXT-000672,SK-000637,ESCO,http://data.europa.eu/esco/skill/de03f4fd-c147-4477-a048-7109e5ba2d6f,1.2.1
+EXT-000673,SK-000638,ESCO,http://data.europa.eu/esco/skill/de2f0ce8-f8d6-48c5-a213-4d065251cecf,1.2.1
+EXT-000674,SK-000639,ESCO,http://data.europa.eu/esco/skill/def007fa-5fed-4a5f-91a2-b0d7e3db1be1,1.2.1
+EXT-000675,SK-000640,ESCO,http://data.europa.eu/esco/skill/dfff95c6-9758-4c04-a228-7eaa88dec6cd,1.2.1
+EXT-000676,SK-000641,ESCO,http://data.europa.eu/esco/skill/e1f09038-b493-4771-ae29-a2d3e7ea013a,1.2.1
+EXT-000677,SK-000642,ESCO,http://data.europa.eu/esco/skill/e1f5c539-7c93-49ee-917d-a24e0d887686,1.2.1
+EXT-000678,SK-000643,ESCO,http://data.europa.eu/esco/skill/e207163b-7963-4c3e-9494-7a4bb000211b,1.2.1
+EXT-000679,SK-000644,ESCO,http://data.europa.eu/esco/skill/e2482d6f-90c8-4b93-997b-7d2556d2579d,1.2.1
+EXT-000680,SK-000645,ESCO,http://data.europa.eu/esco/skill/e2e15494-65b9-4af5-8b86-53fb51e7e022,1.2.1
+EXT-000681,SK-000646,ESCO,http://data.europa.eu/esco/skill/e437eba1-3e22-41f2-8703-741e94785cba,1.2.1
+EXT-000682,SK-000647,ESCO,http://data.europa.eu/esco/skill/e46291c7-52b9-4174-bd59-178884861038,1.2.1
+EXT-000683,SK-000648,ESCO,http://data.europa.eu/esco/skill/e464363b-8346-421d-9035-52118b76d8c8,1.2.1
+EXT-000684,SK-000649,ESCO,http://data.europa.eu/esco/skill/e49c4d19-dea6-42a1-bde2-30d69dc0ca24,1.2.1
+EXT-000685,SK-000650,ESCO,http://data.europa.eu/esco/skill/e4a7d2be-9cdd-43c6-ab43-8060fe5ad5c8,1.2.1
+EXT-000686,SK-000651,ESCO,http://data.europa.eu/esco/skill/e54ff029-1ce9-447d-a5b2-eb7283a23e6e,1.2.1
+EXT-000687,SK-000652,ESCO,http://data.europa.eu/esco/skill/e5609f89-0daf-40bb-bd6b-94f5d7498131,1.2.1
+EXT-000688,SK-000653,ESCO,http://data.europa.eu/esco/skill/e5635e02-2d34-4a8c-b8ca-556d45e9b20e,1.2.1
+EXT-000689,SK-000654,ESCO,http://data.europa.eu/esco/skill/e5a6e1e0-1b07-4432-83ba-77d593b2cb47,1.2.1
+EXT-000690,SK-000655,ESCO,http://data.europa.eu/esco/skill/e5b5053e-0ef6-4c4e-a3f2-42f955f4322c,1.2.1
+EXT-000691,SK-000656,ESCO,http://data.europa.eu/esco/skill/e5beeff8-7c98-490a-ae2c-16fbb6a87305,1.2.1
+EXT-000692,SK-000657,ESCO,http://data.europa.eu/esco/skill/e5d1f825-60ed-4bdd-872a-e748c387f777,1.2.1
+EXT-000693,SK-000658,ESCO,http://data.europa.eu/esco/skill/e717b036-2c0c-4c11-99e9-0cb4ce084fed,1.2.1
+EXT-000694,SK-000659,ESCO,http://data.europa.eu/esco/skill/e71c6cee-7247-49f4-829a-141c880ae938,1.2.1
+EXT-000695,SK-000660,ESCO,http://data.europa.eu/esco/skill/e7219848-a27a-4bf4-8775-d367707be7c9,1.2.1
+EXT-000696,SK-000661,ESCO,http://data.europa.eu/esco/skill/e74f4f21-8d45-412c-b5c3-652e6167ee32,1.2.1
+EXT-000697,SK-000662,ESCO,http://data.europa.eu/esco/skill/e8b89eb6-51e8-4c3a-babb-88b2e110376b,1.2.1
+EXT-000698,SK-000663,ESCO,http://data.europa.eu/esco/skill/e8d9ce55-7bc3-4f09-8412-0a393d4b5b96,1.2.1
+EXT-000699,SK-000664,ESCO,http://data.europa.eu/esco/skill/e9030465-13c5-46d2-bdae-c2c1a9dbec86,1.2.1
+EXT-000700,SK-000665,ESCO,http://data.europa.eu/esco/skill/e9575f7f-053a-439e-8074-f93df3334e92,1.2.1
+EXT-000701,SK-000666,ESCO,http://data.europa.eu/esco/skill/ea412de3-9d7a-4943-8d8c-c6d3c7495d0e,1.2.1
+EXT-000702,SK-000667,ESCO,http://data.europa.eu/esco/skill/ead58f22-0af5-467c-ac1e-b750e4e1ac6a,1.2.1
+EXT-000703,SK-000668,ESCO,http://data.europa.eu/esco/skill/eade4171-3d57-4fb2-9518-44d5a1da4ff5,1.2.1
+EXT-000704,SK-000669,ESCO,http://data.europa.eu/esco/skill/eb0e5615-1575-4a86-a1a2-7d39595033c5,1.2.1
+EXT-000705,SK-000670,ESCO,http://data.europa.eu/esco/skill/eb3aa8c1-fb14-47b4-a352-b7975abd2480,1.2.1
+EXT-000706,SK-000671,ESCO,http://data.europa.eu/esco/skill/ebff1a39-7261-49cd-9cb2-88f565e8dc26,1.2.1
+EXT-000707,SK-000672,ESCO,http://data.europa.eu/esco/skill/ed392b45-1087-44a7-89a9-d514224639ff,1.2.1
+EXT-000708,SK-000673,ESCO,http://data.europa.eu/esco/skill/ed39edd3-44d0-4a16-9796-bfb99f92baf3,1.2.1
+EXT-000709,SK-000674,ESCO,http://data.europa.eu/esco/skill/ed3f3dba-3a35-4ed5-b113-67f4d10ef4c8,1.2.1
+EXT-000710,SK-000675,ESCO,http://data.europa.eu/esco/skill/ed8de897-adbe-4f0e-b4d2-534953e64c72,1.2.1
+EXT-000711,SK-000676,ESCO,http://data.europa.eu/esco/skill/eda4d727-4374-49af-ace4-118c7c906835,1.2.1
+EXT-000712,SK-000677,ESCO,http://data.europa.eu/esco/skill/edebd83d-35f6-4ed5-a940-6c203d178c01,1.2.1
+EXT-000713,SK-000678,ESCO,http://data.europa.eu/esco/skill/ee7f90cc-922e-4da7-a7ae-83c2688fed10,1.2.1
+EXT-000714,SK-000679,ESCO,http://data.europa.eu/esco/skill/eff1bb34-b454-4482-8c29-65f820619f3c,1.2.1
+EXT-000715,SK-000680,ESCO,http://data.europa.eu/esco/skill/f0393af3-bcd9-41af-a36e-0cfb83b60081,1.2.1
+EXT-000716,SK-000681,ESCO,http://data.europa.eu/esco/skill/f049d050-12da-4e40-813a-2b5eb6df6b51,1.2.1
+EXT-000717,SK-000682,ESCO,http://data.europa.eu/esco/skill/f0b45409-42ca-42bc-a701-041e594d0657,1.2.1
+EXT-000718,SK-000683,ESCO,http://data.europa.eu/esco/skill/f1155d3f-fbca-4298-a31c-f6955653bacf,1.2.1
+EXT-000719,SK-000684,ESCO,http://data.europa.eu/esco/skill/f14ff4b7-be1e-4b55-b39b-520005f8a97e,1.2.1
+EXT-000720,SK-000685,ESCO,http://data.europa.eu/esco/skill/f17f94f1-88cb-4815-873a-2a9639f10729,1.2.1
+EXT-000721,SK-000686,ESCO,http://data.europa.eu/esco/skill/f206e732-110c-47ce-a53f-f00c9d97c90d,1.2.1
+EXT-000722,SK-000687,ESCO,http://data.europa.eu/esco/skill/f28617ad-afdd-4041-814c-216153a38998,1.2.1
+EXT-000723,SK-000688,ESCO,http://data.europa.eu/esco/skill/f28c3e9b-8666-48d4-a5e4-542ac193879b,1.2.1
+EXT-000724,SK-000689,ESCO,http://data.europa.eu/esco/skill/f2d57f41-43b4-4f5b-8100-3df5c21eda50,1.2.1
+EXT-000725,SK-000690,ESCO,http://data.europa.eu/esco/skill/f3c5fae0-c0e3-4410-bc09-62bd82d4cecc,1.2.1
+EXT-000726,SK-000691,ESCO,http://data.europa.eu/esco/skill/f47a1998-0beb-43be-9f46-380aa4d183da,1.2.1
+EXT-000727,SK-000692,ESCO,http://data.europa.eu/esco/skill/f5308e60-d763-4ead-be95-88c96fb3e02b,1.2.1
+EXT-000728,SK-000693,ESCO,http://data.europa.eu/esco/skill/f5652e8e-7e25-4f3a-bd31-509c8406213f,1.2.1
+EXT-000729,SK-000694,ESCO,http://data.europa.eu/esco/skill/f597f772-24d3-4cec-813c-cf5a7027c794,1.2.1
+EXT-000730,SK-000695,ESCO,http://data.europa.eu/esco/skill/f5dd06b8-5d17-4932-9d03-957d0c4f5051,1.2.1
+EXT-000731,SK-000696,ESCO,http://data.europa.eu/esco/skill/f5f5b244-6cea-4fbc-8a50-8f712791bc09,1.2.1
+EXT-000732,SK-000697,ESCO,http://data.europa.eu/esco/skill/f60c9e52-95fc-4ca1-a73c-18a491153b63,1.2.1
+EXT-000733,SK-000698,ESCO,http://data.europa.eu/esco/skill/f6ac6241-adb2-4ce2-b35f-09832cbb11ea,1.2.1
+EXT-000734,SK-000699,ESCO,http://data.europa.eu/esco/skill/f715be1d-5fc4-49d3-82a5-0b8090d12849,1.2.1
+EXT-000735,SK-000700,ESCO,http://data.europa.eu/esco/skill/f75b740c-b36c-495e-bc67-efe347bbc6b5,1.2.1
+EXT-000736,SK-000701,ESCO,http://data.europa.eu/esco/skill/f77b73f0-8c65-4389-a3ae-3a57a73ad148,1.2.1
+EXT-000737,SK-000702,ESCO,http://data.europa.eu/esco/skill/f78d5c04-a440-4068-90c2-fab03409a911,1.2.1
+EXT-000738,SK-000703,ESCO,http://data.europa.eu/esco/skill/f7b071bf-4882-4cfc-ae0a-7e0e0ab94c61,1.2.1
+EXT-000739,SK-000704,ESCO,http://data.europa.eu/esco/skill/f7b5d916-52f0-4865-b6a6-e1a3b711cb5e,1.2.1
+EXT-000740,SK-000705,ESCO,http://data.europa.eu/esco/skill/f84a433f-34f1-4083-b0a3-24802623509c,1.2.1
+EXT-000741,SK-000706,ESCO,http://data.europa.eu/esco/skill/f9670490-8aa4-4540-b121-d440a8294aab,1.2.1
+EXT-000742,SK-000707,ESCO,http://data.europa.eu/esco/skill/f975091a-e5a5-4472-ac17-11680e53e98f,1.2.1
+EXT-000743,SK-000708,ESCO,http://data.europa.eu/esco/skill/f9a6f35b-01a7-40c9-8b61-b6ee46f97272,1.2.1
+EXT-000744,SK-000709,ESCO,http://data.europa.eu/esco/skill/fa465db3-56e8-4b5d-a781-e2a313a4ed2d,1.2.1
+EXT-000745,SK-000710,ESCO,http://data.europa.eu/esco/skill/fa642fc3-5cc5-41cf-8926-6617a8b976a7,1.2.1
+EXT-000746,SK-000711,ESCO,http://data.europa.eu/esco/skill/fafe0b9d-dbd9-46bd-b770-26299539ce66,1.2.1
+EXT-000747,SK-000712,ESCO,http://data.europa.eu/esco/skill/fb7aee4d-f6c6-4a87-8e9d-8e542b3771f8,1.2.1
+EXT-000748,SK-000713,ESCO,http://data.europa.eu/esco/skill/fb9c12af-ec45-498a-8e52-891371191557,1.2.1
+EXT-000749,SK-000714,ESCO,http://data.europa.eu/esco/skill/fbafa41f-cd05-4109-a649-8b44d306d779,1.2.1
+EXT-000750,SK-000715,ESCO,http://data.europa.eu/esco/skill/fbdfc3bf-56a0-4454-a17d-2f513fe57b53,1.2.1
+EXT-000751,SK-000716,ESCO,http://data.europa.eu/esco/skill/fc54bd7f-0c03-4fdd-af8c-5eb4021e716d,1.2.1
+EXT-000752,SK-000717,ESCO,http://data.europa.eu/esco/skill/fce3268c-c944-4a5f-8b9c-034a72d5df13,1.2.1
+EXT-000753,SK-000718,ESCO,http://data.europa.eu/esco/skill/fd33c66c-70c4-40e6-b87c-5495bd3bf26e,1.2.1
+EXT-000754,SK-000719,ESCO,http://data.europa.eu/esco/skill/fd6d2981-3d4a-4ce2-9741-cfc98c5b74bd,1.2.1
+EXT-000755,SK-000720,ESCO,http://data.europa.eu/esco/skill/fe0bd9ea-9334-43f8-8eee-3390a259f117,1.2.1
+EXT-000756,SK-000721,ESCO,http://data.europa.eu/esco/skill/fe1c2b32-7fe9-4668-affa-07ff658a68cf,1.2.1
+EXT-000757,SK-000722,ESCO,http://data.europa.eu/esco/skill/fe30a4b0-1a99-4fc7-afff-b162b8c834ba,1.2.1
+EXT-000758,SK-000723,ESCO,http://data.europa.eu/esco/skill/fe39d4db-4cb5-4299-bb9f-896c8fd6ab13,1.2.1
+EXT-000759,SK-000724,ESCO,http://data.europa.eu/esco/skill/fecf8a0d-62c4-4e71-9b03-0f4fc2ad7bf5,1.2.1
+EXT-000760,SK-000725,ESCO,http://data.europa.eu/esco/skill/ff25cbf0-6978-4c4c-887e-d4b185410d74,1.2.1
+EXT-000761,SK-000726,ESCO,http://data.europa.eu/esco/skill/ff599c4c-f7bc-44fc-b75f-eea4b7178692,1.2.1
+EXT-000762,SK-000727,ESCO,http://data.europa.eu/esco/skill/ff64e9fc-36dd-4035-872a-83aa41dc1ad9,1.2.1
+EXT-000763,SK-000728,ESCO,http://data.europa.eu/esco/skill/ff862044-d49e-4417-bf65-1ae2c0a47e5a,1.2.1
+EXT-000764,SK-000729,ESCO,http://data.europa.eu/esco/skill/ffddfc7c-a9dd-449f-9e96-882dc447c8b6,1.2.1
+EXT-000765,SK-000730,ONET,2.A.1.a,08/2023
+EXT-000766,SK-000731,ONET,2.A.1.b,08/2023
+EXT-000767,SK-000732,ONET,2.A.1.c,08/2023
+EXT-000768,SK-000733,ONET,2.A.1.d,08/2023
+EXT-000769,SK-000734,ONET,2.A.1.e,08/2023
+EXT-000770,SK-000735,ONET,2.A.1.f,08/2023
+EXT-000771,SK-000736,ONET,2.A.2.a,08/2023
+EXT-000772,SK-000737,ONET,2.A.2.b,08/2023
+EXT-000773,SK-000738,ONET,2.A.2.c,08/2023
+EXT-000774,SK-000739,ONET,2.A.2.d,08/2023
+EXT-000775,SK-000740,ONET,2.B.1.a,08/2023
+EXT-000776,SK-000741,ONET,2.B.1.b,08/2023
+EXT-000777,SK-000742,ONET,2.B.1.c,08/2023
+EXT-000778,SK-000743,ONET,2.B.1.d,08/2023
+EXT-000779,SK-000744,ONET,2.B.1.e,08/2023
+EXT-000780,SK-000745,ONET,2.B.1.f,08/2023
+EXT-000781,SK-000746,ONET,2.B.2.i,08/2023
+EXT-000782,SK-000747,ONET,2.B.3.a,08/2023
+EXT-000783,SK-000748,ONET,2.B.3.b,08/2023
+EXT-000784,SK-000749,ONET,2.B.3.e,08/2023
+EXT-000785,SK-000750,ONET,2.B.3.g,08/2023
+EXT-000786,SK-000751,ONET,2.B.3.m,08/2023
+EXT-000787,SK-000752,ONET,2.B.4.e,08/2023
+EXT-000788,SK-000753,ONET,2.B.4.g,08/2023
+EXT-000789,SK-000754,ONET,2.B.4.h,08/2023
+EXT-000790,SK-000755,ONET,2.B.5.a,08/2023
+EXT-000791,SK-000756,ONET,2.B.5.b,08/2023
+EXT-000792,SK-000757,ONET,2.B.5.c,08/2023
+EXT-000793,SK-000758,ONET,2.B.5.d,08/2023
+EXT-000794,SK-000759,ONET,2.C.1.a,08/2023
+EXT-000795,SK-000760,ONET,2.C.1.b,08/2023
+EXT-000796,SK-000761,ONET,2.C.1.c,08/2023
+EXT-000797,SK-000762,ONET,2.C.1.d,08/2023
+EXT-000798,SK-000763,ONET,2.C.1.e,08/2023
+EXT-000799,SK-000764,ONET,2.C.1.f,08/2023
+EXT-000800,SK-000765,ONET,2.C.3.a,08/2023
+EXT-000801,SK-000766,ONET,2.C.3.b,08/2023
+EXT-000802,SK-000767,ONET,2.C.3.c,08/2023
+EXT-000803,SK-000768,ONET,2.C.4.a,08/2023
+EXT-000804,SK-000769,ONET,2.C.4.e,08/2023
+EXT-000805,SK-000770,ONET,2.C.4.f,08/2023
+EXT-000806,SK-000771,ONET,2.C.6,08/2023
+EXT-000807,SK-000772,ONET,2.C.7.a,08/2023
+EXT-000808,SK-000773,ONET,2.C.8.a,08/2023
+EXT-000809,SK-000774,ONET,2.C.8.b,08/2023
+EXT-000810,SK-000775,ONET,2.C.9.a,08/2023
+EXT-000811,SK-000776,ONET,2.C.9.b,08/2023
+EXT-000812,SK-000777,ONET_SOFTWARE,2.E.5.b::Adobe Acrobat,08/2023
+EXT-000813,SK-000778,ONET_SOFTWARE,2.E.5.b::Adobe Acrobat Reader,08/2023
+EXT-000814,SK-000779,ONET_SOFTWARE,2.E.7.b::Adobe ActionScript,08/2023
+EXT-000815,SK-000780,ONET_SOFTWARE,2.E.4.c::Adobe After Effects,08/2023
+EXT-000816,SK-000781,ONET_SOFTWARE,2.E.4.b::Adobe Creative Cloud software,08/2023
+EXT-000817,SK-000782,ONET_SOFTWARE,2.E.4.g::Adobe Dreamweaver,08/2023
+EXT-000818,SK-000783,ONET_SOFTWARE,2.E.4.b::Adobe Illustrator,08/2023
+EXT-000819,SK-000784,ONET_SOFTWARE,2.E.4.k::Adobe InDesign,08/2023
+EXT-000820,SK-000785,ONET_SOFTWARE,2.E.4.b::Adobe Photoshop,08/2023
+EXT-000821,SK-000786,ONET_SOFTWARE,2.E.6.f::AdSense Tracker,08/2023
+EXT-000822,SK-000787,ONET_SOFTWARE,2.E.6.f::AEC Software FastTrack Schedule,08/2023
+EXT-000823,SK-000788,ONET_SOFTWARE,2.E.6.f::Airtable,08/2023
+EXT-000824,SK-000789,ONET_SOFTWARE,2.E.6.f::Amazon Redshift,08/2023
+EXT-000825,SK-000790,ONET_SOFTWARE,2.E.6.f::Amazon Web Services AWS software,08/2023
+EXT-000826,SK-000791,ONET_SOFTWARE,2.E.6.d::Apache Cassandra,08/2023
+EXT-000827,SK-000792,ONET_SOFTWARE,2.E.6.d::Apache Hadoop,08/2023
+EXT-000828,SK-000793,ONET_SOFTWARE,2.E.6.d::Apache Hive,08/2023
+EXT-000829,SK-000794,ONET_SOFTWARE,2.E.6.d::Apache Pig,08/2023
+EXT-000830,SK-000795,ONET_SOFTWARE,2.E.6.d::Apache Solr,08/2023
+EXT-000831,SK-000796,ONET_SOFTWARE,2.E.4.c::Apple Final Cut Pro,08/2023
+EXT-000832,SK-000797,ONET_SOFTWARE,2.E.4.f::Apple Keynote,08/2023
+EXT-000833,SK-000798,ONET_SOFTWARE,2.E.13.c::Apple macOS,08/2023
+EXT-000834,SK-000799,ONET_SOFTWARE,2.E.6.l::Armand Morin MultiTrack Generator,08/2023
+EXT-000835,SK-000800,ONET_SOFTWARE,2.E.16.i::Asana,08/2023
+EXT-000836,SK-000801,ONET_SOFTWARE,2.E.1.e::Atlassian Confluence,08/2023
+EXT-000837,SK-000802,ONET_SOFTWARE,2.E.5.a::Atlassian JIRA,08/2023
+EXT-000838,SK-000803,ONET_SOFTWARE,2.E.6.c::Blackbaud The Raiser's Edge,08/2023
+EXT-000839,SK-000804,ONET_SOFTWARE,2.E.7.b::C,08/2023
+EXT-000840,SK-000805,ONET_SOFTWARE,2.E.4.b::Canva,08/2023
+EXT-000841,SK-000806,ONET_SOFTWARE,2.E.7.h::Cascading style sheets CSS,08/2023
+EXT-000842,SK-000807,ONET_SOFTWARE,2.E.12.a::Citrix cloud computing software,08/2023
+EXT-000843,SK-000808,ONET_SOFTWARE,2.E.6.f::ClearEDGE,08/2023
+EXT-000844,SK-000809,ONET_SOFTWARE,2.E.6.c::Constant Contact,08/2023
+EXT-000845,SK-000810,ONET_SOFTWARE,2.E.6.e::Database reporting software,08/2023
+EXT-000846,SK-000811,ONET_SOFTWARE,2.E.6.f::Database software,08/2023
+EXT-000847,SK-000812,ONET_SOFTWARE,2.E.6.f::Databox,08/2023
+EXT-000848,SK-000813,ONET_SOFTWARE,2.E.2.d::Delphi Technology,08/2023
+EXT-000849,SK-000814,ONET_SOFTWARE,2.E.16.i::Dropbox,08/2023
+EXT-000850,SK-000815,ONET_SOFTWARE,2.E.7.h::Drupal,08/2023
+EXT-000851,SK-000816,ONET_SOFTWARE,2.E.7.h::Dynamic hypertext markup language DHTML,08/2023
+EXT-000852,SK-000817,ONET_SOFTWARE,2.E.10.b::Eko,08/2023
+EXT-000853,SK-000818,ONET_SOFTWARE,2.E.6.d::Elasticsearch,08/2023
+EXT-000854,SK-000819,ONET_SOFTWARE,2.E.4.d::Evernote,08/2023
+EXT-000855,SK-000820,ONET_SOFTWARE,2.E.7.h::Extensible hypertext markup language XHTML,08/2023
+EXT-000856,SK-000821,ONET_SOFTWARE,2.E.7.c::Extensible markup language XML,08/2023
+EXT-000857,SK-000822,ONET_SOFTWARE,2.E.4.g::Facebook,08/2023
+EXT-000858,SK-000823,ONET_SOFTWARE,2.E.7.d::Figma,08/2023
+EXT-000859,SK-000824,ONET_SOFTWARE,2.E.6.f::FileMaker Pro,08/2023
+EXT-000860,SK-000825,ONET_SOFTWARE,2.E.4.c::Flipgrid,08/2023
+EXT-000861,SK-000826,ONET_SOFTWARE,2.E.2.a::Fund accounting software,08/2023
+EXT-000862,SK-000827,ONET_SOFTWARE,2.E.10.a::GitHub,08/2023
+EXT-000863,SK-000828,ONET_SOFTWARE,2.E.1.l::Google Ads,08/2023
+EXT-000864,SK-000829,ONET_SOFTWARE,2.E.6.g::Google Analytics,08/2023
+EXT-000865,SK-000830,ONET_SOFTWARE,2.E.4.d::Google Docs,08/2023
+EXT-000866,SK-000831,ONET_SOFTWARE,2.E.16.i::Google Drive,08/2023
+EXT-000867,SK-000832,ONET_SOFTWARE,2.E.6.m::Google Looker Analytics,08/2023
+EXT-000868,SK-000833,ONET_SOFTWARE,2.E.16.b::Google Meet,08/2023
+EXT-000869,SK-000834,ONET_SOFTWARE,2.E.4.f::Google Slides,08/2023
+EXT-000870,SK-000835,ONET_SOFTWARE,2.E.1.l::HubSpot software,08/2023
+EXT-000871,SK-000836,ONET_SOFTWARE,2.E.7.h::Hypertext markup language HTML,08/2023
+EXT-000872,SK-000837,ONET_SOFTWARE,2.E.6.m::IBM Cognos Impromptu,08/2023
+EXT-000873,SK-000838,ONET_SOFTWARE,2.E.12.b::IBM Domino,08/2023
+EXT-000874,SK-000839,ONET_SOFTWARE,2.E.7.c::IBM InfoSphere DataStage,08/2023
+EXT-000875,SK-000840,ONET_SOFTWARE,2.E.16.a::IBM Notes,08/2023
+EXT-000876,SK-000841,ONET_SOFTWARE,2.E.17.a::IBM Power Systems software,08/2023
+EXT-000877,SK-000842,ONET_SOFTWARE,2.E.9.d::IBM SPSS Statistics,08/2023
+EXT-000878,SK-000843,ONET_SOFTWARE,2.E.4.g::Instagram,08/2023
+EXT-000879,SK-000844,ONET_SOFTWARE,2.E.2.a::Intuit QuickBooks,08/2023
+EXT-000880,SK-000845,ONET_SOFTWARE,2.E.4.b::JamBoard,08/2023
+EXT-000881,SK-000846,ONET_SOFTWARE,2.E.7.h::JavaScript,08/2023
+EXT-000882,SK-000847,ONET_SOFTWARE,2.E.7.e::Jupyter Notebook,08/2023
+EXT-000883,SK-000848,ONET_SOFTWARE,2.E.4.c::Kapwing,08/2023
+EXT-000884,SK-000849,ONET_SOFTWARE,2.E.7.h::LAMP Stack,08/2023
+EXT-000885,SK-000850,ONET_SOFTWARE,2.E.6.h::LexisNexis,08/2023
+EXT-000886,SK-000851,ONET_SOFTWARE,2.E.4.g::LinkedIn,08/2023
+EXT-000887,SK-000852,ONET_SOFTWARE,2.E.16.b::LogMeIn GoToMeeting,08/2023
+EXT-000888,SK-000853,ONET_SOFTWARE,2.E.16.c::LogMeIn GoToWebinar,08/2023
+EXT-000889,SK-000854,ONET_SOFTWARE,2.E.9.d::Lyris HQ Web-Analytics Solution,08/2023
+EXT-000890,SK-000855,ONET_SOFTWARE,2.E.1.l::Marketo Marketing Automation,08/2023
+EXT-000891,SK-000856,ONET_SOFTWARE,2.E.6.c::MarketSharp,08/2023
+EXT-000892,SK-000857,ONET_SOFTWARE,2.E.14.d::McAfee,08/2023
+EXT-000893,SK-000858,ONET_SOFTWARE,2.E.4.f::Mentimeter,08/2023
+EXT-000894,SK-000859,ONET_SOFTWARE,2.E.6.f::Microsoft Access,08/2023
+EXT-000895,SK-000860,ONET_SOFTWARE,2.E.7.b::Microsoft Azure software,08/2023
+EXT-000896,SK-000861,ONET_SOFTWARE,2.E.2.b::Microsoft Dynamics,08/2023
+EXT-000897,SK-000862,ONET_SOFTWARE,2.E.4.i::Microsoft Excel,08/2023
+EXT-000898,SK-000863,ONET_SOFTWARE,2.E.1.k::Microsoft Office software,08/2023
+EXT-000899,SK-000864,ONET_SOFTWARE,2.E.16.a::Microsoft Outlook,08/2023
+EXT-000900,SK-000865,ONET_SOFTWARE,2.E.4.f::Microsoft PowerPoint,08/2023
+EXT-000901,SK-000866,ONET_SOFTWARE,2.E.1.e::Microsoft Project,08/2023
+EXT-000902,SK-000867,ONET_SOFTWARE,2.E.4.k::Microsoft Publisher,08/2023
+EXT-000903,SK-000868,ONET_SOFTWARE,2.E.5.b::Microsoft SharePoint,08/2023
+EXT-000904,SK-000869,ONET_SOFTWARE,2.E.6.f::Microsoft SQL Server,08/2023
+EXT-000905,SK-000870,ONET_SOFTWARE,2.E.1.e::Microsoft Teams,08/2023
+EXT-000906,SK-000871,ONET_SOFTWARE,2.E.1.p::Microsoft Visio,08/2023
+EXT-000907,SK-000872,ONET_SOFTWARE,2.E.7.b::Microsoft Visual Basic,08/2023
+EXT-000908,SK-000873,ONET_SOFTWARE,2.E.7.b::Microsoft Visual Basic for Applications VBA,08/2023
+EXT-000909,SK-000874,ONET_SOFTWARE,2.E.7.b::Microsoft Visual Basic Scripting Edition VBScript,08/2023
+EXT-000910,SK-000875,ONET_SOFTWARE,2.E.4.d::Microsoft Word,08/2023
+EXT-000911,SK-000876,ONET_SOFTWARE,2.E.6.m::MicroStrategy,08/2023
+EXT-000912,SK-000877,ONET_SOFTWARE,2.E.9.d::Minitab,08/2023
+EXT-000913,SK-000878,ONET_SOFTWARE,2.E.6.f::MySQL,08/2023
+EXT-000914,SK-000879,ONET_SOFTWARE,2.E.8.e::Nearpod,08/2023
+EXT-000915,SK-000880,ONET_SOFTWARE,2.E.9.d::Nedstat Sitestat,08/2023
+EXT-000916,SK-000881,ONET_SOFTWARE,2.E.2.b::NetSuite ERP,08/2023
+EXT-000917,SK-000882,ONET_SOFTWARE,2.E.14.d::NortonLifeLock cybersecurity software,08/2023
+EXT-000918,SK-000883,ONET_SOFTWARE,2.E.6.d::NoSQL,08/2023
+EXT-000919,SK-000884,ONET_SOFTWARE,2.E.9.d::Online advertising reporting software,08/2023
+EXT-000920,SK-000885,ONET_SOFTWARE,2.E.1.i::Oracle Beehive,08/2023
+EXT-000921,SK-000886,ONET_SOFTWARE,2.E.6.m::Oracle Business Intelligence Enterprise Edition,08/2023
+EXT-000922,SK-000887,ONET_SOFTWARE,2.E.6.f::Oracle Database,08/2023
+EXT-000923,SK-000888,ONET_SOFTWARE,2.E.2.d::Oracle E-Business Suite Financials,08/2023
+EXT-000924,SK-000889,ONET_SOFTWARE,2.E.6.c::Oracle Eloqua,08/2023
+EXT-000925,SK-000890,ONET_SOFTWARE,2.E.2.b::Oracle Fusion Applications,08/2023
+EXT-000926,SK-000891,ONET_SOFTWARE,2.E.2.b::Oracle Hyperion,08/2023
+EXT-000927,SK-000892,ONET_SOFTWARE,2.E.7.h::Oracle JavaServer Pages JSP,08/2023
+EXT-000928,SK-000893,ONET_SOFTWARE,2.E.2.b::Oracle PeopleSoft,08/2023
+EXT-000929,SK-000894,ONET_SOFTWARE,2.E.2.b::Oracle PeopleSoft Financials,08/2023
+EXT-000930,SK-000895,ONET_SOFTWARE,2.E.6.d::Oracle PL/SQL,08/2023
+EXT-000931,SK-000896,ONET_SOFTWARE,2.E.6.c::Oracle Siebel Server Sync,08/2023
+EXT-000932,SK-000897,ONET_SOFTWARE,2.E.8.b::Padlet,08/2023
+EXT-000933,SK-000898,ONET_SOFTWARE,2.E.7.h::PHP,08/2023
+EXT-000934,SK-000899,ONET_SOFTWARE,2.E.7.e::Python,08/2023
+EXT-000935,SK-000900,ONET_SOFTWARE,2.E.6.c::QAD Marketing Automation,08/2023
+EXT-000936,SK-000901,ONET_SOFTWARE,2.E.6.m::Qlik Tech QlikView,08/2023
+EXT-000937,SK-000902,ONET_SOFTWARE,2.E.7.e::R,08/2023
+EXT-000938,SK-000903,ONET_SOFTWARE,2.E.7.b::Ruby,08/2023
+EXT-000939,SK-000904,ONET_SOFTWARE,2.E.7.h::Ruby on Rails,08/2023
+EXT-000940,SK-000905,ONET_SOFTWARE,2.E.6.c::Sage SalesLogix,08/2023
+EXT-000941,SK-000906,ONET_SOFTWARE,2.E.6.c::Salesforce software,08/2023
+EXT-000942,SK-000907,ONET_SOFTWARE,2.E.6.c::Salesforce.com Salesforce CRM,08/2023
+EXT-000943,SK-000908,ONET_SOFTWARE,2.E.2.b::SAP Business Objects,08/2023
+EXT-000944,SK-000909,ONET_SOFTWARE,2.E.2.b::SAP software,08/2023
+EXT-000945,SK-000910,ONET_SOFTWARE,2.E.9.d::SAS,08/2023
+EXT-000946,SK-000911,ONET_SOFTWARE,2.E.4.c::Screencast-O-Matic,08/2023
+EXT-000947,SK-000912,ONET_SOFTWARE,2.E.4.c::Screencastify,08/2023
+EXT-000948,SK-000913,ONET_SOFTWARE,2.E.16.i::Slack,08/2023
+EXT-000949,SK-000914,ONET_SOFTWARE,2.E.4.b::SmugMug Flickr,08/2023
+EXT-000950,SK-000915,ONET_SOFTWARE,2.E.4.g::Social media sites,08/2023
+EXT-000951,SK-000916,ONET_SOFTWARE,2.E.16.i::Software as a service SaaS,08/2023
+EXT-000952,SK-000917,ONET_SOFTWARE,2.E.11.e::Splunk Enterprise,08/2023
+EXT-000953,SK-000918,ONET_SOFTWARE,2.E.9.d::StataCorp Stata,08/2023
+EXT-000954,SK-000919,ONET_SOFTWARE,2.E.6.f::Structured query language SQL,08/2023
+EXT-000955,SK-000920,ONET_SOFTWARE,2.E.7.e::Swift,08/2023
+EXT-000956,SK-000921,ONET_SOFTWARE,2.E.6.m::Tableau,08/2023
+EXT-000957,SK-000922,ONET_SOFTWARE,2.E.2.a::Tax software,08/2023
+EXT-000958,SK-000923,ONET_SOFTWARE,2.E.6.d::Teradata Database,08/2023
+EXT-000959,SK-000924,ONET_SOFTWARE,2.E.9.d::The MathWorks MATLAB,08/2023
+EXT-000960,SK-000925,ONET_SOFTWARE,2.E.4.c::TikTok,08/2023
+EXT-000961,SK-000926,ONET_SOFTWARE,2.E.10.e::Web browser software,08/2023
+EXT-000962,SK-000927,ONET_SOFTWARE,2.E.4.c::WeVideo,08/2023
+EXT-000963,SK-000928,ONET_SOFTWARE,2.E.4.g::WordPress,08/2023
+EXT-000964,SK-000929,ONET_SOFTWARE,2.E.6.f::Yardi software,08/2023
+EXT-000965,SK-000930,ONET_SOFTWARE,2.E.4.c::YouTube,08/2023
+EXT-000966,SK-000931,ONET_SOFTWARE,2.E.4.k::Adobe Distiller,08/2023
+EXT-000967,SK-000932,ONET_SOFTWARE,2.E.4.k::Adobe PageMaker,08/2023
+EXT-000968,SK-000933,ONET_SOFTWARE,2.E.4.c::Apple iDVD,08/2023
+EXT-000969,SK-000934,ONET_SOFTWARE,2.E.4.c::Apple iMovie,08/2023
+EXT-000970,SK-000935,ONET_SOFTWARE,2.E.6.c::Blackbaud eTapestry,08/2023
+EXT-000971,SK-000936,ONET_SOFTWARE,2.E.1.k::Corel WordPerfect Office Suite,08/2023
+EXT-000972,SK-000937,ONET_SOFTWARE,2.E.16.a::Google Gmail,08/2023
+EXT-000973,SK-000938,ONET_SOFTWARE,2.E.1.k::Google Workspace software,08/2023
+EXT-000974,SK-000939,ONET_SOFTWARE,2.E.1.c::Human resource management software HRMS,08/2023
+EXT-000975,SK-000940,ONET_SOFTWARE,2.E.16.a::MicroFocus GroupWise,08/2023
+EXT-000976,SK-000941,ONET_SOFTWARE,2.E.1.l::MightyScout,08/2023
+EXT-000977,SK-000942,ONET_SOFTWARE,2.E.4.k::QuarkXPress,08/2023
+EXT-000978,SK-000943,ONET_SOFTWARE,2.E.1.e::zkipster,08/2023
+EXT-000979,SK-000944,ONET_SOFTWARE,2.E.16.b::Zoom,08/2023
+EXT-000980,SK-000945,ONET_SOFTWARE,2.E.2.a::Accounts receivable software,08/2023
+EXT-000981,SK-000946,ONET_SOFTWARE,2.E.1.c::ADP Workforce Now,08/2023
+EXT-000982,SK-000947,ONET_SOFTWARE,2.E.6.m::Alteryx software,08/2023
+EXT-000983,SK-000948,ONET_SOFTWARE,2.E.2.d::ARES Corporation PRISM Project Estimator,08/2023
+EXT-000984,SK-000949,ONET_SOFTWARE,2.E.2.d::Credit management software,08/2023
+EXT-000985,SK-000950,ONET_SOFTWARE,2.E.9.i::Healthcare common procedure coding system HCPCS,08/2023
+EXT-000986,SK-000951,ONET_SOFTWARE,2.E.1.c::Human resource information system (HRIS),08/2023
+EXT-000987,SK-000952,ONET_SOFTWARE,2.E.2.b::Microsoft Dynamics GP,08/2023
+EXT-000988,SK-000953,ONET_SOFTWARE,2.E.16.a::Microsoft Exchange,08/2023
+EXT-000989,SK-000954,ONET_SOFTWARE,2.E.13.c::Microsoft Windows,08/2023
+EXT-000990,SK-000955,ONET_SOFTWARE,2.E.4.i::Moody's KMV FAMAS,08/2023
+EXT-000991,SK-000956,ONET_SOFTWARE,2.E.2.b::Oracle JD Edwards EnterpriseOne,08/2023
+EXT-000992,SK-000957,ONET_SOFTWARE,2.E.1.e::Oracle Primavera Enterprise Project Portfolio Management,08/2023
+EXT-000993,SK-000958,ONET_SOFTWARE,2.E.2.a::Sage 50 Accounting,08/2023
+EXT-000994,SK-000959,ONET_SOFTWARE,2.E.6.e::SAP Crystal Reports,08/2023
+EXT-000995,SK-000960,ONET_SOFTWARE,2.E.9.e::Tax compliance property tax management software,08/2023
+EXT-000996,SK-000961,ONET_SOFTWARE,2.E.2.b::Workday software,08/2023
+EXT-000997,SK-000962,ONET_SOFTWARE,2.E.1.c::!Trak-it Solutions !Trak-it HR,08/2023
+EXT-000998,SK-000963,ONET_SOFTWARE,2.E.1.c::ADP Employease,08/2023
+EXT-000999,SK-000964,ONET_SOFTWARE,2.E.1.c::ADP HR/Benefits Solution,08/2023
+EXT-001000,SK-000965,ONET_SOFTWARE,2.E.6.e::AdRelevance,08/2023
+EXT-001001,SK-000966,ONET_SOFTWARE,2.E.1.c::Apex Business Software iHR,08/2023
+EXT-001002,SK-000967,ONET_SOFTWARE,2.E.1.c::Ascentis HR,08/2023
+EXT-001003,SK-000968,ONET_SOFTWARE,2.E.1.c::ASL HR Director,08/2023
+EXT-001004,SK-000969,ONET_SOFTWARE,2.E.1.c::Asure Software HCM,08/2023
+EXT-001005,SK-000970,ONET_SOFTWARE,2.E.5.b::Atlas Business Solutions Staff Files,08/2023
+EXT-001006,SK-000971,ONET_SOFTWARE,2.E.1.c::Auxillium West HRnetSource,08/2023
+EXT-001007,SK-000972,ONET_SOFTWARE,2.E.1.c::Blue Chip Computer Consultants HumaNET,08/2023
+EXT-001008,SK-000973,ONET_SOFTWARE,2.E.2.b::Brainworks,08/2023
+EXT-001009,SK-000974,ONET_SOFTWARE,2.E.9.d::Business analysis software,08/2023
+EXT-001010,SK-000975,ONET_SOFTWARE,2.E.1.c::Ceridian Dayforce enterprise HCM,08/2023
+EXT-001011,SK-000976,ONET_SOFTWARE,2.E.1.c::Consultants in Data Processing HRnet,08/2023
+EXT-001012,SK-000977,ONET_SOFTWARE,2.E.1.c::Datamatics V-Core HR,08/2023
+EXT-001013,SK-000978,ONET_SOFTWARE,2.E.2.a::Deltek Costpoint,08/2023
+EXT-001014,SK-000979,ONET_SOFTWARE,2.E.1.c::DenoSys HRiStragegy,08/2023
+EXT-001015,SK-000980,ONET_SOFTWARE,2.E.5.b::Document management system software,08/2023
+EXT-001016,SK-000981,ONET_SOFTWARE,2.E.2.f::e-MDs Bill,08/2023
+EXT-001017,SK-000982,ONET_SOFTWARE,2.E.1.e::Experience in Software Webplanner,08/2023
+EXT-001018,SK-000983,ONET_SOFTWARE,2.E.1.c::FSC Business Solutions Department Managers' Toolkit,08/2023
+EXT-001019,SK-000984,ONET_SOFTWARE,2.E.1.c::Genesys PeopleComeFirst,08/2023
+EXT-001020,SK-000985,ONET_SOFTWARE,2.E.1.c::Global Groupware Solutions Limited Smiles ERM On-Demand,08/2023
+EXT-001021,SK-000986,ONET_SOFTWARE,2.E.1.c::HarrisData Human Resources Information System HRIS,08/2023
+EXT-001022,SK-000987,ONET_SOFTWARE,2.E.1.c::HR-ease,08/2023
+EXT-001023,SK-000988,ONET_SOFTWARE,2.E.1.c::HRMS Solutions iVantage,08/2023
+EXT-001024,SK-000989,ONET_SOFTWARE,2.E.1.c::hSenid Business Solutions HRM Enterprise,08/2023
+EXT-001025,SK-000990,ONET_SOFTWARE,2.E.1.c::Humanic Design Human Resources Management System,08/2023
+EXT-001026,SK-000991,ONET_SOFTWARE,2.E.1.c::iEmployee,08/2023
+EXT-001027,SK-000992,ONET_SOFTWARE,2.E.1.c::Jenss & Associates CompKeeper,08/2023
+EXT-001028,SK-000993,ONET_SOFTWARE,2.E.1.c::Lawson Human Resource Management,08/2023
+EXT-001029,SK-000994,ONET_SOFTWARE,2.E.6.f::Microsoft Dynamics Marketing,08/2023
+EXT-001030,SK-000995,ONET_SOFTWARE,2.E.1.c::NOW Solutions emPath,08/2023
+EXT-001031,SK-000996,ONET_SOFTWARE,2.E.1.c::Nuview Systems Cort HCM,08/2023
+EXT-001032,SK-000997,ONET_SOFTWARE,2.E.1.c::NuView Systems NuViewHR,08/2023
+EXT-001033,SK-000998,ONET_SOFTWARE,2.E.2.b::Oracle E-Business Suite,08/2023
+EXT-001034,SK-000999,ONET_SOFTWARE,2.E.1.c::Oracle HRIS,08/2023
+EXT-001035,SK-001000,ONET_SOFTWARE,2.E.1.c::OrangeHRM,08/2023
+EXT-001036,SK-001001,ONET_SOFTWARE,2.E.6.f::PaloAlto Advertising Plan Pro,08/2023
+EXT-001037,SK-001002,ONET_SOFTWARE,2.E.1.c::PDS Vista,08/2023
+EXT-001038,SK-001003,ONET_SOFTWARE,2.E.1.c::People-Trak HR Essentials,08/2023
+EXT-001039,SK-001004,ONET_SOFTWARE,2.E.1.c::PerfectSoftware PerfectHR,08/2023
+EXT-001040,SK-001005,ONET_SOFTWARE,2.E.1.c::Piney Creek Digital Protocol System,08/2023
+EXT-001041,SK-001006,ONET_SOFTWARE,2.E.1.c::PSTek,08/2023
+EXT-001042,SK-001007,ONET_SOFTWARE,2.E.1.c::Quadkey HR Server,08/2023
+EXT-001043,SK-001008,ONET_SOFTWARE,2.E.4.k::Quark enterprise publishing software,08/2023
+EXT-001044,SK-001009,ONET_SOFTWARE,2.E.9.d::Relex Weibull,08/2023
+EXT-001045,SK-001010,ONET_SOFTWARE,2.E.1.c::Sage HRMS,08/2023
+EXT-001046,SK-001011,ONET_SOFTWARE,2.E.1.c::Saigun Technologies EmpXtrack,08/2023
+EXT-001047,SK-001012,ONET_SOFTWARE,2.E.1.c::Sentient Online MarketPrice,08/2023
+EXT-001048,SK-001013,ONET_SOFTWARE,2.E.1.c::Trigon Road Forte Leave Management,08/2023
+EXT-001049,SK-001014,ONET_SOFTWARE,2.E.1.c::UCN inContact Workforce Management Software WFM,08/2023
+EXT-001050,SK-001015,ONET_SOFTWARE,2.E.1.c::Ultimate Software UltiPro,08/2023
+EXT-001051,SK-001016,ONET_SOFTWARE,2.E.1.c::Vantage Point Software HRA,08/2023
+EXT-001052,SK-001017,ONET_SOFTWARE,2.E.4.e::AASoftTech Web Organization Chart,08/2023
+EXT-001053,SK-001018,ONET_SOFTWARE,2.E.2.a::AccountantsWorld Payroll Relief,08/2023
+EXT-001054,SK-001019,ONET_SOFTWARE,2.E.1.c::ADP Enterprise HR,08/2023
+EXT-001055,SK-001020,ONET_SOFTWARE,2.E.2.e::ADP ezLaborManager,08/2023
+EXT-001056,SK-001021,ONET_SOFTWARE,2.E.1.c::ADP HR/Profile,08/2023
+EXT-001057,SK-001022,ONET_SOFTWARE,2.E.2.e::ADP Pay eXpert,08/2023
+EXT-001058,SK-001023,ONET_SOFTWARE,2.E.1.c::AllNetic Working Time Tracker,08/2023
+EXT-001059,SK-001024,ONET_SOFTWARE,2.E.1.c::Applicant tracking software,08/2023
+EXT-001060,SK-001025,ONET_SOFTWARE,2.E.1.c::Arrow Electronics N/Compass,08/2023
+EXT-001061,SK-001026,ONET_SOFTWARE,2.E.1.c::Authoria Adviser,08/2023
+EXT-001062,SK-001027,ONET_SOFTWARE,2.E.6.f::Automation Centre Personnel Tracker,08/2023
+EXT-001063,SK-001028,ONET_SOFTWARE,2.E.2.e::Data Management TimeClock Plus,08/2023
+EXT-001064,SK-001029,ONET_SOFTWARE,2.E.1.c::Defense Travel System,08/2023
+EXT-001065,SK-001030,ONET_SOFTWARE,2.E.2.b::Deltek Vision,08/2023
+EXT-001066,SK-001031,ONET_SOFTWARE,2.E.2.e::Exact Software Macola ES Labor Performance,08/2023
+EXT-001067,SK-001032,ONET_SOFTWARE,2.E.1.c::Fidelity HR/Payroll,08/2023
+EXT-001068,SK-001033,ONET_SOFTWARE,2.E.1.c::Halogen e360,08/2023
+EXT-001069,SK-001034,ONET_SOFTWARE,2.E.1.c::Halogen ePraisal,08/2023
+EXT-001070,SK-001035,ONET_SOFTWARE,2.E.1.c::Harpers Payroll Services HR la Carte,08/2023
+EXT-001071,SK-001036,ONET_SOFTWARE,2.E.4.i::IBM Lotus 1-2-3,08/2023
+EXT-001072,SK-001037,ONET_SOFTWARE,2.E.1.c::Inception Technologies InfiniTime,08/2023
+EXT-001073,SK-001038,ONET_SOFTWARE,2.E.2.b::Infor ERP SyteLine,08/2023
+EXT-001074,SK-001039,ONET_SOFTWARE,2.E.1.c::Infor SSA Human Capital Management,08/2023
+EXT-001075,SK-001040,ONET_SOFTWARE,2.E.2.e::Infotronics Attendance Enterprise,08/2023
+EXT-001076,SK-001041,ONET_SOFTWARE,2.E.1.c::interactive Personnel Electronic Records Management System iPERMS,08/2023
+EXT-001077,SK-001042,ONET_SOFTWARE,2.E.2.e::iSystems Evolution Payroll and Tax Management,08/2023
+EXT-001078,SK-001043,ONET_SOFTWARE,2.E.2.e::Jantek Electronics Jupiter Time & Attendance,08/2023
+EXT-001079,SK-001044,ONET_SOFTWARE,2.E.2.b::Kronos Enterprise Workforce Management,08/2023
+EXT-001080,SK-001045,ONET_SOFTWARE,2.E.2.e::Kronos Workforce Timekeeper,08/2023
+EXT-001081,SK-001046,ONET_SOFTWARE,2.E.1.c::Lawson Human Resources Suite,08/2023
+EXT-001082,SK-001047,ONET_SOFTWARE,2.E.5.b::Microsoft SharePoint Server,08/2023
+EXT-001083,SK-001048,ONET_SOFTWARE,2.E.1.c::Midrange Software XpertHire,08/2023
+EXT-001084,SK-001049,ONET_SOFTWARE,2.E.2.a::New World Systems Logos.NET,08/2023
+EXT-001085,SK-001050,ONET_SOFTWARE,2.E.2.e::Norchard Solutions Succession Wizard,08/2023
+EXT-001086,SK-001051,ONET_SOFTWARE,2.E.4.d::Nuvosoft Rwiz,08/2023
+EXT-001087,SK-001052,ONET_SOFTWARE,2.E.1.c::Oracle Taleo,08/2023
+EXT-001088,SK-001053,ONET_SOFTWARE,2.E.1.c::Paychex payroll software,08/2023
+EXT-001089,SK-001054,ONET_SOFTWARE,2.E.1.c::Paycor payroll management,08/2023
+EXT-001090,SK-001055,ONET_SOFTWARE,2.E.2.e::Paylocity Web Pay,08/2023
+EXT-001091,SK-001056,ONET_SOFTWARE,2.E.5.b::PDF readers,08/2023
+EXT-001092,SK-001057,ONET_SOFTWARE,2.E.1.c::People-Trak software,08/2023
+EXT-001093,SK-001058,ONET_SOFTWARE,2.E.1.c::peoplefluent Performance,08/2023
+EXT-001094,SK-001059,ONET_SOFTWARE,2.E.1.c::peoplefluent Recruiting,08/2023
+EXT-001095,SK-001060,ONET_SOFTWARE,2.E.1.c::Pereless Systems software,08/2023
+EXT-001096,SK-001061,ONET_SOFTWARE,2.E.2.e::Qqest TimeForce,08/2023
+EXT-001097,SK-001062,ONET_SOFTWARE,2.E.1.c::QuestionMark,08/2023
+EXT-001098,SK-001063,ONET_SOFTWARE,2.E.6.e::SAP BusinessObjects Crystal Reports,08/2023
+EXT-001099,SK-001064,ONET_SOFTWARE,2.E.1.c::Savitr RecruitX,08/2023
+EXT-001100,SK-001065,ONET_SOFTWARE,2.E.2.e::Soft Trac Microix Timesheet,08/2023
+EXT-001101,SK-001066,ONET_SOFTWARE,2.E.1.c::Standard Installation and Division Personnel Reporting System SIDPERS,08/2023
+EXT-001102,SK-001067,ONET_SOFTWARE,2.E.9.e::Stratitec TimeIPS,08/2023
+EXT-001103,SK-001068,ONET_SOFTWARE,2.E.2.e::Stromberg Enterprise,08/2023
+EXT-001104,SK-001069,ONET_SOFTWARE,2.E.1.c::Tesseract Benefits Manager,08/2023
+EXT-001105,SK-001070,ONET_SOFTWARE,2.E.1.c::Tesseract Human Resources Manager,08/2023
+EXT-001106,SK-001071,ONET_SOFTWARE,2.E.1.c::Total Officer Personnel Management Information System TOPMIS,08/2023
+EXT-001107,SK-001072,ONET_SOFTWARE,2.E.8.b::Training software,08/2023
+EXT-001108,SK-001073,ONET_SOFTWARE,2.E.2.b::Tyler Technologies MUNIS,08/2023
+EXT-001109,SK-001074,ONET_SOFTWARE,2.E.1.c::Ultimate Software UltiPro Workplace,08/2023
+EXT-001110,SK-001075,ONET_SOFTWARE,2.E.1.c::Unicorn HRO Open4,08/2023
+EXT-001111,SK-001076,ONET_SOFTWARE,2.E.1.c::UniFocus Watson Human Resources Manager,08/2023
+EXT-001112,SK-001077,ONET_SOFTWARE,2.E.1.c::WhizLabs,08/2023
+EXT-001113,SK-001078,ONET_SOFTWARE,2.E.5.b::WinOcular,08/2023
+EXT-001114,SK-001079,ONET_SOFTWARE,2.E.1.c::Adobe Human Capital Application Solution Accelerator,08/2023
+EXT-001115,SK-001080,ONET_SOFTWARE,2.E.5.b::Adobe LifeCycle Enterprise Suite,08/2023
+EXT-001116,SK-001081,ONET_SOFTWARE,2.E.7.e::Advanced business application programming ABAP,08/2023
+EXT-001117,SK-001082,ONET_SOFTWARE,2.E.1.c::ApplicantPro iApplicants,08/2023
+EXT-001118,SK-001083,ONET_SOFTWARE,2.E.1.c::Arbita OnePost,08/2023
+EXT-001119,SK-001084,ONET_SOFTWARE,2.E.1.c::Arbita OneWorld,08/2023
+EXT-001120,SK-001085,ONET_SOFTWARE,2.E.9.d::Assessment software,08/2023
+EXT-001121,SK-001086,ONET_SOFTWARE,2.E.1.c::AST Staff Matrix,08/2023
+EXT-001122,SK-001087,ONET_SOFTWARE,2.E.1.c::Background checking software,08/2023
+EXT-001123,SK-001088,ONET_SOFTWARE,2.E.6.f::Blackboard software,08/2023
+EXT-001124,SK-001089,ONET_SOFTWARE,2.E.1.c::Blackdog,08/2023
+EXT-001125,SK-001090,ONET_SOFTWARE,2.E.1.c::BlackDog Recruiting,08/2023
+EXT-001126,SK-001091,ONET_SOFTWARE,2.E.1.c::Bond International Adapt Staffing,08/2023
+EXT-001127,SK-001092,ONET_SOFTWARE,2.E.1.c::Bond International Software Bond StaffSuite,08/2023
+EXT-001128,SK-001093,ONET_SOFTWARE,2.E.1.c::BrightMove Applicant Tracking System,08/2023
+EXT-001129,SK-001094,ONET_SOFTWARE,2.E.1.c::Bullhorn Applicant Tracking System,08/2023
+EXT-001130,SK-001095,ONET_SOFTWARE,2.E.1.c::Candidate screening software,08/2023
+EXT-001131,SK-001096,ONET_SOFTWARE,2.E.1.c::Candidate tracking software,08/2023
+EXT-001132,SK-001097,ONET_SOFTWARE,2.E.1.c::Careerbuilder.com,08/2023
+EXT-001133,SK-001098,ONET_SOFTWARE,2.E.16.b::Cisco Webex,08/2023
+EXT-001134,SK-001099,ONET_SOFTWARE,2.E.1.c::Cluen Encore,08/2023
+EXT-001135,SK-001100,ONET_SOFTWARE,2.E.1.c::Cluen executive recruitment software,08/2023
+EXT-001136,SK-001101,ONET_SOFTWARE,2.E.1.c::COATSsql,08/2023
+EXT-001137,SK-001102,ONET_SOFTWARE,2.E.1.c::CVTracer,08/2023
+EXT-001138,SK-001103,ONET_SOFTWARE,2.E.6.f::Data entry software,08/2023
+EXT-001139,SK-001104,ONET_SOFTWARE,2.E.1.c::Data Frenzy,08/2023
+EXT-001140,SK-001105,ONET_SOFTWARE,2.E.1.c::DGCC.com RecruitTrack,08/2023
+EXT-001141,SK-001106,ONET_SOFTWARE,2.E.1.c::Ellucian Banner Human Resources,08/2023
+EXT-001142,SK-001107,ONET_SOFTWARE,2.E.7.h::Enterprise JavaBeans,08/2023
+EXT-001143,SK-001108,ONET_SOFTWARE,2.E.1.c::eQuest,08/2023
+EXT-001144,SK-001109,ONET_SOFTWARE,2.E.8.h::ESRI ArcGIS software,08/2023
+EXT-001145,SK-001110,ONET_SOFTWARE,2.E.16.b::FaceTime,08/2023
+EXT-001146,SK-001111,ONET_SOFTWARE,2.E.1.c::GoBackgrounds,08/2023
+EXT-001147,SK-001112,ONET_SOFTWARE,2.E.6.f::Google,08/2023
+EXT-001148,SK-001113,ONET_SOFTWARE,2.E.1.c::HireAbility ResumeParser,08/2023
+EXT-001149,SK-001114,ONET_SOFTWARE,2.E.1.c::HireLogic PowerPlace,08/2023
+EXT-001150,SK-001115,ONET_SOFTWARE,2.E.1.c::HRM Direct,08/2023
+EXT-001151,SK-001116,ONET_SOFTWARE,2.E.1.c::ICIMS,08/2023
+EXT-001152,SK-001117,ONET_SOFTWARE,2.E.1.c::Industrial Code Recruitpoint.net,08/2023
+EXT-001153,SK-001118,ONET_SOFTWARE,2.E.1.c::Intelius,08/2023
+EXT-001154,SK-001119,ONET_SOFTWARE,2.E.1.c::Intelligent Algorithms InfoGIST Platinum Recruiter,08/2023
+EXT-001155,SK-001120,ONET_SOFTWARE,2.E.1.c::Job posting software,08/2023
+EXT-001156,SK-001121,ONET_SOFTWARE,2.E.1.c::Kronos Workforce HR,08/2023
+EXT-001157,SK-001122,ONET_SOFTWARE,2.E.2.e::Kronos Workforce Payroll,08/2023
+EXT-001158,SK-001123,ONET_SOFTWARE,2.E.6.f::LinkedIn,08/2023
+EXT-001159,SK-001124,ONET_SOFTWARE,2.E.4.c::Loom,08/2023
+EXT-001160,SK-001125,ONET_SOFTWARE,2.E.1.c::Main Sequence Technologies PCRecruiter,08/2023
+EXT-001161,SK-001126,ONET_SOFTWARE,2.E.1.c::Main Sequence Technologies PCRecruiter Resume Inhaler,08/2023
+EXT-001162,SK-001127,ONET_SOFTWARE,2.E.9.i::MEDITECH software,08/2023
+EXT-001163,SK-001128,ONET_SOFTWARE,2.E.1.c::Micro J Systems PcHunter,08/2023
+EXT-001164,SK-001129,ONET_SOFTWARE,2.E.10.e::Microsoft Internet Explorer,08/2023
+EXT-001165,SK-001130,ONET_SOFTWARE,2.E.6.e::Microsoft SQL Server Reporting Services SSRS,08/2023
+EXT-001166,SK-001131,ONET_SOFTWARE,2.E.2.e::MPAY Millennium,08/2023
+EXT-001167,SK-001132,ONET_SOFTWARE,2.E.6.f::Online databases,08/2023
+EXT-001168,SK-001133,ONET_SOFTWARE,2.E.2.b::Oracle PeopleSoft Human Capital Management,08/2023
+EXT-001169,SK-001134,ONET_SOFTWARE,2.E.13.c::Oracle Solaris,08/2023
+EXT-001170,SK-001135,ONET_SOFTWARE,2.E.10.a::Oracle WebLogic Server,08/2023
+EXT-001171,SK-001136,ONET_SOFTWARE,2.E.7.a::Perforce Helix software,08/2023
+EXT-001172,SK-001137,ONET_SOFTWARE,2.E.1.c::Post Once,08/2023
+EXT-001173,SK-001138,ONET_SOFTWARE,2.E.1.c::PostingPal,08/2023
+EXT-001174,SK-001139,ONET_SOFTWARE,2.E.1.c::PowerPlace Professional,08/2023
+EXT-001175,SK-001140,ONET_SOFTWARE,2.E.1.c::Recruit Wizard,08/2023
+EXT-001176,SK-001141,ONET_SOFTWARE,2.E.1.c::Recruitment management software,08/2023
+EXT-001177,SK-001142,ONET_SOFTWARE,2.E.1.c::Recruitpoint.net,08/2023
+EXT-001178,SK-001143,ONET_SOFTWARE,2.E.1.c::RecruitTrack,08/2023
+EXT-001179,SK-001144,ONET_SOFTWARE,2.E.1.c::Resource Edge TalentHook Sphere,08/2023
+EXT-001180,SK-001145,ONET_SOFTWARE,2.E.1.c::Resume converter software,08/2023
+EXT-001181,SK-001146,ONET_SOFTWARE,2.E.1.c::Resume extraction and search software,08/2023
+EXT-001182,SK-001147,ONET_SOFTWARE,2.E.1.c::Resume processing software,08/2023
+EXT-001183,SK-001148,ONET_SOFTWARE,2.E.1.c::ResumeRobot,08/2023
+EXT-001184,SK-001149,ONET_SOFTWARE,2.E.1.c::Safari Software Products Safari,08/2023
+EXT-001185,SK-001150,ONET_SOFTWARE,2.E.1.c::SAP ERP Human Capital Management,08/2023
+EXT-001186,SK-001151,ONET_SOFTWARE,2.E.1.c::Sendouts Recruiting,08/2023
+EXT-001187,SK-001152,ONET_SOFTWARE,2.E.1.c::Silk Road technology OpenHire,08/2023
+EXT-001188,SK-001153,ONET_SOFTWARE,2.E.10.b::Skype,08/2023
+EXT-001189,SK-001154,ONET_SOFTWARE,2.E.1.c::Staffing Solutions Enterprises Staff Matrix,08/2023
+EXT-001190,SK-001155,ONET_SOFTWARE,2.E.1.c::StaffingSoft Staffing Edition,08/2023
+EXT-001191,SK-001156,ONET_SOFTWARE,2.E.1.c::Talent Technology HireDesk,08/2023
+EXT-001192,SK-001157,ONET_SOFTWARE,2.E.1.c::Talent Technology Resume Mirror,08/2023
+EXT-001193,SK-001158,ONET_SOFTWARE,2.E.1.c::Talent Technology Talemetry,08/2023
+EXT-001194,SK-001159,ONET_SOFTWARE,2.E.1.c::TalentHook,08/2023
+EXT-001195,SK-001160,ONET_SOFTWARE,2.E.1.c::Technomedia Hodes iQ,08/2023
+EXT-001196,SK-001161,ONET_SOFTWARE,2.E.1.c::TempWorks recruiting and staffing software,08/2023
+EXT-001197,SK-001162,ONET_SOFTWARE,2.E.1.c::VCG Pointwing,08/2023
+EXT-001198,SK-001163,ONET_SOFTWARE,2.E.6.c::Vendor management system software,08/2023
+EXT-001199,SK-001164,ONET_SOFTWARE,2.E.4.d::3M Post-it App,08/2023
+EXT-001200,SK-001165,ONET_SOFTWARE,2.E.7.h::AJAX,08/2023
+EXT-001201,SK-001166,ONET_SOFTWARE,2.E.6.f::Amazon Elastic Compute Cloud EC2,08/2023
+EXT-001202,SK-001167,ONET_SOFTWARE,2.E.1.i::Ansible software,08/2023
+EXT-001203,SK-001168,ONET_SOFTWARE,2.E.7.b::Apache Ant,08/2023
+EXT-001204,SK-001169,ONET_SOFTWARE,2.E.7.e::Apache Groovy,08/2023
+EXT-001205,SK-001170,ONET_SOFTWARE,2.E.6.k::Apache HTTP Server,08/2023
+EXT-001206,SK-001171,ONET_SOFTWARE,2.E.7.b::Apache Kafka,08/2023
+EXT-001207,SK-001172,ONET_SOFTWARE,2.E.7.b::Apache Maven,08/2023
+EXT-001208,SK-001173,ONET_SOFTWARE,2.E.6.m::Apache Spark,08/2023
+EXT-001209,SK-001174,ONET_SOFTWARE,2.E.7.h::Apache Struts,08/2023
+EXT-001210,SK-001175,ONET_SOFTWARE,2.E.5.c::Apache Subversion SVN,08/2023
+EXT-001211,SK-001176,ONET_SOFTWARE,2.E.7.h::Apache Tomcat,08/2023
+EXT-001212,SK-001177,ONET_SOFTWARE,2.E.7.c::Atlassian Bamboo,08/2023
+EXT-001213,SK-001178,ONET_SOFTWARE,2.E.7.h::Backbone.js,08/2023
+EXT-001214,SK-001179,ONET_SOFTWARE,2.E.13.c::Bash,08/2023
+EXT-001215,SK-001180,ONET_SOFTWARE,2.E.7.e::C#,08/2023
+EXT-001216,SK-001181,ONET_SOFTWARE,2.E.7.e::C++,08/2023
+EXT-001217,SK-001182,ONET_SOFTWARE,2.E.7.a::Chef,08/2023
+EXT-001218,SK-001183,ONET_SOFTWARE,2.E.7.b::Common business oriented language COBOL,08/2023
+EXT-001219,SK-001184,ONET_SOFTWARE,2.E.6.l::Customer information control system CICS,08/2023
+EXT-001220,SK-001185,ONET_SOFTWARE,2.E.7.b::Eclipse IDE,08/2023
+EXT-001221,SK-001186,ONET_SOFTWARE,2.E.9.i::Epic Systems,08/2023
+EXT-001222,SK-001187,ONET_SOFTWARE,2.E.7.h::Ext JS,08/2023
+EXT-001223,SK-001188,ONET_SOFTWARE,2.E.8.h::Geographic information system GIS software,08/2023
+EXT-001224,SK-001189,ONET_SOFTWARE,2.E.5.c::Git,08/2023
+EXT-001225,SK-001190,ONET_SOFTWARE,2.E.7.b::Go,08/2023
+EXT-001226,SK-001191,ONET_SOFTWARE,2.E.7.h::Google Angular,08/2023
+EXT-001227,SK-001192,ONET_SOFTWARE,2.E.13.c::Hewlett Packard HP-UX,08/2023
+EXT-001228,SK-001193,ONET_SOFTWARE,2.E.7.f::Hewlett Packard LoadRunner,08/2023
+EXT-001229,SK-001194,ONET_SOFTWARE,2.E.6.j::Hibernate ORM,08/2023
+EXT-001230,SK-001195,ONET_SOFTWARE,2.E.2.b::IBM Cognos ReportNet,08/2023
+EXT-001231,SK-001196,ONET_SOFTWARE,2.E.7.g::IBM Rational RequisitePro,08/2023
+EXT-001232,SK-001197,ONET_SOFTWARE,2.E.11.e::IBM WebSphere,08/2023
+EXT-001233,SK-001198,ONET_SOFTWARE,2.E.6.e::Information Builders WebFOCUS,08/2023
+EXT-001234,SK-001199,ONET_SOFTWARE,2.E.7.b::Integrated development environment IDE software,08/2023
+EXT-001235,SK-001200,ONET_SOFTWARE,2.E.7.h::JavaScript Object Notation JSON,08/2023
+EXT-001236,SK-001201,ONET_SOFTWARE,2.E.13.c::Job control language JCL,08/2023
+EXT-001237,SK-001202,ONET_SOFTWARE,2.E.7.e::jQuery,08/2023
+EXT-001238,SK-001203,ONET_SOFTWARE,2.E.7.f::JUnit,08/2023
+EXT-001239,SK-001204,ONET_SOFTWARE,2.E.13.c::KornShell,08/2023
+EXT-001240,SK-001205,ONET_SOFTWARE,2.E.13.c::Linux,08/2023
+EXT-001241,SK-001206,ONET_SOFTWARE,2.E.9.i::Medical condition coding software,08/2023
+EXT-001242,SK-001207,ONET_SOFTWARE,2.E.9.i::Medical procedure coding software,08/2023
+EXT-001243,SK-001208,ONET_SOFTWARE,2.E.7.b::Microsoft .NET Framework,08/2023
+EXT-001244,SK-001209,ONET_SOFTWARE,2.E.7.h::Microsoft Active Server Pages ASP,08/2023
+EXT-001245,SK-001210,ONET_SOFTWARE,2.E.7.e::Microsoft ActiveX,08/2023
+EXT-001246,SK-001211,ONET_SOFTWARE,2.E.7.h::Microsoft ASP.NET,08/2023
+EXT-001247,SK-001212,ONET_SOFTWARE,2.E.7.h::Microsoft ASP.NET Core MVC,08/2023
+EXT-001248,SK-001213,ONET_SOFTWARE,2.E.2.b::Microsoft Business Intelligence BI,08/2023
+EXT-001249,SK-001214,ONET_SOFTWARE,2.E.4.d::Microsoft OneNote,08/2023
+EXT-001250,SK-001215,ONET_SOFTWARE,2.E.6.m::Microsoft Power BI,08/2023
+EXT-001251,SK-001216,ONET_SOFTWARE,2.E.7.b::Microsoft PowerShell,08/2023
+EXT-001252,SK-001217,ONET_SOFTWARE,2.E.7.c::Microsoft SQL Server Integration Services SSIS,08/2023
+EXT-001253,SK-001218,ONET_SOFTWARE,2.E.1.e::Microsoft Team Foundation Server,08/2023
+EXT-001254,SK-001219,ONET_SOFTWARE,2.E.7.b::Microsoft Visual Studio,08/2023
+EXT-001255,SK-001220,ONET_SOFTWARE,2.E.6.d::MongoDB,08/2023
+EXT-001256,SK-001221,ONET_SOFTWARE,2.E.11.a::Nagios,08/2023
+EXT-001257,SK-001222,ONET_SOFTWARE,2.E.7.h::Node.js,08/2023
+EXT-001258,SK-001223,ONET_SOFTWARE,2.E.2.b::Oracle Agile Product Lifecycle Management PLM,08/2023
+EXT-001259,SK-001224,ONET_SOFTWARE,2.E.2.b::Oracle Business Intelligence Publisher,08/2023
+EXT-001260,SK-001225,ONET_SOFTWARE,2.E.7.e::Oracle Java,08/2023
+EXT-001261,SK-001226,ONET_SOFTWARE,2.E.6.f::Oracle JDBC,08/2023
+EXT-001262,SK-001227,ONET_SOFTWARE,2.E.7.e::Perl,08/2023
+EXT-001263,SK-001228,ONET_SOFTWARE,2.E.6.j::PostgreSQL,08/2023
+EXT-001264,SK-001229,ONET_SOFTWARE,2.E.7.a::Puppet,08/2023
+EXT-001265,SK-001230,ONET_SOFTWARE,2.E.6.i::Quest Erwin Data Modeler,08/2023
+EXT-001266,SK-001231,ONET_SOFTWARE,2.E.13.c::Red Hat Enterprise Linux,08/2023
+EXT-001267,SK-001232,ONET_SOFTWARE,2.E.10.a::Red Hat WildFly,08/2023
+EXT-001268,SK-001233,ONET_SOFTWARE,2.E.6.d::Relational database management software,08/2023
+EXT-001269,SK-001234,ONET_SOFTWARE,2.E.7.d::Salesforce Visualforce,08/2023
+EXT-001270,SK-001235,ONET_SOFTWARE,2.E.7.e::Scala,08/2023
+EXT-001271,SK-001236,ONET_SOFTWARE,2.E.7.f::Selenium,08/2023
+EXT-001272,SK-001237,ONET_SOFTWARE,2.E.13.c::Shell script,08/2023
+EXT-001273,SK-001238,ONET_SOFTWARE,2.E.16.c::Slido interaction software,08/2023
+EXT-001274,SK-001239,ONET_SOFTWARE,2.E.7.h::Spring Framework,08/2023
+EXT-001275,SK-001240,ONET_SOFTWARE,2.E.9.g::Supervisory control and data acquisition SCADA software,08/2023
+EXT-001276,SK-001241,ONET_SOFTWARE,2.E.6.f::Transact-SQL,08/2023
+EXT-001277,SK-001242,ONET_SOFTWARE,2.E.4.b::Trimble SketchUp Pro,08/2023
+EXT-001278,SK-001243,ONET_SOFTWARE,2.E.13.c::Ubuntu,08/2023
+EXT-001279,SK-001244,ONET_SOFTWARE,2.E.7.g::Unified modeling language UML,08/2023
+EXT-001280,SK-001245,ONET_SOFTWARE,2.E.13.c::UNIX,08/2023
+EXT-001281,SK-001246,ONET_SOFTWARE,2.E.15.f::Veritas NetBackup,08/2023
+EXT-001282,SK-001247,ONET_SOFTWARE,2.E.14.c::Virtual private networking VPN software,08/2023
+EXT-001283,SK-001248,ONET_SOFTWARE,2.E.6.b::VMware,08/2023
+EXT-001284,SK-001249,ONET_SOFTWARE,2.E.11.a::Wireshark,08/2023
+EXT-001285,SK-001250,ONET_SOFTWARE,2.E.1.c::Actuarial Systems Corporation AIM,08/2023
+EXT-001286,SK-001251,ONET_SOFTWARE,2.E.1.c::Actuarial Systems Corporation Compliance Testing System,08/2023
+EXT-001287,SK-001252,ONET_SOFTWARE,2.E.1.c::Actuarial Systems Corporation Defined Benefit System,08/2023
+EXT-001288,SK-001253,ONET_SOFTWARE,2.E.5.b::Actuarial Systems Corporation Document Generation and Management System,08/2023
+EXT-001289,SK-001254,ONET_SOFTWARE,2.E.1.c::Actuarial Systems Corporation DV Direct,08/2023
+EXT-001290,SK-001255,ONET_SOFTWARE,2.E.2.e::ADP Enterprise eTIME,08/2023
+EXT-001291,SK-001256,ONET_SOFTWARE,2.E.1.c::Apex Business Software iBenefits,08/2023
+EXT-001292,SK-001257,ONET_SOFTWARE,2.E.1.c::Ascentis Employee Self-Service,08/2023
+EXT-001293,SK-001258,ONET_SOFTWARE,2.E.1.c::Bargaining Power,08/2023
+EXT-001294,SK-001259,ONET_SOFTWARE,2.E.1.c::BEMAS PayDirect,08/2023
+EXT-001295,SK-001260,ONET_SOFTWARE,2.E.1.c::Benaissance COBRApoint,08/2023
+EXT-001296,SK-001261,ONET_SOFTWARE,2.E.1.c::BenAssist,08/2023
+EXT-001297,SK-001262,ONET_SOFTWARE,2.E.1.c::Benefit Plan Systems Corporation The Plan Administrator,08/2023
+EXT-001298,SK-001263,ONET_SOFTWARE,2.E.1.c::Benefit Software Fringe Facts,08/2023
+EXT-001299,SK-001264,ONET_SOFTWARE,2.E.1.c::BenefitFocus HR in Touch,08/2023
+EXT-001300,SK-001265,ONET_SOFTWARE,2.E.1.c::BeneLink Connect,08/2023
+EXT-001301,SK-001266,ONET_SOFTWARE,2.E.1.c::Benelogic,08/2023
+EXT-001302,SK-001267,ONET_SOFTWARE,2.E.1.c::BeneXL Technologies Pension Administration System,08/2023
+EXT-001303,SK-001268,ONET_SOFTWARE,2.E.1.c::Byrne Software Technologies Visual HCS,08/2023
+EXT-001304,SK-001269,ONET_SOFTWARE,2.E.1.c::Callidus TrueComp,08/2023
+EXT-001305,SK-001270,ONET_SOFTWARE,2.E.6.f::Clayton Wallis CompGeo Online Professional Forecast Library,08/2023
+EXT-001306,SK-001271,ONET_SOFTWARE,2.E.1.c::DataPath dpiSuite,08/2023
+EXT-001307,SK-001272,ONET_SOFTWARE,2.E.1.c::Ebenefits Solutions Benefits Management,08/2023
+EXT-001308,SK-001273,ONET_SOFTWARE,2.E.1.c::Employee self-service software,08/2023
+EXT-001309,SK-001274,ONET_SOFTWARE,2.E.1.c::Halogen eCompensation,08/2023
+EXT-001310,SK-001275,ONET_SOFTWARE,2.E.1.c::Humanic Design Employmee Self-Service,08/2023
+EXT-001311,SK-001276,ONET_SOFTWARE,2.E.1.c::IBM Cognos,08/2023
+EXT-001312,SK-001277,ONET_SOFTWARE,2.E.1.c::Incentive management system software,08/2023
+EXT-001313,SK-001278,ONET_SOFTWARE,2.E.1.c::InfinityHR,08/2023
+EXT-001314,SK-001279,ONET_SOFTWARE,2.E.2.b::Lawson ERP,08/2023
+EXT-001315,SK-001280,ONET_SOFTWARE,2.E.1.c::Lynchval Systems Lvadmin,08/2023
+EXT-001316,SK-001281,ONET_SOFTWARE,2.E.1.c::Lynchval Systems Lvval,08/2023
+EXT-001317,SK-001282,ONET_SOFTWARE,2.E.1.c::Lynchval Systems Lvxact,08/2023
+EXT-001318,SK-001283,ONET_SOFTWARE,2.E.1.c::NPKTools Comp Analytics,08/2023
+EXT-001319,SK-001284,ONET_SOFTWARE,2.E.1.c::NPKTools CompXpert,08/2023
+EXT-001320,SK-001285,ONET_SOFTWARE,2.E.6.f::O*NET OnLine,08/2023
+EXT-001321,SK-001286,ONET_SOFTWARE,2.E.1.c::OnQue Technologies COBRA OnOne,08/2023
+EXT-001322,SK-001287,ONET_SOFTWARE,2.E.1.c::Oracle E-Business Suite Human Resources Management System,08/2023
+EXT-001323,SK-001288,ONET_SOFTWARE,2.E.1.e::Project planning software,08/2023
+EXT-001324,SK-001289,ONET_SOFTWARE,2.E.2.e::Sage HRMS,08/2023
+EXT-001325,SK-001290,ONET_SOFTWARE,2.E.6.f::Salary.com,08/2023
+EXT-001326,SK-001291,ONET_SOFTWARE,2.E.2.b::SAP ERP Human Capital Management,08/2023
+EXT-001327,SK-001292,ONET_SOFTWARE,2.E.1.c::SBC Systems Benefits Workstation,08/2023
+EXT-001328,SK-001293,ONET_SOFTWARE,2.E.1.c::Stroud & Associates Employee Benefits Administration System,08/2023
+EXT-001329,SK-001294,ONET_SOFTWARE,2.E.1.c::Survey Sense,08/2023
+EXT-001330,SK-001295,ONET_SOFTWARE,2.E.1.c::Transcend Technologies Group benefitsCONNECT,08/2023
+EXT-001331,SK-001296,ONET_SOFTWARE,2.E.1.c::Travis Software TravisFlex,08/2023
+EXT-001332,SK-001297,ONET_SOFTWARE,2.E.1.c::Vebnet FIX&FLEX,08/2023
+EXT-001333,SK-001298,ONET_SOFTWARE,2.E.1.c::Virtual Benefits Administrator,08/2023
+EXT-001334,SK-001299,ONET_SOFTWARE,2.E.1.c::Vitech Systems Group V3 Benefits Administration System,08/2023
+EXT-001335,SK-001300,ONET_SOFTWARE,2.E.1.c::VUE Benefits Manager,08/2023
+EXT-001336,SK-001301,ONET_SOFTWARE,2.E.1.c::VUE Compensation Management,08/2023
+EXT-001337,SK-001302,ONET_SOFTWARE,2.E.1.c::Watson Wyatt CompQuest On-Line,08/2023
+EXT-001338,SK-001303,ONET_SOFTWARE,2.E.1.c::Watson Wyatt Global Grading System,08/2023
+EXT-001339,SK-001304,ONET_SOFTWARE,2.E.1.c::Watson Wyatt Reward,08/2023
+EXT-001340,SK-001305,ONET_SOFTWARE,2.E.1.c::Workscape Outsourced Employee Benefits Administration,08/2023
+EXT-001341,SK-001306,ONET_SOFTWARE,2.E.1.c::Xactly Compel,08/2023
+EXT-001342,SK-001307,ONET_SOFTWARE,2.E.12.a::Access management software,08/2023
+EXT-001343,SK-001308,ONET_SOFTWARE,2.E.11.a::AccessData FTK,08/2023
+EXT-001344,SK-001309,ONET_SOFTWARE,2.E.10.d::Active directory software,08/2023
+EXT-001345,SK-001310,ONET_SOFTWARE,2.E.6.d::Amazon DynamoDB,08/2023
+EXT-001346,SK-001311,ONET_SOFTWARE,2.E.12.f::Amazon Simple Storage Service S3,08/2023
+EXT-001347,SK-001312,ONET_SOFTWARE,2.E.11.e::Amazon Web Services AWS CloudFormation,08/2023
+EXT-001348,SK-001313,ONET_SOFTWARE,2.E.14.d::Anti-phishing software,08/2023
+EXT-001349,SK-001314,ONET_SOFTWARE,2.E.14.d::Anti-spyware software,08/2023
+EXT-001350,SK-001315,ONET_SOFTWARE,2.E.14.d::Anti-Trojan software,08/2023
+EXT-001351,SK-001316,ONET_SOFTWARE,2.E.9.o::ArcSight Enterprise Threat and Risk Management,08/2023
+EXT-001352,SK-001317,ONET_SOFTWARE,2.E.11.a::Automated audit trail analysis software,08/2023
+EXT-001353,SK-001318,ONET_SOFTWARE,2.E.7.a::Automated installation software,08/2023
+EXT-001354,SK-001319,ONET_SOFTWARE,2.E.11.a::Automated media tracking software,08/2023
+EXT-001355,SK-001320,ONET_SOFTWARE,2.E.15.f::Backup and archival software,08/2023
+EXT-001356,SK-001321,ONET_SOFTWARE,2.E.10.d::Berkeley Internet Domain Name BIND,08/2023
+EXT-001357,SK-001322,ONET_SOFTWARE,2.E.16.d::Blink,08/2023
+EXT-001358,SK-001323,ONET_SOFTWARE,2.E.12.g::Border Gateway Protocol BGP,08/2023
+EXT-001359,SK-001324,ONET_SOFTWARE,2.E.14.d::Check Point Next Generation Secure Web Gateway,08/2023
+EXT-001360,SK-001325,ONET_SOFTWARE,2.E.11.c::Cisco Systems CiscoWorks,08/2023
+EXT-001361,SK-001326,ONET_SOFTWARE,2.E.13.a::Computer forensic software,08/2023
+EXT-001362,SK-001327,ONET_SOFTWARE,2.E.7.f::Conformance and validation testing software,08/2023
+EXT-001363,SK-001328,ONET_SOFTWARE,2.E.14.c::Cryptographic key management software,08/2023
+EXT-001364,SK-001329,ONET_SOFTWARE,2.E.14.a::Diameter,08/2023
+EXT-001365,SK-001330,ONET_SOFTWARE,2.E.7.h::Django,08/2023
+EXT-001366,SK-001331,ONET_SOFTWARE,2.E.10.a::Docker,08/2023
+EXT-001367,SK-001332,ONET_SOFTWARE,2.E.10.d::Domain name system DNS,08/2023
+EXT-001368,SK-001333,ONET_SOFTWARE,2.E.9.o::eMASS,08/2023
+EXT-001369,SK-001334,ONET_SOFTWARE,2.E.14.d::End-to-end encryption software,08/2023
+EXT-001370,SK-001335,ONET_SOFTWARE,2.E.11.a::Ethereal,08/2023
+EXT-001371,SK-001336,ONET_SOFTWARE,2.E.14.c::Firewall software,08/2023
+EXT-001372,SK-001337,ONET_SOFTWARE,2.E.4.g::Google Sites,08/2023
+EXT-001373,SK-001338,ONET_SOFTWARE,2.E.11.a::Guidance Software EnCase Forensic,08/2023
+EXT-001374,SK-001339,ONET_SOFTWARE,2.E.14.d::Honeypot,08/2023
+EXT-001375,SK-001340,ONET_SOFTWARE,2.E.14.b::HP Fortify,08/2023
+EXT-001376,SK-001341,ONET_SOFTWARE,2.E.14.d::HP WebInspect,08/2023
+EXT-001377,SK-001342,ONET_SOFTWARE,2.E.11.a::IBM QRadar SIEM,08/2023
+EXT-001378,SK-001343,ONET_SOFTWARE,2.E.12.a::IBM Tivoli Access Management TAM,08/2023
+EXT-001379,SK-001344,ONET_SOFTWARE,2.E.14.a::IBM Tivoli Identity Management TIM,08/2023
+EXT-001380,SK-001345,ONET_SOFTWARE,2.E.14.c::Imperva SecureSphere,08/2023
+EXT-001381,SK-001346,ONET_SOFTWARE,2.E.11.a::Integrity verification software,08/2023
+EXT-001382,SK-001347,ONET_SOFTWARE,2.E.14.b::Intrusion detection system IDS,08/2023
+EXT-001383,SK-001348,ONET_SOFTWARE,2.E.14.b::Intrusion prevention system IPS,08/2023
+EXT-001384,SK-001349,ONET_SOFTWARE,2.E.14.c::IpFilter,08/2023
+EXT-001385,SK-001350,ONET_SOFTWARE,2.E.14.c::IpTables,08/2023
+EXT-001386,SK-001351,ONET_SOFTWARE,2.E.14.b::ISS RealSecure,08/2023
+EXT-001387,SK-001352,ONET_SOFTWARE,2.E.14.c::Juniper Networks NetScreen-Security Manager,08/2023
+EXT-001388,SK-001353,ONET_SOFTWARE,2.E.7.f::Kali Linux,08/2023
+EXT-001389,SK-001354,ONET_SOFTWARE,2.E.11.a::Keystroke monitoring software,08/2023
+EXT-001390,SK-001355,ONET_SOFTWARE,2.E.14.d::Link encryption software,08/2023
+EXT-001391,SK-001356,ONET_SOFTWARE,2.E.14.d::McAfee VirusScan,08/2023
+EXT-001392,SK-001357,ONET_SOFTWARE,2.E.14.d::Metasploit,08/2023
+EXT-001393,SK-001358,ONET_SOFTWARE,2.E.11.a::Micro Focus OpenView,08/2023
+EXT-001394,SK-001359,ONET_SOFTWARE,2.E.10.d::Microsoft Active Directory,08/2023
+EXT-001395,SK-001360,ONET_SOFTWARE,2.E.13.c::Microsoft Hyper-V Server,08/2023
+EXT-001396,SK-001361,ONET_SOFTWARE,2.E.13.c::Microsoft Windows Server,08/2023
+EXT-001397,SK-001362,ONET_SOFTWARE,2.E.7.f::MITRE ATT&CK software,08/2023
+EXT-001398,SK-001363,ONET_SOFTWARE,2.E.6.d::MySQL,08/2023
+EXT-001399,SK-001364,ONET_SOFTWARE,2.E.7.b::National Instruments LabVIEW,08/2023
+EXT-001400,SK-001365,ONET_SOFTWARE,2.E.14.b::Network and system vulnerability assessment software,08/2023
+EXT-001401,SK-001366,ONET_SOFTWARE,2.E.10.d::Network directory services software,08/2023
+EXT-001402,SK-001367,ONET_SOFTWARE,2.E.11.a::Network intrusion prevention systems NIPS,08/2023
+EXT-001403,SK-001368,ONET_SOFTWARE,2.E.14.b::Network security auditing software,08/2023
+EXT-001404,SK-001369,ONET_SOFTWARE,"2.E.11.a::Network, hardware, and software auditing software",08/2023
+EXT-001405,SK-001370,ONET_SOFTWARE,2.E.14.d::Norton AntiVirus,08/2023
+EXT-001406,SK-001371,ONET_SOFTWARE,2.E.7.e::Objective C,08/2023
+EXT-001407,SK-001372,ONET_SOFTWARE,2.E.7.c::Oracle Fusion Middleware,08/2023
+EXT-001408,SK-001373,ONET_SOFTWARE,2.E.11.a::Oracle Net Manager,08/2023
+EXT-001409,SK-001374,ONET_SOFTWARE,2.E.14.c::Palo Alto Networks Next-Generation Security Platform,08/2023
+EXT-001410,SK-001375,ONET_SOFTWARE,2.E.14.d::Password cracker software,08/2023
+EXT-001411,SK-001376,ONET_SOFTWARE,2.E.14.a::Password management software,08/2023
+EXT-001412,SK-001377,ONET_SOFTWARE,2.E.7.a::Patch and update management software,08/2023
+EXT-001413,SK-001378,ONET_SOFTWARE,2.E.14.d::Penetration testing software,08/2023
+EXT-001414,SK-001379,ONET_SOFTWARE,2.E.14.d::Ping Identity,08/2023
+EXT-001415,SK-001380,ONET_SOFTWARE,2.E.14.d::Portswigger BurP Suite,08/2023
+EXT-001416,SK-001381,ONET_SOFTWARE,2.E.14.d::Program checksumming software,08/2023
+EXT-001417,SK-001382,ONET_SOFTWARE,2.E.14.e::Qualys Cloud Platform,08/2023
+EXT-001418,SK-001383,ONET_SOFTWARE,2.E.11.a::Quest BigBrother,08/2023
+EXT-001419,SK-001384,ONET_SOFTWARE,2.E.14.d::Rapid7 Nexpose,08/2023
+EXT-001420,SK-001385,ONET_SOFTWARE,2.E.10.a::Red Hat OpenShift,08/2023
+EXT-001421,SK-001386,ONET_SOFTWARE,2.E.14.a::Remote authentication dial-in user service RADIUS software,08/2023
+EXT-001422,SK-001387,ONET_SOFTWARE,2.E.14.d::Root kit detection software,08/2023
+EXT-001423,SK-001388,ONET_SOFTWARE,2.E.14.d::Secure internet filtering software,08/2023
+EXT-001424,SK-001389,ONET_SOFTWARE,2.E.10.b::Secure shell SSH software,08/2023
+EXT-001425,SK-001390,ONET_SOFTWARE,2.E.14.b::Security incident management software,08/2023
+EXT-001426,SK-001391,ONET_SOFTWARE,2.E.14.d::Security risk assessment software,08/2023
+EXT-001427,SK-001392,ONET_SOFTWARE,2.E.9.j::Smart card management software,08/2023
+EXT-001428,SK-001393,ONET_SOFTWARE,2.E.11.a::Sniffer Investigator,08/2023
+EXT-001429,SK-001394,ONET_SOFTWARE,2.E.11.a::Snort,08/2023
+EXT-001430,SK-001395,ONET_SOFTWARE,2.E.14.d::Stack smashing protection SSP software,08/2023
+EXT-001431,SK-001396,ONET_SOFTWARE,2.E.11.a::Symantec Blue Coat Data Loss Prevention,08/2023
+EXT-001432,SK-001397,ONET_SOFTWARE,2.E.14.d::Symantec Endpoint Protection,08/2023
+EXT-001433,SK-001398,ONET_SOFTWARE,2.E.15.f::System and data disaster recovery software,08/2023
+EXT-001434,SK-001399,ONET_SOFTWARE,2.E.7.f::System testing software,08/2023
+EXT-001435,SK-001400,ONET_SOFTWARE,2.E.11.a::Tcpdump,08/2023
+EXT-001436,SK-001401,ONET_SOFTWARE,2.E.14.d::Tenable Nessus,08/2023
+EXT-001437,SK-001402,ONET_SOFTWARE,2.E.14.c::Trend Micro TippingPoint,08/2023
+EXT-001438,SK-001403,ONET_SOFTWARE,2.E.13.c::UNIX Shell,08/2023
+EXT-001439,SK-001404,ONET_SOFTWARE,2.E.14.d::Virus scanning software,08/2023
+EXT-001440,SK-001405,ONET_SOFTWARE,2.E.11.d::Voice over internet protocol VoIP system software,08/2023
+EXT-001441,SK-001406,ONET_SOFTWARE,2.E.14.b::Websense Data Loss Prevention,08/2023
+EXT-001442,SK-001407,ONET_SOFTWARE,2.E.5.c::WinMerge,08/2023
+EXT-001443,SK-001408,ONET_SOFTWARE,2.E.4.b::3D graphics software,08/2023
+EXT-001444,SK-001409,ONET_SOFTWARE,2.E.7.b::Ada,08/2023
+EXT-001445,SK-001410,ONET_SOFTWARE,2.E.9.d::Advanced numerical software,08/2023
+EXT-001446,SK-001411,ONET_SOFTWARE,2.E.9.d::Algorithmic software,08/2023
+EXT-001447,SK-001412,ONET_SOFTWARE,2.E.11.e::Amazon Web Services AWS SageMaker,08/2023
+EXT-001448,SK-001413,ONET_SOFTWARE,2.E.1.o::Apache Airflow,08/2023
+EXT-001449,SK-001414,ONET_SOFTWARE,2.E.6.d::Apache Flume,08/2023
+EXT-001450,SK-001415,ONET_SOFTWARE,2.E.6.f::Apache Hive,08/2023
+EXT-001451,SK-001416,ONET_SOFTWARE,2.E.9.d::Augmint,08/2023
+EXT-001452,SK-001417,ONET_SOFTWARE,2.E.7.b::Automated document generation software,08/2023
+EXT-001453,SK-001418,ONET_SOFTWARE,2.E.9.d::Bidirectional encoder representations from transformers (BERT),08/2023
+EXT-001454,SK-001419,ONET_SOFTWARE,2.E.1.k::Business software applications,08/2023
+EXT-001455,SK-001420,ONET_SOFTWARE,2.E.7.e::Charm++,08/2023
+EXT-001456,SK-001421,ONET_SOFTWARE,2.E.9.g::Chatbot software,08/2023
+EXT-001457,SK-001422,ONET_SOFTWARE,2.E.6.b::Clustermatic,08/2023
+EXT-001458,SK-001423,ONET_SOFTWARE,2.E.7.b::CMake,08/2023
+EXT-001459,SK-001424,ONET_SOFTWARE,2.E.9.d::Computational statistics software,08/2023
+EXT-001460,SK-001425,ONET_SOFTWARE,2.E.9.c::Computer aided design and drafting CADD software,08/2023
+EXT-001461,SK-001426,ONET_SOFTWARE,2.E.9.d::Data visualization software,08/2023
+EXT-001462,SK-001427,ONET_SOFTWARE,2.E.7.b::Doxygen,08/2023
+EXT-001463,SK-001428,ONET_SOFTWARE,2.E.7.e::Eiffel,08/2023
+EXT-001464,SK-001429,ONET_SOFTWARE,2.E.7.b::Embarcadero JBuilder,08/2023
+EXT-001465,SK-001430,ONET_SOFTWARE,2.E.7.h::Extensible stylesheet language transformations XSLT,08/2023
+EXT-001466,SK-001431,ONET_SOFTWARE,2.E.7.b::Formula translation/translator FORTRAN,08/2023
+EXT-001467,SK-001432,ONET_SOFTWARE,2.E.10.a::GitLab,08/2023
+EXT-001468,SK-001433,ONET_SOFTWARE,2.E.7.d::Grafana Labs Grafana Cloud,08/2023
+EXT-001469,SK-001434,ONET_SOFTWARE,2.E.4.b::Graphics pipelines,08/2023
+EXT-001470,SK-001435,ONET_SOFTWARE,2.E.7.i::Greenhills Ada compilers,08/2023
+EXT-001471,SK-001436,ONET_SOFTWARE,2.E.7.b::High-performance software libraries,08/2023
+EXT-001472,SK-001437,ONET_SOFTWARE,2.E.7.b::Hugging Face,08/2023
+EXT-001473,SK-001438,ONET_SOFTWARE,2.E.7.a::IBM Rational Apex,08/2023
+EXT-001474,SK-001439,ONET_SOFTWARE,2.E.7.b::IBM Rational Rose XDE,08/2023
+EXT-001475,SK-001440,ONET_SOFTWARE,2.E.7.a::IBM Terraform,08/2023
+EXT-001476,SK-001441,ONET_SOFTWARE,2.E.7.b::Intel Integrated Performance Primitives,08/2023
+EXT-001477,SK-001442,ONET_SOFTWARE,2.E.9.d::Intel Math Kernel Library,08/2023
+EXT-001478,SK-001443,ONET_SOFTWARE,2.E.7.c::Jenkins CI,08/2023
+EXT-001479,SK-001444,ONET_SOFTWARE,2.E.10.a::Kubernetes,08/2023
+EXT-001480,SK-001445,ONET_SOFTWARE,2.E.7.e::LangChain,08/2023
+EXT-001481,SK-001446,ONET_SOFTWARE,2.E.7.b::List processing language LISP,08/2023
+EXT-001482,SK-001447,ONET_SOFTWARE,2.E.7.i::Low-level virtual machine LLVM compilers,08/2023
+EXT-001483,SK-001448,ONET_SOFTWARE,2.E.9.d::Mathematical software,08/2023
+EXT-001484,SK-001449,ONET_SOFTWARE,2.E.7.e::Microsoft Visual Basic.NET,08/2023
+EXT-001485,SK-001450,ONET_SOFTWARE,2.E.7.e::Microsoft Visual C# .NET,08/2023
+EXT-001486,SK-001451,ONET_SOFTWARE,2.E.7.b::Microsoft Visual Studio.NET,08/2023
+EXT-001487,SK-001452,ONET_SOFTWARE,2.E.13.c::Microsoft Windows XP,08/2023
+EXT-001488,SK-001453,ONET_SOFTWARE,2.E.9.d::Multisensory data representation software,08/2023
+EXT-001489,SK-001454,ONET_SOFTWARE,2.E.7.e::Object oriented development environment software,08/2023
+EXT-001490,SK-001455,ONET_SOFTWARE,2.E.4.b::Open Graphics Library OpenGL,08/2023
+EXT-001491,SK-001456,ONET_SOFTWARE,2.E.7.b::OpenAI ChatGPT,08/2023
+EXT-001492,SK-001457,ONET_SOFTWARE,2.E.9.d::Optimization software,08/2023
+EXT-001493,SK-001458,ONET_SOFTWARE,2.E.6.d::Oracle Database,08/2023
+EXT-001494,SK-001459,ONET_SOFTWARE,2.E.7.b::Oracle Java 2 Platform Enterprise Edition J2EE,08/2023
+EXT-001495,SK-001460,ONET_SOFTWARE,2.E.6.f::pandas,08/2023
+EXT-001496,SK-001461,ONET_SOFTWARE,2.E.6.b::Parallel systems software,08/2023
+EXT-001497,SK-001462,ONET_SOFTWARE,2.E.7.a::Perforce Software Configuration Management System,08/2023
+EXT-001498,SK-001463,ONET_SOFTWARE,2.E.4.g::Plug-in file software,08/2023
+EXT-001499,SK-001464,ONET_SOFTWARE,2.E.7.i::Polaris parallelizing compilers,08/2023
+EXT-001500,SK-001465,ONET_SOFTWARE,2.E.9.d::Polhemus Fasttrack System,08/2023
+EXT-001501,SK-001466,ONET_SOFTWARE,2.E.7.b::Prolog,08/2023
+EXT-001502,SK-001467,ONET_SOFTWARE,2.E.6.f::Prometheus,08/2023
+EXT-001503,SK-001468,ONET_SOFTWARE,2.E.9.c::PTC Creo Parametric,08/2023
+EXT-001504,SK-001469,ONET_SOFTWARE,2.E.6.f::PyTorch,08/2023
+EXT-001505,SK-001470,ONET_SOFTWARE,2.E.6.d::Redis,08/2023
+EXT-001506,SK-001471,ONET_SOFTWARE,2.E.6.d::Relational database management system software,08/2023
+EXT-001507,SK-001472,ONET_SOFTWARE,2.E.9.d::Rice Simulator for ILP Multiprocessors RSIM,08/2023
+EXT-001508,SK-001473,ONET_SOFTWARE,2.E.7.b::Scikit-learn,08/2023
+EXT-001509,SK-001474,ONET_SOFTWARE,2.E.9.d::Simulation software,08/2023
+EXT-001510,SK-001475,ONET_SOFTWARE,2.E.6.g::Snowflake,08/2023
+EXT-001511,SK-001476,ONET_SOFTWARE,2.E.7.b::Software libraries,08/2023
+EXT-001512,SK-001477,ONET_SOFTWARE,2.E.7.b::Source code management SCM software,08/2023
+EXT-001513,SK-001478,ONET_SOFTWARE,2.E.9.d::TensorFlow,08/2023
+EXT-001514,SK-001479,ONET_SOFTWARE,2.E.6.d::Vector database software,08/2023
+EXT-001515,SK-001480,ONET_SOFTWARE,2.E.7.b::Verilog,08/2023
+EXT-001516,SK-001481,ONET_SOFTWARE,2.E.4.c::Video editing software,08/2023
+EXT-001517,SK-001482,ONET_SOFTWARE,2.E.13.c::VME PowerPC VxWorks,08/2023
+EXT-001518,SK-001483,ONET_SOFTWARE,2.E.7.d::Waikato Environment for Knowledge Analysis Weka,08/2023
+EXT-001519,SK-001484,ONET_SOFTWARE,2.E.7.b::A programming language APL,08/2023
+EXT-001520,SK-001485,ONET_SOFTWARE,2.E.7.b::ABC Compiler,08/2023
+EXT-001521,SK-001486,ONET_SOFTWARE,2.E.7.e::ABC: the AspectBench Compiler for AspectJ,08/2023
+EXT-001522,SK-001487,ONET_SOFTWARE,2.E.6.f::ADO.NET,08/2023
+EXT-001523,SK-001488,ONET_SOFTWARE,2.E.7.h::Adobe Flex,08/2023
+EXT-001524,SK-001489,ONET_SOFTWARE,2.E.7.b::Algorithmic language ALGOL,08/2023
+EXT-001525,SK-001490,ONET_SOFTWARE,2.E.7.h::Allaire ColdFusion,08/2023
+EXT-001526,SK-001491,ONET_SOFTWARE,2.E.6.d::Amazon Kinesis,08/2023
+EXT-001527,SK-001492,ONET_SOFTWARE,2.E.7.b::American National Standards Institute ANSI C,08/2023
+EXT-001528,SK-001493,ONET_SOFTWARE,2.E.6.h::Apache Avro,08/2023
+EXT-001529,SK-001494,ONET_SOFTWARE,2.E.6.d::Apache HBase,08/2023
+EXT-001530,SK-001495,ONET_SOFTWARE,2.E.6.d::Apache Oozie,08/2023
+EXT-001531,SK-001496,ONET_SOFTWARE,2.E.7.e::Apache Spark,08/2023
+EXT-001532,SK-001497,ONET_SOFTWARE,2.E.13.c::Apple iOS,08/2023
+EXT-001533,SK-001498,ONET_SOFTWARE,2.E.10.a::Atlassian Bitbucket,08/2023
+EXT-001534,SK-001499,ONET_SOFTWARE,2.E.7.b::AWK,08/2023
+EXT-001535,SK-001500,ONET_SOFTWARE,2.E.7.b::B-Method,08/2023
+EXT-001536,SK-001501,ONET_SOFTWARE,2.E.7.b::Beginner's all-purpose symbolic instruction code BASIC,08/2023
+EXT-001537,SK-001502,ONET_SOFTWARE,2.E.7.b::Bigloo Scheme,08/2023
+EXT-001538,SK-001503,ONET_SOFTWARE,2.E.7.h::Bootstrap,08/2023
+EXT-001539,SK-001504,ONET_SOFTWARE,2.E.7.b::Call-processing language CPL,08/2023
+EXT-001540,SK-001505,ONET_SOFTWARE,2.E.7.b::Canu,08/2023
+EXT-001541,SK-001506,ONET_SOFTWARE,2.E.13.c::Cisco IOS,08/2023
+EXT-001542,SK-001507,ONET_SOFTWARE,2.E.7.e::Collaborative Application Markup Language CAML,08/2023
+EXT-001543,SK-001508,ONET_SOFTWARE,2.E.7.e::Common Lisp Object System CLOS,08/2023
+EXT-001544,SK-001509,ONET_SOFTWARE,2.E.7.e::Component object model COM software,08/2023
+EXT-001545,SK-001510,ONET_SOFTWARE,2.E.7.e::Component-based Scalable Logical Architecture CSLA,08/2023
+EXT-001546,SK-001511,ONET_SOFTWARE,2.E.6.d::Computer Associates integrated data management system CA-IDMS,08/2023
+EXT-001547,SK-001512,ONET_SOFTWARE,2.E.7.b::Computer On-line Real-time Applications Language CORAL 66,08/2023
+EXT-001548,SK-001513,ONET_SOFTWARE,2.E.9.d::Data analysis software,08/2023
+EXT-001549,SK-001514,ONET_SOFTWARE,2.E.6.d::Data definition language DDL,08/2023
+EXT-001550,SK-001515,ONET_SOFTWARE,2.E.6.d::Data manipulation language DML,08/2023
+EXT-001551,SK-001516,ONET_SOFTWARE,2.E.6.e::DataVision,08/2023
+EXT-001552,SK-001517,ONET_SOFTWARE,2.E.7.f::Defect tracking software,08/2023
+EXT-001553,SK-001518,ONET_SOFTWARE,2.E.7.a::Deployment software,08/2023
+EXT-001554,SK-001519,ONET_SOFTWARE,2.E.13.c::Disk operating system DOS,08/2023
+EXT-001555,SK-001520,ONET_SOFTWARE,2.E.7.e::Distributed component object model DCOM software,08/2023
+EXT-001556,SK-001521,ONET_SOFTWARE,2.E.6.d::Distributed database management software,08/2023
+EXT-001557,SK-001522,ONET_SOFTWARE,2.E.7.e::Document Object Model DOM Scripting,08/2023
+EXT-001558,SK-001523,ONET_SOFTWARE,2.E.7.f::Dynamic analysis software,08/2023
+EXT-001559,SK-001524,ONET_SOFTWARE,2.E.9.d::Dynamic modeling software,08/2023
+EXT-001560,SK-001525,ONET_SOFTWARE,2.E.7.e::E++ pattern language,08/2023
+EXT-001561,SK-001526,ONET_SOFTWARE,2.E.7.h::Eclipse Jersey,08/2023
+EXT-001562,SK-001527,ONET_SOFTWARE,2.E.7.e::Embarcadero Delphi,08/2023
+EXT-001563,SK-001528,ONET_SOFTWARE,2.E.7.b::Embedded systems development software,08/2023
+EXT-001564,SK-001529,ONET_SOFTWARE,2.E.5.a::Emerald Software Group Emerald Green Office,08/2023
+EXT-001565,SK-001530,ONET_SOFTWARE,2.E.14.d::Encryption software,08/2023
+EXT-001566,SK-001531,ONET_SOFTWARE,2.E.7.c::Enterprise application integration EAI software,08/2023
+EXT-001567,SK-001532,ONET_SOFTWARE,2.E.16.e::ESRI ArcGIS software,08/2023
+EXT-001568,SK-001533,ONET_SOFTWARE,2.E.7.b::Event-driven State-machines Programming,08/2023
+EXT-001569,SK-001534,ONET_SOFTWARE,2.E.7.f::Fault testing software,08/2023
+EXT-001570,SK-001535,ONET_SOFTWARE,2.E.13.a::File server software,08/2023
+EXT-001571,SK-001536,ONET_SOFTWARE,2.E.7.b::Forth,08/2023
+EXT-001572,SK-001537,ONET_SOFTWARE,2.E.7.f::Functional testing software,08/2023
+EXT-001573,SK-001538,ONET_SOFTWARE,2.E.7.b::Gambit Scheme,08/2023
+EXT-001574,SK-001539,ONET_SOFTWARE,2.E.4.b::GNU Image Manipulation Program GIMP,08/2023
+EXT-001575,SK-001540,ONET_SOFTWARE,2.E.13.c::Google Android,08/2023
+EXT-001576,SK-001541,ONET_SOFTWARE,2.E.11.e::Google Cloud software,08/2023
+EXT-001577,SK-001542,ONET_SOFTWARE,2.E.4.i::Google Sheets,08/2023
+EXT-001578,SK-001543,ONET_SOFTWARE,2.E.7.e::Gradle,08/2023
+EXT-001579,SK-001544,ONET_SOFTWARE,2.E.7.d::Graphical user interface GUI builder software,08/2023
+EXT-001580,SK-001545,ONET_SOFTWARE,2.E.7.d::Graphical user interface GUI design software,08/2023
+EXT-001581,SK-001546,ONET_SOFTWARE,2.E.6.f::GraphQL,08/2023
+EXT-001582,SK-001547,ONET_SOFTWARE,2.E.16.d::GroupMe,08/2023
+EXT-001583,SK-001548,ONET_SOFTWARE,2.E.7.b::Haskell,08/2023
+EXT-001584,SK-001549,ONET_SOFTWARE,2.E.13.c::IBM AIX,08/2023
+EXT-001585,SK-001550,ONET_SOFTWARE,2.E.6.f::IBM DB2,08/2023
+EXT-001586,SK-001551,ONET_SOFTWARE,2.E.6.l::IBM Middleware,08/2023
+EXT-001587,SK-001552,ONET_SOFTWARE,2.E.7.a::IBM Rational ClearCase,08/2023
+EXT-001588,SK-001553,ONET_SOFTWARE,2.E.7.b::IBM Rational ClearQuest,08/2023
+EXT-001589,SK-001554,ONET_SOFTWARE,2.E.7.f::IBM Rational PurifyPlus,08/2023
+EXT-001590,SK-001555,ONET_SOFTWARE,2.E.11.e::IBM WebSphere MQ,08/2023
+EXT-001591,SK-001556,ONET_SOFTWARE,2.E.13.b::IBM z/OS operating systems,08/2023
+EXT-001592,SK-001557,ONET_SOFTWARE,2.E.7.b::ICON programming language,08/2023
+EXT-001593,SK-001558,ONET_SOFTWARE,2.E.6.f::IEA Software Emerald,08/2023
+EXT-001594,SK-001559,ONET_SOFTWARE,2.E.6.i::Informatica software,08/2023
+EXT-001595,SK-001560,ONET_SOFTWARE,2.E.7.f::Integration testing software,08/2023
+EXT-001596,SK-001561,ONET_SOFTWARE,2.E.7.b::Interface definition language IDL,08/2023
+EXT-001597,SK-001562,ONET_SOFTWARE,2.E.7.f::Interoperability testing software,08/2023
+EXT-001598,SK-001563,ONET_SOFTWARE,2.E.7.b::Interstate connection ICON,08/2023
+EXT-001599,SK-001564,ONET_SOFTWARE,2.E.7.b::J,08/2023
+EXT-001600,SK-001565,ONET_SOFTWARE,2.E.7.h::JavaScript framework software,08/2023
+EXT-001601,SK-001566,ONET_SOFTWARE,2.E.7.b::JFrog Artifactory,08/2023
+EXT-001602,SK-001567,ONET_SOFTWARE,2.E.7.b::Kotlin,08/2023
+EXT-001603,SK-001568,ONET_SOFTWARE,2.E.1.k::LibreOffice,08/2023
+EXT-001604,SK-001569,ONET_SOFTWARE,2.E.7.f::Load testing software,08/2023
+EXT-001605,SK-001570,ONET_SOFTWARE,2.E.13.c::Magellan Firmware,08/2023
+EXT-001606,SK-001571,ONET_SOFTWARE,2.E.2.b::Management information systems MIS,08/2023
+EXT-001607,SK-001572,ONET_SOFTWARE,2.E.9.d::MathWorks Simulink,08/2023
+EXT-001608,SK-001573,ONET_SOFTWARE,2.E.10.a::Microservices Architecture,08/2023
+EXT-001609,SK-001574,ONET_SOFTWARE,2.E.7.b::Microsoft Azure DevOps Services,08/2023
+EXT-001610,SK-001575,ONET_SOFTWARE,2.E.15.c::Microsoft DirectX,08/2023
+EXT-001611,SK-001576,ONET_SOFTWARE,2.E.7.b::Microsoft ESP SDK,08/2023
+EXT-001612,SK-001577,ONET_SOFTWARE,2.E.6.l::Microsoft Internet Information Services (IIS),08/2023
+EXT-001613,SK-001578,ONET_SOFTWARE,2.E.7.c::Microsoft Power Automate,08/2023
+EXT-001614,SK-001579,ONET_SOFTWARE,2.E.7.c::Microsoft Power Platform software,08/2023
+EXT-001615,SK-001580,ONET_SOFTWARE,2.E.6.d::Microsoft transact-structural query language T-SQL,08/2023
+EXT-001616,SK-001581,ONET_SOFTWARE,2.E.12.m::Migration software,08/2023
+EXT-001617,SK-001582,ONET_SOFTWARE,2.E.7.f::Migration testing software,08/2023
+EXT-001618,SK-001583,ONET_SOFTWARE,2.E.7.e::Modula,08/2023
+EXT-001619,SK-001584,ONET_SOFTWARE,2.E.8.b::Moodle,08/2023
+EXT-001620,SK-001585,ONET_SOFTWARE,2.E.7.c::MuleSoft software,08/2023
+EXT-001621,SK-001586,ONET_SOFTWARE,2.E.7.b::MUMPS M,08/2023
+EXT-001622,SK-001587,ONET_SOFTWARE,2.E.7.f::Mutation testing software,08/2023
+EXT-001623,SK-001588,ONET_SOFTWARE,2.E.7.e::Oberon,08/2023
+EXT-001624,SK-001589,ONET_SOFTWARE,2.E.6.l::Object Management Group Object Request Broker,08/2023
+EXT-001625,SK-001590,ONET_SOFTWARE,2.E.7.e::Objective Caml,08/2023
+EXT-001626,SK-001591,ONET_SOFTWARE,2.E.13.c::Operating system shells,08/2023
+EXT-001627,SK-001592,ONET_SOFTWARE,2.E.10.a::Oracle Application Server,08/2023
+EXT-001628,SK-001593,ONET_SOFTWARE,2.E.6.e::Oracle Business Intelligence Discoverer,08/2023
+EXT-001629,SK-001594,ONET_SOFTWARE,2.E.6.e::Oracle Business Intelligence Suite,08/2023
+EXT-001630,SK-001595,ONET_SOFTWARE,2.E.11.e::Oracle Cloud software,08/2023
+EXT-001631,SK-001596,ONET_SOFTWARE,2.E.7.e::Oracle Java Message Service JMS,08/2023
+EXT-001632,SK-001597,ONET_SOFTWARE,2.E.6.e::Oracle Reports,08/2023
+EXT-001633,SK-001598,ONET_SOFTWARE,2.E.7.b::Oracle SQL Developer,08/2023
+EXT-001634,SK-001599,ONET_SOFTWARE,2.E.7.b::Pascal,08/2023
+EXT-001635,SK-001600,ONET_SOFTWARE,2.E.7.a::Patch management software,08/2023
+EXT-001636,SK-001601,ONET_SOFTWARE,2.E.16.i::Platform as a service PaaS,08/2023
+EXT-001637,SK-001602,ONET_SOFTWARE,2.E.7.b::Programming language one PL/I,08/2023
+EXT-001638,SK-001603,ONET_SOFTWARE,2.E.12.a::PuTTY,08/2023
+EXT-001639,SK-001604,ONET_SOFTWARE,2.E.13.c::QNX,08/2023
+EXT-001640,SK-001605,ONET_SOFTWARE,2.E.7.e::RabbitMQ,08/2023
+EXT-001641,SK-001606,ONET_SOFTWARE,2.E.7.h::React,08/2023
+EXT-001642,SK-001607,ONET_SOFTWARE,2.E.7.h::React Native,08/2023
+EXT-001643,SK-001608,ONET_SOFTWARE,2.E.7.h::React Redux,08/2023
+EXT-001644,SK-001609,ONET_SOFTWARE,2.E.13.c::Real time operating system RTOS software,08/2023
+EXT-001645,SK-001610,ONET_SOFTWARE,2.E.7.f::Recovery testing software,08/2023
+EXT-001646,SK-001611,ONET_SOFTWARE,2.E.7.a::Red Hat Ansible Engine,08/2023
+EXT-001647,SK-001612,ONET_SOFTWARE,2.E.7.f::Regression testing software,08/2023
+EXT-001648,SK-001613,ONET_SOFTWARE,2.E.7.g::Requirements management software,08/2023
+EXT-001649,SK-001614,ONET_SOFTWARE,2.E.7.h::RESTful API,08/2023
+EXT-001650,SK-001615,ONET_SOFTWARE,2.E.7.b::Restructured extended executor REXX,08/2023
+EXT-001651,SK-001616,ONET_SOFTWARE,2.E.6.d::SAP Adaptive Server Enterprise,08/2023
+EXT-001652,SK-001617,ONET_SOFTWARE,2.E.6.e::SAP Business Intelligence,08/2023
+EXT-001653,SK-001618,ONET_SOFTWARE,2.E.2.b::SAP ERP,08/2023
+EXT-001654,SK-001619,ONET_SOFTWARE,2.E.7.c::SAP NetWeaver,08/2023
+EXT-001655,SK-001620,ONET_SOFTWARE,2.E.7.e::SAP PowerBuilder,08/2023
+EXT-001656,SK-001621,ONET_SOFTWARE,2.E.7.b::Scheme,08/2023
+EXT-001657,SK-001622,ONET_SOFTWARE,2.E.7.f::Security testing software,08/2023
+EXT-001658,SK-001623,ONET_SOFTWARE,2.E.6.f::ServiceNow,08/2023
+EXT-001659,SK-001624,ONET_SOFTWARE,2.E.7.e::Simple API for XML SAX,08/2023
+EXT-001660,SK-001625,ONET_SOFTWARE,2.E.9.d::Simulation program with integrated circuit emphasis SPICE,08/2023
+EXT-001661,SK-001626,ONET_SOFTWARE,2.E.14.a::Single sign-on SSO,08/2023
+EXT-001662,SK-001627,ONET_SOFTWARE,2.E.7.e::Smalltalk,08/2023
+EXT-001663,SK-001628,ONET_SOFTWARE,2.E.7.b::Software development tools,08/2023
+EXT-001664,SK-001629,ONET_SOFTWARE,2.E.11.c::Software distribution management software,08/2023
+EXT-001665,SK-001630,ONET_SOFTWARE,2.E.7.f::SonarQube,08/2023
+EXT-001666,SK-001631,ONET_SOFTWARE,2.E.7.f::Source code editor software,08/2023
+EXT-001667,SK-001632,ONET_SOFTWARE,2.E.10.a::Spring Boot,08/2023
+EXT-001668,SK-001633,ONET_SOFTWARE,2.E.7.f::Static analysis software,08/2023
+EXT-001669,SK-001634,ONET_SOFTWARE,2.E.12.f::Storage area network SAN software,08/2023
+EXT-001670,SK-001635,ONET_SOFTWARE,2.E.7.f::Stress testing software,08/2023
+EXT-001671,SK-001636,ONET_SOFTWARE,2.E.7.b::String oriented symbolic language SNOBOL,08/2023
+EXT-001672,SK-001637,ONET_SOFTWARE,2.E.6.d::Structured Query Report SQR,08/2023
+EXT-001673,SK-001638,ONET_SOFTWARE,2.E.7.e::Sun Microsystems Java Persistence API,08/2023
+EXT-001674,SK-001639,ONET_SOFTWARE,2.E.7.b::Symantec Visual Cafe,08/2023
+EXT-001675,SK-001640,ONET_SOFTWARE,2.E.6.d::Talend Big Data Integration,08/2023
+EXT-001676,SK-001641,ONET_SOFTWARE,2.E.6.i::Talend Data Fabric,08/2023
+EXT-001677,SK-001642,ONET_SOFTWARE,2.E.7.f::Test design software,08/2023
+EXT-001678,SK-001643,ONET_SOFTWARE,2.E.7.f::Test implementation software,08/2023
+EXT-001679,SK-001644,ONET_SOFTWARE,2.E.7.e::TypeScript,08/2023
+EXT-001680,SK-001645,ONET_SOFTWARE,2.E.7.f::Unit testing software,08/2023
+EXT-001681,SK-001646,ONET_SOFTWARE,2.E.7.f::Usability testing software,08/2023
+EXT-001682,SK-001647,ONET_SOFTWARE,2.E.5.c::Version control software,08/2023
+EXT-001683,SK-001648,ONET_SOFTWARE,2.E.7.a::Visible Razor,08/2023
+EXT-001684,SK-001649,ONET_SOFTWARE,2.E.7.h::Vue.js,08/2023
+EXT-001685,SK-001650,ONET_SOFTWARE,2.E.7.b::Web application software,08/2023
+EXT-001686,SK-001651,ONET_SOFTWARE,2.E.6.l::Web server software,08/2023
+EXT-001687,SK-001652,ONET_SOFTWARE,2.E.7.b::Web service definition language WDSL,08/2023
+EXT-001688,SK-001653,ONET_SOFTWARE,2.E.13.c::Win CE,08/2023
+EXT-001689,SK-001654,ONET_SOFTWARE,2.E.13.c::Wind River VxWorks,08/2023
+EXT-001690,SK-001655,ONET_SOFTWARE,2.E.7.b::Xcode,08/2023
+EXT-001691,SK-001656,ONET_SOFTWARE,2.E.7.b::XML Path Language XPATH,08/2023
+EXT-001692,SK-001657,ONET_SOFTWARE,2.E.7.e::Acresso InstallAnywhere,08/2023
+EXT-001693,SK-001658,ONET_SOFTWARE,2.E.6.d::Amazon Data Pipeline,08/2023
+EXT-001694,SK-001659,ONET_SOFTWARE,2.E.14.d::Antivirus software,08/2023
+EXT-001695,SK-001660,ONET_SOFTWARE,2.E.7.e::Apache JMeter,08/2023
+EXT-001696,SK-001661,ONET_SOFTWARE,2.E.6.d::Apache Sqoop,08/2023
+EXT-001697,SK-001662,ONET_SOFTWARE,2.E.7.b::Apache Subversion SVN,08/2023
+EXT-001698,SK-001663,ONET_SOFTWARE,2.E.7.f::Appium,08/2023
+EXT-001699,SK-001664,ONET_SOFTWARE,2.E.7.e::Apple Cocoa,08/2023
+EXT-001700,SK-001665,ONET_SOFTWARE,2.E.10.e::Apple Safari,08/2023
+EXT-001701,SK-001666,ONET_SOFTWARE,2.E.1.e::Atlassian JIRA,08/2023
+EXT-001702,SK-001667,ONET_SOFTWARE,2.E.9.c::Autodesk AutoCAD,08/2023
+EXT-001703,SK-001668,ONET_SOFTWARE,2.E.9.c::Bentley MicroStation,08/2023
+EXT-001704,SK-001669,ONET_SOFTWARE,2.E.7.f::Borland SilkTest,08/2023
+EXT-001705,SK-001670,ONET_SOFTWARE,2.E.7.f::Bugzilla,08/2023
+EXT-001706,SK-001671,ONET_SOFTWARE,2.E.7.b::CruiseControl,08/2023
+EXT-001707,SK-001672,ONET_SOFTWARE,2.E.9.c::Dassault Systemes CATIA,08/2023
+EXT-001708,SK-001673,ONET_SOFTWARE,2.E.7.f::Debugview,08/2023
+EXT-001709,SK-001674,ONET_SOFTWARE,2.E.7.f::ej-technologies JProfiler,08/2023
+EXT-001710,SK-001675,ONET_SOFTWARE,2.E.7.f::FileMon,08/2023
+EXT-001711,SK-001676,ONET_SOFTWARE,2.E.7.f::FitNesse,08/2023
+EXT-001712,SK-001677,ONET_SOFTWARE,2.E.7.f::Hewlett-Packard HP QuickTest Professional,08/2023
+EXT-001713,SK-001678,ONET_SOFTWARE,2.E.7.f::Hewlett-Packard HP TestDirector for Quality Center,08/2023
+EXT-001714,SK-001679,ONET_SOFTWARE,2.E.7.f::Hewlett-Packard HP WinRunner,08/2023
+EXT-001715,SK-001680,ONET_SOFTWARE,2.E.7.f::IBM Rational Robot,08/2023
+EXT-001716,SK-001681,ONET_SOFTWARE,2.E.7.b::JetBrains IntelliJ IDEA,08/2023
+EXT-001717,SK-001682,ONET_SOFTWARE,2.E.7.f::Microsoft Playwright,08/2023
+EXT-001718,SK-001683,ONET_SOFTWARE,2.E.7.b::Microsoft Visual SourceSafe,08/2023
+EXT-001719,SK-001684,ONET_SOFTWARE,2.E.7.b::Microsoft Windows SDK,08/2023
+EXT-001720,SK-001685,ONET_SOFTWARE,2.E.10.e::Mozilla Firefox,08/2023
+EXT-001721,SK-001686,ONET_SOFTWARE,2.E.14.c::Network intrusion detection software,08/2023
+EXT-001722,SK-001687,ONET_SOFTWARE,2.E.7.f::NUnit,08/2023
+EXT-001723,SK-001688,ONET_SOFTWARE,2.E.13.c::Postman,08/2023
+EXT-001724,SK-001689,ONET_SOFTWARE,2.E.7.f::RegMon,08/2023
+EXT-001725,SK-001690,ONET_SOFTWARE,2.E.7.f::REST Assured,08/2023
+EXT-001726,SK-001691,ONET_SOFTWARE,2.E.7.a::Revision control software,08/2023
+EXT-001727,SK-001692,ONET_SOFTWARE,2.E.7.f::SmartBear Software AutomatedQA TestComplete,08/2023
+EXT-001728,SK-001693,ONET_SOFTWARE,2.E.7.f::TestNG,08/2023
+EXT-001729,SK-001694,ONET_SOFTWARE,2.E.5.a::Twiki,08/2023
+EXT-001730,SK-001695,ONET_SOFTWARE,2.E.10.a::VMWare ESX Server,08/2023
+EXT-001731,SK-001696,ONET_SOFTWARE,2.E.13.c::VMWare Workstation,08/2023
+EXT-001732,SK-001697,ONET_SOFTWARE,2.E.7.f::Watir,08/2023
+EXT-001733,SK-001698,ONET_SOFTWARE,2.E.13.c::Wind River Systems VxWorks,08/2023
+EXT-001734,SK-001699,ONET_SOFTWARE,2.E.5.a::Workflow software,08/2023
+EXT-001735,SK-001700,ONET_SOFTWARE,2.E.7.f::YourKit Java Profiler,08/2023
+EXT-001736,SK-001701,ONET_SOFTWARE,2.E.16.d::Atlassian HipChat,08/2023
+EXT-001737,SK-001702,ONET_SOFTWARE,2.E.7.c::Common gateway interface CGI,08/2023
+EXT-001738,SK-001703,ONET_SOFTWARE,2.E.7.c::Extensible stylesheet language XSL,08/2023
+EXT-001739,SK-001704,ONET_SOFTWARE,2.E.7.h::FlexBox,08/2023
+EXT-001740,SK-001705,ONET_SOFTWARE,2.E.7.h::HashiCorp Vagrant,08/2023
+EXT-001741,SK-001706,ONET_SOFTWARE,2.E.6.f::IBM Informix,08/2023
+EXT-001742,SK-001707,ONET_SOFTWARE,2.E.1.p::InVision software,08/2023
+EXT-001743,SK-001708,ONET_SOFTWARE,2.E.7.h::Jekyll,08/2023
+EXT-001744,SK-001709,ONET_SOFTWARE,2.E.7.f::Jest,08/2023
+EXT-001745,SK-001710,ONET_SOFTWARE,2.E.7.h::JetBrains PhpStorm,08/2023
+EXT-001746,SK-001711,ONET_SOFTWARE,2.E.6.f::MarkLogic,08/2023
+EXT-001747,SK-001712,ONET_SOFTWARE,2.E.7.h::MeteorJS,08/2023
+EXT-001748,SK-001713,ONET_SOFTWARE,2.E.7.h::Microsoft Commerce Server,08/2023
+EXT-001749,SK-001714,ONET_SOFTWARE,2.E.7.h::Microsoft Visual InterDev,08/2023
+EXT-001750,SK-001715,ONET_SOFTWARE,2.E.7.h::Nunjucks,08/2023
+EXT-001751,SK-001716,ONET_SOFTWARE,2.E.7.h::PhantomJS,08/2023
+EXT-001752,SK-001717,ONET_SOFTWARE,2.E.7.h::RequireJS,08/2023
+EXT-001753,SK-001718,ONET_SOFTWARE,2.E.5.a::Sitecore CMS,08/2023
+EXT-001754,SK-001719,ONET_SOFTWARE,2.E.7.h::Syntactically awesome style sheets SASS,08/2023
+EXT-001755,SK-001720,ONET_SOFTWARE,2.E.7.f::Travis,08/2023
+EXT-001756,SK-001721,ONET_SOFTWARE,2.E.4.g::Web content management system CMS software,08/2023
+EXT-001757,SK-001722,ONET_SOFTWARE,2.E.7.h::webpack,08/2023
+EXT-001758,SK-001723,ONET_SOFTWARE,2.E.7.h::Zend Framework,08/2023
+EXT-001759,SK-001724,ONET_SOFTWARE,2.E.1.e::24SevenOffice Project,08/2023
+EXT-001760,SK-001725,ONET_SOFTWARE,2.E.1.e::Actano Rplan,08/2023
+EXT-001761,SK-001726,ONET_SOFTWARE,2.E.1.e::AEC Software FastTrack Schedule,08/2023
+EXT-001762,SK-001727,ONET_SOFTWARE,2.E.1.e::AMS REALTIME Projects,08/2023
+EXT-001763,SK-001728,ONET_SOFTWARE,2.E.7.b::AnthillPro,08/2023
+EXT-001764,SK-001729,ONET_SOFTWARE,2.E.7.b::Apache Continuum,08/2023
+EXT-001765,SK-001730,ONET_SOFTWARE,2.E.7.b::Apache Gump,08/2023
+EXT-001766,SK-001731,ONET_SOFTWARE,2.E.1.e::Ascensio Systems TeamLab,08/2023
+EXT-001767,SK-001732,ONET_SOFTWARE,2.E.1.e::Assembla,08/2023
+EXT-001768,SK-001733,ONET_SOFTWARE,2.E.1.e::AtTask,08/2023
+EXT-001769,SK-001734,ONET_SOFTWARE,2.E.9.c::Autodesk Revit,08/2023
+EXT-001770,SK-001735,ONET_SOFTWARE,2.E.1.e::Automation Centre TrackerSuite.Net,08/2023
+EXT-001771,SK-001736,ONET_SOFTWARE,2.E.1.e::Basecamp,08/2023
+EXT-001772,SK-001737,ONET_SOFTWARE,2.E.8.b::Blackboard software,08/2023
+EXT-001773,SK-001738,ONET_SOFTWARE,2.E.1.e::BrightWork pmPoint,08/2023
+EXT-001774,SK-001739,ONET_SOFTWARE,2.E.1.e::CA Technologies CA Clarity PPM for IT Governance,08/2023
+EXT-001775,SK-001740,ONET_SOFTWARE,2.E.6.f::Canonical Launchpad,08/2023
+EXT-001776,SK-001741,ONET_SOFTWARE,2.E.1.e::Central Desktop,08/2023
+EXT-001777,SK-001742,ONET_SOFTWARE,2.E.2.b::Clarity Systems IBM Clarity,08/2023
+EXT-001778,SK-001743,ONET_SOFTWARE,2.E.1.e::Clarizen,08/2023
+EXT-001779,SK-001744,ONET_SOFTWARE,2.E.10.a::Code hosting software,08/2023
+EXT-001780,SK-001745,ONET_SOFTWARE,2.E.2.b::Collaborative application lifecycle management ALM software,08/2023
+EXT-001781,SK-001746,ONET_SOFTWARE,2.E.5.c::Continuous integration software,08/2023
+EXT-001782,SK-001747,ONET_SOFTWARE,2.E.1.e::Countersoft Gemini,08/2023
+EXT-001783,SK-001748,ONET_SOFTWARE,2.E.1.e::CS Odessa ConceptDraw Project,08/2023
+EXT-001784,SK-001749,ONET_SOFTWARE,2.E.6.f::Daptiv PPM,08/2023
+EXT-001785,SK-001750,ONET_SOFTWARE,2.E.1.e::Digital Crew Teamwork Project Manager,08/2023
+EXT-001786,SK-001751,ONET_SOFTWARE,2.E.1.e::Disarea 5pm,08/2023
+EXT-001787,SK-001752,ONET_SOFTWARE,2.E.1.e::dotProject,08/2023
+EXT-001788,SK-001753,ONET_SOFTWARE,2.E.7.b::easyCIS,08/2023
+EXT-001789,SK-001754,ONET_SOFTWARE,2.E.6.f::Edgewell Trac,08/2023
+EXT-001790,SK-001755,ONET_SOFTWARE,2.E.8.b::Edulastic,08/2023
+EXT-001791,SK-001756,ONET_SOFTWARE,2.E.7.b::ElectricCloud ElectricCommander,08/2023
+EXT-001792,SK-001757,ONET_SOFTWARE,2.E.1.e::Element Software Copper,08/2023
+EXT-001793,SK-001758,ONET_SOFTWARE,2.E.1.e::Endeavour Agile ALM,08/2023
+EXT-001794,SK-001759,ONET_SOFTWARE,2.E.1.e::Experience in Software Project KickStart,08/2023
+EXT-001795,SK-001760,ONET_SOFTWARE,2.E.6.f::Feng Office Collaboration Platform,08/2023
+EXT-001796,SK-001761,ONET_SOFTWARE,2.E.7.b::FinalBuilder,08/2023
+EXT-001797,SK-001762,ONET_SOFTWARE,2.E.7.b::Fog Creek Software FogBugz,08/2023
+EXT-001798,SK-001763,ONET_SOFTWARE,2.E.1.e::Forum One Communications ProjectSpaces,08/2023
+EXT-001799,SK-001764,ONET_SOFTWARE,2.E.1.e::GanttProject,08/2023
+EXT-001800,SK-001765,ONET_SOFTWARE,2.E.16.i::Glasscubes,08/2023
+EXT-001801,SK-001766,ONET_SOFTWARE,2.E.6.f::Hewlett Packard HP Project Portfolio Management Solution,08/2023
+EXT-001802,SK-001767,ONET_SOFTWARE,2.E.1.e::HyperOffice Collaboration Suite,08/2023
+EXT-001803,SK-001768,ONET_SOFTWARE,2.E.1.e::i-lign,08/2023
+EXT-001804,SK-001769,ONET_SOFTWARE,2.E.7.b::IBM Rational Build Forge,08/2023
+EXT-001805,SK-001770,ONET_SOFTWARE,2.E.7.a::IBM Software Configuration and Library Manager SCLM,08/2023
+EXT-001806,SK-001771,ONET_SOFTWARE,2.E.1.e::InLoox,08/2023
+EXT-001807,SK-001772,ONET_SOFTWARE,2.E.1.e::Intellisys Project Desktop,08/2023
+EXT-001808,SK-001773,ONET_SOFTWARE,2.E.1.e::Intland Software codeBeamer,08/2023
+EXT-001809,SK-001774,ONET_SOFTWARE,2.E.6.f::Issue tracking system software,08/2023
+EXT-001810,SK-001775,ONET_SOFTWARE,2.E.7.b::JetBrains Team City,08/2023
+EXT-001811,SK-001776,ONET_SOFTWARE,2.E.17.a::Kforge,08/2023
+EXT-001812,SK-001777,ONET_SOFTWARE,2.E.1.e::Kidasa Milestones Professional,08/2023
+EXT-001813,SK-001778,ONET_SOFTWARE,2.E.1.e::KOffice.org Kplato,08/2023
+EXT-001814,SK-001779,ONET_SOFTWARE,2.E.1.e::KommandCore,08/2023
+EXT-001815,SK-001780,ONET_SOFTWARE,2.E.1.e::LiquidPlanner,08/2023
+EXT-001816,SK-001781,ONET_SOFTWARE,2.E.1.e::Logic Software Easy Projects.NET,08/2023
+EXT-001817,SK-001782,ONET_SOFTWARE,2.E.7.b::LuntBuild,08/2023
+EXT-001818,SK-001783,ONET_SOFTWARE,2.E.1.e::Madrigal Soft Tools Delegator,08/2023
+EXT-001819,SK-001784,ONET_SOFTWARE,2.E.6.f::MantisBT,08/2023
+EXT-001820,SK-001785,ONET_SOFTWARE,2.E.4.a::MatchWare MindView,08/2023
+EXT-001821,SK-001786,ONET_SOFTWARE,2.E.7.b::Microsoft Team Foundation Server,08/2023
+EXT-001822,SK-001787,ONET_SOFTWARE,2.E.4.a::Mind mapping software,08/2023
+EXT-001823,SK-001788,ONET_SOFTWARE,2.E.4.a::MindGenius,08/2023
+EXT-001824,SK-001789,ONET_SOFTWARE,2.E.1.e::MinuteMan Systems MinuteMan Project Management Software,08/2023
+EXT-001825,SK-001790,ONET_SOFTWARE,2.E.4.a::MPI Micro Planner X-Pert,08/2023
+EXT-001826,SK-001791,ONET_SOFTWARE,2.E.1.e::Ninian Huddle,08/2023
+EXT-001827,SK-001792,ONET_SOFTWARE,2.E.4.a::NovaMind Merlin Project Manager,08/2023
+EXT-001828,SK-001793,ONET_SOFTWARE,2.E.5.b::O3spaces Workplace,08/2023
+EXT-001829,SK-001794,ONET_SOFTWARE,2.E.6.f::Objective Decision Contactizer Pro,08/2023
+EXT-001830,SK-001795,ONET_SOFTWARE,2.E.1.e::OfficeWork Software TurboProject,08/2023
+EXT-001831,SK-001796,ONET_SOFTWARE,2.E.1.e::Open Dynamics Collabtive,08/2023
+EXT-001832,SK-001797,ONET_SOFTWARE,2.E.7.b::OpenMake Software Meister,08/2023
+EXT-001833,SK-001798,ONET_SOFTWARE,2.E.7.b::OpenMake Software Mojo,08/2023
+EXT-001834,SK-001799,ONET_SOFTWARE,2.E.1.e::Oracle Primavera P6 Professional Project Management,08/2023
+EXT-001835,SK-001800,ONET_SOFTWARE,2.E.1.e::Palbridge Ubidesk,08/2023
+EXT-001836,SK-001801,ONET_SOFTWARE,2.E.1.e::Planbox,08/2023
+EXT-001837,SK-001802,ONET_SOFTWARE,2.E.6.f::Planisware,08/2023
+EXT-001838,SK-001803,ONET_SOFTWARE,2.E.2.b::Planview Process Builder,08/2023
+EXT-001839,SK-001804,ONET_SOFTWARE,2.E.7.b::pm ase QuickBuild,08/2023
+EXT-001840,SK-001805,ONET_SOFTWARE,2.E.1.e::Project Manager Online ProjectManager.com,08/2023
+EXT-001841,SK-001806,ONET_SOFTWARE,2.E.2.b::Project portfolio management PPM software,08/2023
+EXT-001842,SK-001807,ONET_SOFTWARE,2.E.1.e::Project-Open,08/2023
+EXT-001843,SK-001808,ONET_SOFTWARE,2.E.2.b::Project.net,08/2023
+EXT-001844,SK-001809,ONET_SOFTWARE,2.E.1.e::ProjectLibre,08/2023
+EXT-001845,SK-001810,ONET_SOFTWARE,2.E.1.e::Projecturf,08/2023
+EXT-001846,SK-001811,ONET_SOFTWARE,2.E.6.f::QSM SLIM Suite,08/2023
+EXT-001847,SK-001812,ONET_SOFTWARE,2.E.6.f::QuickBase business management software,08/2023
+EXT-001848,SK-001813,ONET_SOFTWARE,2.E.1.e::Redmine,08/2023
+EXT-001849,SK-001814,ONET_SOFTWARE,2.E.16.h::Resource management software,08/2023
+EXT-001850,SK-001815,ONET_SOFTWARE,2.E.4.h::Scheduling software,08/2023
+EXT-001851,SK-001816,ONET_SOFTWARE,2.E.1.e::Sciforma,08/2023
+EXT-001852,SK-001817,ONET_SOFTWARE,2.E.1.e::SharedPlan Software SharedPlan Pro,08/2023
+EXT-001853,SK-001818,ONET_SOFTWARE,2.E.1.e::Siemens Teamcenter,08/2023
+EXT-001854,SK-001819,ONET_SOFTWARE,2.E.7.b::SmartBear Software Automated Build Studio,08/2023
+EXT-001855,SK-001820,ONET_SOFTWARE,2.E.1.e::Smartsheet,08/2023
+EXT-001856,SK-001821,ONET_SOFTWARE,2.E.1.e::Standpipe Studios Vertabase,08/2023
+EXT-001857,SK-001822,ONET_SOFTWARE,2.E.1.e::Stylite eGroupWare,08/2023
+EXT-001858,SK-001823,ONET_SOFTWARE,2.E.1.e::TaskJuggler,08/2023
+EXT-001859,SK-001824,ONET_SOFTWARE,2.E.1.e::TeamDynamixHE,08/2023
+EXT-001860,SK-001825,ONET_SOFTWARE,2.E.1.e::Tenrox Project Workforce Management,08/2023
+EXT-001861,SK-001826,ONET_SOFTWARE,2.E.1.e::The Omni Group OmniPlan,08/2023
+EXT-001862,SK-001827,ONET_SOFTWARE,2.E.1.e::ThoughtWorks Studio Mingle,08/2023
+EXT-001863,SK-001828,ONET_SOFTWARE,2.E.7.b::Tigris Cabie,08/2023
+EXT-001864,SK-001829,ONET_SOFTWARE,2.E.1.e::Unawave,08/2023
+EXT-001865,SK-001830,ONET_SOFTWARE,2.E.14.b::Virtual private networking VPN software,08/2023
+EXT-001866,SK-001831,ONET_SOFTWARE,2.E.2.b::Vitria M3O Operational Intelligence,08/2023
+EXT-001867,SK-001832,ONET_SOFTWARE,2.E.1.e::VSCOnline VPMi,08/2023
+EXT-001868,SK-001833,ONET_SOFTWARE,2.E.1.e::WBS Goplan,08/2023
+EXT-001869,SK-001834,ONET_SOFTWARE,2.E.1.e::web2project,08/2023
+EXT-001870,SK-001835,ONET_SOFTWARE,2.E.16.i::Wrike,08/2023
+EXT-001871,SK-001836,ONET_SOFTWARE,2.E.6.f::Xplanner,08/2023
+EXT-001872,SK-001837,ONET_SOFTWARE,2.E.1.e::Zoho Projects,08/2023
+EXT-001873,SK-001838,ONET_SOFTWARE,2.E.9.g::Apache MXNet,08/2023
+EXT-001874,SK-001839,ONET_SOFTWARE,2.E.6.f::BigQuery,08/2023
+EXT-001875,SK-001840,ONET_SOFTWARE,2.E.6.m::Business intelligence software,08/2023
+EXT-001876,SK-001841,ONET_SOFTWARE,2.E.7.b::Flask,08/2023
+EXT-001877,SK-001842,ONET_SOFTWARE,2.E.8.h::Geographic information system GIS systems,08/2023
+EXT-001878,SK-001843,ONET_SOFTWARE,2.E.7.b::Julia,08/2023
+EXT-001879,SK-001844,ONET_SOFTWARE,2.E.7.e::Jupyter software,08/2023
+EXT-001880,SK-001845,ONET_SOFTWARE,2.E.13.c::Keras,08/2023
+EXT-001881,SK-001846,ONET_SOFTWARE,2.E.9.d::Kubeflow,08/2023
+EXT-001882,SK-001847,ONET_SOFTWARE,2.E.6.m::MapReduce big data software,08/2023
+EXT-001883,SK-001848,ONET_SOFTWARE,2.E.9.d::Mlflow,08/2023
+EXT-001884,SK-001849,ONET_SOFTWARE,2.E.6.f::Neo4j,08/2023
+EXT-001885,SK-001850,ONET_SOFTWARE,2.E.6.f::NumPy,08/2023
+EXT-001886,SK-001851,ONET_SOFTWARE,2.E.6.f::PySpark,08/2023
+EXT-001887,SK-001852,ONET_SOFTWARE,2.E.6.e::Reporting software,08/2023
+EXT-001888,SK-001853,ONET_SOFTWARE,2.E.7.e::SciPy,08/2023
+EXT-001889,SK-001854,ONET_SOFTWARE,2.E.7.e::Shiny,08/2023
+EXT-001890,SK-001855,ONET_SOFTWARE,2.E.7.e::spaCy,08/2023
+EXT-001891,SK-001856,ONET_SOFTWARE,2.E.17.a::Splunk Enterprise,08/2023
+EXT-001892,SK-001857,ONET_SOFTWARE,2.E.9.d::Statistical software,08/2023
+EXT-001893,SK-001858,ONET_SOFTWARE,2.E.7.b::XGBoost,08/2023
+EXT-001894,SK-001859,ONET_SOFTWARE,2.E.8.b::Blackboard Learn,08/2023
+EXT-001895,SK-001860,ONET_SOFTWARE,2.E.8.b::Blackboard Learning System,08/2023
+EXT-001896,SK-001861,ONET_SOFTWARE,2.E.16.a::Email software,08/2023
+EXT-001897,SK-001862,ONET_SOFTWARE,2.E.1.c::Employee performance management system,08/2023
+EXT-001898,SK-001863,ONET_SOFTWARE,2.E.4.h::Google Calendar,08/2023
+EXT-001899,SK-001864,ONET_SOFTWARE,2.E.8.b::Learning management system LMS,08/2023
+EXT-001900,SK-001865,ONET_SOFTWARE,2.E.1.c::Oracle PeopleSoft Enterprise Employee Self-Service,08/2023
+EXT-001901,SK-001866,ONET_SOFTWARE,2.E.1.c::Oracle PeopleSoft Enterprise Human Resources,08/2023
+EXT-001902,SK-001867,ONET_SOFTWARE,2.E.1.c::Oracle Self-Service Human Resources,08/2023
+EXT-001903,SK-001868,ONET_SOFTWARE,2.E.4.j::Scanning software,08/2023
+EXT-001904,SK-001869,ONET_SOFTWARE,2.E.1.c::Workscape HR Service Center,08/2023

@@ -1,0 +1,29 @@
+O*NET Data Preparation Report
+=============================
+
+Source Data Date: 08/2023
+
+Roles Summary:
+- Source occupations read: 1016
+- Candidate roles generated: 16
+- Roles by domain:
+  * IT: 7
+  * HR: 5
+  * BUSINESS: 4
+  * NONE: 0
+- Review status (Roles): Approved=0, Excluded=0, Pending/Review=16
+
+Skills & Knowledge Summary:
+- Source skills/knowledge rows read: 123440
+- Unique skill/knowledge concepts selected: 47
+- Duplicate concept IDs mapped across types: 0
+- Missing descriptions: 0
+- Review status (Skills/Knowledge): Approved=0, Excluded=0, Pending/Review=47
+
+Software & Technology Summary:
+- Source software rows read: 31821
+- Unique software candidates selected: 1093
+- Review status (Software): Approved=0, Excluded=0, Pending/Review=1093
+- NOTE: Software candidates contain specific product examples that require review before canonical import.
+
+Errors/Warnings: None

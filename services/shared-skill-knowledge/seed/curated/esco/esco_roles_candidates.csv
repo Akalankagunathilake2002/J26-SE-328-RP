@@ -1,0 +1,168 @@
+esco_uri,preferred_name,alternative_labels,hidden_labels,description,definition,esco_status,modified_date,isco_group_code,source,source_version,suggested_domain_code,review_status,review_notes
+http://data.europa.eu/esco/occupation/04f39bfa-bc03-4480-98bc-b18ce4fe4b4b,accounting manager,"financial director
+head of accounts
+accounts payable manager
+financial accounts supervisor
+accounting office manager
+accounting department manager
+accounting director
+group accounting manager
+financial accounting manager
+cost accounting manager",,"Accounting managers assume responsibility for all accounting activities relating to financial reporting. They develop and maintain accounting principles and procedures to ensure timely and accurate financial statements, supervise accounting staff and manage the accounting activities within the appropriate time frame and budget.",,released,2024-01-22T11:52:52.028Z,1211,ESCO,1.2.1,BUSINESS,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/068370e0-9c27-4814-87d0-44fbb3140815,recruitment consultant,"job placement officer
+temporary labour officer
+employment agent
+employee recruiter
+job placement consultant
+temporary labour agent
+recruiting process consultant
+head hunter
+recruitment officer",,"Recruitment consultants provide the suitable candidates to employers according to the specific job profile requested. They perform testing and interviewing with job seekers, shortlist few candidates to present to the employers and match candidates to appropriate jobs. Recruitment consultants maintain relationships with employers to offer their services on a more long-term basis.",,released,2025-01-28T16:25:37.44Z,2423,ESCO,1.2.1,HR,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/106f79e4-6264-45f1-9e7a-297435cd684b,software tester,"module tester
+application tester
+soft tester
+application software tester
+software testing specialist
+unit tester
+software testers
+software application tester
+tester",,Software testers perform software tests. They may also plan and design them. They may also debug and repair software although this mainly corresponds to designers and developers. They ensure that applications function properly before delivering them to internal and external clients.,,released,2024-01-26T16:03:05.864Z,2519,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/1fce1be0-bf52-449b-9a2b-3f2cc710290a,compensation analyst,"compensation advisor
+incentive compensation analyst
+compensation coordinator
+compensation manager
+benefits and compensation analyst
+compensation and benefits analyst
+compensation consultant
+compensation lead
+total rewards analyst
+global compensation analyst
+manager of compensation
+compensation administrator
+international compensation analyst
+HR compensation analyst
+variable compensation analyst",,Compensation analysts recognise and reward contributions and behaviors that support company’s business objectives and corporate values.,,released,2023-11-22T11:16:34.798Z,2423,ESCO,1.2.1,HR,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/2079755f-d809-49e6-8037-4de6180e54c0,data engineer,"data engineer expert
+research data engineer",,"Data engineers develop the architecture needed to process, manage, and store large amounts of data which will be used by data scientists for analysis. They design the infrastructure and maintain data pipelines and warehouses to leverage data for strategic advantage.",,released,2024-01-17T11:20:14.985Z,2511,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/258e46f9-0075-4a2e-adae-1ff0477e0f30,data scientist,"data expert
+research data scientist
+data research scientist
+electromobility data scientist",,"Data scientists find and interpret rich data sources, manage large amounts of data, merge data sources, ensure consistency of data-sets, and create visualisations to aid in understanding data. They build mathematical models using data, present and communicate data insights and findings to specialists and scientists in their team and if required, to a non-expert audience, and recommend ways to apply the data.",,released,2025-04-11T11:38:25.534Z,2511,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/349ee6f6-c295-4c38-9b98-48765b55280e,cloud engineer,"hybrid cloud engineer
+cloud computing engineer
+cloud infrastructure engineer
+cloud software engineer
+cloud-native engineer
+cloud security engineer
+cloud developer
+cloud network engineer
+cloud solution engineer",,"Cloud engineers are responsible for the design, planning, management and maintenance of cloud-based systems. They develop and implement cloud-applications, handle the migration of existing on-premise applications to the cloud, and debug cloud stacks.",,released,2024-02-13T10:43:31.922Z,2512,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/57af9090-55b4-4911-b2d0-86db01c00b02,embedded systems software developer,"embedded systems software developers
+embedded software developerl embedded systems engineer
+embedded systems designer
+embedded system software programmer
+embedded software programmer
+embedded system software developer",,"Embedded systems software developers program, implement, document and maintain software to be run on an embedded system.",,released,2024-01-26T09:54:35.3Z,2514,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/57b459d4-655c-4053-b189-3c249ce33faf,ICT business development manager,"IT business development manager
+ICT commercial development manager
+IT commercial development manager
+ICT business development managers",,"ICT business development managers increase business opportunities for the organisation and develop strategies that will enhance the smooth running of the organisation, product development and product distribution. They negotiate prices and establish contract terms.",,released,2024-01-26T14:43:09.878Z,2434,ESCO,1.2.1,BUSINESS,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/60082a99-d8ef-4e84-9290-78902681b6ed,business analyst,"management consultant
+standardisation manager
+business strategy analyst
+organisational developer
+standardisation expert
+business strategy consultant
+standardization expert
+business development analyst",,"Business analysts research and understand the strategic position of businesses and companies in relation to their markets and their stakeholders. They analyse and present their views on how the company, from many perspectives, can improve its strategic position and internal corporate structure. They assess needs for change, communication methods, technology, IT tools, new standards and certifications.",,released,2024-01-25T10:51:24.838Z,2421,ESCO,1.2.1,BUSINESS,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/6fcf4638-e7c7-4978-9302-9a7b63a3d57c,marketing manager,"market manager
+sales and marketing manager
+marketing director
+promotions manager
+telemarketing manager
+advertising sales manager
+product marketing manager
+marketing and promotions manager
+marketing executive
+market development manager",,"Marketing managers carry out the implementation of efforts related to the marketing operations in a company. They develop marketing strategies and plans by detailing cost and resources needed. They analyse the profitability of these plans, develop pricing strategies, and strive to raise awareness on products and companies among targeted customers.",,released,2025-03-18T15:30:28.579Z,1221,ESCO,1.2.1,BUSINESS,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/7754d570-9519-48c2-b1c9-8e165f8bca0f,cybersecurity risk manager,"cybersecurity specialist
+cybersecurity risk assurance consultant
+information security manager
+cyber risk manager
+cybersecurity risk assessor
+IT security chief
+ICT security chief
+ICT security manager
+ICT technical security expert
+security coordinator
+cybersecurity impact analyst
+IT security manager
+information security risk analyst",,"Cybersecurity risk managers identify, analyse, assess, estimate and mitigate cybersecurity-related risks of ICT infrastructures such as systems or services. They manage these aspects by planning risk analysis, applying, reporting, assessing, communicating, and treating them. They establish a risk management strategy for the organisation and ensure that risks remain at an acceptable level for the organisation by selecting mitigation actions and controls.",,released,2024-01-12T11:24:03.192Z,2529,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/a6e8a6bf-9209-4d19-a131-a8b6431e0f75,talent acquisition manager,"talent acquisition specialist
+talent acquisition partner
+talent acquisition recruiter",,"Talent acquisition managers plan, develop, manage and oversee talent acquisition and recruitment processes. Interview candidates, check applicants' references and manage posts on online job boards.",,released,2024-01-10T10:55:37.15Z,1212,ESCO,1.2.1,HR,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/bea99fea-0383-4c63-b944-70d4799de2c5,project manager,"special project manager
+project expediter
+project leader
+projects manager
+project coordinator
+project director
+senior project manager",,"Project managers oversee the project on a daily basis and are responsible for delivering high-quality results within the identified objectives and constraints, ensuring the effective use of the allocated resources. They are responsible for risk and issue management, project communication and stakeholder management. Project managers perform the activities of planning, organising, securing, monitoring and managing the resources and work necessary to deliver specific project goals and objectives in an effective and efficient way.",,released,2024-01-17T16:56:27.374Z,1219,ESCO,1.2.1,BUSINESS,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/c40a2919-48a9-40ea-b506-1f34f693496d,web developer,"web application developer
+web developers
+web engineer
+web specialist
+web programmer",,"Web developers develop, implement and document web-accessible software based on the designs provided. They align the client's web presence with its business strategy, troubleshoot software problems and issues and look for ways to improve the application.",,released,2024-02-06T13:41:54.202Z,2513,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/d3e32e5e-7f24-48e3-b939-e4f800eb62fb,human resources officer,"HR director
+personnel rep
+human resources director
+HR officer
+lifelong learning coach
+personnel manager
+personnel representative
+human resources supervisor
+personnel officer
+human resources worker
+HR worker
+personnel expert
+HR rep
+HR supervisor
+human resource officer
+personnel supervisor
+HR representative
+human resources representative
+personnel assistant
+personnel director
+personnel worker
+personnel administrator
+skills trainer
+personnel recruiter
+human resources rep
+personnel development specialist
+competencies trainer",,"Human resources officers develop and implement strategies that help their employers select and retain appropriately qualified staff within that business sector. They recruit staff, prepare job advertisements, interview and short-list people, negotiate with employment agencies, and set up working conditions. Human resources officers also administer the payroll, review salaries and advise on remuneration benefits and employment law. They arrange for training opportunities to enhance employees' performance.",,released,2025-01-28T16:24:40.1Z,2423,ESCO,1.2.1,HR,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/d3edb8f8-3a06-47a0-8fb9-9b212c006aa2,data analyst,"battery data analyst
+mine electrification data analyst
+data warehouse analyst
+data warehousing analyst
+battery materials data analyst
+battery module performance data analyst
+business data analyst
+data storage analyst",,"Data analysts import, inspect, clean, transform, validate, model, or interpret collections of data with regard to the business goals of the company. They ensure that the data sources and repositories provide consistent and reliable data. Data analysts use different algorithms and IT tools as demanded by the situation and the current data. They might prepare reports in the form of visualisations such as graphs, charts, and dashboards.",,released,2025-04-11T11:27:25.66Z,2511,ESCO,1.2.1,IT,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/f605bcd2-90b6-45a0-a558-d05016d68a77,human resources manager,"human resources director
+personnel manager
+personnel director
+relocation manager
+human resources specialist
+HRM manager
+staffing manager
+employee benefits manager
+benefits manager
+career advice office manager
+recruitment manager
+industrial relations manager
+outplacement office manager
+HR manager",,"Human resources managers plan, design and implement processes related to the human capital of companies. They develop programs for recruiting, interviewing, and selecting employees based on a previous assessment of the profile and skills required in the company. Moreover, they manage compensation and development programs for the company's employees comprising trainings, skill assessment and yearly evaluations, promotion, expat programs, and general assurance of the well-being of the employees in the workplace.",,released,2025-03-18T15:30:28.579Z,1212,ESCO,1.2.1,HR,PENDING_REVIEW,
+http://data.europa.eu/esco/occupation/fe0fa514-b48d-4a53-9757-a283c0baacf0,ICT business analyst,"requirement engineer
+business process specialist
+IT business analyst
+ICT business analysts",,"ICT business analysts are in charge of analysing and designing an organisation's processes and systems, assessing the business model and its integration with technology. They also identify change needs, assess the impact of the change, capture and document requirements and then ensure that these requirements are delivered whilst supporting the business through the implementation process.",,released,2025-02-27T12:25:01.531Z,2511,ESCO,1.2.1,BUSINESS,PENDING_REVIEW,

@@ -1,0 +1,27 @@
+{
+  "IT": [
+    "http://data.europa.eu/esco/occupation/106f79e4-6264-45f1-9e7a-297435cd684b",
+    "http://data.europa.eu/esco/occupation/2079755f-d809-49e6-8037-4de6180e54c0",
+    "http://data.europa.eu/esco/occupation/258e46f9-0075-4a2e-adae-1ff0477e0f30",
+    "http://data.europa.eu/esco/occupation/349ee6f6-c295-4c38-9b98-48765b55280e",
+    "http://data.europa.eu/esco/occupation/7754d570-9519-48c2-b1c9-8e165f8bca0f",
+    "http://data.europa.eu/esco/occupation/c40a2919-48a9-40ea-b506-1f34f693496d",
+    "http://data.europa.eu/esco/occupation/d3edb8f8-3a06-47a0-8fb9-9b212c006aa2",
+    "http://data.europa.eu/esco/occupation/57af9090-55b4-4911-b2d0-86db01c00b02"
+  ],
+  "HR": [
+    "http://data.europa.eu/esco/occupation/068370e0-9c27-4814-87d0-44fbb3140815",
+    "http://data.europa.eu/esco/occupation/1fce1be0-bf52-449b-9a2b-3f2cc710290a",
+    "http://data.europa.eu/esco/occupation/a6e8a6bf-9209-4d19-a131-a8b6431e0f75",
+    "http://data.europa.eu/esco/occupation/d3e32e5e-7f24-48e3-b939-e4f800eb62fb",
+    "http://data.europa.eu/esco/occupation/f605bcd2-90b6-45a0-a558-d05016d68a77"
+  ],
+  "BUSINESS": [
+    "http://data.europa.eu/esco/occupation/04f39bfa-bc03-4480-98bc-b18ce4fe4b4b",
+    "http://data.europa.eu/esco/occupation/60082a99-d8ef-4e84-9290-78902681b6ed",
+    "http://data.europa.eu/esco/occupation/6fcf4638-e7c7-4978-9302-9a7b63a3d57c",
+    "http://data.europa.eu/esco/occupation/bea99fea-0383-4c63-b944-70d4799de2c5",
+    "http://data.europa.eu/esco/occupation/fe0fa514-b48d-4a53-9757-a283c0baacf0",
+    "http://data.europa.eu/esco/occupation/57b459d4-655c-4053-b189-3c249ce33faf"
+  ]
+}
