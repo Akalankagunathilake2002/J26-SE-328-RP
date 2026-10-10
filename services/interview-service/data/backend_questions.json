@@ -1,0 +1,65 @@
+[
+  {
+    "title": "Spring Boot Connection Pooling Mechanics",
+    "role": "Backend Developer",
+    "topic": "Database Connection Management",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Can you explain how connection pooling works in a Spring Boot application connecting to MySQL, and why it is critical for performance?",
+    "expected_answer": "Connection pooling (defaulting to HikariCP in Spring Boot) maintains a cache of active, physical database TCP connections. Instead of paying the expensive latency cost of establishing a new TCP connection and TLS handshake for every incoming HTTP request, worker threads borrow an existing connection from the pool, execute SQL, and return it. This prevents database server connection exhaustion and drastically lowers response times.",
+    "rubric": {
+      "criteria": [
+        "Mentions HikariCP or connection reusability",
+        "Explains TCP handshake and authentication overhead",
+        "Explains risk of database connection exhaustion without pooling"
+      ],
+      "scoring": {
+        "5": "Explains HikariCP mechanics, connection borrowing/returning lifecycle, and thread contention trade-offs.",
+        "3": "Explains connection reuse but lacks depth on TCP overhead or resource limits.",
+        "1": "Confuses connection pooling with database caching."
+      }
+    }
+  },
+  {
+    "title": "JWT Token Verification and Expiration Strategies",
+    "role": "Backend Developer",
+    "topic": "Authentication & Authorization",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "How does a stateless backend verify a JWT, and how do you handle token revocation if the token is stateless?",
+    "expected_answer": "A stateless backend verifies a JWT by decoding the Base64 header and payload, computing the cryptographic signature using its secret/public key, and comparing it against the incoming signature. If it matches and the expiration claim (exp) is valid, the request is authenticated without database lookups. For revocation before expiration, industry approaches use short-lived access tokens (10-15 mins) paired with refresh token rotation stored in Redis, or an in-memory token blocklist for invalidated tokens.",
+    "rubric": {
+      "criteria": [
+        "Explains signature verification using secret/public key",
+        "Identifies expiration timestamp (exp) check",
+        "Proposes refresh token rotation or Redis blocklist for early revocation"
+      ],
+      "scoring": {
+        "5": "Thoroughly explains cryptographic signature comparison, exp validation, and architectural revocation patterns like Redis blocklisting.",
+        "3": "Explains signature verification but struggles with revocation strategies.",
+        "1": "Incorrectly states JWTs must be queried in a database on every request."
+      }
+    }
+  },
+  {
+    "title": "Database B-Tree Indexing and Query Performance",
+    "role": "Backend Developer",
+    "topic": "Relational Database Indexing",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "How does a B-Tree index accelerate SQL queries, and what is the trade-off of having too many indexes on a table?",
+    "expected_answer": "A B-Tree index maintains a self-balancing tree structure where leaf nodes contain indexed column values paired with row pointers. Queries with equality or range filters traverse the tree in O(log N) disk page reads instead of an O(N) full table scan. However, every additional index incurs write overhead on INSERT, UPDATE, and DELETE operations because the DBMS must update the table storage pages and every corresponding index structure, causing write amplification and higher storage consumption.",
+    "rubric": {
+      "criteria": [
+        "Explains logarithmic traversal O(log N) vs full table scan O(N)",
+        "Identifies write amplification on INSERT/UPDATE/DELETE",
+        "Mentions index storage and memory (buffer cache) footprint"
+      ],
+      "scoring": {
+        "5": "Accurately articulates tree height, binary/page search, and write amplification trade-offs.",
+        "3": "Mentions faster search and slower writes without theoretical depth.",
+        "1": "Cannot explain how tree structure avoids full scans."
+      }
+    }
+  }
+]
