@@ -17,9 +17,8 @@ COPY app/ ./app/
 COPY ingestion/ ./ingestion/
 COPY data/ ./data/
 
-EXPOSE 8001
-
 HEALTHCHECK --interval=10s --timeout=5s --retries=3 \
-  CMD curl -f http://localhost:8001/health || exit 1
+  CMD sh -c "curl -f http://localhost:\${LEARNING_SERVICE_PORT:-\${SERVICE_PORT}}/health || exit 1"
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port \${LEARNING_SERVICE_PORT:-\${SERVICE_PORT}}"
+

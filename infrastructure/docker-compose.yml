@@ -54,7 +54,8 @@ services:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: learning_db
-      SERVICE_PORT: ${LEARNING_SERVICE_PORT:-8001}
+      LEARNING_SERVICE_PORT: ${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
+      SERVICE_PORT: ${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
       LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
       LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
@@ -72,7 +73,8 @@ services:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: interview_db
-      SERVICE_PORT: ${INTERVIEW_SERVICE_PORT:-8002}
+      INTERVIEW_SERVICE_PORT: ${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
+      SERVICE_PORT: ${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
       LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
       LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
@@ -86,8 +88,13 @@ services:
     image: nginx:1.28-alpine
     ports:
       - "${GATEWAY_HOST_PORT:-8080}:80"
+    environment:
+      - LEARNING_SERVICE_PORT=${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
+      - INTERVIEW_SERVICE_PORT=${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
+      - SHARED_SKILL_KNOWLEDGE_PORT=${SHARED_SKILL_KNOWLEDGE_PORT:-8005}
+      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT
     volumes:
-      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     depends_on:
       - auth-service
       - shared-skill-knowledge
@@ -96,3 +103,4 @@ services:
 
 volumes:
   postgres-data:
+

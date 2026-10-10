@@ -89,7 +89,7 @@ export default function PersonalizedLearningView({
             Module 1 • Microservice
           </span>
           <span className="border border-ink bg-lime px-2 py-0.5 text-xs font-bold text-ink">
-            Port 8001 • learning_db
+            Learning Microservice • learning_db
           </span>
         </div>
         <h2 className="font-display text-2xl uppercase tracking-wide text-ink mt-1">

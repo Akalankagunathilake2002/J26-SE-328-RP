@@ -5,8 +5,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     # Service Information
     SERVICE_NAME: str = "learning-service"
-    SERVICE_PORT: int = 8001
+    LEARNING_SERVICE_PORT: int | None = None
+    SERVICE_PORT: int | None = None
     ENVIRONMENT: str = "development"
+
+    @property
+    def port(self) -> int:
+        port_val = self.LEARNING_SERVICE_PORT or self.SERVICE_PORT
+        if port_val is None:
+            raise ValueError("LEARNING_SERVICE_PORT must be configured in .env")
+        return port_val
+
 
     # Database
     POSTGRES_USER: str = "postgres"
