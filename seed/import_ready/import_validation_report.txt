@@ -1,6 +1,0 @@
-Import Data Validation Report
-=============================
-
-[PASS] Entity IDs are unique.
-[PASS] External IDs are unique.
-[PASS] All foreign keys are consistent.
