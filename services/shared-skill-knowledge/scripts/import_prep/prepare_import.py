@@ -1,4 +1,4 @@
-import os
+﻿import os
 import csv
 import json
 import re
@@ -74,7 +74,8 @@ def main():
 
     canonical_entities = []
     external_ids = []
-    aliases_and_domains = []
+    aliases = []
+    entity_domains = {}
     review_required = []
     
     # Process ESCO Roles
@@ -105,7 +106,7 @@ def main():
             alias = normalize_alias(raw_alias)
             if alias and alias.lower() not in seen_aliases:
                 seen_aliases.add(alias.lower())
-                aliases_and_domains.append({
+                aliases.append({
                     'id': generate_id("AL", f"ALIAS_{r_id}_{alias}"),
                     'canonical_entity_id': r_id,
                     'record_type': 'ALIAS',
@@ -116,13 +117,9 @@ def main():
         for d in r.get('suggested_domain_code', '').split(','):
             d = d.strip()
             if d in ['IT', 'HR', 'BUSINESS']:
-                aliases_and_domains.append({
-                    'id': generate_id("DOM", f"DOMAIN_{r_id}_{d}"),
-                    'canonical_entity_id': r_id,
-                    'record_type': 'DOMAIN',
-                    'value': d,
-                    'is_verified': '1.0'
-                })
+                if r_id not in entity_domains:
+                    entity_domains[r_id] = set()
+                entity_domains[r_id].add(d)
             elif d:
                 review_required.append({
                     'review_category': 'DOMAIN_UNKNOWN',
@@ -160,7 +157,7 @@ def main():
             alias = normalize_alias(raw_alias)
             if alias and alias.lower() not in seen_aliases:
                 seen_aliases.add(alias.lower())
-                aliases_and_domains.append({
+                aliases.append({
                     'id': generate_id("AL", f"ALIAS_{r_id}_{alias}"),
                     'canonical_entity_id': r_id,
                     'record_type': 'ALIAS',
@@ -171,13 +168,9 @@ def main():
         for d in r.get('suggested_domain_code', '').split(','):
             d = d.strip()
             if d in ['IT', 'HR', 'BUSINESS']:
-                aliases_and_domains.append({
-                    'id': generate_id("DOM", f"DOMAIN_{r_id}_{d}"),
-                    'canonical_entity_id': r_id,
-                    'record_type': 'DOMAIN',
-                    'value': d,
-                    'is_verified': '1.0'
-                })
+                if r_id not in entity_domains:
+                    entity_domains[r_id] = set()
+                entity_domains[r_id].add(d)
             elif d:
                 review_required.append({
                     'review_category': 'DOMAIN_UNKNOWN',
@@ -242,7 +235,7 @@ def main():
             alias = normalize_alias(raw_alias)
             if alias and alias.lower() not in seen_aliases:
                 seen_aliases.add(alias.lower())
-                aliases_and_domains.append({
+                aliases.append({
                     'id': generate_id("AL", f"ALIAS_{s_id}_{alias}"),
                     'canonical_entity_id': s_id,
                     'record_type': 'ALIAS',
@@ -253,13 +246,9 @@ def main():
         for d in s.get('suggested_domain_code', '').split(','):
             d = d.strip()
             if d in ['IT', 'HR', 'BUSINESS']:
-                aliases_and_domains.append({
-                    'id': generate_id("DOM", f"DOMAIN_{s_id}_{d}"),
-                    'canonical_entity_id': s_id,
-                    'record_type': 'DOMAIN',
-                    'value': d,
-                    'is_verified': '1.0'
-                })
+                if s_id not in entity_domains:
+                    entity_domains[s_id] = set()
+                entity_domains[s_id].add(d)
             elif d:
                 review_required.append({
                     'review_category': 'DOMAIN_UNKNOWN',
@@ -306,13 +295,9 @@ def main():
         for d in s.get('suggested_domain_code', '').split(','):
             d = d.strip()
             if d in ['IT', 'HR', 'BUSINESS']:
-                aliases_and_domains.append({
-                    'id': generate_id("DOM", f"DOMAIN_{s_id}_{d}"),
-                    'canonical_entity_id': s_id,
-                    'record_type': 'DOMAIN',
-                    'value': d,
-                    'is_verified': '1.0'
-                })
+                if s_id not in entity_domains:
+                    entity_domains[s_id] = set()
+                entity_domains[s_id].add(d)
             elif d:
                 review_required.append({
                     'review_category': 'DOMAIN_UNKNOWN',
@@ -385,8 +370,8 @@ def main():
     pl_names.update(['c', 'c++', 'c#', 'java', 'python', 'javascript', 'ruby', 'go', 'rust', 'typescript', 'php', 'swift', 'kotlin'])
     
     clean_ad = []
-    for ad in aliases_and_domains:
-        if ad['record_type'] == 'ALIAS':
+    for ad in aliases:
+        if True:
             ce = next((c for c in canonical_entities if c['id'] == ad['canonical_entity_id']), None)
             if ce:
                 ce_name_clean = re.sub(r'\(computer programming\)', '', ce['name'].lower()).strip()
@@ -402,7 +387,7 @@ def main():
                     if ce_name_clean != alias_clean:
                         continue
         clean_ad.append(ad)
-    aliases_and_domains = clean_ad
+    aliases = clean_ad
 
     # Conflict Detection
     name_map = {}
@@ -414,8 +399,8 @@ def main():
             name_map[name] = []
         name_map[name].append(ce['id'])
         
-    for ad in aliases_and_domains:
-        if ad['record_type'] == 'ALIAS':
+    for ad in aliases:
+        if True:
             alias = ad['value'].lower()
             if alias not in alias_map:
                 alias_map[alias] = []
@@ -448,7 +433,19 @@ def main():
     print("Saving CSVs...")
     save_csv(canonical_entities, os.path.join(out_dir, "canonical_entities.csv"), ['id', 'entity_type', 'name', 'description', 'skill_type', 'concept_kind', 'review_status'])
     save_csv(external_ids, os.path.join(out_dir, "external_ids.csv"), ['id', 'canonical_entity_id', 'source_system', 'external_id', 'source_version'])
-    save_csv(aliases_and_domains, os.path.join(out_dir, "aliases_and_domains.csv"), ['id', 'canonical_entity_id', 'record_type', 'value', 'is_verified'])
+    try:
+        save_csv(aliases, os.path.join(out_dir, "aliases.csv"), ['id', 'canonical_entity_id', 'record_type', 'value', 'is_verified'])
+    except PermissionError:
+        print("WARNING: aliases.csv is locked. Saving to aliases_unlocked.csv instead.")
+        save_csv(aliases, os.path.join(out_dir, "aliases_unlocked.csv"), ['id', 'canonical_entity_id', 'record_type', 'value', 'is_verified'])
+    
+    domains_list = []
+    for entity_id, d_set in entity_domains.items():
+        domains_list.append({
+            'entity_id': entity_id,
+            'domains': ', '.join(sorted(list(d_set)))
+        })
+    save_csv(domains_list, os.path.join(out_dir, "entity_domains.csv"), ['entity_id', 'domains'])
     save_csv(review_required, os.path.join(out_dir, "review_required.csv"), ['review_category', 'entity_type', 'entity_id', 'issue', 'source'])
 
     # Validation
@@ -476,10 +473,25 @@ def main():
             val_report.append(f"[ERROR] Invalid canonical_entity_id in external_ids: {e['canonical_entity_id']}")
             fk_errors += 1
             
-    for ad in aliases_and_domains:
+    for ad in aliases:
         if ad['canonical_entity_id'] not in entity_id_set:
-            val_report.append(f"[ERROR] Invalid canonical_entity_id in aliases_and_domains: {ad['canonical_entity_id']}")
+            val_report.append(f"[ERROR] Invalid canonical_entity_id in aliases: {ad['canonical_entity_id']}")
             fk_errors += 1
+            
+    for ed in domains_list:
+        if ed['entity_id'] not in entity_id_set:
+            val_report.append(f"[ERROR] Invalid entity_id in entity_domains: {ed['entity_id']}")
+            fk_errors += 1
+            
+        ds = ed['domains'].split(', ')
+        if len(ds) != len(set(ds)):
+            val_report.append(f"[ERROR] Duplicate domains for entity {ed['entity_id']}")
+            fk_errors += 1
+            
+        for d in ds:
+            if d not in ['IT', 'HR', 'BUSINESS']:
+                val_report.append(f"[ERROR] Invalid domain '{d}' for entity {ed['entity_id']}")
+                fk_errors += 1
 
     if fk_errors == 0:
         val_report.append("[PASS] All foreign keys are consistent.")
@@ -493,7 +505,8 @@ def main():
         "counts": {
             "canonical_entities": len(canonical_entities),
             "external_ids": len(external_ids),
-            "aliases_and_domains": len(aliases_and_domains),
+            "aliases": len(aliases),
+            "entity_domains": len(domains_list),
             "review_required": len(review_required)
         },
         "review_status": {
@@ -529,14 +542,20 @@ def main():
 | external_id | String | Exact source URI, SOC code, or Element ID |
 | source_version | String | Version of the source system data |
 
-## aliases_and_domains
+## aliases
 | Column | Type | Description |
 |---|---|---|
-| id | String | Unique internal identifier (AL-###### or DOM-######) |
+| id | String | Unique internal identifier (AL-######) |
 | canonical_entity_id | String | FK to canonical_entities.id |
-| record_type | String | 'ALIAS' or 'DOMAIN' |
-| value | String | The alternative name or domain code (IT, HR, BUSINESS) |
-| is_verified | String | 'true', 'false', or a confidence score like '1.0' |
+| record_type | String | 'ALIAS' |
+| value | String | The alternative name |
+| is_verified | String | 'true', 'false' |
+
+## entity_domains
+| Column | Type | Description |
+|---|---|---|
+| entity_id | String | FK to canonical_entities.id |
+| domains | String | Comma-separated list of domains (IT, HR, BUSINESS) |
 
 ## review_required
 | Column | Type | Description |
@@ -552,3 +571,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
