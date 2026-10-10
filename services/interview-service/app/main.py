@@ -15,6 +15,21 @@ async def lifespan(app: FastAPI):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print(f"[{settings.SERVICE_NAME}] Database tables verified successfully.")
+
+        # Auto-seed question rubrics if table has fewer than 20 items
+        try:
+            from sqlalchemy import func, select
+            from app.models.interview import InterviewDocument
+            from ingestion.ingest_rubrics import run_interview_ingestion
+            from app.core.database import async_session_factory
+            async with async_session_factory() as session:
+                res = await session.execute(select(func.count(InterviewDocument.id)))
+                count = res.scalar() or 0
+                if count < 20:
+                    print(f"[{settings.SERVICE_NAME}] Seeding expanded interview rubric bank ({count} existing items)...")
+                    await run_interview_ingestion()
+        except Exception as e:
+            print(f"[{settings.SERVICE_NAME}] Auto-ingestion notice: {e}")
     except Exception as e:
         print(f"[{settings.SERVICE_NAME}] Database connection warning: {e}")
 

@@ -5,7 +5,7 @@
     "topic": "Database Connection Management",
     "difficulty": "Entry Level",
     "source": "Curated Technical Interview Bank",
-    "content": "Can you explain how connection pooling works in a Spring Boot application connecting to MySQL, and why it is critical for performance?",
+    "content": "Can you explain how connection pooling works in a Spring Boot application connecting to PostgreSQL, and why it is critical for performance?",
     "expected_answer": "Connection pooling (defaulting to HikariCP in Spring Boot) maintains a cache of active, physical database TCP connections. Instead of paying the expensive latency cost of establishing a new TCP connection and TLS handshake for every incoming HTTP request, worker threads borrow an existing connection from the pool, execute SQL, and return it. This prevents database server connection exhaustion and drastically lowers response times.",
     "rubric": {
       "criteria": [
@@ -13,6 +13,8 @@
         "Explains TCP handshake and authentication overhead",
         "Explains risk of database connection exhaustion without pooling"
       ],
+      "high_score_criteria": "Accurately articulates physical socket reuse, HikariCP lock-free borrowing, formula sizing (2x cores + spindles), and connection leak detection thresholds.",
+      "low_score_criteria": "Confuses connection pooling with database result caching or assumes opening unlimited connections improves concurrency.",
       "scoring": {
         "5": "Explains HikariCP mechanics, connection borrowing/returning lifecycle, and thread contention trade-offs.",
         "3": "Explains connection reuse but lacks depth on TCP overhead or resource limits.",
@@ -34,10 +36,197 @@
         "Identifies expiration timestamp (exp) check",
         "Proposes refresh token rotation or Redis blocklist for early revocation"
       ],
+      "high_score_criteria": "Articulates cryptographic signature verification, exp/iat validation, asymmetric vs symmetric signing (RS256 vs HS256), and short TTLs with Redis blocklist.",
+      "low_score_criteria": "Believes the backend must query a SQL database on every request to verify a stateless JWT or stores secrets directly in JWT payloads.",
       "scoring": {
         "5": "Thoroughly explains cryptographic signature comparison, exp validation, and architectural revocation patterns like Redis blocklisting.",
         "3": "Explains signature verification but struggles with revocation strategies.",
         "1": "Incorrectly states JWTs must be queried in a database on every request."
+      }
+    }
+  },
+  {
+    "title": "REST API Idempotency and HTTP Verbs",
+    "role": "Backend Developer",
+    "topic": "API Design & Protocols",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "What is idempotency in REST APIs, which HTTP verbs are idempotent, and how do you ensure payment creation endpoints remain safe against duplicate submissions?",
+    "expected_answer": "An HTTP method is idempotent if executing it multiple identical times produces the exact same server state as a single invocation. GET, PUT, DELETE, and HEAD are idempotent; POST is inherently non-idempotent. To protect non-idempotent payment creation (POST) against client retries, systems utilize an Idempotency-Key header stored in Redis or database unique constraint tables.",
+    "rubric": {
+      "criteria": [
+        "Defines idempotency correctly (same server state regardless of repetitions)",
+        "Correctly identifies GET, PUT, DELETE as idempotent, POST as non-idempotent",
+        "Proposes Idempotency-Key header with database deduplication"
+      ],
+      "high_score_criteria": "Distinguishes idempotency from safety, clarifies PUT vs PATCH idempotency nuances, and details distributed lock/deduplication key architecture.",
+      "low_score_criteria": "Claims POST is idempotent or claims response payloads must be identical rather than server state.",
+      "scoring": {
+        "5": "Deep explanation of HTTP semantics, RFC 7231 guarantees, and atomic idempotency key patterns in distributed backends.",
+        "3": "Identifies idempotent verbs correctly but offers vague mechanisms for duplicate POST prevention.",
+        "1": "Cannot define idempotency or confuses it with caching."
+      }
+    }
+  },
+  {
+    "title": "React Re-Rendering Mechanics and Hook Optimization",
+    "role": "Full-Stack Developer",
+    "topic": "Frontend Performance",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "When does a React component re-render, and how do you prevent unnecessary re-renders in large component trees?",
+    "expected_answer": "A React component re-renders when its state updates, its parent re-renders, or its consumed Context value changes. Unnecessary re-renders are prevented by structuring state locally, wrapping expensive child components in React.memo, memoizing callback references with useCallback, and caching heavy computations using useMemo.",
+    "rubric": {
+      "criteria": [
+        "Identifies state changes and parent renders as primary re-render triggers",
+        "Explains React.memo for component memoization",
+        "Explains useCallback for referential stability of functions"
+      ],
+      "high_score_criteria": "Mentions reconciliation virtual DOM diffing, referential equality of objects/functions, and caution against premature memoization overhead.",
+      "low_score_criteria": "Claims changing props directly causes re-renders or believes useMemo should wrap every single variable in an application.",
+      "scoring": {
+        "5": "Clear articulation of render cycle, referential equality traps, Context broadcast re-renders, and measured use of React.memo.",
+        "3": "Knows React.memo and useCallback but cannot explain referential equality.",
+        "1": "Thinks DOM is completely wiped and re-created on each render."
+      }
+    }
+  },
+  {
+    "title": "Cross-Origin Resource Sharing (CORS) Mechanics",
+    "role": "Full-Stack Developer",
+    "topic": "Web Security",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "What is CORS, why does the browser enforce it, and what happens during a preflight OPTIONS request?",
+    "expected_answer": "CORS is a browser security mechanism enforcing the Same-Origin Policy (SOP). It prevents malicious scripts on one origin from making unauthorized cross-origin requests to another origin without server permission. For non-simple requests (methods like PUT/DELETE or custom headers), the browser sends an automatic preflight OPTIONS request asking the server for Access-Control-Allow-Origin, Allow-Methods, and Allow-Headers before dispatching the real payload.",
+    "rubric": {
+      "criteria": [
+        "Explains Same-Origin Policy and origin definition (protocol, domain, port)",
+        "Explains the preflight OPTIONS request",
+        "Identifies Access-Control-Allow-* headers"
+      ],
+      "high_score_criteria": "Clarifies that CORS is enforced by the client browser rather than the server, distinguishes simple from preflighted requests, and explains credentialed request cookie caveats.",
+      "low_score_criteria": "Believes disabling CORS on the client makes the backend secure or confuses CORS with authentication.",
+      "scoring": {
+        "5": "Complete grasp of browser security sandbox, preflight caching (Max-Age), and gateway wildcard configuration risks.",
+        "3": "Understands origins and headers but unsure why preflight occurs.",
+        "1": "Claims CORS is a server-side firewall."
+      }
+    }
+  },
+  {
+    "title": "Docker Containerization vs Virtual Machines",
+    "role": "DevOps Engineer",
+    "topic": "Containerization Fundamentals",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "What is the architectural difference between a Docker container and a traditional Virtual Machine?",
+    "expected_answer": "A Virtual Machine runs a full guest operating system on top of a hypervisor (Type 1 or 2), virtualizing hardware and requiring gigabytes of RAM and slow boot times. A Docker container shares the host OS kernel and isolates processes using Linux namespaces (PID, net, mount) and cgroups (CPU, memory limits). Containers boot in milliseconds with near-zero virtualization overhead.",
+    "rubric": {
+      "criteria": [
+        "Mentions hypervisor and guest OS in VMs",
+        "Mentions shared host kernel in containers",
+        "Identifies Linux namespaces and cgroups as container isolation primitives"
+      ],
+      "high_score_criteria": "Deeply explains kernel sharing, cgroup resource constraints, namespace process isolation, and image layering copy-on-write storage.",
+      "low_score_criteria": "Believes containers bundle a miniature guest OS kernel or provides no technical explanation beyond 'containers are lighter'.",
+      "scoring": {
+        "5": "Accurately articulates kernel syscall sharing, security boundary differences, and cgroups/namespaces mechanics.",
+        "3": "Explains guest OS vs container difference without mentioning kernel or namespaces.",
+        "1": "Thinks containers are just small virtual machines."
+      }
+    }
+  },
+  {
+    "title": "CI/CD Pipeline Stages and Quality Gates",
+    "role": "DevOps Engineer",
+    "topic": "Continuous Integration",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Walk me through the standard stages of an automated CI/CD pipeline from git push to production deployment.",
+    "expected_answer": "A standard pipeline consists of: 1) Trigger on commit/PR, 2) Static analysis & linting, 3) Unit and integration testing, 4) Security/vulnerability scanning (SAST and container image scan), 5) Container image build and registry push with immutable semantic version tags, 6) Staging deployment & automated smoke tests, and 7) Progressive production rollout with automated health verification.",
+    "rubric": {
+      "criteria": [
+        "Lists linting, automated testing, container build, and deployment",
+        "Mentions immutable image tagging",
+        "Highlights automated testing gates prior to production promotion"
+      ],
+      "high_score_criteria": "Emphasizes fast feedback loops, artifact immutability, vulnerability gating (Trivy), and rollback mechanisms.",
+      "low_score_criteria": "Mentions only compiling code or relies on manual SSH commands to deploy.",
+      "scoring": {
+        "5": "Thoroughly details continuous integration gates, artifact registry promotion, and automated deployment canary verification.",
+        "3": "Covers basic build and test steps with minimal security or rollback awareness.",
+        "1": "Vague overview lacking understanding of pipeline automation."
+      }
+    }
+  },
+  {
+    "title": "Relational Foreign Keys and Referential Integrity",
+    "role": "Database Engineer",
+    "topic": "Relational Data Modeling",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "What is referential integrity in relational databases, and what are the trade-offs of ON DELETE CASCADE versus ON DELETE RESTRICT?",
+    "expected_answer": "Referential integrity guarantees that foreign key relationships remain valid: a child table cannot reference a non-existent parent row. ON DELETE RESTRICT (or NO ACTION) rejects parent deletion if dependent child rows exist, protecting against accidental data loss. ON DELETE CASCADE automatically deletes all dependent child rows when the parent is deleted, which simplifies cleanup but risks unintended catastrophic data loss in deeply nested relationship graphs.",
+    "rubric": {
+      "criteria": [
+        "Defines referential integrity correctly",
+        "Explains ON DELETE RESTRICT behavior",
+        "Explains ON DELETE CASCADE risks and behavior"
+      ],
+      "high_score_criteria": "Identifies indexing foreign key columns to avoid full table scans on parent deletes, locking implications, and soft-delete patterns.",
+      "low_score_criteria": "Does not know what a foreign key constraint does or recommends deleting database constraints for speed.",
+      "scoring": {
+        "5": "Accurate breakdown of constraint validation timing (DEFERRABLE), cascade locking contention, and business logic safety.",
+        "3": "Defines cascade and restrict accurately without edge case awareness.",
+        "1": "Confuses foreign keys with primary keys."
+      }
+    }
+  },
+  {
+    "title": "Database Normalization Forms 1NF through 3NF",
+    "role": "Database Engineer",
+    "topic": "Database Normalization",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Can you define First, Second, and Third Normal Form (1NF, 2NF, 3NF), and explain when you would intentionally denormalize a table?",
+    "expected_answer": "1NF requires atomic values (no repeating groups/arrays) and a primary key. 2NF requires 1NF and that all non-key attributes are fully functionally dependent on the entire composite primary key (no partial dependencies). 3NF requires 2NF and no transitive dependencies (non-key columns must not depend on other non-key columns). Denormalization is intentionally applied in read-heavy analytics or high-traffic reporting to eliminate expensive multi-table joins.",
+    "rubric": {
+      "criteria": [
+        "Defines 1NF (atomic attributes)",
+        "Defines 2NF (no partial key dependencies)",
+        "Defines 3NF (no transitive dependencies)",
+        "Validates intentional denormalization for read performance"
+      ],
+      "high_score_criteria": "Clearly contrasts modification anomalies (insert, update, delete anomalies) with read latency and caching trade-offs.",
+      "low_score_criteria": "Confuses normal forms or cannot provide an example of transitive dependency.",
+      "scoring": {
+        "5": "Flawless definition of functional dependencies, anomaly mitigation, and reasoned analytical denormalization.",
+        "3": "Explains atomic values and reducing duplicates without formal dependency terminology.",
+        "1": "Cannot explain difference between 2NF and 3NF."
+      }
+    }
+  },
+  {
+    "title": "Git Branching Strategies and Merge Conflict Resolution",
+    "role": "Backend Developer",
+    "topic": "Version Control & Collaboration",
+    "difficulty": "Entry Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Explain the difference between git merge and git rebase, and how you resolve merge conflicts safely.",
+    "expected_answer": "Git merge combines two branch histories by creating a dedicated 3-way merge commit with two parents, preserving the exact chronological record. Git rebase rewrites project history by taking commits from the feature branch and replaying them on top of the base branch, producing a linear commit history. When conflicts occur, developers manually inspect conflicting lines between HEAD and incoming changes, verify tests pass, and complete the operation.",
+    "rubric": {
+      "criteria": [
+        "Explains merge commit vs history rewriting in rebase",
+        "Warns against rebasing public shared branches (Golden Rule of Rebase)",
+        "Outlines conflict resolution process"
+      ],
+      "high_score_criteria": "Details fast-forward vs three-way merges, interactive rebase squashing, and reflog safety recovery.",
+      "low_score_criteria": "Recommends force-pushing over conflicts or cannot distinguish merge from rebase.",
+      "scoring": {
+        "5": "Clear command of DAG commit history, public branch immutability, and structured conflict workflows.",
+        "3": "Explains linear history vs merge commits but vague on conflict mechanics.",
+        "1": "Has never resolved a merge conflict or thinks rebase deletes code."
       }
     }
   },
@@ -55,10 +244,405 @@
         "Identifies write amplification on INSERT/UPDATE/DELETE",
         "Mentions index storage and memory (buffer cache) footprint"
       ],
+      "high_score_criteria": "Details tree depth, sequential leaf linked-list scans for range queries, index selectivity, and heap lookup overhead.",
+      "low_score_criteria": "Assumes indexes make writes faster or claims indexing every column is good practice.",
       "scoring": {
         "5": "Accurately articulates tree height, binary/page search, and write amplification trade-offs.",
         "3": "Mentions faster search and slower writes without theoretical depth.",
-        "1": "Cannot explain how tree structure avoids full scans."
+        "1": "Confuses indexes with primary keys or foreign keys."
+      }
+    }
+  },
+  {
+    "title": "Redis Caching Strategies and Thundering Herd Mitigation",
+    "role": "Backend Developer",
+    "topic": "Distributed Caching",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Explain the Cache-Aside pattern. What is a Cache Stampede (Thundering Herd problem), and how do you prevent it in production?",
+    "expected_answer": "In Cache-Aside, the application checks cache first; on a miss, it queries the database, writes the result to cache with a TTL, and returns it. A Cache Stampede occurs when a high-traffic key expires, causing hundreds of concurrent requests to experience simultaneous misses and hit the database at once. It is mitigated using distributed mutex locks (SET key lock NX EX) so only one thread recomputes the cache while others wait, or via probabilistic early expiration (XFetch algorithm).",
+    "rubric": {
+      "criteria": [
+        "Explains Cache-Aside lookup and populate flow",
+        "Defines Cache Stampede as simultaneous cache misses on hot key expiration",
+        "Proposes distributed mutex locking or probabilistic early expiration"
+      ],
+      "high_score_criteria": "Covers lock timeout safety, fallback to stale data while refreshing asynchronously, and jittered TTLs against cache avalanches.",
+      "low_score_criteria": "Claims increasing Redis RAM prevents stampedes or confuses stampede with cache penetration.",
+      "scoring": {
+        "5": "Comprehensive design covering mutex locks, async background regeneration, and cache avalanche jitter.",
+        "3": "Explains Cache-Aside and stampede problem but gives basic locking solution without edge cases.",
+        "1": "Does not know what a cache stampede is."
+      }
+    }
+  },
+  {
+    "title": "Microservices Resilience and Circuit Breakers",
+    "role": "Backend Developer",
+    "topic": "Microservices Architecture",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "How does the Circuit Breaker pattern prevent cascading failures in a microservices architecture? Explain Closed, Open, and Half-Open states.",
+    "expected_answer": "The Circuit Breaker pattern prevents thread pool exhaustion when a downstream dependency fails. In Closed state, requests pass normally; if the error rate exceeds a threshold, it transitions to Open. In Open state, requests fail fast immediately without calling the remote service, invoking a fallback. After a timeout, it transitions to Half-Open, allowing trial requests to test if the service has recovered.",
+    "rubric": {
+      "criteria": [
+        "Defines cascading failure / thread exhaustion risk",
+        "Explains Closed, Open, and Half-Open state machine",
+        "Mentions fail-fast behavior and fallback responses"
+      ],
+      "high_score_criteria": "Details sliding window metrics (count-based vs time-based), bulkhead thread pool isolation, and fallback degradation strategies.",
+      "low_score_criteria": "Thinks circuit breaker just retries failed requests continuously or cannot explain Half-Open state.",
+      "scoring": {
+        "5": "Clear mastery of state transitions, failure rate thresholds, bulkhead isolation, and graceful degradation.",
+        "3": "Understands the three states but vague on failure metrics or downstream thread impacts.",
+        "1": "Confuses circuit breakers with standard try/catch blocks."
+      }
+    }
+  },
+  {
+    "title": "State Management: Zustand vs Redux Toolkit vs React Context",
+    "role": "Full-Stack Developer",
+    "topic": "Frontend Architecture",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Compare React Context, Zustand, and Redux Toolkit. When would you choose each, and what is Context's primary rendering pitfall?",
+    "expected_answer": "React Context is for low-frequency global dependency injection (theme, auth state). Its pitfall is that any value change triggers re-renders across all consumer components. Zustand is a lightweight store outside React using a pub/sub model that supports atomic state selector hooks without unnecessary re-renders. Redux Toolkit provides strict opinionated state management with time-travel debugging and middleware for large enterprise applications.",
+    "rubric": {
+      "criteria": [
+        "Identifies Context re-render broadcast flaw on consumer components",
+        "Explains Zustand atomic selectors preventing unnecessary renders",
+        "Identifies Redux Toolkit use case (complex workflows, middleware, large teams)"
+      ],
+      "high_score_criteria": "Explains why server state belongs in TanStack Query rather than Redux/Zustand, and referential equality checking in store subscriptions.",
+      "low_score_criteria": "Claims React Context is a full state management library or cannot explain why Context triggers widespread re-renders.",
+      "scoring": {
+        "5": "Clear differentiation between server state vs client state, selector subscriptions, and Context render boundaries.",
+        "3": "Compares libraries adequately but misses Context re-rendering architectural root cause.",
+        "1": "Thinks Redux is required for all React apps."
+      }
+    }
+  },
+  {
+    "title": "Next.js Rendering Strategies: SSR vs SSG vs ISR",
+    "role": "Full-Stack Developer",
+    "topic": "Full-Stack Performance",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Explain Server-Side Rendering (SSR), Static Site Generation (SSG), and Incremental Static Regeneration (ISR) in Next.js. How does ISR achieve both speed and fresh data?",
+    "expected_answer": "SSG generates static HTML at build time for instant CDN delivery. SSR generates HTML on every HTTP request on the server, guaranteeing fresh data at the cost of server compute and higher TTFB. ISR combines both: it serves statically cached HTML instantly, and after a configured revalidation time, a background request regenerates the page and updates the CDN cache asynchronously without blocking the user.",
+    "rubric": {
+      "criteria": [
+        "Distinguishes build-time (SSG) vs per-request (SSR) rendering",
+        "Explains ISR revalidate timer and background regeneration",
+        "Mentions Stale-While-Revalidate caching pattern"
+      ],
+      "high_score_criteria": "Deeply explains Time to First Byte (TTFB), CDN caching edge nodes, on-demand revalidation webhooks, and React Server Components.",
+      "low_score_criteria": "Cannot explain how ISR regenerates pages or confuses SSR with client-side React rendering.",
+      "scoring": {
+        "5": "Exemplary explanation of build vs runtime compilation, stale-while-revalidate mechanics, and edge deployment.",
+        "3": "Defines SSR and SSG accurately but stumbles on how ISR revalidation works.",
+        "1": "Confuses Next.js rendering with basic client-side single page apps."
+      }
+    }
+  },
+  {
+    "title": "Kubernetes Liveness, Readiness, and Startup Probes",
+    "role": "DevOps Engineer",
+    "topic": "Container Orchestration",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "What is the difference between Liveness, Readiness, and Startup probes in Kubernetes, and what happens when each fails?",
+    "expected_answer": "Startup probe checks if the application has initialized (prevents killing slow-starting apps). Liveness probe checks if the process is alive; if it fails, the kubelet kills and restarts the container. Readiness probe checks if the pod can accept network traffic; if it fails, the pod is temporarily removed from the Service's endpoint routing without restarting the container.",
+    "rubric": {
+      "criteria": [
+        "Explains Liveness failure triggers container restart",
+        "Explains Readiness failure removes pod from Service endpoints without killing it",
+        "Explains Startup probe purpose for slow-initializing containers"
+      ],
+      "high_score_criteria": "Identifies cascading crash-loop risks from misconfigured liveness probes querying deep database connections instead of local process state.",
+      "low_score_criteria": "Thinks readiness probes restart pods or that liveness and readiness probes do the same thing.",
+      "scoring": {
+        "5": "Precise understanding of kubelet actions, service endpoint removal, and probe anti-patterns.",
+        "3": "Defines liveness and readiness correctly but misses startup probes.",
+        "1": "Cannot distinguish between restarting a pod and removing it from routing."
+      }
+    }
+  },
+  {
+    "title": "Docker Multi-Stage Builds and Security Hardening",
+    "role": "DevOps Engineer",
+    "topic": "Container Optimization",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Why should production Docker images use Multi-Stage Builds, and how do they improve both performance and security?",
+    "expected_answer": "Multi-stage builds separate the build environment (compilers, build tools, SDKs) from the runtime environment. Artifacts compiled in builder stages are copied into a minimal production base image (Alpine or Distroless). This reduces image size from gigabytes to megabytes, accelerating image pull times, and reduces security vulnerabilities (CVEs) by stripping out compilers and shells.",
+    "rubric": {
+      "criteria": [
+        "Explains separating build tools/compilers from runtime image",
+        "Identifies smaller image size and faster deployment pull times",
+        "Highlights attack surface reduction (fewer CVEs, no package managers or shells)"
+      ],
+      "high_score_criteria": "Mentions Distroless base images, non-root USER execution, layer caching order, and .dockerignore exclusions.",
+      "low_score_criteria": "Believes multi-stage builds are only for running automated tests or doesn't understand image layering.",
+      "scoring": {
+        "5": "Thorough analysis of build vs runner stages, Distroless security posture, and layer caching optimization.",
+        "3": "Explains smaller images well but minimal security depth.",
+        "1": "Unfamiliar with multi-stage Dockerfile syntax."
+      }
+    }
+  },
+  {
+    "title": "PostgreSQL Transaction Isolation Levels and MVCC",
+    "role": "Database Engineer",
+    "topic": "Concurrency & Transactions",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Explain Read Committed vs Repeatable Read isolation levels. How does PostgreSQL's Multi-Version Concurrency Control (MVCC) prevent dirty reads without locking rows?",
+    "expected_answer": "In Read Committed, each query within a transaction sees data committed before that query began. In Repeatable Read, the transaction captures a snapshot at its start and sees data committed before the transaction began. PostgreSQL MVCC achieves this without read locks by storing row versions with xmin and xmax transaction IDs; readers only see row versions visible to their active transaction snapshot.",
+    "rubric": {
+      "criteria": [
+        "Contrasts per-query snapshot (Read Committed) vs per-transaction snapshot (Repeatable Read)",
+        "Explains MVCC non-blocking reads (readers don't block writers)",
+        "Mentions row versioning with xmin / xmax identifiers"
+      ],
+      "high_score_criteria": "Explains table bloat and VACUUM reclaiming dead tuples, and write skew anomalies under Repeatable Read.",
+      "low_score_criteria": "Claims PostgreSQL uses shared read locks for all SELECT queries or confuses isolation levels.",
+      "scoring": {
+        "5": "Deep mastery of snapshot isolation, MVCC tuple header fields, and lock-free concurrency.",
+        "3": "Explains isolation levels well but weak on MVCC internal row versioning.",
+        "1": "Claims dirty reads are possible in PostgreSQL or doesn't know MVCC."
+      }
+    }
+  },
+  {
+    "title": "PostgreSQL GIN vs B-Tree vs BRIN Indexing",
+    "role": "Database Engineer",
+    "topic": "Database Indexing Structures",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "When would you choose a GIN index or a BRIN index over a standard B-Tree index in PostgreSQL?",
+    "expected_answer": "B-Tree is the default for scalar equality and range queries. GIN (Generalized Inverted Index) is chosen for composite multi-value attributes like JSONB documents, arrays, and full-text search where an item contains multiple searchable tokens. BRIN (Block Range Index) is chosen for massive append-only tables where data is naturally ordered on disk (timestamps, serial IDs); it indexes page block min/max values, using kilobytes of RAM instead of gigabytes.",
+    "rubric": {
+      "criteria": [
+        "Identifies GIN for JSONB, arrays, and full-text search",
+        "Identifies BRIN for massive ordered timeseries/append-only data",
+        "Highlights storage and memory differences between B-Tree and BRIN"
+      ],
+      "high_score_criteria": "Explains GIN write overhead and pending list vacuuming, and BRIN block range skipping mechanics.",
+      "low_score_criteria": "Claims GIN is faster than B-Tree for simple integer primary keys or doesn't know what BRIN is.",
+      "scoring": {
+        "5": "Authoritative breakdown of index data structures, page layout mechanics, and memory/write trade-offs.",
+        "3": "Knows GIN is for JSONB/fulltext and B-Tree for standard lookups, but vague on BRIN.",
+        "1": "Thinks B-Tree is the only index type needed in PostgreSQL."
+      }
+    }
+  },
+  {
+    "title": "Database Query Plan Analysis with EXPLAIN ANALYZE",
+    "role": "Database Engineer",
+    "topic": "SQL Optimization",
+    "difficulty": "Mid Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "How do you use EXPLAIN ANALYZE to identify SQL performance bottlenecks? What is the difference between an Index Scan, an Index Only Scan, and a Bitmap Heap Scan?",
+    "expected_answer": "EXPLAIN ANALYZE executes the query and shows estimated cost vs actual execution time, rows, and buffer hits. An Index Scan traverses the index and fetches table heap pages for each row. An Index Only Scan retrieves all needed columns directly from the index without reading table heap pages (if visibility map confirms). A Bitmap Index Scan creates an in-memory bitmap of matching row locations and reads heap pages sequentially.",
+    "rubric": {
+      "criteria": [
+        "Explains EXPLAIN (estimates only) vs EXPLAIN ANALYZE (actual execution)",
+        "Distinguishes Index Scan vs Index Only Scan (avoiding heap page access)",
+        "Explains Bitmap Heap Scan for batching disk page reads"
+      ],
+      "high_score_criteria": "Details shared buffers hits vs reads, sequential vs random disk I/O, and visibility map vacuum requirements for Index Only Scans.",
+      "low_score_criteria": "Thinks EXPLAIN ANALYZE does not execute the query or cannot distinguish Index Scan from Index Only Scan.",
+      "scoring": {
+        "5": "Precise breakdown of heap page fetches, visibility maps, disk I/O patterns, and join node evaluations.",
+        "3": "Explains basic execution time and index usage but misses Index Only Scan visibility map nuances.",
+        "1": "Does not know how to read an execution plan."
+      }
+    }
+  },
+  {
+    "title": "Distributed System Consistency: The CAP Theorem and PACELC",
+    "role": "Backend Developer",
+    "topic": "Distributed Systems",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Critique the classical CAP theorem. What is the PACELC theorem, and how does it more accurately describe modern distributed databases?",
+    "expected_answer": "The CAP theorem states that under a network Partition (P), a distributed system must choose between Consistency (C) and Availability (A). However, network partitions are rare; PACELC extends CAP by stating: If there is a Partition (P), how does the system trade off Availability (A) and Consistency (C)? Else (E), when the system is running normally, how does it trade off Latency (L) and Consistency (C)? For example, MongoDB and DynamoDB default to PA/EL (prioritizing latency under normal operation).",
+    "rubric": {
+      "criteria": [
+        "Defines CAP theorem correctly (Consistency, Availability, Partition Tolerance)",
+        "Explains that network partitions force a choice between C and A",
+        "Explains PACELC extension: Else (normal operation) trading Latency vs Consistency"
+      ],
+      "high_score_criteria": "Analyzes real-world systems (Cassandra as PA/EL, Spanner as PC/EC), quorum consensus (R + W > N), and read repair vs write sync.",
+      "low_score_criteria": "Claims a system can have all three of C, A, and P simultaneously in a distributed network.",
+      "scoring": {
+        "5": "Expert critique of CAP oversimplification, PACELC latency trade-offs, and consensus protocol trade-offs.",
+        "3": "Explains CAP well and mentions PACELC concept but vague on normal-operation latency trade-offs.",
+        "1": "Misunderstands partition tolerance or claims CA distributed databases exist."
+      }
+    }
+  },
+  {
+    "title": "Distributed Transactions: 2PC vs Saga Pattern",
+    "role": "Backend Developer",
+    "topic": "Distributed Architecture",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Compare Two-Phase Commit (2PC) with the Saga Pattern for managing transactions across distributed microservices. How do Choreography and Orchestration Sagas differ?",
+    "expected_answer": "Two-Phase Commit (2PC) guarantees atomic consistency via a coordinator using prepare and commit phases, but it suffers from blocking locks, high latency, and coordinator single-point-of-failure. The Saga Pattern decomposes transactions into a series of local transactions coordinated through asynchronous messaging; if a step fails, compensating transactions are executed to undo changes. Choreography relies on event-driven peer-to-peer pub/sub; Orchestration uses a centralized orchestrator directing each service.",
+    "rubric": {
+      "criteria": [
+        "Explains 2PC prepare/commit phases and blocking lock vulnerabilities",
+        "Explains Saga pattern with compensating transactions",
+        "Distinguishes Choreography (events) vs Orchestration (central state machine)"
+      ],
+      "high_score_criteria": "Details semantic rollbacks, eventual consistency, idempotency requirements for compensations, and outbox pattern integration.",
+      "low_score_criteria": "Claims 2PC is recommended for high-throughput microservices or forgets compensating transactions in Sagas.",
+      "scoring": {
+        "5": "Masterful architectural evaluation of blocking vs non-blocking protocols, isolation anomalies in Sagas, and orchestrator deadlocks.",
+        "3": "Explains 2PC and Sagas adequately but struggles with Choreography vs Orchestration differences.",
+        "1": "Does not understand how compensating transactions work."
+      }
+    }
+  },
+  {
+    "title": "Kafka Partitioning, Consumer Groups, and Exactly-Once Semantics",
+    "role": "Backend Developer",
+    "topic": "Event-Driven Systems",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "How does Kafka achieve horizontal scalability through partitioning? How do consumer groups work, and how does Kafka achieve Exactly-Once Semantics (EOS)?",
+    "expected_answer": "Kafka scales horizontally by dividing topics into partitions across broker nodes. Partitions represent the unit of parallelism, guaranteeing strict order only per partition key. A consumer group assigns each partition to exactly one consumer instance. Exactly-Once Semantics (EOS) is achieved using idempotent producers (sequence numbers and producer IDs preventing duplicates) and transactional coordinators that atomically commit message writes and consumer offset commits together.",
+    "rubric": {
+      "criteria": [
+        "Explains partition-level ordering and parallelism unit",
+        "Explains consumer group rebalancing and partition assignment",
+        "Explains Exactly-Once Semantics via idempotent producers and transactional commits"
+      ],
+      "high_score_criteria": "Covers consumer rebalance protocols (cooperative sticky assignor), page cache zero-copy reads, and zombie fencing with epoch numbers.",
+      "low_score_criteria": "Claims Kafka guarantees global ordering across all partitions or thinks adding consumers beyond partition count increases throughput.",
+      "scoring": {
+        "5": "Deep technical mastery of transactional APIs, two-phase commits in Kafka streams, and rebalance protocols.",
+        "3": "Explains partitions and consumer groups well but vague on EOS transactional mechanics.",
+        "1": "Confuses Kafka with traditional RabbitMQ message queues."
+      }
+    }
+  },
+  {
+    "title": "Full-Stack Security: Mitigating XSS, CSRF, and Token Hijacking",
+    "role": "Full-Stack Developer",
+    "topic": "Application Security",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Design an end-to-end authentication and session architecture resilient against XSS, CSRF, and token theft. Where should tokens be stored, and how should refresh tokens be handled?",
+    "expected_answer": "Store short-lived access tokens (10-15 mins) in memory or in an HttpOnly, Secure, SameSite=Strict cookie to prevent theft via JavaScript XSS. Store refresh tokens in HttpOnly cookies with path restriction. Implement Refresh Token Rotation (RTR): issuing a new refresh token on every exchange and invalidating the entire family if an already-used token is reused (indicating theft). Combine with strict Content Security Policy (CSP) and anti-CSRF headers for state-changing requests.",
+    "rubric": {
+      "criteria": [
+        "Bans localStorage for sensitive tokens due to XSS vulnerability",
+        "Uses HttpOnly, Secure, SameSite cookies",
+        "Explains Refresh Token Rotation with automatic reuse detection",
+        "Includes Content Security Policy (CSP) headers"
+      ],
+      "high_score_criteria": "Details token family invalidation in Redis, defense-in-depth sanitization (DOMPurify), and CORS origin validation.",
+      "low_score_criteria": "Recommends storing JWT tokens in localStorage or believes SameSite cookies solve all XSS vulnerabilities.",
+      "scoring": {
+        "5": "Flawless security architecture detailing cryptographic cookies, token rotation reuse detection, and CSP policies.",
+        "3": "Recommends HttpOnly cookies and rotation but misses token reuse detection or CSP.",
+        "1": "Advises localStorage for JWT authentication."
+      }
+    }
+  },
+  {
+    "title": "Kubernetes Production Zero-Downtime Deployments and Ingress",
+    "role": "DevOps Engineer",
+    "topic": "Cloud Infrastructure",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Design a zero-downtime deployment pipeline in Kubernetes. How do you handle database schema migrations alongside rolling deployments without breaking live users?",
+    "expected_answer": "Zero-downtime rolling deployments require readiness probes so new pods only receive traffic once healthy, and preStop hooks with graceful termination signals (SIGTERM) allowing in-flight connections to complete. Database schema migrations must follow the Expand and Contract pattern (Parallel Run): 1) Expand database (add new nullable column/table), 2) Deploy new code writing to both old and new columns, 3) Backfill historical data, 4) Deploy code reading only new column, 5) Contract database (drop old column).",
+    "rubric": {
+      "criteria": [
+        "Mentions preStop hooks and terminationGracePeriodSeconds for in-flight requests",
+        "Explains readiness probes preventing premature traffic routing",
+        "Explains Expand and Contract (Parallel Run) migration pattern"
+      ],
+      "high_score_criteria": "Details canary rollouts with service mesh (Istio/Envoy) traffic splitting, connection draining, and backward-compatible serialization.",
+      "low_score_criteria": "Recommends running breaking schema migrations directly inside pod startup scripts during rolling updates.",
+      "scoring": {
+        "5": "Exemplary production design covering graceful pod shutdown, traffic draining, and Expand/Contract database migration steps.",
+        "3": "Explains rolling updates and readiness probes but vague on database backward compatibility.",
+        "1": "Has no strategy for handling database migrations during deployments."
+      }
+    }
+  },
+  {
+    "title": "PostgreSQL Sharding, Table Partitioning, and Multi-Tenant Isolation",
+    "role": "Database Engineer",
+    "topic": "Scalable Database Architectures",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Compare declarative table partitioning with horizontal sharding and multi-tenant schema isolation in PostgreSQL. How do you design for a 10 TB multi-tenant SaaS application?",
+    "expected_answer": "Table partitioning splits a single database instance's tables by range/list/hash for query pruning and fast archival. Multi-tenant schema isolation uses separate PostgreSQL schemas per tenant for security isolation. When data volume and write throughput exceed single-node vertical capacity, horizontal sharding distributes tenants across independent database nodes using hash or tenant-id routing. For 10TB SaaS, a hybrid approach shards tenants across clusters while partitioning large audit/timeseries tables within each tenant shard.",
+    "rubric": {
+      "criteria": [
+        "Distinguishes single-node partitioning from distributed multi-node sharding",
+        "Evaluates multi-tenant isolation patterns (shared table with tenant_id, schema per tenant, database per tenant)",
+        "Proposes shard key routing and partition pruning"
+      ],
+      "high_score_criteria": "Analyzes noisy-neighbor problems, Citus/distributed PostgreSQL extensions, cross-tenant query limitations, and connection pooler (PgBouncer) scaling.",
+      "low_score_criteria": "Claims partitioning allows infinite horizontal scaling across separate servers or recommends separate databases for 100,000 tenants.",
+      "scoring": {
+        "5": "Mastery of physical vs logical isolation, partition pruning, distributed shard routing, and connection pooler limits.",
+        "3": "Explains partitioning and sharding correctly but weak on multi-tenant trade-offs.",
+        "1": "Confuses partitioning with sharding."
+      }
+    }
+  },
+  {
+    "title": "RAG Systems: Vector Search, Context Window Optimization, and Evaluation",
+    "role": "Backend Developer",
+    "topic": "AI & Retrieval-Augmented Generation",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "Explain the architecture of an Advanced RAG pipeline. How does Hybrid Retrieval (Dense + Sparse) with Reciprocal Rank Fusion outperform naive vector search, and how do you quantitatively measure RAG quality?",
+    "expected_answer": "Naive RAG relies solely on dense vector search, which often misses exact keyword queries (acronyms, code identifiers, part numbers). Advanced RAG uses Hybrid Search combining dense semantic vectors (pgvector) and sparse BM25 full-text search, fused via Reciprocal Rank Fusion (RRF) to score candidate chunks. Two-stage re-ranking (Cross-Encoder) filters Top-N candidates down to Top-K to overcome the 'Lost in the Middle' problem. RAG quality is quantitatively measured using the RAG Triad: Faithfulness (zero hallucination against retrieved context), Answer Relevance (answering user query without drift), and Context Precision/Recall.",
+    "rubric": {
+      "criteria": [
+        "Contrasts semantic dense search vs exact sparse keyword BM25 search",
+        "Explains Reciprocal Rank Fusion (RRF) formula and rank merging",
+        "Mentions Two-Stage Re-ranking overcoming 'Lost in the Middle' phenomenon",
+        "Identifies RAG Triad metrics: Faithfulness, Answer Relevance, Context Precision/Recall"
+      ],
+      "high_score_criteria": "Details mathematical RRF formula (1/(k+rank)), chunking strategies with metadata pre-filtering, cross-encoder latency trade-offs, and automated LLM-as-a-judge benchmarking.",
+      "low_score_criteria": "Believes pure vector search is always sufficient for all queries or has no metrics for evaluating RAG outputs.",
+      "scoring": {
+        "5": "Authoritative research-grade mastery of hybrid retrieval, RRF math, two-stage re-ranking, and Ragas/TruLens evaluation frameworks.",
+        "3": "Understands hybrid search and basic RAG metrics but lacks depth on re-ranking or RRF mechanics.",
+        "1": "Only knows basic vector search embeddings."
+      }
+    }
+  },
+  {
+    "title": "Site Reliability: The Four Golden Signals and Incident Post-Mortems",
+    "role": "DevOps Engineer",
+    "topic": "Site Reliability Engineering",
+    "difficulty": "Senior Level",
+    "source": "Curated Technical Interview Bank",
+    "content": "What are Google SRE's Four Golden Signals? How do you establish Service Level Objectives (SLOs) and Error Budgets, and what makes a blameless post-mortem effective?",
+    "expected_answer": "The Four Golden Signals are Latency (time to serve request), Traffic (demand/throughput), Errors (rate of failed requests), and Saturation (how full system resources are). A Service Level Objective (SLO) defines target reliability (e.g. 99.9% success rate), and the Error Budget is the remaining permitted unreliability (0.1%). If error budget is exhausted, feature deployments are paused to focus on reliability. A blameless post-mortem assumes engineers had good intentions and focuses on systemic safeguards, automated testing gaps, and architectural improvements rather than human error.",
+    "rubric": {
+      "criteria": [
+        "Identifies Latency, Traffic, Errors, and Saturation",
+        "Explains SLOs and Error Budget governance",
+        "Defines principles of blameless post-mortem culture and systemic root causes"
+      ],
+      "high_score_criteria": "Distinguishes SLIs, SLOs, and SLAs, burnout prevention via error budget freezes, and automated remediation action items.",
+      "low_score_criteria": "Confuses SLOs with SLAs or believes incidents should assign individual blame.",
+      "scoring": {
+        "5": "Complete command of SRE operational frameworks, error budget governance, and culture of systemic reliability.",
+        "3": "Names most golden signals and explains post-mortems adequately.",
+        "1": "Unfamiliar with SRE principles."
       }
     }
   }

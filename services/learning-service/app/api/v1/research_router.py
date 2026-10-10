@@ -8,6 +8,7 @@ from app.models.learning import LearningExperimentLog
 from app.schemas.learning import (
     BenchmarkRequest,
     BenchmarkComparisonResponse,
+    ComparativeBenchmarkMatrixResponse,
     LearningQueryRequest,
     RetrievalAblationResponse,
     RetrievalStrategyResult,
@@ -159,6 +160,47 @@ async def run_benchmark_comparison(
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Benchmark execution error: {str(e)}")
+
+
+@router.get("/benchmark-matrix", response_model=ComparativeBenchmarkMatrixResponse)
+async def get_benchmark_matrix(
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Returns the comprehensive 40-item RAG Triad research evaluation matrix
+    comparing Baseline (Direct LLM), Naive RAG (Dense Only), and Advanced RAG (Hybrid RRF + Re-Ranker).
+    """
+    from app.services.rag_evaluator import rag_evaluator_service
+    return await rag_evaluator_service.run_full_benchmark_matrix(session=db)
+
+
+@router.get("/golden-dataset")
+async def get_golden_dataset():
+    """Returns the 40-item curated multi-track golden evaluation corpus."""
+    from app.services.rag_evaluator import rag_evaluator_service
+    return rag_evaluator_service.load_golden_dataset()
+
+
+class EvaluateQueryRequest(BaseModel):
+    item_id: str = "eval_01"
+
+
+@router.post("/evaluate-query")
+async def evaluate_single_query(
+    request: EvaluateQueryRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Runs live RAG Triad benchmarking for a selected golden dataset item,
+    returning empirical Faithfulness, Relevance, Precision, and Recall across all 3 conditions.
+    """
+    from app.services.rag_evaluator import rag_evaluator_service
+    dataset = rag_evaluator_service.load_golden_dataset()
+    matched = next((item for item in dataset if item["id"] == request.item_id), None)
+    if not matched:
+        raise HTTPException(status_code=404, detail=f"Golden dataset item {request.item_id} not found.")
+
+    return await rag_evaluator_service.evaluate_single_item(session=db, item=matched)
 
 
 @router.get("/experiments")

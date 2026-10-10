@@ -1,0 +1,402 @@
+[
+  {
+    "id": "eval_01",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Microservices Resilience",
+    "query": "How does a circuit breaker prevent cascading failure during downstream outages?",
+    "ground_truth_doc_title": "Microservices Resilience: Circuit Breakers, Bulkheads, and Retry Strategies",
+    "ground_truth_keywords": ["closed", "open", "half-open", "cascading failure", "fallback", "fast-fail"],
+    "expert_reference_answer": "A circuit breaker transitions from Closed to Open when failure rates cross a threshold, immediately failing fast and invoking fallbacks without calling the downstream service. After a sleep cooldown, it enters Half-Open to test recovery with trial traffic."
+  },
+  {
+    "id": "eval_02",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Database Connection Management",
+    "query": "Why does connection pooling use HikariCP and what is the formula for pool sizing?",
+    "ground_truth_doc_title": "Database Connection Pooling and Resource Optimization",
+    "ground_truth_keywords": ["hikaricp", "tcp handshake", "cpu cores", "disk spindles", "leakdetectionthreshold"],
+    "expert_reference_answer": "HikariCP maintains pre-established physical TCP connections to eliminate TCP and TLS handshake overhead. The recommended pool size formula is (2 * CPU Cores) + Disk Spindles."
+  },
+  {
+    "id": "eval_03",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Distributed Caching",
+    "query": "What causes a cache stampede or thundering herd and how do you resolve it?",
+    "ground_truth_doc_title": "High-Performance Caching Patterns with Redis",
+    "ground_truth_keywords": ["cache stampede", "thundering herd", "mutex lock", "xfetch", "ttl"],
+    "expert_reference_answer": "A cache stampede occurs when a high-traffic key expires simultaneously for many concurrent requests. It is mitigated using distributed mutex locks or probabilistic early expiration algorithms like XFetch."
+  },
+  {
+    "id": "eval_04",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Message Queues",
+    "query": "How does Kafka maintain message ordering while scaling across consumer groups?",
+    "ground_truth_doc_title": "Distributed Message Queues: Apache Kafka vs RabbitMQ",
+    "ground_truth_keywords": ["partitions", "consumer groups", "partition key", "order", "offset"],
+    "expert_reference_answer": "Kafka guarantees strict chronological order within a single partition based on the message key. Horizontal scaling is achieved by assigning each partition to exactly one consumer instance within a consumer group."
+  },
+  {
+    "id": "eval_05",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Protocols & RPC",
+    "query": "Why is gRPC over HTTP/2 faster than traditional REST over JSON?",
+    "ground_truth_doc_title": "Inter-Service Communication: gRPC vs RESTful HTTP APIs",
+    "ground_truth_keywords": ["protobuf", "binary serialization", "http/2", "multiplexing", "hpack"],
+    "expert_reference_answer": "gRPC uses Protocol Buffers binary serialization instead of text JSON, reducing payload size by up to 70%, and runs on HTTP/2 which provides multiplexing over a single persistent TCP connection."
+  },
+  {
+    "id": "eval_06",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Distributed Tracing",
+    "query": "How does OpenTelemetry propagate trace context across microservices?",
+    "ground_truth_doc_title": "Distributed Tracing and Microservices Observability with OpenTelemetry",
+    "ground_truth_keywords": ["traceparent", "traceid", "spanid", "context propagation", "w3c"],
+    "expert_reference_answer": "OpenTelemetry injects and extracts W3C Trace Context HTTP headers containing traceparent with TraceID and SpanID across service boundaries to stitch asynchronous spans into a coherent distributed trace graph."
+  },
+  {
+    "id": "eval_07",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Rate Limiting",
+    "query": "How does the Token Bucket algorithm work for API rate limiting?",
+    "ground_truth_doc_title": "API Rate Limiting and Traffic Throttling Algorithms",
+    "ground_truth_keywords": ["token bucket", "refill rate", "capacity", "burst", "429"],
+    "expert_reference_answer": "A bucket has capacity C and refills with tokens at rate R per second. Each request consumes one token; if empty, HTTP 429 is returned. This accommodates short bursts while enforcing long-term average throughput."
+  },
+  {
+    "id": "eval_08",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Authentication",
+    "query": "How do you verify a stateless JWT and handle revocation before expiration?",
+    "ground_truth_doc_title": "JSON Web Token (JWT) Authentication and Session Management",
+    "ground_truth_keywords": ["signature", "secret key", "exp", "redis blocklist", "refresh token"],
+    "expert_reference_answer": "The backend decodes header and payload and computes the signature using its secret or public key. If valid and not expired, the request is authenticated. Early revocation uses short-lived tokens and Redis blocklists."
+  },
+  {
+    "id": "eval_09",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "REST API Architecture",
+    "query": "What are the core constraints of REST and what makes an HTTP method idempotent?",
+    "ground_truth_doc_title": "RESTful API Architectural Principles and Design Best Practices",
+    "ground_truth_keywords": ["statelessness", "idempotent", "put", "delete", "post"],
+    "expert_reference_answer": "REST requires client-server separation, statelessness, cacheability, and uniform interface. An HTTP method is idempotent if executing it multiple times leaves the server in the identical state as a single invocation."
+  },
+  {
+    "id": "eval_10",
+    "track": "backend",
+    "target_role": "Backend Developer",
+    "topic": "Rate Limiting Concurrency",
+    "query": "Why should distributed rate limiting in Redis use atomic Lua scripts?",
+    "ground_truth_doc_title": "API Rate Limiting and Traffic Throttling Algorithms",
+    "ground_truth_keywords": ["lua script", "atomic", "single-threaded", "race conditions", "redis"],
+    "expert_reference_answer": "Centralized Redis nodes executing Lua scripts run atomically within Redis's single-threaded event loop, preventing race conditions when incrementing counters and setting TTLs across clustered gateways."
+  },
+  {
+    "id": "eval_11",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Next.js Rendering",
+    "query": "What is the difference between SSG and ISR in Next.js applications?",
+    "ground_truth_doc_title": "Modern Frontend Rendering Patterns: SSR, SSG, ISR, and React Server Components",
+    "ground_truth_keywords": ["ssg", "isr", "revalidate", "stale-while-revalidate", "cdn"],
+    "expert_reference_answer": "SSG compiles static HTML at build time. ISR serves statically cached pages from CDNs while allowing background asynchronous page regeneration after a configured revalidation time window."
+  },
+  {
+    "id": "eval_12",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "React Architecture",
+    "query": "What are React Server Components and how do they reduce client bundle sizes?",
+    "ground_truth_doc_title": "Modern Frontend Rendering Patterns: SSR, SSG, ISR, and React Server Components",
+    "ground_truth_keywords": ["server components", "rsc", "zero bundle size", "use client", "serialization"],
+    "expert_reference_answer": "React Server Components execute solely on the server and stream a serialized binary protocol to the browser, fetching database data directly with zero client JavaScript bundle size overhead."
+  },
+  {
+    "id": "eval_13",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "State Management",
+    "query": "Why can React Context degrade performance compared to Zustand?",
+    "ground_truth_doc_title": "Modern Frontend State Management: Client State vs Server Cache",
+    "ground_truth_keywords": ["context", "re-render", "zustand", "selectors", "atomic"],
+    "expert_reference_answer": "Any value update in React Context forces every consumer component to re-render. Zustand uses atomic selector subscriptions outside React's render tree, updating only components whose selected state slices changed."
+  },
+  {
+    "id": "eval_14",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Server State",
+    "query": "What advantages does TanStack Query offer for server state caching?",
+    "ground_truth_doc_title": "Modern Frontend State Management: Client State vs Server Cache",
+    "ground_truth_keywords": ["tanstack query", "request deduplication", "optimistic updates", "cache invalidation"],
+    "expert_reference_answer": "TanStack Query automatically manages server state caching, deduplicating concurrent promises, providing background stale-while-revalidate fetching, and enabling optimistic UI updates with automatic rollback."
+  },
+  {
+    "id": "eval_15",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Web Security",
+    "query": "How does a Content Security Policy protect against Cross-Site Scripting (XSS)?",
+    "ground_truth_doc_title": "Client-Side Security: Defending Against XSS, CSRF, and Supply Chain Vulnerabilities",
+    "ground_truth_keywords": ["csp", "content-security-policy", "script-src", "eval", "xss"],
+    "expert_reference_answer": "A Content Security Policy (CSP) header restricts the trusted domains from which scripts can be loaded, restricts inline script execution, and disables dynamic eval(), preventing unauthorized injected script execution."
+  },
+  {
+    "id": "eval_16",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Cookie Security",
+    "query": "Why should authentication tokens be stored in HttpOnly cookies rather than localStorage?",
+    "ground_truth_doc_title": "Client-Side Security: Defending Against XSS, CSRF, and Supply Chain Vulnerabilities",
+    "ground_truth_keywords": ["httponly", "localstorage", "xss", "secure", "samesite"],
+    "expert_reference_answer": "Tokens stored in localStorage are accessible to any JavaScript executing on the origin via XSS. HttpOnly cookies cannot be accessed by client JavaScript APIs, preventing token exfiltration."
+  },
+  {
+    "id": "eval_17",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Web Vitals",
+    "query": "What causes poor Interaction to Next Paint (INP) and how do you optimize it?",
+    "ground_truth_doc_title": "Web Vitals Optimization and Frontend Performance Engineering",
+    "ground_truth_keywords": ["inp", "interaction to next paint", "long tasks", "web workers", "usedeferredvalue"],
+    "expert_reference_answer": "Poor INP is caused by long JavaScript tasks (> 50ms) blocking the main thread during user input. It is optimized by breaking up tasks via scheduler.yield(), offloading work to Web Workers, and using useTransition."
+  },
+  {
+    "id": "eval_18",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Web Vitals",
+    "query": "How do you eliminate Cumulative Layout Shift (CLS) on dynamic web pages?",
+    "ground_truth_doc_title": "Web Vitals Optimization and Frontend Performance Engineering",
+    "ground_truth_keywords": ["cls", "cumulative layout shift", "aspect-ratio", "width height", "placeholders"],
+    "expert_reference_answer": "CLS is eliminated by reserving explicit width and height dimensions or aspect-ratio CSS on images, videos, and dynamic embeds, and avoiding inserting dynamic banners above existing content."
+  },
+  {
+    "id": "eval_19",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Micro-Frontends",
+    "query": "How does Webpack Module Federation enable independent frontend deployments?",
+    "ground_truth_doc_title": "Micro-Frontends Architecture: Module Federation and Independent Deployments",
+    "ground_truth_keywords": ["module federation", "host container", "remote bundles", "shared dependencies"],
+    "expert_reference_answer": "Module Federation allows a host application to dynamically load remote JavaScript bundles at runtime over HTTP, sharing singleton library instances like React to avoid duplicate runtime downloads."
+  },
+  {
+    "id": "eval_20",
+    "track": "fullstack",
+    "target_role": "Full-Stack Developer",
+    "topic": "Real-Time Web",
+    "query": "When should an application choose Server-Sent Events (SSE) over WebSockets?",
+    "ground_truth_doc_title": "Real-Time Web Architectures: WebSockets vs Server-Sent Events vs Long-Polling",
+    "ground_truth_keywords": ["server-sent events", "sse", "websockets", "unidirectional", "text/event-stream"],
+    "expert_reference_answer": "Server-Sent Events (SSE) is preferred when real-time data flow is strictly unidirectional from server to client (e.g. LLM token streaming, notifications) because it operates over standard HTTP with native browser reconnection."
+  },
+  {
+    "id": "eval_21",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Docker Optimization",
+    "query": "How do Docker Multi-Stage builds improve security posture?",
+    "ground_truth_doc_title": "Docker Multi-Stage Builds and Container Image Optimization",
+    "ground_truth_keywords": ["multi-stage", "builder", "runner", "cves", "distroless"],
+    "expert_reference_answer": "Multi-stage builds leave compilers, SDKs, and build dependencies in temporary build stages and copy only runtime binaries into minimal Distroless/Alpine images, drastically eliminating CVEs and removing shells."
+  },
+  {
+    "id": "eval_22",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Docker Optimization",
+    "query": "Why should Docker instruction ordering place dependency files before source code?",
+    "ground_truth_doc_title": "Docker Multi-Stage Builds and Container Image Optimization",
+    "ground_truth_keywords": ["layer caching", "package.json", "dockerignore", "rebuild"],
+    "expert_reference_answer": "Docker caches image layers sequentially. Copying package descriptors and running dependency installs first ensures Docker reuses cached layers when application source code changes, speeding up builds."
+  },
+  {
+    "id": "eval_23",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Kubernetes Architecture",
+    "query": "What is the difference between a Kubernetes Pod, Deployment, and Service?",
+    "ground_truth_doc_title": "Kubernetes Architecture: Pod Orchestration, Services, and Autoscaling",
+    "ground_truth_keywords": ["pod", "deployment", "service", "clusterip", "replicaset"],
+    "expert_reference_answer": "A Pod is the smallest execution unit running tightly coupled containers. A Deployment manages replica counts and rolling updates. A Service provides a stable IP address and DNS name across ephemeral Pods."
+  },
+  {
+    "id": "eval_24",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Kubernetes Health",
+    "query": "What happens when a Kubernetes Readiness probe fails versus a Liveness probe?",
+    "ground_truth_doc_title": "Kubernetes Architecture: Pod Orchestration, Services, and Autoscaling",
+    "ground_truth_keywords": ["liveness probe", "readiness probe", "restart", "service endpoints"],
+    "expert_reference_answer": "If a Liveness probe fails, the kubelet restarts the container. If a Readiness probe fails, the Pod is removed from the Service's endpoint routing pool without being restarted, preventing traffic to warming pods."
+  },
+  {
+    "id": "eval_25",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Progressive Delivery",
+    "query": "Explain Blue-Green deployment versus Canary rollout strategies.",
+    "ground_truth_doc_title": "CI/CD Automation: GitHub Actions Pipelines and Progressive Delivery",
+    "ground_truth_keywords": ["blue-green", "canary", "traffic switching", "rollback", "zero-downtime"],
+    "expert_reference_answer": "Blue-Green maintains two identical environments, switching 100% of traffic instantly once Green passes tests. Canary routes a small fraction (e.g. 5%) of traffic to the new release to verify metrics before gradual promotion."
+  },
+  {
+    "id": "eval_26",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Terraform IaC",
+    "query": "What is the role of the Terraform state file and why is state locking required?",
+    "ground_truth_doc_title": "Infrastructure as Code (IaC) with HashiCorp Terraform",
+    "ground_truth_keywords": ["state file", "terraform.tfstate", "state locking", "s3", "dynamodb"],
+    "expert_reference_answer": "The state file maps declared HCL resources to real-world cloud IDs and attributes. Remote state locking (via DynamoDB) prevents concurrent team members from applying overlapping changes that corrupt state."
+  },
+  {
+    "id": "eval_27",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Terraform IaC",
+    "query": "How does Terraform detect and reconcile configuration drift?",
+    "ground_truth_doc_title": "Infrastructure as Code (IaC) with HashiCorp Terraform",
+    "ground_truth_keywords": ["configuration drift", "terraform plan", "reconcile", "out-of-band"],
+    "expert_reference_answer": "Running terraform plan queries live cloud provider APIs and compares the actual infrastructure against the state file and HCL code, generating a plan to restore out-of-band manual changes back to declared code."
+  },
+  {
+    "id": "eval_28",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Cloud Networking",
+    "query": "What distinguishes a Public Subnet from a Private Subnet in a Cloud VPC?",
+    "ground_truth_doc_title": "Cloud Networking: Virtual Private Clouds (VPC), Subnetting, and Zero-Trust Security",
+    "ground_truth_keywords": ["public subnet", "private subnet", "internet gateway", "nat gateway"],
+    "expert_reference_answer": "A Public Subnet has a route table directing 0.0.0.0/0 to an Internet Gateway for inbound/outbound access. A Private Subnet routes outbound traffic through a NAT Gateway and has no direct route to the Internet."
+  },
+  {
+    "id": "eval_29",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Cloud Networking",
+    "query": "What is the difference between Security Groups and Network ACLs?",
+    "ground_truth_doc_title": "Cloud Networking: Virtual Private Clouds (VPC), Subnetting, and Zero-Trust Security",
+    "ground_truth_keywords": ["security groups", "nacls", "stateful", "stateless", "subnet boundary"],
+    "expert_reference_answer": "Security Groups operate at the ENI instance level and are stateful (inbound allows corresponding outbound). NACLs operate at the subnet boundary and are stateless (both directions must be explicitly configured)."
+  },
+  {
+    "id": "eval_30",
+    "track": "devops",
+    "target_role": "DevOps Engineer",
+    "topic": "Linux Performance",
+    "query": "According to the USE Method, how do you diagnose memory saturation in Linux?",
+    "ground_truth_doc_title": "Linux Systems Performance Engineering and Troubleshooting",
+    "ground_truth_keywords": ["use method", "vmstat", "swap", "si so", "oom killer"],
+    "expert_reference_answer": "Memory saturation is diagnosed using vmstat to inspect active swap-in (si) and swap-out (so) paging. High paging rates show the kernel is thrashing disk storage to compensate for memory exhaustion, leading to OOM."
+  },
+  {
+    "id": "eval_31",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Table Partitioning",
+    "query": "What is Partition Pruning in PostgreSQL and how does it accelerate range queries?",
+    "ground_truth_doc_title": "PostgreSQL Table Partitioning and Large-Scale Data Management",
+    "ground_truth_keywords": ["partition pruning", "range partitioning", "query planner", "child tables"],
+    "expert_reference_answer": "Partition pruning allows the PostgreSQL query planner to scan only the specific child partition tables matching the query filter, skipping all other non-matching partitions to drastically reduce disk I/O."
+  },
+  {
+    "id": "eval_32",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Table Partitioning",
+    "query": "Why is dropping an old table partition faster than running a large DELETE statement?",
+    "ground_truth_doc_title": "PostgreSQL Table Partitioning and Large-Scale Data Management",
+    "ground_truth_keywords": ["detach partition", "drop table", "wal", "table bloat", "zero i/o"],
+    "expert_reference_answer": "DELETE statements write individual row delete markers, generate massive WAL writes, and cause table bloat requiring VACUUM. Dropping a detached partition table unlinks the physical storage files in milliseconds."
+  },
+  {
+    "id": "eval_33",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Transactions & Concurrency",
+    "query": "What is a Phantom Read anomaly and does PostgreSQL Repeatable Read prevent it?",
+    "ground_truth_doc_title": "Transaction Isolation Levels, Concurrency Anomalies, and ACID Mechanics",
+    "ground_truth_keywords": ["phantom read", "repeatable read", "mvcc", "snapshot", "range query"],
+    "expert_reference_answer": "A phantom read occurs when a transaction queries a range of rows, and a concurrent transaction inserts and commits a new matching row. In PostgreSQL, Repeatable Read prevents phantom reads using MVCC snapshots."
+  },
+  {
+    "id": "eval_34",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Transactions & Concurrency",
+    "query": "How does PostgreSQL MVCC use xmin and xmax to avoid read locks?",
+    "ground_truth_doc_title": "Transaction Isolation Levels, Concurrency Anomalies, and ACID Mechanics",
+    "ground_truth_keywords": ["mvcc", "xmin", "xmax", "dead tuples", "readers never block writers"],
+    "expert_reference_answer": "Every row version records creating (xmin) and deleting (xmax) transaction IDs. Transactions compare these IDs against their active snapshot, ensuring readers only see valid versions without acquiring read locks."
+  },
+  {
+    "id": "eval_35",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Indexing Strategies",
+    "query": "How does a BRIN index achieve small memory footprints on large append-only tables?",
+    "ground_truth_doc_title": "Relational Indexing Strategies: Deep Dive into B-Tree, GIN, and BRIN",
+    "ground_truth_keywords": ["brin", "block range index", "min max", "append-only", "page blocks"],
+    "expert_reference_answer": "A Block Range Index (BRIN) stores only the minimum and maximum values for physical blocks of pages (e.g. 128 disk pages) rather than indexing every row, fitting 500 million rows into kilobytes of RAM."
+  },
+  {
+    "id": "eval_36",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Indexing Strategies",
+    "query": "What are GIN indexes designed for and what is their primary write trade-off?",
+    "ground_truth_doc_title": "Relational Indexing Strategies: Deep Dive into B-Tree, GIN, and BRIN",
+    "ground_truth_keywords": ["gin", "inverted index", "jsonb", "arrays", "full-text", "pending list"],
+    "expert_reference_answer": "GIN (Generalized Inverted Index) maps individual sub-tokens and elements in JSONB documents, arrays, and full-text search. Its trade-off is higher write overhead due to updating multiple inverted keys."
+  },
+  {
+    "id": "eval_37",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Replication & High Availability",
+    "query": "What is replication lag in asynchronous database streaming replication?",
+    "ground_truth_doc_title": "Database High Availability: Primary-Replica Replication and Sharding",
+    "ground_truth_keywords": ["replication lag", "asynchronous", "wal", "stale reads", "primary replica"],
+    "expert_reference_answer": "Replication lag is the delay between a Primary committing a transaction to WAL and a Replica applying that WAL record. It can cause clients reading from replicas immediately after writing to observe stale data."
+  },
+  {
+    "id": "eval_38",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Horizontal Sharding",
+    "query": "How does Consistent Hashing prevent massive data reshuffling when adding database shards?",
+    "ground_truth_doc_title": "Database High Availability: Primary-Replica Replication and Sharding",
+    "ground_truth_keywords": ["consistent hashing", "hash ring", "shards", "rebalancing", "modulo"],
+    "expert_reference_answer": "Consistent hashing maps nodes and keys to a continuous circular ring. Adding or removing a shard requires moving only K/N keys between adjacent neighbors rather than re-indexing the entire database."
+  },
+  {
+    "id": "eval_39",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Relational vs Document",
+    "query": "How does PostgreSQL JSONB provide NoSQL document flexibility with ACID guarantees?",
+    "ground_truth_doc_title": "Data Modeling Trade-offs: Relational PostgreSQL vs Document NoSQL",
+    "ground_truth_keywords": ["jsonb", "gin index", "acid", "relational", "binary format"],
+    "expert_reference_answer": "PostgreSQL JSONB stores parsed binary JSON supporting fast path extraction and GIN indexing, allowing developers to query semi-structured document payloads joined with relational tables under full ACID transactions."
+  },
+  {
+    "id": "eval_40",
+    "track": "database",
+    "target_role": "Database Engineer",
+    "topic": "Query Optimization",
+    "query": "What does 'Buffers: shared hit' indicate in an EXPLAIN (ANALYZE, BUFFERS) plan?",
+    "ground_truth_doc_title": "SQL Query Performance Tuning with EXPLAIN ANALYZE",
+    "ground_truth_keywords": ["buffers shared hit", "shared_buffers", "cache", "disk i/o", "explain analyze"],
+    "expert_reference_answer": "In EXPLAIN (ANALYZE, BUFFERS), 'shared hit' indicates that the requested 8KB database pages were already present in PostgreSQL's shared_buffers RAM cache, requiring zero physical disk I/O reads."
+  }
+]

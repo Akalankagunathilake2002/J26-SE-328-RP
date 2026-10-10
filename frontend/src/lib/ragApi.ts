@@ -19,6 +19,7 @@ export interface SourceCitation {
 
 export interface RetrievedChunk {
   chunk_id: string;
+  title?: string;
   content_preview: string;
   similarity_score: number;
   source: string;
@@ -26,6 +27,9 @@ export interface RetrievedChunk {
   dense_rank?: number;
   sparse_rank?: number;
   rrf_score?: number;
+  pre_rerank_rank?: number;
+  rerank_score?: number;
+  rank_delta?: number;
   retrieval_method?: string;
 }
 
@@ -35,9 +39,12 @@ export interface LearningResponse {
   sources: SourceCitation[];
   retrieved_chunks: RetrievedChunk[];
   retrieval_latency_ms: number;
+  rerank_latency_ms?: number;
   generation_latency_ms: number;
   total_latency_ms: number;
   retrieval_strategy?: string;
+  tokens_saved_percent?: number;
+  context_compression_applied?: boolean;
 }
 
 export interface BenchmarkResponse {
@@ -72,6 +79,37 @@ export interface RetrievalAblationData {
   recommended_strategy: string;
 }
 
+export interface RAGTriadMetrics {
+  strategy_name: string;
+  faithfulness: number;
+  answer_relevance: number;
+  context_precision: number;
+  context_recall: number;
+  average_latency_ms: number;
+  prompt_tokens: number;
+}
+
+export interface ComparativeBenchmarkMatrixData {
+  dataset_name: string;
+  sample_size: number;
+  baseline_direct_llm: RAGTriadMetrics;
+  naive_rag_dense: RAGTriadMetrics;
+  advanced_rag_hybrid_rerank: RAGTriadMetrics;
+  p_value_statistical_significance: number;
+  research_conclusion: string;
+}
+
+export interface GoldenDatasetItem {
+  id: string;
+  track: string;
+  target_role: string;
+  topic: string;
+  query: string;
+  ground_truth_doc_title: string;
+  ground_truth_keywords: string[];
+  expert_reference_answer: string;
+}
+
 export interface InterviewSession {
   session_id: string;
   student_id: string;
@@ -101,7 +139,34 @@ export interface EvaluationResponse {
   communication_feedback: string;
   strengths: string[];
   missing_concepts: string[];
+  areas_for_improvement?: string[];
   evaluation_latency_ms: number;
+  speaking_duration_seconds?: number;
+  words_per_minute?: number;
+  eye_contact_ratio?: number;
+  pacing_assessment?: string;
+  overall_score?: number;
+}
+
+export interface UpstreamProfilePayload {
+  student_id: string;
+  target_role: string;
+  readiness_score: number;
+  identified_weak_skills: string[];
+  priority_learning_topics: string[];
+}
+
+export interface PlatformAnalyticsData {
+  student_id: string;
+  target_role: string;
+  total_learning_queries: number;
+  topics_explored: string[];
+  total_study_minutes: number;
+  mock_interviews_completed: number;
+  average_technical_accuracy: number;
+  average_communication_score: number;
+  estimated_readiness_improvement_percent: number;
+  last_active: string;
 }
 
 export const ragApi = {
@@ -137,6 +202,54 @@ export const ragApi = {
     });
     if (!res.ok) {
       throw new Error(`Retrieval ablation API error: ${res.statusText}`);
+    }
+    return res.json();
+  },
+
+  async fetchBenchmarkMatrix(): Promise<ComparativeBenchmarkMatrixData> {
+    const res = await fetch(`${API_BASE}/api/v1/research/benchmark-matrix`);
+    if (!res.ok) {
+      throw new Error(`Benchmark Matrix API error: ${res.statusText}`);
+    }
+    return res.json();
+  },
+
+  async fetchGoldenDataset(): Promise<GoldenDatasetItem[]> {
+    const res = await fetch(`${API_BASE}/api/v1/research/golden-dataset`);
+    if (!res.ok) {
+      throw new Error(`Golden Dataset API error: ${res.statusText}`);
+    }
+    return res.json();
+  },
+
+  async evaluateGoldenQuery(itemId: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/api/v1/research/evaluate-query`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ item_id: itemId }),
+    });
+    if (!res.ok) {
+      throw new Error(`Evaluate query error: ${res.statusText}`);
+    }
+    return res.json();
+  },
+
+  async submitUpstreamProfile(payload: UpstreamProfilePayload): Promise<any> {
+    const res = await fetch(`${API_BASE}/api/v1/upstream/student-profile`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      throw new Error(`Upstream profile sync error: ${res.statusText}`);
+    }
+    return res.json();
+  },
+
+  async fetchPlatformAnalytics(studentId: string): Promise<PlatformAnalyticsData> {
+    const res = await fetch(`${API_BASE}/api/v1/analytics/student-progress/${studentId}`);
+    if (!res.ok) {
+      throw new Error(`Analytics API error: ${res.statusText}`);
     }
     return res.json();
   },
@@ -190,7 +303,7 @@ export const ragApi = {
     return res.json();
   },
 
-  async transcribeAudio(file: Blob): Promise<{ transcript: string }> {
+  async transcribeAudio(file: Blob): Promise<{ transcript: string; domain_terms_detected?: string[] }> {
     const formData = new FormData();
     formData.append("file", file, "answer.webm");
     const res = await fetch(`${API_BASE}/api/v1/interview/transcribe`, {
@@ -203,7 +316,17 @@ export const ragApi = {
     return res.json();
   },
 
-  async evaluateAnswer(turnId: string, transcript: string, studentId: string): Promise<EvaluationResponse> {
+  async evaluateAnswer(
+    turnId: string,
+    transcript: string,
+    studentId: string,
+    telemetry?: {
+      speaking_duration_seconds?: number;
+      eye_contact_ratio?: number;
+      words_per_minute?: number;
+      filler_words_count?: number;
+    }
+  ): Promise<EvaluationResponse> {
     const res = await fetch(`${API_BASE}/api/v1/interview/evaluate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -211,6 +334,7 @@ export const ragApi = {
         turn_id: turnId,
         transcript,
         student_id: studentId,
+        ...telemetry,
       }),
     });
     if (!res.ok) {

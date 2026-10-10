@@ -39,12 +39,17 @@ class InterviewQuestionResponse(BaseModel):
 class TranscribeResponse(BaseModel):
     transcript: str
     latency_ms: float
+    domain_terms_detected: Optional[List[str]] = []
 
 
 class EvaluateAnswerRequest(BaseModel):
     turn_id: str
     transcript: str
     student_id: str
+    speaking_duration_seconds: Optional[float] = Field(None, example=35.5)
+    eye_contact_ratio: Optional[float] = Field(None, example=0.82)
+    words_per_minute: Optional[float] = Field(None, example=135.0)
+    filler_words_count: Optional[int] = Field(None, example=2)
 
 
 class EvaluationResultResponse(BaseModel):
@@ -59,3 +64,8 @@ class EvaluationResultResponse(BaseModel):
     strengths: List[str]
     areas_for_improvement: List[str]
     evaluation_latency_ms: float
+    speaking_duration_seconds: Optional[float] = None
+    words_per_minute: Optional[float] = None
+    eye_contact_ratio: Optional[float] = None
+    pacing_assessment: Optional[str] = None
+    overall_score: Optional[float] = None

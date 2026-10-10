@@ -16,6 +16,21 @@ async def lifespan(app: FastAPI):
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         print(f"[{settings.SERVICE_NAME}] Database tables verified successfully.")
+
+        # Auto-seed educational curriculum documents if corpus is empty or needs update
+        try:
+            from sqlalchemy import func, select
+            from app.models.learning import LearningDocument
+            from ingestion.ingest import run_ingestion
+            from app.core.database import async_session_factory
+            async with async_session_factory() as session:
+                res = await session.execute(select(func.count(LearningDocument.id)))
+                count = res.scalar() or 0
+                if count < 25:
+                    print(f"[{settings.SERVICE_NAME}] Seeding full multi-track curriculum corpus ({count} existing docs)...")
+                    await run_ingestion()
+        except Exception as e:
+            print(f"[{settings.SERVICE_NAME}] Auto-ingestion notice: {e}")
     except Exception as e:
         print(f"[{settings.SERVICE_NAME}] Database connection warning during startup: {e}")
 
