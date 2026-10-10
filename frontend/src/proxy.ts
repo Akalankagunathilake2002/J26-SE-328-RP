@@ -14,5 +14,5 @@ export function proxy(request: NextRequest) {
 
 // Pages that need a logged-in user: every nav link except Home (components/home/links.ts).
 export const config = {
-  matcher: ["/skills-profile/:path*", "/market-pulse/:path*", "/skill-analysis/:path*", "/mock-interview/:path*"],
+  matcher: ["/skills-profile/:path*", "/market-pulse/:path*", "/skill-analysis/:path*"],
 };

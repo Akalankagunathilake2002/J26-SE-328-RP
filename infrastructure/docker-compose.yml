@@ -11,7 +11,7 @@ name: skill-bridge
 
 services:
   postgres:
-    image: postgres:16
+    image: pgvector/pgvector:pg16
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-skillbridge}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}
@@ -46,15 +46,61 @@ services:
       postgres:
         condition: service_healthy
 
+  learning-service:
+    build: ../services/learning-service
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-skillbridge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: learning_db
+      LEARNING_SERVICE_PORT: ${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
+      SERVICE_PORT: ${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
+      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-gemini}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  interview-service:
+    build: ../services/interview-service
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-skillbridge}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: interview_db
+      INTERVIEW_SERVICE_PORT: ${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
+      SERVICE_PORT: ${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
+      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-gemini}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   api-gateway:
     image: nginx:1.28-alpine
     ports:
       - "${GATEWAY_HOST_PORT:-8080}:80"
+    environment:
+      - LEARNING_SERVICE_PORT=${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
+      - INTERVIEW_SERVICE_PORT=${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
+      - SHARED_SKILL_KNOWLEDGE_PORT=${SHARED_SKILL_KNOWLEDGE_PORT:-8005}
+      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT
     volumes:
-      - ./gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     depends_on:
       - auth-service
       - shared-skill-knowledge
+      - learning-service
+      - interview-service
 
 volumes:
   postgres-data:
+
