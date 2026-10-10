@@ -18,7 +18,7 @@ def entities():
 
 @pytest.fixture(scope="module")
 def aliases():
-    return [a for a in load_csv('aliases_and_domains.csv') if a['record_type'] == 'ALIAS']
+    return [a for a in load_csv('aliases.csv')]
 
 def test_programming_languages_distinct_from_general(entities, aliases):
     # Find computer programming entity
@@ -65,3 +65,5 @@ def test_no_dangling_references(entities, aliases):
     entity_ids = set(e['id'] for e in entities)
     for a in aliases:
         assert a['canonical_entity_id'] in entity_ids, f"Dangling reference: {a['canonical_entity_id']}"
+
+
