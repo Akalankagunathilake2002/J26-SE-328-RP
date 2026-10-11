@@ -1,0 +1,28 @@
+[project]
+name = "job-market-intelligence-engine"
+version = "0.1.0"
+description = "SkillBridge C01: collects Sri Lankan job ads responsibly and profiles the skills each job role demands."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "requests>=2.32",
+    "beautifulsoup4>=4.12",
+    "PyYAML>=6.0.1",
+    "rapidfuzz>=3.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

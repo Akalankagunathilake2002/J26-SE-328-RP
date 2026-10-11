@@ -1,0 +1,13 @@
+# Collected data stays local: raw/ pages contain recruiters' contact details as published.
+data/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+.pytest_cache/
+
+# Local settings (e.g. SKILLBRIDGE_CONTACT)
+.env

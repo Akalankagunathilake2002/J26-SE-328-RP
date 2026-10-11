@@ -1,0 +1,82 @@
+# Maps each job site's own categories to the four SkillBridge sectors.
+#
+# Only sites with `enabled: true` are collected. The reasons for disabling a site come from the
+# feasibility check of each site's robots.txt and terms of use.
+
+sectors: [IT, HR, Management, Agriculture]
+
+sites:
+  topjobs:
+    enabled: true
+    base_url: https://www.topjobs.lk
+    categories:
+      IT:
+        - {code: SDQ, name: "IT-Sware/DB/QA/Web/Graphics/GIS"}
+        - {code: HNS, name: "IT-HWare/Networks/Systems"}
+        - {code: ITT, name: "IT-Telecoms"}
+      HR:
+        - {code: HAT, name: "HR/Training"}
+      Management:
+        - {code: COM, name: "Corporate Management/Analysts"}
+      Agriculture:
+        - {code: AGD, name: "Agriculture/Dairy/Environment"}
+    unmapped_for_review:
+      - "Manufacturing/Operations"
+      - "Sales/Marketing/Merchandising"
+
+  xpress:
+    enabled: false
+    disabled_reason: >-
+      Terms of use prohibit it: "you are prohibited from using the site or its content ... to spam,
+      phish, pharm, pretext, spider, crawl, or scrape".
+    base_url: https://xpress.jobs
+    categories:
+      IT:
+        - {id: 30, name: "IT-SWare/Internet"}
+        - {id: 139, name: "IT-HWare/Networks/Systems"}
+        - {id: 50, name: "Telecommunications"}
+      HR:
+        - {id: 29, name: "Human Resources/Recruitment"}
+        - {id: 140, name: "Training and Development"}
+      Management:
+        - {id: 46, name: "Senior Management/Directors"}
+        - {id: 65, name: "Business Management"}
+        - {id: 39, name: "Project/Programme Management"}
+      Agriculture:
+        - {id: 4, name: "Agriculture"}
+    unmapped_for_review:
+      - "Quality Assurance"
+      - "Production & Operations"
+      - "Sales / New Business Development"
+
+  ikman:
+    enabled: false
+    disabled_reason: >-
+      Terms of use: no material may be copied, reproduced, stored or distributed without written
+      permission from Saltside Technologies AB. Not collected until permission is granted.
+    base_url: https://ikman.lk
+    categories:
+      IT:
+        - {name: "IT and Network Industry"}
+      HR:
+        - {name: "HR and Recruitments"}
+      Management:
+        - {name: "Business Development"}
+        - {name: "Business Operations"}
+      Agriculture:
+        - {name: "Agriculture"}
+    unmapped_for_review:
+      - "Production and Operations"
+      - "Analyst"
+      - "Consultant"
+
+# Every site has its own Agriculture category, so these keywords are not needed to find ads.
+# topjobs' AGD category also lists HSE, environmental, food-safety, mining and hydrogeology jobs,
+# so Agriculture ads without any of these keywords are flagged as possibly not agriculture.
+agriculture_keywords:
+  - agriculture
+  - plantation
+  - agronomy
+  - farm
+  - estate
+  - livestock
