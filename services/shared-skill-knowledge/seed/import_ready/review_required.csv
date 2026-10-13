@@ -436,3 +436,16 @@ ALIAS_CONFLICT,ALIAS,SK-000591,Alias 'python' conflicts with preferred name of e
 ALIAS_CONFLICT,ALIAS,SK-000647,Alias 'apache hadoop' conflicts with preferred name of entity 'SK-000792',VALIDATION
 ALIAS_CONFLICT,ALIAS,SK-000662,Alias 'pascal' conflicts with preferred name of entity 'SK-001599',VALIDATION
 ALIAS_CONFLICT,ALIAS,SK-000691,Alias 'jenkins ci' conflicts with preferred name of entity 'SK-001443',VALIDATION
+DUPLICATE_CONCEPT,SKILL,SK-000790,C02 custom skill 'Amazon Web Services' (custom:amazon-web-services) is a duplicate of existing entity SK-000790 (Amazon Web Services AWS software). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-001541,C02 custom skill 'Google Cloud Platform' (custom:google-cloud-platform) is a duplicate of existing entity SK-001541 (Google Cloud software). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-000836,C02 custom skill 'HTML' (custom:html) is a duplicate of existing entity SK-000836 (Hypertext markup language HTML). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-000802,C02 custom skill 'Jira' (custom:jira) is a duplicate of existing entity SK-000802 / SK-001666 (Atlassian JIRA). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-000860,C02 custom skill 'Microsoft Azure' (custom:microsoft-azure) is a duplicate of existing entity SK-000860 (Microsoft Azure software). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-000257,C02 custom skill 'Object-oriented programming' (custom:object-oriented-programming) is a duplicate of existing entity SK-000257 (use object-oriented programming). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-001215,C02 custom skill 'Power BI' (custom:power-bi) is a duplicate of existing entity SK-001215 (Microsoft Power BI). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-000844,C02 custom skill 'QuickBooks' (custom:quickbooks) is a duplicate of existing entity SK-000844 (Intuit QuickBooks). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-001614,C02 custom skill 'REST API' (custom:rest-api) is a duplicate of existing entity SK-001614 (RESTful API). Not created as new entity.,C02_REVIEW
+DUPLICATE_CONCEPT,SKILL,SK-000354,C02 custom skill 'Unit testing' (custom:unit-testing) is a duplicate of existing entities SK-000354 (perform software unit testing) and SK-001645 (Unit testing software). Not created as new entity.,C02_REVIEW
+CONCEPT_OVERLAP,SKILL,SK-001746,C02 custom skill 'CI/CD' (custom:ci-cd) overlaps with existing entity SK-001746 (Continuous integration software). Left out of canonical entities pending review.,C02_REVIEW
+OUT_OF_SCOPE,SKILL,custom:sinhala,C02 custom skill 'Sinhala' (custom:sinhala) is a natural language and out of scope for IT/HR/BUSINESS vocabulary.,C02_REVIEW
+HIDDEN_ALIAS_SCHEMA,ALIAS,C02_HIDDEN_ALIASES,66 proposed ESCO hidden aliases (common misspellings/variants) retained in review records pending schema support for hidden labels.,C02_REVIEW
