@@ -20,6 +20,7 @@ class SkillBase(BaseModel):
     preferred_name: str
     description: str | None = None
     skill_type: str
+    skill_nature: str | None = None
     status: str = "ACTIVE"
 
 class SkillCreate(SkillBase):

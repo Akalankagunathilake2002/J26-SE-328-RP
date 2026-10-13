@@ -9,6 +9,7 @@
 | description | Text | Description |
 | skill_type | String | Category of concept (knowledge, skill/competence, Software) or empty |
 | concept_kind | String | Differentiates PROGRAMMING_LANGUAGE, SOFTWARE_OR_TOOL, etc. |
+| skill_nature | String | Classification into 'TECHNICAL', 'BEHAVIOURAL', 'OTHER', or empty (for roles / pending) |
 | review_status | String | Current review status (PENDING_REVIEW, APPROVED) |
 
 ## external_ids
@@ -16,7 +17,7 @@
 |---|---|---|
 | id | String | Unique internal identifier (EXT-######) |
 | canonical_entity_id | String | FK to canonical_entities.id |
-| source_system | String | Origin of data (ESCO, ONET, ONET_SOFTWARE) |
+| source_system | String | Origin of data (ESCO, ONET, ONET_SOFTWARE, C02_CUSTOM) |
 | external_id | String | Exact source URI, SOC code, or Element ID |
 | source_version | String | Version of the source system data |
 
@@ -42,4 +43,4 @@
 | entity_type | String | Entity type associated with the issue |
 | entity_id | String | Identifier associated with the issue |
 | issue | Text | Description of the unresolved decision or conflict |
-| source | String | Source triggering the flag (ESCO, ONET, COMPARISON) |
+| source | String | Source triggering the flag (ESCO, ONET, COMPARISON, C02_REVIEW) |

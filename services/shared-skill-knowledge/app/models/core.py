@@ -11,6 +11,7 @@ class Skill(Base):
     preferred_name: Mapped[str] = mapped_column(String(255), index=True)
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
     skill_type: Mapped[str] = mapped_column(String(100))
+    skill_nature: Mapped[str | None] = mapped_column(String(50), nullable=True)
     status: Mapped[str] = mapped_column(String(50), default="ACTIVE")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -19,6 +20,10 @@ class Skill(Base):
         CheckConstraint(
             "skill_type IN ('PROGRAMMING_LANGUAGE', 'PROGRAMMING_SKILL', 'PROGRAMMING_PARADIGM', 'SOFTWARE_OR_TOOL', 'KNOWLEDGE', 'OTHER_SKILL')",
             name="check_valid_skill_type"
+        ),
+        CheckConstraint(
+            "skill_nature IN ('TECHNICAL', 'BEHAVIOURAL', 'OTHER') OR skill_nature IS NULL",
+            name="check_valid_skill_nature"
         ),
     )
 

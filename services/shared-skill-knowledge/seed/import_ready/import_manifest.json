@@ -1,14 +1,25 @@
 {
-  "generated_at": "2026-10-10T10:51:59.756705",
+  "generated_at": "2026-10-13T12:43:25.749301+00:00",
   "counts": {
-    "canonical_entities": 1904,
-    "external_ids": 1904,
-    "aliases": 4312,
-    "entity_domains": 779,
-    "review_required": 437
+    "canonical_entities": 1915,
+    "external_ids": 1915,
+    "aliases": 4333,
+    "entity_domains": 790,
+    "review_required": 450
   },
   "review_status": {
-    "pending_entities": 1904,
-    "review_required_items": 437
+    "approved_entities": 1881,
+    "pending_entities": 34,
+    "approved_roles": 35,
+    "pending_roles": 0,
+    "approved_skills": 1846,
+    "pending_skills": 34,
+    "review_required_items": 450
+  },
+  "skill_nature_counts": {
+    "TECHNICAL": 1452,
+    "BEHAVIOURAL": 65,
+    "OTHER": 361,
+    "PENDING_OR_ROLE": 37
   }
 }

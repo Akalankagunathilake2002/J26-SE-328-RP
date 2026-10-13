@@ -40,3 +40,13 @@ It will own:
   `GET /skills/{skill_id}/relationships`, `GET /roles/{role_id}`, `GET /roles/{role_id}/skills`
 - Reached through the API gateway: add a route in `infrastructure/gateway/nginx.conf` (there is a
   commented example for this service) and the service in `infrastructure/docker-compose.yml`
+
+## Database Migrations & Setup
+
+- **Fresh Setup**: When running the FastAPI application against a clean database, `Base.metadata.create_all` automatically generates all tables with current columns and constraints (including `skill_nature` and `check_valid_skill_nature`).
+- **Existing Database Upgrade**: To upgrade an existing database instance that lacks the `skill_nature` column, apply the idempotent SQL migration:
+  ```bash
+  psql -d <database_name> -f migrations/001_add_skill_nature_to_skills.sql
+  ```
+  The script safely adds `skill_nature VARCHAR(50)` and constraint `check_valid_skill_nature` only if not already present. It is safe to re-run multiple times.
+
