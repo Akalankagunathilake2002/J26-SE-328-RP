@@ -27,7 +27,3 @@ out/
 
 # Logs
 *.log
-
-services/shared-skill-knowledge/seed/esco
-services/shared-skill-knowledge/seed/onet
-services/shared-skill-knowledge/seed/incoming
