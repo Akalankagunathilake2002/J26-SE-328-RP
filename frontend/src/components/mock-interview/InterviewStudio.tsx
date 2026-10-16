@@ -49,24 +49,19 @@ export default function InterviewStudio({
   const [evaluation, setEvaluation] = useState<EvaluationResponse | null>(null);
   const [evaluating, setEvaluating] = useState(false);
 
+  // Shown instead of inventing a transcript or scores when recording, transcription or evaluation fails
+  const [answerError, setAnswerError] = useState("");
+  const [evaluationError, setEvaluationError] = useState("");
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
   const recordingStartTimeRef = useRef<number>(0);
   const [recordedDuration, setRecordedDuration] = useState<number>(0);
 
-  // Fast Speech Synthesis TTS for AI Avatar Voice
-  const speakQuestion = (text: string) => {
-    if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.02;
-      utterance.pitch = 1.0;
-      utterance.onstart = () => setInterviewState("speaking");
-      utterance.onend = () => setInterviewState("idle");
-      window.speechSynthesis.speak(utterance);
-    }
-  };
+  // The interviewer avatar is the single voice source; bumping this asks it to speak the current question
+  const [speakRequest, setSpeakRequest] = useState(0);
+  const speakQuestion = () => setSpeakRequest((n) => n + 1);
 
   // Start interview session
   const handleStartSession = async () => {
@@ -76,10 +71,12 @@ export default function InterviewStudio({
       setSession(sess);
 
       const q = await ragApi.getInterviewQuestion(sess.session_id, studentId, targetRole, "Entry Level", skills);
-      setQuestionData(q);
+      setQuestionData({ ...q, question_number: 1 });
       setTranscript("");
       setEvaluation(null);
-      speakQuestion(q.question);
+      setAnswerError("");
+      setEvaluationError("");
+      speakQuestion();
     } catch (err: any) {
       console.warn("API gateway unreachable, using realistic mock interview state:", err);
       // Realistic standalone fallback session for demo
@@ -110,7 +107,7 @@ export default function InterviewStudio({
       setQuestionData(mockQ);
       setTranscript("");
       setEvaluation(null);
-      speakQuestion(mockQ.question);
+      speakQuestion();
     } finally {
       setLoading(false);
     }
@@ -121,11 +118,24 @@ export default function InterviewStudio({
     if (!session) return;
     setNextLoading(true);
     try {
-      const q = await ragApi.getInterviewQuestion(session.session_id, studentId, targetRole, "Entry Level", skills);
-      setQuestionData(q);
+      // The previous turn lets the interviewer acknowledge the answer and probe what it missed
+      const previous =
+        questionData && transcript.trim()
+          ? {
+              previous_question: questionData.question,
+              previous_answer: transcript.trim(),
+              previous_missing_concepts: evaluation?.missing_concepts ?? [],
+            }
+          : undefined;
+      const q = await ragApi.getInterviewQuestion(
+        session.session_id, studentId, targetRole, "Entry Level", skills, previous
+      );
+      setQuestionData({ ...q, question_number: (questionData?.question_number || 1) + 1 });
       setTranscript("");
       setEvaluation(null);
-      speakQuestion(q.question);
+      setAnswerError("");
+      setEvaluationError("");
+      speakQuestion();
     } catch (err: any) {
       const mockNextQ: InterviewQuestionResponse = {
         turn_id: "turn_" + Date.now(),
@@ -144,7 +154,7 @@ export default function InterviewStudio({
       setQuestionData(mockNextQ);
       setTranscript("");
       setEvaluation(null);
-      speakQuestion(mockNextQ.question);
+      speakQuestion();
     } finally {
       setNextLoading(false);
     }
@@ -173,9 +183,10 @@ export default function InterviewStudio({
         try {
           const res = await ragApi.transcribeAudio(audioBlob);
           setTranscript(res.transcript);
-        } catch {
-          setTranscript(
-            "Database connection pooling maintains a cache of established TCP sockets, avoiding expensive SSL/TLS handshakes for every query. In HikariCP, setting maximumPoolSize according to CPU cores and I/O disk capacity prevents threads from competing, while connectionTimeout ensures requests fail fast rather than stalling the entire thread pool."
+        } catch (err) {
+          // Never put words in the candidate's mouth: the transcript is what gets scored
+          setAnswerError(
+            `${err instanceof Error ? err.message : "Transcription failed."} Your recording wasn't transcribed. Record again or type your answer.`
           );
         } finally {
           setTranscribing(false);
@@ -184,21 +195,16 @@ export default function InterviewStudio({
       };
 
       mediaRecorderRef.current.start();
+      setAnswerError("");
       setIsRecording(true);
       setInterviewState("listening");
     } catch (err) {
-      console.warn("Microphone access simulated:", err);
-      setIsRecording(true);
-      setInterviewState("listening");
-      setTimeout(() => {
-        const durationSec = 14;
-        setRecordedDuration(durationSec);
-        setIsRecording(false);
-        setInterviewState("idle");
-        setTranscript(
-          "Connection pooling in HikariCP caches pre-authenticated database connections so each incoming request doesn't pay the overhead of establishing a new TCP session. We configure maxPoolSize to match CPU and disk throughput, set connectionTimeout to around 30 seconds to avoid thread starvation, and implement circuit breakers to stop cascading failures."
-        );
-      }, 3500);
+      console.warn("Microphone unavailable:", err);
+      setIsRecording(false);
+      setInterviewState("idle");
+      setAnswerError(
+        "Microphone access was blocked or no microphone was found. Allow microphone access in your browser, or type your answer below."
+      );
     }
   };
 
@@ -217,6 +223,7 @@ export default function InterviewStudio({
   const handleEvaluate = async () => {
     if (!questionData || !transcript.trim()) return;
     setEvaluating(true);
+    setEvaluationError("");
     setInterviewState("thinking");
 
     const words = transcript.trim().split(/\s+/).length;
@@ -232,34 +239,12 @@ export default function InterviewStudio({
         filler_words_count: 1,
       });
       setEvaluation(res);
-    } catch {
-      // High-quality fallback evaluation if API backend is busy
-      const fallbackEval: EvaluationResponse = {
-        turn_id: questionData.turn_id,
-        technical_accuracy: 4.8,
-        relevance: 4.7,
-        explanation_quality: 4.6,
-        clarity: 4.5,
-        technical_feedback:
-          "Excellent technical depth. You clearly articulated the mechanics of TCP socket reuse and HikariCP pool sizing heuristics. Accurately referenced thread starvation prevention.",
-        communication_feedback:
-          `Well-structured technical delivery. Speaking pacing of ${computedWpm} WPM was steady and clear. Camera engagement ratio at 86% demonstrates strong remote interview presence.`,
-        strengths: [
-          "Directly answered connection lifecycle and socket reuse",
-          "Demonstrated practical knowledge of HikariCP pool configuration",
-          "Addressed cascading failures and thread pool protection",
-        ],
-        missing_concepts: [
-          "Could also mention leakDetectionThreshold for detecting leaked connections in long-running queries",
-        ],
-        evaluation_latency_ms: 380,
-        speaking_duration_seconds: duration,
-        words_per_minute: computedWpm,
-        eye_contact_ratio: simulatedEyeContact,
-        pacing_assessment: "Well-Paced & Clear",
-        overall_score: 4.75,
-      };
-      setEvaluation(fallbackEval);
+    } catch (err) {
+      // No made-up scores: a fabricated 4.8/5 would mislead the candidate about their readiness
+      setEvaluation(null);
+      setEvaluationError(
+        `${err instanceof Error ? err.message : "Evaluation failed."} Your answer is kept. Try evaluating again in a moment.`
+      );
     } finally {
       setEvaluating(false);
       setInterviewState("idle");
@@ -316,8 +301,10 @@ export default function InterviewStudio({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             <AIInterviewerAvatar
               currentTextToSpeak={questionData.question}
+              speakRequest={speakRequest}
+              avatarJobId={questionData.avatar_job_id}
               interviewState={interviewState}
-              onSpeechEnd={() => setInterviewState("idle")}
+              onSpeechEnd={() => setInterviewState((s) => (s === "speaking" ? "idle" : s))}
               onSpeechStart={() => setInterviewState("speaking")}
               topic={questionData.topic}
               difficulty={questionData.difficulty}
@@ -419,6 +406,13 @@ export default function InterviewStudio({
                 )}
               </div>
 
+              {answerError && (
+                <div className="flex items-start gap-2 border-2 border-ink bg-pink/40 p-3 text-xs font-bold text-ink">
+                  <AlertCircle className="size-4 shrink-0" />
+                  <span>{answerError}</span>
+                </div>
+              )}
+
               {/* Editable transcript */}
               <div>
                 <div className="flex items-center justify-between mb-1.5 text-xs font-semibold text-muted">
@@ -449,6 +443,13 @@ export default function InterviewStudio({
                   </>
                 )}
               </button>
+
+              {evaluationError && (
+                <div className="flex items-start gap-2 border-2 border-ink bg-pink/40 p-3 text-xs font-bold text-ink">
+                  <AlertCircle className="size-4 shrink-0" />
+                  <span>{evaluationError}</span>
+                </div>
+              )}
             </div>
 
             {/* Right: Multi-Criteria Rubric Diagnostic Feedback */}

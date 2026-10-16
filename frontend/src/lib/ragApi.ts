@@ -127,6 +127,8 @@ export interface InterviewQuestionResponse {
   question: string;
   rubric_criteria: string[];
   context_or_reason?: string;
+  /** Local avatar render already started for this question (see getAvatarJob) */
+  avatar_job_id?: string | null;
 }
 
 export interface EvaluationResponse {
@@ -168,6 +170,52 @@ export interface PlatformAnalyticsData {
   estimated_readiness_improvement_percent: number;
   last_active: string;
 }
+
+export interface AvatarSessionToken {
+  session_token: string;
+  session_id: string;
+  avatar_id: string;
+  is_sandbox: boolean;
+}
+
+export interface AvatarConfig {
+  provider: "liveavatar" | "local" | "none";
+  available: boolean;
+  avatar_name?: string | null;
+  idle_video_url?: string | null;
+  detail?: string | null;
+}
+
+export interface AvatarJob {
+  job_id: string;
+  status: "queued" | "running" | "done" | "error";
+  message?: string | null;
+  queued_ahead?: number | null;
+  video_url?: string | null;
+  audio_seconds?: number | null;
+  error?: string | null;
+}
+
+/** Context from the previous turn so the interviewer can acknowledge it and follow up */
+export interface PreviousTurnContext {
+  previous_question?: string;
+  previous_answer?: string;
+  previous_missing_concepts?: string[];
+}
+
+/** Prefer the backend's own explanation (FastAPI `detail`) over the bare status text */
+async function apiError(res: Response, label: string): Promise<Error> {
+  try {
+    const body = await res.json();
+    if (body?.detail) return new Error(typeof body.detail === "string" ? body.detail : JSON.stringify(body.detail));
+  } catch {
+    /* not JSON */
+  }
+  return new Error(`${label}: ${res.statusText || res.status}`);
+}
+
+/** Absolute URL for a path the backend returns (avatar media is served through the gateway) */
+export const apiUrl = (path: string) => (path.startsWith("http") ? path : `${API_BASE}${path}`);
 
 export const ragApi = {
   async askLearning(payload: LearningQueryPayload): Promise<LearningResponse> {
@@ -284,7 +332,8 @@ export const ragApi = {
     studentId: string,
     role: string,
     level: string,
-    skills: string[]
+    skills: string[],
+    previous?: PreviousTurnContext
   ): Promise<InterviewQuestionResponse> {
     const res = await fetch(`${API_BASE}/api/v1/interview/question`, {
       method: "POST",
@@ -295,6 +344,7 @@ export const ragApi = {
         target_role: role,
         experience_level: level,
         current_skills: skills,
+        ...previous,
       }),
     });
     if (!res.ok) {
@@ -311,7 +361,45 @@ export const ragApi = {
       body: formData,
     });
     if (!res.ok) {
-      throw new Error(`Audio transcription error: ${res.statusText}`);
+      throw await apiError(res, "Audio transcription error");
+    }
+    return res.json();
+  },
+
+  async getAvatarConfig(): Promise<AvatarConfig> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/avatar/config`);
+    if (!res.ok) {
+      throw await apiError(res, "Avatar config error");
+    }
+    return res.json();
+  },
+
+  async renderAvatarClip(text: string): Promise<AvatarJob> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/avatar/render`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) {
+      throw await apiError(res, "Avatar render error");
+    }
+    return res.json();
+  },
+
+  async getAvatarJob(jobId: string): Promise<AvatarJob> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/avatar/jobs/${encodeURIComponent(jobId)}`);
+    if (!res.ok) {
+      throw await apiError(res, "Avatar job error");
+    }
+    return res.json();
+  },
+
+  async getAvatarSessionToken(): Promise<AvatarSessionToken> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/avatar/token`, {
+      method: "POST",
+    });
+    if (!res.ok) {
+      throw new Error(`Avatar session token error: ${res.statusText}`);
     }
     return res.json();
   },
@@ -338,7 +426,7 @@ export const ragApi = {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Interview evaluate error: ${res.statusText}`);
+      throw await apiError(res, "Interview evaluate error");
     }
     return res.json();
   },
