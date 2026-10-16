@@ -1,4 +1,4 @@
-﻿import os
+import os
 import csv
 import pytest
 
@@ -18,7 +18,10 @@ def entities():
 
 @pytest.fixture(scope="module")
 def aliases():
-    return [a for a in load_csv('aliases.csv')]
+    data = load_csv('aliases_unlocked.csv')
+    if not data:
+        data = load_csv('aliases.csv')
+    return data
 
 def test_programming_languages_distinct_from_general(entities, aliases):
     # Find computer programming entity

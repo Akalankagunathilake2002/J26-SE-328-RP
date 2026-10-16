@@ -1,6 +1,12 @@
 import contextlib
 from fastapi import FastAPI, APIRouter
-from app.api.routers import domains_router, skills_router, roles_router
+from app.api.routers import (
+    domains_router,
+    skills_router,
+    roles_router,
+    normalization_router,
+    candidates_router,
+)
 from app.config.settings import get_settings
 
 @contextlib.asynccontextmanager
@@ -30,6 +36,8 @@ def create_app() -> FastAPI:
     ssks_router.include_router(domains_router)
     ssks_router.include_router(skills_router)
     ssks_router.include_router(roles_router)
+    ssks_router.include_router(normalization_router)
+    ssks_router.include_router(candidates_router)
 
     app.include_router(ssks_router)
 
