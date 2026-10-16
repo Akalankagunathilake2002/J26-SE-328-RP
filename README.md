@@ -125,6 +125,32 @@ npm run dev
 | Auth Service, through the gateway | http://localhost:8080/auth/… (API docs at `/auth/docs`) |
 | PostgreSQL | `localhost:15432`, user and password from `infrastructure/.env` |
 
+### Mock interview: choosing the interviewer
+
+The mock interview's video interviewer is set by `AVATAR_PROVIDER` in `infrastructure/.env`:
+
+| Value | Interviewer | Needs |
+|---|---|---|
+| `local` (default) | Local avatar: LivePortrait head motion and blinking, MuseTalk lip-sync | The avatar engine running on the host Mac (Apple Silicon) |
+| `liveavatar` | HeyGen LiveAvatar stream | `LIVEAVATAR_API_KEY`; sandbox sessions end after about a minute |
+| `none` | Still portrait and browser voice | Nothing |
+
+The local engine uses the Mac's GPU, which Docker can't access, so it runs outside Docker and
+the interview service reaches it at `http://host.docker.internal:8768`. Start it before Docker:
+
+```bash
+./start-avatar.sh        # in the Huggingbay folder; serves http://127.0.0.1:8768
+```
+
+The interviewer is the engine's `elena` avatar (`LOCAL_AVATAR_NAME`), created from
+`frontend/public/interviewer/avatar_neutral.jpg`. When a question is generated, the interview
+service starts rendering its video straight away; the frontend plays it when it's ready (usually
+15–30 seconds on an M4 Air) and shows the avatar's idle loop in between. If the engine isn't
+running, the frontend falls back to the portrait and browser voice.
+
+If the container can't reach the engine, start the engine with `AVATAR_HOST=0.0.0.0` (this also
+exposes it to your local network).
+
 ## Status
 
 The project is at an early stage. The home page, login and registration work end to end with the
