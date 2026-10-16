@@ -38,12 +38,43 @@ class InterviewQuestionResponse(BaseModel):
     difficulty: str
     context_or_reason: str
     rubric_criteria: List[str]
+    # Set when the local avatar engine started rendering this question as video
+    avatar_job_id: Optional[str] = None
 
 
 class TranscribeResponse(BaseModel):
     transcript: str
     latency_ms: float
     domain_terms_detected: Optional[List[str]] = []
+
+
+class AvatarSessionTokenResponse(BaseModel):
+    session_token: str
+    session_id: str
+    avatar_id: str
+    is_sandbox: bool
+
+
+class AvatarConfigResponse(BaseModel):
+    provider: str                       # "liveavatar" | "local" | "none"
+    available: bool
+    avatar_name: Optional[str] = None
+    idle_video_url: Optional[str] = None
+    detail: Optional[str] = None
+
+
+class AvatarRenderRequest(BaseModel):
+    text: str = Field(..., min_length=1, max_length=2000)
+
+
+class AvatarJobResponse(BaseModel):
+    job_id: str
+    status: str                         # "queued" | "running" | "done" | "error"
+    message: Optional[str] = None
+    queued_ahead: Optional[int] = None
+    video_url: Optional[str] = None
+    audio_seconds: Optional[float] = None
+    error: Optional[str] = None
 
 
 class EvaluateAnswerRequest(BaseModel):

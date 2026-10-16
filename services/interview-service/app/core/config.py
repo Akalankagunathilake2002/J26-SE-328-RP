@@ -46,6 +46,25 @@ class Settings(BaseSettings):
     # RAG Parameters
     TOP_K: int = 3
 
+    # Realistic Human Interviewer (HeyGen LiveAvatar streaming avatar)
+    LIVEAVATAR_API_KEY: str = ""
+    LIVEAVATAR_API_URL: str = "https://api.liveavatar.com"
+    # Sandbox mode costs no credits but only allows the "Wayne" avatar and ends sessions after ~1 minute
+    LIVEAVATAR_SANDBOX: bool = True
+    LIVEAVATAR_AVATAR_ID: str = "dd73ea75-1218-4ef3-92ce-606d5f7fbc0a"
+    LIVEAVATAR_VOICE_ID: str = ""
+    LIVEAVATAR_MAX_SESSION_SECONDS: int = 1200
+
+    # Which interviewer the frontend uses: HeyGen LiveAvatar, the local avatar engine
+    # (LivePortrait + MuseTalk on the host Mac, see Huggingbay/start-avatar.sh), or none
+    # (portrait + browser voice).
+    AVATAR_PROVIDER: Literal["liveavatar", "local", "none"] = "liveavatar"
+    # The local engine needs the Mac's GPU, so it runs on the host, not in Docker.
+    LOCAL_AVATAR_URL: str = "http://host.docker.internal:8768"
+    LOCAL_AVATAR_NAME: str = "elena"
+    LOCAL_AVATAR_VOICE: str = "Samantha"
+    LOCAL_AVATAR_DECODER: Literal["fast", "quality"] = "fast"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
