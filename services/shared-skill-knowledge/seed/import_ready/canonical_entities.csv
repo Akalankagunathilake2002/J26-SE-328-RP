@@ -36,7 +36,7 @@ RL-000034,ROLE,Data Scientists,"Develop and implement a set of techniques or ana
 RL-000035,ROLE,"Human Resources Assistants, Except Payroll and Timekeeping","Compile and keep personnel records. Record data for each employee, such as address, weekly earnings, absences, amount of sales or production, supervisory reports, and date of and reason for termination. May prepare reports for employment records, file employment records, or search employee files and furnish information to authorized persons.",,ROLE,,APPROVED
 SK-000001,SKILL,Haskell,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in Haskell.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000002,SKILL,draft scientific or academic papers and technical documentation,"Draft and edit scientific, academic or technical texts on different subjects.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000003,SKILL,KDevelop,"The computer program KDevelop is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the software community KDE.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000003,SKILL,KDevelop,"The computer program KDevelop is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the software community KDE.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000004,SKILL,migrate existing data,"Apply migration and conversion methods for existing data, in order to transfer or convert data between formats, storage or computer systems.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000005,SKILL,manage supplies,"Monitor and control the flow of supplies that includes the purchase, storage and movement of the required quality of raw materials, and also work-in-progress inventory. Manage supply chain activities and synchronise supply with demand of production and customer.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000006,SKILL,Erlang,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in Erlang.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
@@ -71,7 +71,7 @@ SK-000034,SKILL,gather data for forensic purposes,"Collect protected, fragmented
 SK-000035,SKILL,coach employees,"Maintain and improve employees' performance by coaching individuals or groups how to optimise specific methods, skills or abilities, using adapted coaching styles and methods. Tutor newly recruited employees and assist them in the learning of new business systems.",skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000036,SKILL,Ruby (computer programming),"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in Ruby.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000037,SKILL,Common Lisp,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in Common Lisp.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
-SK-000038,SKILL,Apache Maven,"The tool Apache Maven is a software program to perform configuration identification, control, status accounting and audit of software during its development and maintenance.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000038,SKILL,Apache Maven,"The tool Apache Maven is a software program to perform configuration identification, control, status accounting and audit of software during its development and maintenance.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000039,SKILL,communicate with customers,"Respond to and communicate with customers in the most efficient and appropriate manner to enable them to access the desired products or services, or any other help they may require.",skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000040,SKILL,internal risk management policy,"The internal risk management policies that identify, assess and prioritise risks in an IT environment. The methods used to minimise, monitor and control the possibility and the impact of disastrous events that affect the reaching of business goals.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000041,SKILL,Lisp,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in Lisp.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
@@ -213,10 +213,8 @@ SK-000176,SKILL,Perl,"The techniques and principles of software development, suc
 SK-000177,SKILL,demonstrate disciplinary expertise,"Demonstrate deep knowledge and complex understanding of a specific research area, including responsible research, research ethics and scientific integrity principles, privacy and GDPR requirements, related to research activities within a specific discipline.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000178,SKILL,use different communication channels,"Make use of various types of communication channels such as verbal, handwritten, digital and telephonic communication with the purpose of constructing and sharing ideas or information.",skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000179,SKILL,perform data mining,"Explore large datasets to reveal patterns using statistics, database systems or artificial intelligence and present the information in a comprehensible way.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000180,SKILL,ICT safety,"Personal protection, data protection, digital identity protection, security measures, safe and sustainable use.",,OTHER_SKILL,,PENDING_REVIEW
 SK-000181,SKILL,Smalltalk (computer programming),"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in Smalltalk.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000182,SKILL,global standards for sustainability reporting,"The global, standardised reporting framework that enable organisations to quantify and communicate about their environmental, social and governance impact.",knowledge,KNOWLEDGE,OTHER,APPROVED
-SK-000183,SKILL,mathematics,"Mathematics is the study of topics such as quantity, structure, space, and change. It involves the identification of patterns and formulating new conjectures based on them. Mathematicians strive to prove the truth or falsity of these conjectures. There are many fields of mathematics, some of which are widely used for practical applications.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000184,SKILL,PHP,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in PHP.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000185,SKILL,software anomalies,"The deviations of what is standard and exceptional events during software system performance, identification of incidents that can alter the flow and the process of system execution.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000186,SKILL,database,"The classification of databases, that includes their purpose, characteristics, terminology, models and use such as XML databases, document-oriented databases and full text databases.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
@@ -224,7 +222,7 @@ SK-000187,SKILL,identify undetected organisational needs,"Use the collected inpu
 SK-000188,SKILL,respond to incidents in cloud,Troubleshoot issues with the cloud and determine how to restore operations. Design and automate disaster recovery strategies and evaluate a deployment for points of failure.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000189,SKILL,use databases,"Use software tools for managing and organising data in a structured environment which consists of attributes, tables and relationships in order to query and modify the stored data.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000190,SKILL,design wayside signalling interlockings,Design procedures to implement wayside signalling interlockings. Analyse routes and aspect charts and take into account highway crossing warning systems.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000191,SKILL,Xcode,"The computer program Xcode is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the software company Apple.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000191,SKILL,Xcode,"The computer program Xcode is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the software company Apple.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000192,SKILL,image recognition,"A process designed to detect and identify a feature or object in an image or video. This process is used in medical imaging, security surveillance or defect detection, among other fields. Key technique for a wide range of applications such as automated driving, image classification, or visual inspection.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000193,SKILL,integrate ICT data,Combine data from sources to provide unified view of the set of these data.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000194,SKILL,communicate with stakeholders,"Facilitate communication between organisations and interested third parties such as suppliers, distributors, shareholders and other stakeholders in order to inform them of the organisation and its objectives.",skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
@@ -311,13 +309,13 @@ SK-000274,SKILL,neuromarketing techniques,A field of marketing which uses medica
 SK-000275,SKILL,prepare financial statements,"Collect, entry, and prepare the set of financial records disclosing the financial position of a company at the end of a certain period or accounting year. The financial statements consisting of five parts which are the statement of financial position, the statement of comprehensive income, the statement of changes in equity (SOCE), the statement of cash flows and notes.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000276,SKILL,store digital data and systems,"Use software tools to archive data by copying and backing them up, in order to ensure their integrity and to prevent data loss.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000277,SKILL,deploy cloud resource,"Identify and execute steps required to provision cloud resources, such as networks, servers, storage, applications, GPUs, and services. Define the cloud global infrastructure and remediate deployment issues.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000278,SKILL,digital data processing,"Identify, locate, retrieve, store, organise and analyse digital information, judging its relevance and purpose.",,OTHER_SKILL,,PENDING_REVIEW
+SK-000278,SKILL,digital data processing,"Identify, locate, retrieve, store, organise and analyse digital information, judging its relevance and purpose.",,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000279,SKILL,market entry strategies,"The ways to enter a new market and their implications, namely; exporting via representatives, franchising to third parties, collaborating joint ventures, and opening of fully-owned subsidiaries and flagships.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000280,SKILL,business analysis,"The research field which addresses the identification of business needs and problems and the determination of the solutions that would mitigate or prevent the smooth functioning of a business. Business analysis comprises IT solutions, market challenges, policy development and strategic matters.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000281,SKILL,online job platforms,Online platforms which display job offers.,knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000282,SKILL,quantitative analysis,The technique of employing statistical and mathematical modelling and measurement to represent a specific reality through numbers.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000283,SKILL,Outsourcing model,"The outsourcing model consists of principles and fundamentals of service-oriented modelling for business and software systems that allow the design and specification of service-oriented business systems within a variety of architectural styles, such as enterprise architecture.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
-SK-000284,SKILL,Puppet (tools for software configuration management),"The tool Puppet is a software program to perform configuration identification, control, status accounting and audit.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000284,SKILL,Puppet (tools for software configuration management),"The tool Puppet is a software program to perform configuration identification, control, status accounting and audit.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000285,SKILL,use ICT ticketing system,"Utilise a specialised system to track registration, processing and resolution of issues in an organisation by assigning each of these issues a ticket, registering inputs from involved persons, tracking changes and displaying the status of the ticket, until it is completed.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000286,SKILL,evaluate advertising campaign,Assess the performance of the advertising campaign after implementation and conclusion. Check if objectives were met and if the campaign was successful.,skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000287,SKILL,promote human rights,"Promote and respect human rights and diversity in light of the physical, psychological, spiritual and social needs of autonomous individuals, taking into account their opinions, beliefs and values, and the international and national codes of ethics, as well as the ethical implications of healthcare provision, ensuring their right to privacy and honouring for the confidentiality of healthcare information.",skill/competence,OTHER_SKILL,OTHER,APPROVED
@@ -342,7 +340,7 @@ SK-000305,SKILL,crowdsourcing strategy,"The high level planning for managing and
 SK-000306,SKILL,information extraction,The techniques and methods used for eliciting and extracting information from unstructured or semi-structured digital documents and sources.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000307,SKILL,web programming,"The programming paradigm that is based on combining markup (which adds context and structure to text) and other web programming code, such as AJAX, javascript and PHP, in order to carry out appropriate actions and visualise the content.",knowledge,PROGRAMMING_PARADIGM,TECHNICAL,APPROVED
 SK-000308,SKILL,implement ICT risk management,"Develop and implement procedures for identifying, assessing, treating and mitigating ICT risks, such as hacks or data leaks, according to the company's risk strategy, procedures and policies. Analyse and manage security risks and incidents. Recommend measures to improve digital security strategy.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000309,SKILL,STAF,"The tool STAF is a software program to perform configuration identification, control, status accounting and audit.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000309,SKILL,STAF,"The tool STAF is a software program to perform configuration identification, control, status accounting and audit.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000310,SKILL,ensure equipment availability,"Ensure that the necessary equipment is provided, ready and available for use before start of procedures.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000311,SKILL,advise on communication strategies,"Provide companies and organisations with consulting services concerning their internal and external communication plans and their representation, including their presence online. Recommend improvements in communication and make sure that important information reaches all employees and that their questions are answered.",skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000312,SKILL,develop automated software tests,"Create software test sets in an automated manner, ​using specialised languages or tools, that can be performed by testing tools in order to save resources, gain efficiency and effectiveness in test execution.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
@@ -350,14 +348,14 @@ SK-000313,SKILL,audit techniques,"The techniques and methods that support a syst
 SK-000314,SKILL,office administration,"The paperwork processes related to the administrative areas of an office environment. The activities or processes may include financial planning, record keeping and billing and managing the general logistics of an organisation.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000315,SKILL,create business process models,"Develop formal and informal descriptions of the business processes and the organisational structure by using business process models, notations and tools.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000316,SKILL,develop with cloud services,"Write code that interacts with cloud services by using APIs, SDKs, and cloud CLI. Write code for serverless applications, translate functional requirements into application design, implement application design into application code.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000317,SKILL,Eclipse (integrated development environment software),"The computer program Eclipse is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the Eclipse Foundation.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000317,SKILL,Eclipse,"The computer program Eclipse is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the Eclipse Foundation.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000318,SKILL,design database scheme,"Draft a database scheme by following the Relational Database Management System (RDBMS) rules in order to create a logically arranged group of objects such as tables, columns and processes.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000319,SKILL,apply strategic thinking,"Apply generation and effective application of business insights and possible opportunities, in order to achieve competitive business advantage on a long-term basis.",skill/competence,OTHER_SKILL,OTHER,APPROVED
-SK-000320,SKILL,WordPress,"The open-source web-based software systems used for creating, editing, publishing and archiving blogs, articles, web pages or press releases which are mostly managed by users with limited web programming knowledge.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000320,SKILL,WordPress,"The open-source web-based software systems used for creating, editing, publishing and archiving blogs, articles, web pages or press releases which are mostly managed by users with limited web programming knowledge.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000321,SKILL,manage corporate training programmes,Monitor and regulate the coaching courses offered to organisations for developing the skills of their employees.,skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000322,SKILL,risk management,"The process of identifying, assessing, and prioritising of all types of risks and where they could come from, such as natural causes, legal changes, or uncertainty in any given context, and the methods for dealing with risks effectively.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000323,SKILL,security engineering,"Interdisciplinary field of study that focuses on the realisation of secure systems and the technology to protect individuals or information from malice, errors, or unauthorized access. It involves defining security protection requirements, processes, and methods to ensure the resilience of systems and data.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
-SK-000324,SKILL,Ansible,"The tool Ansible is a software program to perform configuration identification, control, status accounting and audit.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000324,SKILL,Ansible,"The tool Ansible is a software program to perform configuration identification, control, status accounting and audit.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000325,SKILL,outsourcing strategy,The high level planning for managing and optimising external services of providers to execute business processes.,knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000326,SKILL,ICT system integration,"The principles of integrating ICT components and products from a number of sources to create an operational ICT system, techniques which ensure interoperability and interfaces between components and the system.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000327,SKILL,monitor company policy,Monitor the company's policy and propose improvements to the company.,skill/competence,OTHER_SKILL,OTHER,APPROVED
@@ -418,7 +416,7 @@ SK-000381,SKILL,service-oriented modelling,"The principles and fundamentals of s
 SK-000382,SKILL,innovate in ICT,"Create and describe new original research and innovation ideas within the field of information and communication technologies, compare to the emerging technologies and trends and plan the development of new ideas.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000383,SKILL,apply research ethics and scientific integrity principles in research activities,"Apply fundamental ethical principles and legislation to scientific research, including issues of research integrity. Perform, review, or report research avoiding misconducts such as fabrication, falsification, and plagiarism.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000384,SKILL,remove computer virus or malware from a computer,Carry out actions to remove computer viruses or other types of malware from a computer.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000385,SKILL,Microsoft Visual C++,"The computer program Visual C++ is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the software company Microsoft.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000385,SKILL,Microsoft Visual C++,"The computer program Visual C++ is a suite of software development tools for writing programs, such as compiler, debugger, code editor, code highlights, packaged in a unified user interface. It is developed by the software company Microsoft.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000386,SKILL,follow the statutory obligations,"Understand, abide by, and apply the statutory obligations of the company in the daily performance of the job.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000387,SKILL,develop ICT device driver,Create a software program that controls the working of an ICT device and its interaction with other applications.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000388,SKILL,interpret technical texts,"Read and understand technical texts that provide information on how to perform a task, usually explained in steps.",skill/competence,OTHER_SKILL,OTHER,APPROVED
@@ -438,7 +436,7 @@ SK-000401,SKILL,total quality control,"The quality control philosophy that expec
 SK-000402,SKILL,game theory,"The study of mathematical models of strategic decisions among stakeholders. It has applications in all fields of social science, as well as in systems science, computer science and logic. Essential concepts are the Nash Equilibrium and the Prisoner's Dilemma.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000403,SKILL,promote employment policy,"Promote the development and implementation of policies which aim to improve employment standards, and reduce unemployment rates, in order to acquire governmental and public support.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000404,SKILL,evaluate employees,Analyse employees' individual performances over a certain time span and communicate your conclusions to the employee in question or higher management. Evaluate achievements of staff members.,skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
-SK-000405,SKILL,use software libraries,Utilise collections of codes and software packages which capture frequently used routines to help programmers simplify their work.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
+SK-000405,SKILL,Software libraries,Utilise collections of codes and software packages which capture frequently used routines to help programmers simplify their work.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000406,SKILL,set organisational policies,"Participate in setting organisational policies that cover issues such as participant eligibility, program requirements, and program benefits for the service users.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000407,SKILL,advise on efficiency improvements,Analyse information and details of processes and products in order to advise on possible efficiency improvements that could be implemented and would signify a better use of resources.,skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000408,SKILL,monitor legislation developments,"Monitor changes in rules, policies and legislation, and identify how they may influence the organisation, existing operations, or a specific case or situation.",skill/competence,OTHER_SKILL,OTHER,APPROVED
@@ -481,7 +479,7 @@ SK-000444,SKILL,data analytics,The science of analysing and making decisions bas
 SK-000445,SKILL,business process modelling,"The tools, methods and notations such as Business Process Model and Notation (BPMN) and Business Process Execution Language (BPEL), used to describe and analyse the characteristics of a business process and model its further development.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000446,SKILL,promote the transfer of knowledge,"Deploy broad awareness of processes of knowledge valorisation aimed to maximise the two–way flow of technology, intellectual property, expertise and capability between the research base and industry or the public sector.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000447,SKILL,business analytics,The disciplines and technologies for solving business problems through employing quantitative methods such as data analysis and statistical models.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
-SK-000448,SKILL,resource description framework query language,The query languages such as SPARQL which are used to retrieve and manipulate data stored in Resource Description Framework format (RDF).,knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
+SK-000448,SKILL,resource description framework query language,The query languages such as SPARQL which are used to retrieve and manipulate data stored in Resource Description Framework format (RDF).,knowledge,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000449,SKILL,CoffeeScript,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in CoffeeScript.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000450,SKILL,calculate compensation payments,"Calculate the amount due by the insurance company in case of a legitimate claim, authorise the financial transfer and address reclamations to other insurance companies if needed.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000451,SKILL,financial analysis,"The process of assessing the financial possibilities, means, and status of an organisation or individual by analysing financial statements and reports in order to make well informed business or financial decisions.",knowledge,KNOWLEDGE,OTHER,APPROVED
@@ -514,8 +512,8 @@ SK-000477,SKILL,healthcare analytics,"The use of qualitative and quantitative me
 SK-000478,SKILL,ICT problem management techniques,The techniques related to identifying the solutions of the root cause of ICT incidents.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000479,SKILL,web strategy assessment,Techniques for conducting a deep analysis of a company's web presence.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000480,SKILL,plan events,"Plan programmes, agendas, budgets, and services of an event according to customers' requirements.",skill/competence,OTHER_SKILL,OTHER,APPROVED
-SK-000481,SKILL,ML (computer programming),"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in ML.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
-SK-000482,SKILL,IBM WebSphere,The application server IBM WebSphere provides flexible and secure Java EE runtime environments to support application infrastructure and deployments.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000481,SKILL,Machine Learning,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in ML.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000482,SKILL,IBM WebSphere,The application server IBM WebSphere provides flexible and secure Java EE runtime environments to support application infrastructure and deployments.,knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000483,SKILL,calculate employee benefits,"Calculate the benefits which the people connected to the organisation are entitled to, such as employees or retired people, using the information of the person and the interplay between governmental benefits and benefits obtained through for example employment.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000484,SKILL,information confidentiality,"The mechanisms and regulations which allow for selective access control and guarantee that only authorised parties (people, processes, systems and devices) have access to data, the way to comply with confidential information and the risks of non-compliance.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000485,SKILL,manage sub-contract labour,Oversee work and the labourers hired to carry out part or all of the responsibilities of someone else's contract.,skill/competence,OTHER_SKILL,OTHER,APPROVED
@@ -550,14 +548,14 @@ SK-000513,SKILL,online analytical processing,"The online tools which analyse, ag
 SK-000514,SKILL,ICT system programming,"The methods and tools required to develop system software, specifications of system architectures and interfacing techniques between network and system modules and components.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000515,SKILL,e-commerce systems,"Basic digital architecture and commercial transactions for trading products or services conducted via Internet, e-mail, mobile devices, social media, etc.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000516,SKILL,Open source model,"The open source model consists of principles and fundamentals of service-oriented modelling for business and software systems that allow the design and specification of service-oriented business systems within a variety of architectural styles, such as enterprise architecture.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
-SK-000517,SKILL,WildFly,The open-source application server JBoss is a Linux based platform which supports Java applications and large websites.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000517,SKILL,WildFly,The open-source application server JBoss is a Linux based platform which supports Java applications and large websites.,knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000518,SKILL,business communication,The process of effectively communicating within the workplace and to external bodies to achieve organisational goals.,knowledge,KNOWLEDGE,BEHAVIOURAL,APPROVED
 SK-000519,SKILL,ensure cross-department cooperation,"Guarantee communication and cooperation with all the entities and teams in a given organisation, according to the company strategy.",skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000520,SKILL,identify necessary human resources,"Determine the number of employees needed for the realisation of a project and their allocation in the creation, production, communication or administration team.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000521,SKILL,apply blended learning,"Be familiar with blended learning tools by combining traditional face-to-face and online learning, using digital tools, online technologies, and e-learning methods.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000522,SKILL,labour law,"The field of law that is concerned with the regulation of the relationship between employers, employees, trade unions, and the government.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000523,SKILL,adapt training to labour market,Identify developments in the labour market and recognise their relevance to the training of students.,skill/competence,OTHER_SKILL,OTHER,APPROVED
-SK-000524,SKILL,AJAX,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in AJAX.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
+SK-000524,SKILL,AJAX,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in AJAX.",knowledge,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000525,SKILL,draft accounting procedures,"Lay down standard methods and guidelines to regulate bookkeeping and accounting operations, including determining the bookkeeping system used to record financial transactions.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000526,SKILL,C++,"The techniques and principles of software development, such as analysis, algorithms, coding, testing and compiling of programming paradigms in C++.",knowledge,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000527,SKILL,collaborate in the development of marketing strategies,Work together with a group of professionals to develop marketing strategies performing market analysis and financial viability while staying aligned with the company's goals.,skill/competence,OTHER_SKILL,OTHER,APPROVED
@@ -608,7 +606,7 @@ SK-000571,SKILL,analyse customer service surveys,Analyse results from surveys co
 SK-000572,SKILL,unstructured data,The information that is not arranged in a pre-defined manner or does not have a pre-defined data model and is difficult to understand and find patterns in without using techniques such as data mining.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000573,SKILL,human resources department processes,"The different processes, duties, jargon, role in an organisation, and other specificities of the human resources department within an organisation such as recruitment, pension systems, and personnel development programs.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000574,SKILL,plan schedule,"Develop the schedule including procedures, appointments and working hours.",skill/competence,OTHER_SKILL,OTHER,APPROVED
-SK-000575,SKILL,Salt (tools for software configuration management),"The tool Salt is a software program to perform configuration identification, control, status accounting and audit.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000575,SKILL,Salt (tools for software configuration management),"The tool Salt is a software program to perform configuration identification, control, status accounting and audit.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000576,SKILL,quality assurance methodologies,"Quality assurance principles, standard requirements, and the set of processes and activities used for measuring, controlling and ensuring the quality of products and processes.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000577,SKILL,LINQ,The computer language LINQ is a query language for retrieval of information from a database and of documents containing the needed information. It is developed by the software company Microsoft.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000578,SKILL,manage several projects,Oversee and direct the development of several projects running independently. Ensure coherence and leveraging forces among projects in order to secure an overall success and profitability.,skill/competence,OTHER_SKILL,OTHER,APPROVED
@@ -640,7 +638,7 @@ SK-000603,SKILL,assist employee health programmes,Support and provide assistance
 SK-000604,SKILL,perform product planning,"Identify and articulate market requirements that define a product’s feature set. Product planning serves as the basis for decisions about price, distribution and promotion.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000605,SKILL,identify new business opportunities,Pursue potential customers or products in order to generate additional sales and ensure growth.,skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000606,SKILL,teach corporate skills,"Teach the skills necessary for operating in an organisation to the employees of an institution. Educate them on general or technical skills, ranging from computer skills to interpersonal skills.",skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
-SK-000607,SKILL,Joomla,"The open-source web-based software system written in PHP, used for creating, editing, publishing and archiving blogs, articles, corporate or small business websites, social networking websites or press releases.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000607,SKILL,Joomla,"The open-source web-based software system written in PHP, used for creating, editing, publishing and archiving blogs, articles, corporate or small business websites, social networking websites or press releases.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000608,SKILL,advise on organisational culture,"Advise organisations on their internal culture and work environment as experienced by employees, and the factors which may influence the behaviour of employees.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000609,SKILL,use functional programming,"Utilise specialised ICT tools to create computer code which treats computation as the evaluation of mathematical functions and seeks to avoid state and mutable data. Use programming languages which support this method such as LISP, PROLOG and Haskell.",skill/competence,PROGRAMMING_SKILL,TECHNICAL,APPROVED
 SK-000610,SKILL,manage cloud data and storage,"Create and manage cloud data retention. Identify and implement data protection, encryption, and capacity planning needs.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
@@ -661,7 +659,7 @@ SK-000624,SKILL,video conferencing tool,The software that are used to enable vir
 SK-000625,SKILL,negotiate with employment agencies,Establish arrangements with employment agencies to organise recruiting activities. Maintain communication with these agencies in order to ensure efficient and productive recruitment with high potential candidates as an outcome.,skill/competence,OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000626,SKILL,labour market,"The trends, functioning, and fluctuations of the labour market, career options, wages, unions, working population and the supply and demand of certain professions in a sector.",knowledge,KNOWLEDGE,OTHER,APPROVED
 SK-000627,SKILL,define technical requirements,"Specify technical properties of goods, materials, methods, processes, services, systems, software and functionalities by identifying and responding to the particular needs that are to be satisfied according to customer requirements.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
-SK-000628,SKILL,Teradata Database,"The computer program Teradata Database is a tool for creating, updating and managing databases, developed by the software company Teradata Corporation.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000628,SKILL,Teradata Database,"The computer program Teradata Database is a tool for creating, updating and managing databases, developed by the software company Teradata Corporation.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000629,SKILL,ensure compliance with disclosure criteria of accounting information,"Revise the accounting information of the company to make sure it meets the commonly agreed criteria for its disclosure such as understandability, relevance, consistency, comparability, reliability, and objectivity.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000630,SKILL,lean project management,"The lean project management approach is a methodology for planning, managing and overseeing of ICT resources in order to meet specific goals and using project management ICT tools.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000631,SKILL,manage open publications,"Be familiar with Open Publication strategies, with the use of information technology to support research, and with the development and management of CRIS (current research information systems) and institutional repositories. Provide licensing and copyright advice, use bibliometric indicators, and measure and report research impact.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
@@ -687,7 +685,7 @@ SK-000650,SKILL,monitor organisation climate,Monitor the work environment and th
 SK-000651,SKILL,train employees,Lead and guide employees through a process in which they are taught the necessary skills for the perspective job. Organise activities aimed at introducing the work and systems or improving the performance of individuals and groups in organisational settings.,skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000652,SKILL,ICT market,"The processes, stakeholders and the dynamics of the chain of goods and services in the ICT market sector.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
 SK-000653,SKILL,identify potential markets for companies,Observe and analyse market research findings in order to determine promising and profitable markets. Consider the firm's specific advantage and match it with markets where such value proposition is missing.,skill/competence,OTHER_SKILL,OTHER,APPROVED
-SK-000654,SKILL,SAS Data Management,"The computer program SAS Data Management is a tool for integration of information from multiple applications, created and maintained by organisations, into one consistent and transparent data structure, developed by the software company SAS.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000654,SKILL,SAS Data Management,"The computer program SAS Data Management is a tool for integration of information from multiple applications, created and maintained by organisations, into one consistent and transparent data structure, developed by the software company SAS.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000655,SKILL,implement a firewall,"Download, install and update a network security system designed to prevent unauthorized access to a private network.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000656,SKILL,manage keys for data protection,"Select appropriate authentication and authorization mechanisms. Design, implement and troubleshoot key management and use. Design and implement a data encryption solution for data at rest and data in transit.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000657,SKILL,CSS,"The computer language CSS is a style sheet language that conveys the presentation of structured documents. These documents have to adhere to style sheets, a set of stylistic rules such as font, color and layout.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
@@ -724,7 +722,7 @@ SK-000687,SKILL,analyse software specifications,"Assess the specifications of a 
 SK-000688,SKILL,advise on social security benefits,"Advise citizens on government-regulated benefits they are eligible for, such as unemployment benefits, family benefits, and other social security benefits.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000689,SKILL,process data,"Enter information into a data storage and data retrieval system via processes such as scanning, manual keying or electronic data transfer in order to process large amounts of data.",skill/competence,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000690,SKILL,support employability of people with disabilities,Ensure employment opportunities for people with disabilities by making appropriate adjustments to accommodate within reason in line with national legislation and policies on accessibility. Ensure their full integration into the work environment by promoting a culture of acceptance within the organisation and fighting potential stereotypes and prejudices.,skill/competence,OTHER_SKILL,OTHER,APPROVED
-SK-000691,SKILL,Jenkins (tools for software configuration management),"The tool Jenkins is a software program to perform configuration identification, control, status accounting and audit of software during its development and maintenance.",knowledge,KNOWLEDGE,TECHNICAL,APPROVED
+SK-000691,SKILL,Jenkins (tools for software configuration management),"The tool Jenkins is a software program to perform configuration identification, control, status accounting and audit of software during its development and maintenance.",knowledge,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000692,SKILL,adapt to changes in technological development plans,Modify the current design and development activities of technological projects to meet changes in requests or strategies. Ensure that the organisation's or client's needs are met and that any sudden requests which were not previously planned are implemented.,skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000693,SKILL,supervise accounting operations,"Coordinate, commission, and monitor operations in accounting departments in order to ensure the accurate record and eventual reporting of the financial operations of the company.",skill/competence,OTHER_SKILL,OTHER,APPROVED
 SK-000694,SKILL,N1QL,The computer language N1QL is a query language for retrieval of information from a database and of documents containing the needed information. It is developed by the software company Couchbase.,knowledge,KNOWLEDGE,TECHNICAL,APPROVED
@@ -767,8 +765,8 @@ SK-000730,SKILL,Reading Comprehension,Understanding written sentences and paragr
 SK-000731,SKILL,Active Listening,"Giving full attention to what other people are saying, taking time to understand the points being made, asking questions as appropriate, and not interrupting at inappropriate times.",Skill (Essential),OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000732,SKILL,Writing,Communicating effectively in writing as appropriate for the needs of the audience.,Skill (Essential),OTHER_SKILL,OTHER,APPROVED
 SK-000733,SKILL,Speaking,Talking to others to convey information effectively.,Skill (Essential),OTHER_SKILL,BEHAVIOURAL,APPROVED
-SK-000734,SKILL,Mathematics,Using mathematics to solve problems.,Skill (Essential),OTHER_SKILL,TECHNICAL,PENDING_REVIEW
-SK-000735,SKILL,Science,Using scientific rules and methods to solve problems.,Skill (Essential),OTHER_SKILL,BEHAVIOURAL,APPROVED
+SK-000734,SKILL,Mathematics,Using mathematics to solve problems.,Skill (Essential),KNOWLEDGE,TECHNICAL,APPROVED
+SK-000735,SKILL,Science,Using scientific rules and methods to solve problems.,Skill (Essential),KNOWLEDGE,TECHNICAL,APPROVED
 SK-000736,SKILL,Critical Thinking,"Using logic and reasoning to identify the strengths and weaknesses of alternative solutions, conclusions, or approaches to problems.",Skill (Essential),OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000737,SKILL,Active Learning,Understanding the implications of new information for both current and future problem-solving and decision-making.,Skill (Essential),OTHER_SKILL,BEHAVIOURAL,APPROVED
 SK-000738,SKILL,Learning Strategies,Selecting and using training/instructional methods and procedures appropriate for the situation when learning or teaching new things.,Skill (Essential),OTHER_SKILL,OTHER,APPROVED
@@ -801,7 +799,6 @@ SK-000764,SKILL,Personnel and Human Resources,"Knowledge of principles and proce
 SK-000765,SKILL,Computers and Electronics,"Knowledge of circuit boards, processors, chips, electronic equipment, and computer hardware and software, including applications and programming.",Knowledge,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000766,SKILL,Engineering and Technology,"Knowledge of the practical application of engineering science and technology. This includes applying principles, techniques, procedures, and equipment to the design and production of various goods and services.",Knowledge,OTHER_SKILL,TECHNICAL,APPROVED
 SK-000767,SKILL,Design,"Knowledge of design techniques, tools, and principles involved in production of precision technical plans, blueprints, drawings, and models.",Knowledge,OTHER_SKILL,OTHER,APPROVED
-SK-000768,SKILL,Mathematics,"Knowledge of arithmetic, algebra, geometry, calculus, statistics, and their applications.",Knowledge,OTHER_SKILL,TECHNICAL,PENDING_REVIEW
 SK-000769,SKILL,Psychology,"Knowledge of human behavior and performance; individual differences in ability, personality, and interests; learning and motivation; psychological research methods; and the assessment and treatment of behavioral and affective disorders.",Knowledge,OTHER_SKILL,OTHER,APPROVED
 SK-000770,SKILL,Sociology and Anthropology,"Knowledge of group behavior and dynamics, societal trends and influences, human migrations, ethnicity, cultures, and their history and origins.",Knowledge,OTHER_SKILL,OTHER,APPROVED
 SK-000771,SKILL,Education and Training,"Knowledge of principles and methods for curriculum and training design, teaching and instruction for individuals and groups, and the measurement of training effects.",Knowledge,OTHER_SKILL,OTHER,APPROVED
@@ -879,7 +876,6 @@ SK-000842,SKILL,IBM SPSS Statistics,Software product/technology in category: Ana
 SK-000843,SKILL,Instagram,Software product/technology in category: Web page creation and editing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000844,SKILL,Intuit QuickBooks,Software product/technology in category: Accounting software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000845,SKILL,JamBoard,Software product/technology in category: Graphics or photo imaging software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-000846,SKILL,JavaScript,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-000847,SKILL,Jupyter Notebook,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000848,SKILL,Kapwing,Software product/technology in category: Video creation and editing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000849,SKILL,LAMP Stack,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -931,12 +927,10 @@ SK-000894,SKILL,Oracle PeopleSoft Financials,Software product/technology in cate
 SK-000895,SKILL,Oracle PL/SQL,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000896,SKILL,Oracle Siebel Server Sync,Software product/technology in category: Customer relationship management CRM software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000897,SKILL,Padlet,Software product/technology in category: Computer based training software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-000898,SKILL,PHP,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
-SK-000899,SKILL,Python,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
+SK-000899,SKILL,Python,Software product/technology in category: Object or component oriented development software,Software,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000900,SKILL,QAD Marketing Automation,Software product/technology in category: Customer relationship management CRM software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000901,SKILL,Qlik Tech QlikView,Software product/technology in category: Business intelligence and data analysis software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-000902,SKILL,R,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
-SK-000903,SKILL,Ruby,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
+SK-000903,SKILL,Ruby,Software product/technology in category: Development environment software,Software,PROGRAMMING_LANGUAGE,TECHNICAL,APPROVED
 SK-000904,SKILL,Ruby on Rails,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000905,SKILL,Sage SalesLogix,Software product/technology in category: Customer relationship management CRM software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000906,SKILL,Salesforce software,Software product/technology in category: Customer relationship management CRM software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -956,12 +950,10 @@ SK-000919,SKILL,Structured query language SQL,Software product/technology in cat
 SK-000920,SKILL,Swift,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000921,SKILL,Tableau,Software product/technology in category: Business intelligence and data analysis software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000922,SKILL,Tax software,Software product/technology in category: Accounting software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-000923,SKILL,Teradata Database,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-000924,SKILL,The MathWorks MATLAB,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000925,SKILL,TikTok,Software product/technology in category: Video creation and editing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000926,SKILL,Web browser software,Software product/technology in category: Internet browser software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000927,SKILL,WeVideo,Software product/technology in category: Video creation and editing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-000928,SKILL,WordPress,Software product/technology in category: Web page creation and editing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-000929,SKILL,Yardi software,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000930,SKILL,YouTube,Software product/technology in category: Video creation and editing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-000931,SKILL,Adobe Distiller,Software product/technology in category: Desktop publishing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1156,7 +1148,6 @@ SK-001119,SKILL,Intelligent Algorithms InfoGIST Platinum Recruiter,Software prod
 SK-001120,SKILL,Job posting software,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001121,SKILL,Kronos Workforce HR,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001122,SKILL,Kronos Workforce Payroll,Software product/technology in category: Time accounting software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001123,SKILL,LinkedIn,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001124,SKILL,Loom,Software product/technology in category: Video creation and editing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001125,SKILL,Main Sequence Technologies PCRecruiter,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001126,SKILL,Main Sequence Technologies PCRecruiter Resume Inhaler,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1198,14 +1189,12 @@ SK-001161,SKILL,TempWorks recruiting and staffing software,Software product/tech
 SK-001162,SKILL,VCG Pointwing,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001163,SKILL,Vendor management system software,Software product/technology in category: Customer relationship management CRM software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001164,SKILL,3M Post-it App,Software product/technology in category: Word processing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001165,SKILL,AJAX,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001166,SKILL,Amazon Elastic Compute Cloud EC2,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001167,SKILL,Ansible software,Software product/technology in category: Expert system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001168,SKILL,Apache Ant,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001169,SKILL,Apache Groovy,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001170,SKILL,Apache HTTP Server,Software product/technology in category: Portal server software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001171,SKILL,Apache Kafka,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001172,SKILL,Apache Maven,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001173,SKILL,Apache Spark,Software product/technology in category: Business intelligence and data analysis software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001174,SKILL,Apache Struts,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001175,SKILL,Apache Subversion SVN,Software product/technology in category: File versioning software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1213,8 +1202,6 @@ SK-001176,SKILL,Apache Tomcat,Software product/technology in category: Web platf
 SK-001177,SKILL,Atlassian Bamboo,Software product/technology in category: Enterprise application integration software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001178,SKILL,Backbone.js,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001179,SKILL,Bash,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001180,SKILL,C#,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
-SK-001181,SKILL,C++,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001182,SKILL,Chef,Software product/technology in category: Configuration management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001183,SKILL,Common business oriented language COBOL,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001184,SKILL,Customer information control system CICS,Software product/technology in category: Transaction server software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1230,9 +1217,7 @@ SK-001193,SKILL,Hewlett Packard LoadRunner,Software product/technology in catego
 SK-001194,SKILL,Hibernate ORM,Software product/technology in category: Object oriented data base management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001195,SKILL,IBM Cognos ReportNet,Software product/technology in category: Enterprise resource planning ERP software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001196,SKILL,IBM Rational RequisitePro,Software product/technology in category: Requirements analysis and system architecture software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001197,SKILL,IBM WebSphere,Software product/technology in category: Cloud-based management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001198,SKILL,Information Builders WebFOCUS,Software product/technology in category: Data base reporting software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001199,SKILL,Integrated development environment IDE software,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001200,SKILL,JavaScript Object Notation JSON,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001201,SKILL,Job control language JCL,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001202,SKILL,jQuery,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1260,15 +1245,12 @@ SK-001223,SKILL,Oracle Agile Product Lifecycle Management PLM,Software product/t
 SK-001224,SKILL,Oracle Business Intelligence Publisher,Software product/technology in category: Enterprise resource planning ERP software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001225,SKILL,Oracle Java,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001226,SKILL,Oracle JDBC,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001227,SKILL,Perl,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001228,SKILL,PostgreSQL,Software product/technology in category: Object oriented data base management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001229,SKILL,Puppet,Software product/technology in category: Configuration management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001230,SKILL,Quest Erwin Data Modeler,Software product/technology in category: Metadata management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001231,SKILL,Red Hat Enterprise Linux,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001232,SKILL,Red Hat WildFly,Software product/technology in category: Application server software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001233,SKILL,Relational database management software,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001234,SKILL,Salesforce Visualforce,Software product/technology in category: Graphical user interface development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001235,SKILL,Scala,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001236,SKILL,Selenium,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001237,SKILL,Shell script,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001238,SKILL,Slido interaction software,Software product/technology in category: Network conferencing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1322,9 +1304,7 @@ SK-001285,SKILL,O*NET OnLine,Software product/technology in category: Data base 
 SK-001286,SKILL,OnQue Technologies COBRA OnOne,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001287,SKILL,Oracle E-Business Suite Human Resources Management System,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001288,SKILL,Project planning software,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001289,SKILL,Sage HRMS,Software product/technology in category: Time accounting software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001290,SKILL,Salary.com,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001291,SKILL,SAP ERP Human Capital Management,Software product/technology in category: Enterprise resource planning ERP software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001292,SKILL,SBC Systems Benefits Workstation,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001293,SKILL,Stroud & Associates Employee Benefits Administration System,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001294,SKILL,Survey Sense,Software product/technology in category: Human resources software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1396,7 +1376,6 @@ SK-001359,SKILL,Microsoft Active Directory,Software product/technology in catego
 SK-001360,SKILL,Microsoft Hyper-V Server,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001361,SKILL,Microsoft Windows Server,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001362,SKILL,MITRE ATT&CK software,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001363,SKILL,MySQL,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001364,SKILL,National Instruments LabVIEW,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001365,SKILL,Network and system vulnerability assessment software,Software product/technology in category: Network security or virtual private network VPN management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001366,SKILL,Network directory services software,Software product/technology in category: Internet directory services software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1404,7 +1383,6 @@ SK-001367,SKILL,Network intrusion prevention systems NIPS,Software product/techn
 SK-001368,SKILL,Network security auditing software,Software product/technology in category: Network security or virtual private network VPN management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001369,SKILL,"Network, hardware, and software auditing software",Software product/technology in category: Network monitoring software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001370,SKILL,Norton AntiVirus,Software product/technology in category: Transaction security and virus protection software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001371,SKILL,Objective C,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001372,SKILL,Oracle Fusion Middleware,Software product/technology in category: Enterprise application integration software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001373,SKILL,Oracle Net Manager,Software product/technology in category: Network monitoring software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001374,SKILL,Palo Alto Networks Next-Generation Security Platform,Software product/technology in category: Network security and virtual private network VPN equipment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1448,7 +1426,6 @@ SK-001411,SKILL,Algorithmic software,Software product/technology in category: An
 SK-001412,SKILL,Amazon Web Services AWS SageMaker,Software product/technology in category: Cloud-based management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001413,SKILL,Apache Airflow,Software product/technology in category: Procedure management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001414,SKILL,Apache Flume,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001415,SKILL,Apache Hive,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001416,SKILL,Augmint,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001417,SKILL,Automated document generation software,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001418,SKILL,Bidirectional encoder representations from transformers (BERT),Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1459,7 +1436,6 @@ SK-001422,SKILL,Clustermatic,Software product/technology in category: Clustering
 SK-001423,SKILL,CMake,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001424,SKILL,Computational statistics software,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001425,SKILL,Computer aided design and drafting CADD software,Software product/technology in category: Computer aided design CAD software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001426,SKILL,Data visualization software,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001427,SKILL,Doxygen,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001428,SKILL,Eiffel,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001429,SKILL,Embarcadero JBuilder,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1491,7 +1467,6 @@ SK-001454,SKILL,Object oriented development environment software,Software produc
 SK-001455,SKILL,Open Graphics Library OpenGL,Software product/technology in category: Graphics or photo imaging software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001456,SKILL,OpenAI ChatGPT,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001457,SKILL,Optimization software,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001458,SKILL,Oracle Database,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001459,SKILL,Oracle Java 2 Platform Enterprise Edition J2EE,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001460,SKILL,pandas,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001461,SKILL,Parallel systems software,Software product/technology in category: Clustering software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1509,7 +1484,6 @@ SK-001472,SKILL,Rice Simulator for ILP Multiprocessors RSIM,Software product/tec
 SK-001473,SKILL,Scikit-learn,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001474,SKILL,Simulation software,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001475,SKILL,Snowflake,Software product/technology in category: Data mining software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001476,SKILL,Software libraries,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001477,SKILL,Source code management SCM software,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001478,SKILL,TensorFlow,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001479,SKILL,Vector database software,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1529,7 +1503,6 @@ SK-001492,SKILL,American National Standards Institute ANSI C,Software product/te
 SK-001493,SKILL,Apache Avro,Software product/technology in category: Information retrieval or search software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001494,SKILL,Apache HBase,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001495,SKILL,Apache Oozie,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001496,SKILL,Apache Spark,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001497,SKILL,Apple iOS,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001498,SKILL,Atlassian Bitbucket,Software product/technology in category: Application server software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001499,SKILL,AWK,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1565,7 +1538,6 @@ SK-001528,SKILL,Embedded systems development software,Software product/technolog
 SK-001529,SKILL,Emerald Software Group Emerald Green Office,Software product/technology in category: Content workflow software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001530,SKILL,Encryption software,Software product/technology in category: Transaction security and virus protection software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001531,SKILL,Enterprise application integration EAI software,Software product/technology in category: Enterprise application integration software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001532,SKILL,ESRI ArcGIS software,Software product/technology in category: Map creation software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001533,SKILL,Event-driven State-machines Programming,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001534,SKILL,Fault testing software,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001535,SKILL,File server software,Software product/technology in category: Filesystem software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1581,7 +1553,6 @@ SK-001544,SKILL,Graphical user interface GUI builder software,Software product/t
 SK-001545,SKILL,Graphical user interface GUI design software,Software product/technology in category: Graphical user interface development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001546,SKILL,GraphQL,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001547,SKILL,GroupMe,Software product/technology in category: Instant messaging software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001548,SKILL,Haskell,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001549,SKILL,IBM AIX,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001550,SKILL,IBM DB2,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001551,SKILL,IBM Middleware,Software product/technology in category: Transaction server software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1677,7 +1648,6 @@ SK-001640,SKILL,Talend Big Data Integration,Software product/technology in categ
 SK-001641,SKILL,Talend Data Fabric,Software product/technology in category: Metadata management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001642,SKILL,Test design software,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001643,SKILL,Test implementation software,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001644,SKILL,TypeScript,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001645,SKILL,Unit testing software,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001646,SKILL,Usability testing software,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001647,SKILL,Version control software,Software product/technology in category: File versioning software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1688,18 +1658,15 @@ SK-001651,SKILL,Web server software,Software product/technology in category: Tra
 SK-001652,SKILL,Web service definition language WDSL,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001653,SKILL,Win CE,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001654,SKILL,Wind River VxWorks,Software product/technology in category: Operating system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001655,SKILL,Xcode,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001656,SKILL,XML Path Language XPATH,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001657,SKILL,Acresso InstallAnywhere,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001658,SKILL,Amazon Data Pipeline,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001659,SKILL,Antivirus software,Software product/technology in category: Transaction security and virus protection software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001660,SKILL,Apache JMeter,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001661,SKILL,Apache Sqoop,Software product/technology in category: Data base management system software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001662,SKILL,Apache Subversion SVN,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001663,SKILL,Appium,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001664,SKILL,Apple Cocoa,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001665,SKILL,Apple Safari,Software product/technology in category: Internet browser software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001666,SKILL,Atlassian JIRA,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001667,SKILL,Autodesk AutoCAD,Software product/technology in category: Computer aided design CAD software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001668,SKILL,Bentley MicroStation,Software product/technology in category: Computer aided design CAD software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001669,SKILL,Borland SilkTest,Software product/technology in category: Program testing software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1759,7 +1726,6 @@ SK-001722,SKILL,webpack,Software product/technology in category: Web platform de
 SK-001723,SKILL,Zend Framework,Software product/technology in category: Web platform development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001724,SKILL,24SevenOffice Project,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001725,SKILL,Actano Rplan,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001726,SKILL,AEC Software FastTrack Schedule,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001727,SKILL,AMS REALTIME Projects,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001728,SKILL,AnthillPro,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001729,SKILL,Apache Continuum,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1770,7 +1736,6 @@ SK-001733,SKILL,AtTask,Software product/technology in category: Project manageme
 SK-001734,SKILL,Autodesk Revit,Software product/technology in category: Computer aided design CAD software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001735,SKILL,Automation Centre TrackerSuite.Net,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001736,SKILL,Basecamp,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001737,SKILL,Blackboard software,Software product/technology in category: Computer based training software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001738,SKILL,BrightWork pmPoint,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001739,SKILL,CA Technologies CA Clarity PPM for IT Governance,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001740,SKILL,Canonical Launchpad,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1819,7 +1784,6 @@ SK-001782,SKILL,LuntBuild,Software product/technology in category: Development e
 SK-001783,SKILL,Madrigal Soft Tools Delegator,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001784,SKILL,MantisBT,Software product/technology in category: Data base user interface and query software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001785,SKILL,MatchWare MindView,Software product/technology in category: Pattern design software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001786,SKILL,Microsoft Team Foundation Server,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001787,SKILL,Mind mapping software,Software product/technology in category: Pattern design software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001788,SKILL,MindGenius,Software product/technology in category: Pattern design software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001789,SKILL,MinuteMan Systems MinuteMan Project Management Software,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1863,7 +1827,6 @@ SK-001826,SKILL,The Omni Group OmniPlan,Software product/technology in category:
 SK-001827,SKILL,ThoughtWorks Studio Mingle,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001828,SKILL,Tigris Cabie,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001829,SKILL,Unawave,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001830,SKILL,Virtual private networking VPN software,Software product/technology in category: Network security or virtual private network VPN management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001831,SKILL,Vitria M3O Operational Intelligence,Software product/technology in category: Enterprise resource planning ERP software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001832,SKILL,VSCOnline VPMi,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001833,SKILL,WBS Goplan,Software product/technology in category: Project management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
@@ -1889,7 +1852,6 @@ SK-001852,SKILL,Reporting software,Software product/technology in category: Data
 SK-001853,SKILL,SciPy,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001854,SKILL,Shiny,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001855,SKILL,spaCy,Software product/technology in category: Object or component oriented development software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
-SK-001856,SKILL,Splunk Enterprise,Software product/technology in category: Enterprise system management software,Software,SOFTWARE_OR_TOOL,TECHNICAL,PENDING_REVIEW
 SK-001857,SKILL,Statistical software,Software product/technology in category: Analytical or scientific software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001858,SKILL,XGBoost,Software product/technology in category: Development environment software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
 SK-001859,SKILL,Blackboard Learn,Software product/technology in category: Computer based training software,Software,SOFTWARE_OR_TOOL,TECHNICAL,APPROVED
