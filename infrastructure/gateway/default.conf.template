@@ -21,7 +21,13 @@ server {
 
     client_max_body_size 50M;
 
-    # Global CORS Headers for API calls
+    # Global CORS Headers for API calls. The gateway owns CORS: services' own CORS headers are dropped,
+    # otherwise browsers see duplicate Access-Control-Allow-Origin values and block the response.
+    proxy_hide_header 'Access-Control-Allow-Origin';
+    proxy_hide_header 'Access-Control-Allow-Credentials';
+    proxy_hide_header 'Access-Control-Allow-Methods';
+    proxy_hide_header 'Access-Control-Allow-Headers';
+    proxy_hide_header 'Access-Control-Expose-Headers';
     add_header 'Access-Control-Allow-Origin' '*' always;
     add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
     add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization' always;
