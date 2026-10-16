@@ -14,7 +14,7 @@ async def test_invalid_skill_type(client):
     assert res.status_code == 422
 
 @pytest.mark.anyio
-async def test_invalid_self_reference():
+async def test_invalid_self_reference(setup_db):
     async with TestingSessionLocal() as session:
         skill = Skill(skill_id="SK-1", preferred_name="S1", skill_type="KNOWLEDGE")
         session.add(skill)
@@ -153,7 +153,7 @@ async def test_role_crud_pagination_and_filters(client):
 
 
 @pytest.mark.anyio
-async def test_repository_rolls_back_on_conflict():
+async def test_repository_rolls_back_on_conflict(setup_db):
     from app.repositories.core import SkillRepository, ConflictError
     from app.schemas.core import SkillCreate
     async with TestingSessionLocal() as session:
