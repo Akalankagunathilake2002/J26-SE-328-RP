@@ -80,6 +80,19 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-gemini}
+      LIVEAVATAR_API_KEY: ${LIVEAVATAR_API_KEY:-}
+      LIVEAVATAR_SANDBOX: ${LIVEAVATAR_SANDBOX:-true}
+      LIVEAVATAR_AVATAR_ID: ${LIVEAVATAR_AVATAR_ID:-dd73ea75-1218-4ef3-92ce-606d5f7fbc0a}
+      LIVEAVATAR_VOICE_ID: ${LIVEAVATAR_VOICE_ID:-}
+      # Interviewer: "local" = LivePortrait + MuseTalk engine on the host Mac (Huggingbay/start-avatar.sh),
+      # "liveavatar" = HeyGen, "none" = portrait + browser voice
+      AVATAR_PROVIDER: ${AVATAR_PROVIDER:-local}
+      LOCAL_AVATAR_URL: ${LOCAL_AVATAR_URL:-http://host.docker.internal:8768}
+      LOCAL_AVATAR_NAME: ${LOCAL_AVATAR_NAME:-elena}
+      LOCAL_AVATAR_VOICE: ${LOCAL_AVATAR_VOICE:-Samantha}
+      LOCAL_AVATAR_DECODER: ${LOCAL_AVATAR_DECODER:-fast}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
