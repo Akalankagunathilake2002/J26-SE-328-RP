@@ -54,6 +54,12 @@ def get_domain_association_service(session: AsyncSession = Depends(get_session))
         domain_repo=DomainRepository(session),
     )
 
+from app.repositories.snapshots import SnapshotRepository
+from app.services.snapshots import SnapshotService
+
+def get_snapshot_service(session: AsyncSession = Depends(get_session)) -> SnapshotService:
+    return SnapshotService(repo=SnapshotRepository(session))
+
 def verify_reviewer(x_reviewer_id: str | None = Header(None, alias="X-Reviewer-Id")) -> str:
     # TEMPORARY DEVELOPMENT MECHANISM: Real authentication and authorization is pending integration
     # with central auth-service. This check requires the X-Reviewer-Id header to prevent unrestricted access.
