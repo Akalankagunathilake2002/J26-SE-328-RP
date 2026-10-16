@@ -6,6 +6,11 @@ from app.api.routers import (
     roles_router,
     normalization_router,
     candidates_router,
+    relationships_router,
+    candidate_relationships_router,
+    skill_domains_router,
+    role_domains_router,
+    snapshots_router,
 )
 from app.config.settings import get_settings
 
@@ -38,6 +43,11 @@ def create_app() -> FastAPI:
     ssks_router.include_router(roles_router)
     ssks_router.include_router(normalization_router)
     ssks_router.include_router(candidates_router)
+    ssks_router.include_router(relationships_router)
+    ssks_router.include_router(candidate_relationships_router)
+    ssks_router.include_router(skill_domains_router)
+    ssks_router.include_router(role_domains_router)
+    ssks_router.include_router(snapshots_router)
 
     app.include_router(ssks_router)
 

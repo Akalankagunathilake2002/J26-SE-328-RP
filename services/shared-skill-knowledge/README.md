@@ -5,7 +5,7 @@ development starts.
 
 ## Purpose
 
-The single, authoritative source of the skill and role knowledge that C01, C02, C03 and C04 all
+The single, authoritative source of the skill and role knowledge that C01, C02, SkillGap, and C04 all
 use. No other service keeps its own copy of this knowledge.
 
 It will own:
@@ -20,7 +20,7 @@ It will own:
 ## Rules
 
 - Relationships start as **pending** and are only shared with other services once **verified**.
-- C03 uses verified relationships for its proposed readiness method. This service never
+- SkillGap (Skill Gap Analysis and Career Readiness Engine) uses verified relationships for its proposed readiness method. This service never
   calculates matching, skill gaps or readiness itself.
 - There is one skill graph, here; no service builds its own.
 
@@ -30,7 +30,7 @@ It will own:
 |---|---|
 | C01 Industry Skill Extraction | Looks up canonical skill and role IDs |
 | C02 Student Skill Profile | Maps skill names and aliases to canonical skill IDs |
-| C03 Skill Gap Analysis and Career Readiness | Reads verified skill relationships |
+| SkillGap (Skill Gap Analysis and Career Readiness Engine) | Reads authoritative knowledge snapshots and verified relationships |
 | C04 Learning Skill Tree | Reads relationships such as prerequisites to order learning paths |
 
 ## Plan
@@ -49,4 +49,16 @@ It will own:
   psql -d <database_name> -f migrations/001_add_skill_nature_to_skills.sql
   ```
   The script safely adds `skill_nature VARCHAR(50)` and constraint `check_valid_skill_nature` only if not already present. It is safe to re-run multiple times.
+
+## Snapshot Export & SkillGap Cache Support
+
+SSKS provides deterministic, read-only snapshot export and cache validation endpoints under `/ssks/snapshots` for the **Skill Gap Analysis and Career Readiness Engine (`SkillGap`)**:
+
+- `GET /ssks/snapshots/export?consumer=SkillGap`: Exports the full consistent snapshot payload.
+- `POST /ssks/snapshots/export?consumer=SkillGap`: Safe, idempotent export request endpoint.
+- `GET /ssks/snapshots/metadata?consumer=SkillGap`: Returns version tag, generation timestamp, and counts.
+- `GET /ssks/snapshots/validate?version={version}&consumer=SkillGap`: Validates cache freshness.
+
+For detailed Postman/cURL examples and the proposed SkillGap local cache schema (documentation only), see [docs/skillgap_cache_schema.md](docs/skillgap_cache_schema.md).
+
 
