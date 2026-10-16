@@ -1,14 +1,31 @@
-from pydantic import BaseModel, Field
+from typing import Annotated, Literal
+
+from pydantic import BaseModel, StringConstraints
 from datetime import datetime
 
+SkillType = Literal[
+    "PROGRAMMING_LANGUAGE",
+    "PROGRAMMING_SKILL",
+    "PROGRAMMING_PARADIGM",
+    "SOFTWARE_OR_TOOL",
+    "KNOWLEDGE",
+    "OTHER_SKILL",
+]
+SkillNature = Literal["TECHNICAL", "BEHAVIOURAL", "OTHER"]
+
+# Trimmed, non-empty strings sized to the database columns
+Id50 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
+Name255 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)]
+Status50 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
+
 class DomainBase(BaseModel):
-    name: str
-    code: str
+    name: Name255
+    code: Id50
     description: str | None = None
-    status: str = "ACTIVE"
+    status: Status50 = "ACTIVE"
 
 class DomainCreate(DomainBase):
-    domain_id: str
+    domain_id: Id50
 
 class DomainOut(DomainBase):
     domain_id: str
@@ -17,14 +34,14 @@ class DomainOut(DomainBase):
         from_attributes = True
 
 class SkillBase(BaseModel):
-    preferred_name: str
+    preferred_name: Name255
     description: str | None = None
-    skill_type: str
-    skill_nature: str | None = None
-    status: str = "ACTIVE"
+    skill_type: SkillType
+    skill_nature: SkillNature | None = None
+    status: Status50 = "ACTIVE"
 
 class SkillCreate(SkillBase):
-    skill_id: str
+    skill_id: Id50
 
 class SkillOut(SkillBase):
     skill_id: str
@@ -35,12 +52,12 @@ class SkillOut(SkillBase):
         from_attributes = True
 
 class RoleBase(BaseModel):
-    preferred_name: str
+    preferred_name: Name255
     description: str | None = None
-    status: str = "ACTIVE"
+    status: Status50 = "ACTIVE"
 
 class RoleCreate(RoleBase):
-    role_id: str
+    role_id: Id50
 
 class RoleOut(RoleBase):
     role_id: str
