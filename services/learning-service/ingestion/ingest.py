@@ -16,7 +16,7 @@ from ingestion.chunker import MarkdownChunker
 
 async def run_ingestion(data_dir: str = None):
     if data_dir is None:
-        data_dir = os.path.join(os.path.dirname(__file__), "..", "data", "backend")
+        data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
 
     print(f"[Ingestion] Loading educational documents from: {data_dir}")
     documents = DocumentLoader.load_directory(data_dir)

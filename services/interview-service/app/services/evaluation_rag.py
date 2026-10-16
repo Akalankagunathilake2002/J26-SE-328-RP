@@ -72,7 +72,43 @@ class EvaluationRAGService:
 
         evaluation_latency_ms = round((time.perf_counter() - t_start) * 1000, 2)
 
-        # 3. Persist scores to interview_turns
+        # 3. Non-Verbal & Pacing Telemetry Assessment
+        wpm = request.words_per_minute
+        duration = request.speaking_duration_seconds
+        eye_contact = request.eye_contact_ratio
+        fillers = request.filler_words_count or 0
+
+        pacing_note = "Optimal"
+        if wpm is not None:
+            if wpm < 110:
+                pacing_note = "Slightly Deliberate / Slow"
+            elif wpm > 165:
+                pacing_note = "Rapid / Fast Paced"
+            else:
+                pacing_note = "Well-Paced & Clear"
+
+        # Blend non-verbal communication telemetry into feedback
+        eye_ratio = (eye_contact / 100.0) if (eye_contact is not None and eye_contact > 1.0) else eye_contact
+
+        if duration or eye_contact or wpm:
+            comm_additions = []
+            if wpm:
+                comm_additions.append(f"Delivery pacing: {wpm:.0f} WPM ({pacing_note}).")
+            if eye_ratio is not None:
+                comm_additions.append(f"Camera engagement: {eye_ratio * 100:.0f}%.")
+            if fillers > 3:
+                comm_additions.append(f"Identified {fillers} verbal filler hesitation pauses.")
+            
+            if comm_additions:
+                eval_data["communication_feedback"] += f" Non-verbal telemetry: {' '.join(comm_additions)}"
+
+        # Compute weighted overall score (70% technical accuracy, 15% clarity, 15% communication/engagement)
+        tech_score = eval_data["technical_accuracy"]
+        clarity_score = eval_data["clarity"]
+        eye_boost = (eye_ratio * 5.0) if eye_ratio is not None else clarity_score
+        overall_score = round((tech_score * 0.70) + (clarity_score * 0.15) + (eye_boost * 0.15), 2)
+
+        # 4. Persist scores to interview_turns
         turn.technical_accuracy_score = eval_data["technical_accuracy"]
         turn.relevance_score = eval_data["relevance"]
         turn.explanation_quality_score = eval_data["explanation_quality"]
@@ -104,7 +140,12 @@ class EvaluationRAGService:
             missing_concepts=eval_data["missing_concepts"],
             strengths=eval_data["strengths"],
             areas_for_improvement=eval_data["areas_for_improvement"],
-            evaluation_latency_ms=evaluation_latency_ms
+            evaluation_latency_ms=evaluation_latency_ms,
+            speaking_duration_seconds=duration,
+            words_per_minute=wpm,
+            eye_contact_ratio=eye_contact,
+            pacing_assessment=pacing_note,
+            overall_score=overall_score
         )
 
     async def _run_evaluation_chain(self, question: str, topic: str, transcript: str) -> Dict[str, Any]:

@@ -108,5 +108,31 @@ class ProgressService:
             topics=items
         )
 
+    @staticmethod
+    async def get_or_create_progress(
+        session: AsyncSession,
+        student_id: str,
+        target_role: str
+    ):
+        """Ensures student baseline record exists when profile is synchronized."""
+        stmt = select(StudentTopicProgress).where(
+            StudentTopicProgress.student_id == student_id
+        )
+        result = await session.execute(stmt)
+        record = result.scalars().first()
+        if not record:
+            init_progress = StudentTopicProgress(
+                student_id=student_id,
+                topic="Architecture Foundations",
+                target_role=target_role,
+                queries_count=0,
+                status="in_progress",
+                last_studied_at=datetime.utcnow()
+            )
+            session.add(init_progress)
+            await session.commit()
+            return init_progress
+        return record
+
 
 progress_service = ProgressService()

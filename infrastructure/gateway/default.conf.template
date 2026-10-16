@@ -76,6 +76,22 @@ server {
         proxy_read_timeout 120s;
     }
 
+    location /api/v1/upstream/ {
+        if ($request_method = 'OPTIONS') {
+            return 204;
+        }
+        set $learning_service http://learning-service:${LEARNING_SERVICE_PORT};
+        proxy_pass $learning_service;
+    }
+
+    location /api/v1/analytics/ {
+        if ($request_method = 'OPTIONS') {
+            return 204;
+        }
+        set $learning_service http://learning-service:${LEARNING_SERVICE_PORT};
+        proxy_pass $learning_service;
+    }
+
     # RAG: AI Mock Interview Microservice
     location /api/v1/interview/ {
         if ($request_method = 'OPTIONS') {

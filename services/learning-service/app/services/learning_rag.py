@@ -48,23 +48,41 @@ class LearningRAGService:
         Executes the full Personalized Learning RAG pipeline:
         Query -> pgvector Semantic Search -> Grounded Prompt Construction -> LLM -> Grounded Output
         """
-        # Step 1: Retrieval
+        # Step 1: Stage-1 Candidate Retrieval (Top-10 via Hybrid RRF)
         t_retrieval_start = time.perf_counter()
-        retrieved_results = await vector_store_service.search_learning_chunks(
+        candidate_pool_size = max(settings.TOP_K * 2, 8)
+        initial_candidates = await vector_store_service.search_learning_chunks(
             session=session,
             query=request.question,
             target_role=request.target_role,
-            top_k=settings.TOP_K
+            top_k=candidate_pool_size
         )
         retrieval_latency_ms = round((time.perf_counter() - t_retrieval_start) * 1000, 2)
 
-        # Format debug chunks & citations
+        # Step 2: Stage-2 Two-Stage Re-Ranking (Top-3 Selection)
+        from app.services.reranker import reranker_service
+        t_rerank_start = time.perf_counter()
+        top_reranked = reranker_service.rerank_candidates(
+            query=request.question,
+            candidates=initial_candidates,
+            top_k=settings.TOP_K
+        )
+        rerank_latency_ms = round((time.perf_counter() - t_rerank_start) * 1000, 2)
+
+        # Step 3: Context Compression & 'Lost in the Middle' Order Optimization
         debug_chunks: List[RetrievedChunkDebug] = []
         sources: List[SourceCitation] = []
         seen_sources = set()
-
         context_texts = []
-        for i, item in enumerate(retrieved_results, 1):
+        total_orig_tokens = 0
+        total_comp_tokens = 0
+
+        # Anti-'Lost in the Middle' arrangement: Place top items at boundaries
+        arranged_items = list(top_reranked)
+        if len(arranged_items) == 3:
+            arranged_items = [arranged_items[0], arranged_items[2], arranged_items[1]]
+
+        for i, item in enumerate(top_reranked, 1):
             debug_chunks.append(RetrievedChunkDebug(
                 chunk_id=item["chunk_id"],
                 content_preview=item["content"][:200] + ("..." if len(item["content"]) > 200 else ""),
@@ -74,7 +92,10 @@ class LearningRAGService:
                 dense_rank=item.get("dense_rank"),
                 sparse_rank=item.get("sparse_rank"),
                 rrf_score=item.get("rrf_score"),
-                retrieval_method=item.get("retrieval_method", "hybrid_rrf")
+                pre_rerank_rank=item.get("pre_rerank_rank"),
+                rerank_score=item.get("rerank_score"),
+                rank_delta=item.get("rank_delta"),
+                retrieval_method="hybrid_rrf_plus_rerank"
             ))
 
             src_key = (item["title"], item["source"])
@@ -87,13 +108,22 @@ class LearningRAGService:
                 ))
                 seen_sources.add(src_key)
 
+        for i, item in enumerate(arranged_items, 1):
+            comp_res = reranker_service.compress_context_chunk(item["content"])
+            total_orig_tokens += comp_res["original_tokens"]
+            total_comp_tokens += comp_res["compressed_tokens"]
+
             context_texts.append(
-                f"[Source {i}: {item['title']} ({item['source']})]\n{item['content']}"
+                f"[Source {i}: {item['title']} ({item['source']})]\n{comp_res['compressed_text']}"
             )
+
+        tokens_saved_pct = round(
+            ((total_orig_tokens - total_comp_tokens) / max(total_orig_tokens, 1)) * 100, 1
+        ) if total_orig_tokens > 0 else 0.0
 
         formatted_context = "\n\n".join(context_texts) if context_texts else "No specific documents found."
 
-        # Step 2: Grounded Prompt Construction & Generation
+        # Step 4: Grounded Generation
         t_gen_start = time.perf_counter()
 
         system_prompt = (
@@ -113,9 +143,9 @@ class LearningRAGService:
 
         user_prompt = f"Student Question: {request.question}"
 
-        answer_text, next_topic = await self._generate_response(system_prompt, user_prompt, retrieved_results)
+        answer_text, next_topic = await self._generate_response(system_prompt, user_prompt, top_reranked)
         generation_latency_ms = round((time.perf_counter() - t_gen_start) * 1000, 2)
-        total_latency_ms = round(retrieval_latency_ms + generation_latency_ms, 2)
+        total_latency_ms = round(retrieval_latency_ms + rerank_latency_ms + generation_latency_ms, 2)
 
         return LearningQueryResponse(
             answer=answer_text,
@@ -123,9 +153,12 @@ class LearningRAGService:
             sources=sources,
             retrieved_chunks=debug_chunks,
             retrieval_latency_ms=retrieval_latency_ms,
+            rerank_latency_ms=rerank_latency_ms,
             generation_latency_ms=generation_latency_ms,
             total_latency_ms=total_latency_ms,
-            retrieval_strategy=settings.RETRIEVAL_STRATEGY
+            retrieval_strategy="hybrid_rrf_with_rerank",
+            tokens_saved_percent=tokens_saved_pct,
+            context_compression_applied=True
         )
 
     async def execute_baseline(self, request: LearningQueryRequest) -> Dict[str, Any]:
