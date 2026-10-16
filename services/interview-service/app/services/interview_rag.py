@@ -74,8 +74,15 @@ class InterviewRAGService:
         result = await session.execute(stmt)
         candidates = result.all()
 
+        # Same query every turn returns the same best match, so skip topics already asked
+        asked_res = await session.execute(
+            select(InterviewTurn.topic).where(InterviewTurn.session_id == uuid.UUID(request.session_id))
+        )
+        asked_topics = {t for (t,) in asked_res.all() if t}
+        fresh = [c for c in candidates if c.topic not in asked_topics]
+
         if candidates:
-            selected = candidates[0]
+            selected = fresh[0] if fresh else candidates[0]
             topic = selected.topic
             difficulty = selected.difficulty
             rubric_dict = selected.rubric if isinstance(selected.rubric, dict) else {}
@@ -92,7 +99,10 @@ class InterviewRAGService:
                 level=request.experience_level,
                 topic=topic,
                 skills=request.current_skills,
-                reference_concept=selected.content
+                reference_concept=selected.content,
+                previous_question=request.previous_question,
+                previous_answer=request.previous_answer,
+                previous_missing=request.previous_missing_concepts,
             )
             context_or_reason = f"Evaluates your understanding of {topic} for an {request.experience_level} {request.target_role} position."
         else:
@@ -136,15 +146,29 @@ class InterviewRAGService:
         level: str,
         topic: str,
         skills: List[str],
-        reference_concept: str
+        reference_concept: str,
+        previous_question: str | None = None,
+        previous_answer: str | None = None,
+        previous_missing: List[str] | None = None,
     ) -> str:
         prompt = (
             f"You are a Senior Technical Interviewer assessing a candidate for a {level} {role} position.\n"
             f"Candidate Skills: {', '.join(skills)}\n"
             f"Topic: {topic}\n"
             f"Reference Concept:\n{reference_concept}\n\n"
-            f"Task: Formulate ONE clear, scenario-oriented technical interview question testing this concept. "
-            f"Do not ask multiple questions. Be direct and realistic."
+        )
+        if previous_question and previous_answer:
+            prompt += (
+                f"Previous question: {previous_question}\n"
+                f"Candidate's answer: {previous_answer[:1500]}\n"
+                + (f"Concepts the answer missed: {', '.join(previous_missing)}\n" if previous_missing else "")
+                + "\nStart with ONE short, natural sentence acknowledging their previous answer "
+                "(no scores, no praise inflation). If a missed concept relates to this topic, probe it.\n"
+            )
+        prompt += (
+            "Task: Formulate ONE clear, scenario-oriented technical interview question testing this concept. "
+            "Do not ask multiple questions. Be direct and realistic. It will be spoken aloud by a video "
+            "interviewer, so write plain conversational sentences: no markdown, lists, code or quotes."
         )
 
         if self._llm == "gemini" and self._gemini_client:

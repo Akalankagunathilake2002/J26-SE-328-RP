@@ -24,6 +24,10 @@ class QuestionGenerationRequest(BaseModel):
     experience_level: str = "Entry Level"
     current_skills: List[str] = []
     preferred_topic: Optional[str] = None
+    # The previous turn, so the interviewer can acknowledge the answer and follow up on gaps
+    previous_question: Optional[str] = None
+    previous_answer: Optional[str] = None
+    previous_missing_concepts: List[str] = []
 
 
 class InterviewQuestionResponse(BaseModel):
