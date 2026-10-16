@@ -12,6 +12,12 @@ TECHNICAL_DOMAIN_VOCABULARY = (
 )
 
 
+class SpeechToTextError(Exception):
+    def __init__(self, message: str, status_code: int = 502):
+        super().__init__(message)
+        self.status_code = status_code
+
+
 class SpeechToTextService:
     def __init__(self):
         self._client = None
@@ -36,28 +42,28 @@ class SpeechToTextService:
         t_start = time.perf_counter()
         prompt_vocab = custom_prompt or TECHNICAL_DOMAIN_VOCABULARY
 
-        if self._client and os.path.exists(file_path):
-            try:
-                with open(file_path, "rb") as audio_file:
-                    transcript_resp = self._client.audio.transcriptions.create(
-                        model=settings.WHISPER_MODEL,
-                        file=audio_file,
-                        prompt=prompt_vocab,
-                        temperature=0.0
-                    )
-                    transcript_text = transcript_resp.text
-            except Exception as e:
-                print(f"[Error] Whisper API error: {e}. Falling back to domain transcript generator.")
-                transcript_text = (
-                    "In our microservice architecture, connection pooling via HikariCP maintains active database connections, "
-                    "reducing TCP handshake latency and preventing database connection slot exhaustion under heavy traffic."
-                )
-        else:
-            # Fallback transcript for offline / test environments
-            transcript_text = (
-                "In our microservice architecture, connection pooling via HikariCP maintains active database connections, "
-                "reducing TCP handshake latency and preventing database connection slot exhaustion under heavy traffic."
+        # Never substitute a canned answer: the transcript is scored as the candidate's own words.
+        if not self._client:
+            raise SpeechToTextError(
+                "Speech-to-text is not configured (OPENAI_API_KEY missing). Type your answer instead.",
+                status_code=503,
             )
+        if not os.path.exists(file_path):
+            raise SpeechToTextError("The recorded audio was not received.", status_code=400)
+        try:
+            with open(file_path, "rb") as audio_file:
+                transcript_resp = self._client.audio.transcriptions.create(
+                    model=settings.WHISPER_MODEL,
+                    file=audio_file,
+                    prompt=prompt_vocab,
+                    temperature=0.0
+                )
+                transcript_text = (transcript_resp.text or "").strip()
+        except Exception as e:
+            print(f"[Error] Whisper API error: {e}")
+            raise SpeechToTextError("Transcription failed. Please try again or type your answer.") from e
+        if not transcript_text:
+            raise SpeechToTextError("No speech was detected in the recording. Please try again.", status_code=422)
 
         latency_ms = round((time.perf_counter() - t_start) * 1000, 2)
 
