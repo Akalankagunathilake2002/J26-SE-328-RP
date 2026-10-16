@@ -23,6 +23,7 @@ async def create_tables() -> None:
     import app.models.sources
     import app.models.aliases
     import app.models.relationships
+    import app.models.candidates
 
     async with get_engine().begin() as connection:
         await connection.run_sync(Base.metadata.create_all)

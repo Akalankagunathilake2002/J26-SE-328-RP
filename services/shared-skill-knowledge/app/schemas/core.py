@@ -1,7 +1,6 @@
 from typing import Annotated, Literal
-
-from pydantic import BaseModel, StringConstraints
 from datetime import datetime
+from pydantic import BaseModel, ConfigDict, StringConstraints
 
 SkillType = Literal[
     "PROGRAMMING_LANGUAGE",
@@ -13,7 +12,6 @@ SkillType = Literal[
 ]
 SkillNature = Literal["TECHNICAL", "BEHAVIOURAL", "OTHER"]
 
-# Trimmed, non-empty strings sized to the database columns
 Id50 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
 Name255 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)]
 Status50 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
@@ -29,9 +27,7 @@ class DomainCreate(DomainBase):
 
 class DomainOut(DomainBase):
     domain_id: str
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class SkillBase(BaseModel):
     preferred_name: Name255
@@ -47,9 +43,7 @@ class SkillOut(SkillBase):
     skill_id: str
     created_at: datetime
     updated_at: datetime
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class RoleBase(BaseModel):
     preferred_name: Name255
@@ -63,6 +57,4 @@ class RoleOut(RoleBase):
     role_id: str
     created_at: datetime
     updated_at: datetime
-    
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

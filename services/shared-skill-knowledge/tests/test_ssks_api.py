@@ -1,35 +1,8 @@
-﻿import pytest
-from httpx import AsyncClient, ASGITransport
+import pytest
 import sqlalchemy as sa
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from app.main import app
-from app.db.base import Base
-from app.db.session import get_session
 from app.models.core import Skill, Domain
-from app.models.relationships import SkillDomain, RoleDomain
-from app.models.relationships import SkillRelationship, CandidateSkillRelationship
-
-test_engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
-TestingSessionLocal = async_sessionmaker(test_engine, expire_on_commit=False)
-
-async def override_get_session():
-    async with TestingSessionLocal() as session:
-        yield session
-
-app.dependency_overrides[get_session] = override_get_session
-
-@pytest.fixture(autouse=True, scope="function")
-async def setup_db():
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
-    async with test_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-
-@pytest.fixture
-async def client():
-    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
-        yield c
+from app.models.relationships import SkillDomain, RoleDomain, SkillRelationship, CandidateSkillRelationship
+from tests.conftest import TestingSessionLocal
 
 @pytest.mark.anyio
 async def test_invalid_skill_type(client):
@@ -191,4 +164,3 @@ async def test_repository_rolls_back_on_conflict():
         # Session must stay usable after the rollback
         await repo.create(SkillCreate(**_skill("SK-2")))
         assert len(await repo.get_all()) == 2
-
