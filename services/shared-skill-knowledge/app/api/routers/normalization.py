@@ -3,9 +3,9 @@ from app.schemas.normalization import BulkNormalizeRequest, BulkNormalizeRespons
 from app.services.normalization import NormalizationService
 from app.api.dependencies import get_normalization_service
 
-normalization_router = APIRouter(prefix="/normalize", tags=["normalization"])
+router = APIRouter(prefix="/normalize", tags=["normalization"])
 
-@normalization_router.post(
+@router.post(
     "/skills",
     response_model=BulkNormalizeResponse,
     summary="Bulk normalize skills",
@@ -16,7 +16,7 @@ async def normalize_skills(
 ):
     return await service.normalize_skills(request)
 
-@normalization_router.post(
+@router.post(
     "/roles",
     response_model=BulkNormalizeResponse,
     summary="Bulk normalize roles",

@@ -1,8 +1,12 @@
 import contextlib
 from fastapi import FastAPI, APIRouter
-from app.api.routers import domains_router, skills_router, roles_router
-from app.api.candidates import candidates_router
-from app.api.normalization import normalization_router
+from app.api.routers import (
+    domains_router,
+    skills_router,
+    roles_router,
+    normalization_router,
+    candidates_router,
+)
 from app.config.settings import get_settings
 
 @contextlib.asynccontextmanager

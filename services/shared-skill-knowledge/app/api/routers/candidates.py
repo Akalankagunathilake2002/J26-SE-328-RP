@@ -9,9 +9,9 @@ from app.schemas.candidates import (
 from app.services.candidates import CandidateService
 from app.api.dependencies import get_candidate_service, verify_reviewer
 
-candidates_router = APIRouter(prefix="/candidates", tags=["candidates"])
+router = APIRouter(prefix="/candidates", tags=["candidates"])
 
-@candidates_router.post(
+@router.post(
     "/entities",
     response_model=CandidateEntityOut,
     status_code=status.HTTP_201_CREATED,
@@ -23,7 +23,7 @@ async def submit_candidate_entity(
 ):
     return await service.create_candidate(data)
 
-@candidates_router.get(
+@router.get(
     "/entities",
     response_model=list[CandidateEntityOut],
     summary="List candidate entities",
@@ -42,7 +42,7 @@ async def list_candidate_entities(
         review_status=review_status,
     )
 
-@candidates_router.get(
+@router.get(
     "/entities/{candidate_entity_id}",
     response_model=CandidateEntityOut,
     summary="Get candidate entity by ID",
@@ -53,7 +53,7 @@ async def get_candidate_entity(
 ):
     return await service.get_candidate(candidate_entity_id)
 
-@candidates_router.patch(
+@router.patch(
     "/entities/{candidate_entity_id}/review",
     response_model=CandidateEntityOut,
     summary="Review candidate entity (approve or reject)",
