@@ -60,10 +60,34 @@ def test_requirements_heading_with_inline_content():
     assert extract_requirements("Key Skills: Payroll, Labour law") == "Payroll, Labour law"
 
 
+def test_requirement_headings_seen_on_real_flyers():
+    flyer = (
+        "WE ARE HIRING\nJob Responsibilities\n= Process weekly payroll\n"
+        "Experience and Qualifications\n— 2 years of experience in UK payroll.\n"
+        "= Strong Excel skills\nInterested candidates please send your CV"
+    )
+    assert extract_requirements(flyer) == "2 years of experience in UK payroll.\nStrong Excel skills"
+    ideal = "The ideal candidate should possess the following :\n© Degree in HR\nCandidates meeting above criteria"
+    assert extract_requirements(ideal) == "Degree in HR"
+    assert extract_requirements("Candidate Requrements\n¢ English Communication Skill") == "English Communication Skill"
+
+
+def test_requirements_end_at_responsibilities_but_not_at_responsible():
+    text = "Requirements:\nResponsible attitude\nTeamwork\nKey Responsibilities\nManage staff"
+    assert extract_requirements(text) == "Responsible attitude\nTeamwork"
+
+
+def test_office_skills_are_not_mistaken_for_names():
+    scrubbed = scrub_personal_data("Ms Word / Excel Knowledge\nMS Office\nContact Ms. Perera")
+    assert "Ms Word" in scrubbed and "MS Office" in scrubbed
+    assert "Perera" not in scrubbed
+
+
 def test_experience_formats():
     assert extract_experience("Minimum 2 years of experience in HR") == "2+ years"
     assert extract_experience("1-3 years experience in payroll") == "1–3 years"
     assert extract_experience("3+ years industry experience") == "3+ years"
+    assert extract_experience("Should have at-least 3 years of HR experience") == "3+ years"
     assert extract_experience("Age 25-35 years with 2 years experience") == "2 years"
     assert extract_experience("16 years experience") is None  # OCR-mangled "1–6 years"
     assert extract_experience("Degree required") is None

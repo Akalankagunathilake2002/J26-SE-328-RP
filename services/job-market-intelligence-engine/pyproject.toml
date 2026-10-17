@@ -9,6 +9,8 @@ dependencies = [
     "beautifulsoup4>=4.12",
     "PyYAML>=6.0.1",
     "rapidfuzz>=3.9",
+    "pytesseract>=0.3.13",  # needs the Tesseract program: brew install tesseract
+    "Pillow>=10.4",
 ]
 
 [project.optional-dependencies]
