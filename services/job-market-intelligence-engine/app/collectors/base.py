@@ -47,6 +47,7 @@ class Client(Protocol):
 
 @dataclass
 class CollectResult:
+    listed: dict[str, int] = field(default_factory=dict)  # sector → ads on its listing pages
     new_ads: dict[str, int] = field(default_factory=dict)  # sector → ads downloaded
     already_stored: int = 0  # listed again; any new sector is recorded, nothing is downloaded
     gone: int = 0  # listed, but the ad page returned 404
@@ -114,7 +115,9 @@ class BaseCollector(ABC):
         result = CollectResult()
         for sector in sectors:
             downloaded = 0
-            for entry in self.select(self.listings(sector), limit=None):
+            listed = self.select(self.listings(sector), limit=None)
+            result.listed[sector] = len(listed)
+            for entry in listed:
                 if self.storage.find_raw(self.site, entry.job_id):
                     self.storage.add_listing(entry)  # same ad, possibly listed under another sector
                     result.already_stored += 1
