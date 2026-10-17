@@ -5,7 +5,8 @@
     python -m app.collectors.run --site all --reparse     # offline: rebuild processed/ from raw/
 
 Image ads get their text from the saved flyer with OCR (Tesseract; skip with --no-ocr).
-Every run ends by refreshing data/processed/quality_report.md.
+Every run ends by refreshing data/processed/quality_report.md and the skill profile
+(skill_profile.md and skill_profile.json).
 
 The User-Agent names the project. Set SKILLBRIDGE_CONTACT (in the environment or the service's
 .env file) to add a contact address to it.
@@ -26,8 +27,9 @@ from app.collectors.models import JobAd, SiteConfig
 from app.collectors.report import write_report
 from app.collectors.storage import Storage
 from app.collectors.text_utils import clean_ad
-from app.processing.ocr import add_ocr_text, tesseract_available
 from app.collectors.topjobs import TopjobsCollector
+from app.processing.ocr import add_ocr_text, tesseract_available
+from app.processing.skills import write_profile
 
 COLLECTORS: dict[str, type[BaseCollector]] = {"topjobs": TopjobsCollector}
 
@@ -104,6 +106,7 @@ def main(
     write_processed(storage, names, ads)
     for name in names:
         log.info("%s: data quality report in %s", name, write_report(storage, name, sector_names))
+    log.info("skill profile per job role in %s", write_profile(storage, names)[0])
     return exit_code
 
 

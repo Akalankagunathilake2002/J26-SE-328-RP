@@ -46,6 +46,16 @@ services:
       postgres:
         condition: service_healthy
 
+  job-market-intelligence-engine:
+    build: ../services/job-market-intelligence-engine
+    environment:
+      JOB_MARKET_INTELLIGENCE_PORT: ${JOB_MARKET_INTELLIGENCE_PORT:-8003}
+      SKILLBRIDGE_DATA_DIR: /service/data
+    volumes:
+      # Only the processed data (no personal details), read-only. Ads are collected on the host:
+      # see services/job-market-intelligence-engine/README.md.
+      - ../services/job-market-intelligence-engine/data/processed:/service/data/processed:ro
+
   learning-service:
     build: ../services/learning-service
     environment:
@@ -105,12 +115,14 @@ services:
       - LEARNING_SERVICE_PORT=${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
       - INTERVIEW_SERVICE_PORT=${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
       - SHARED_SKILL_KNOWLEDGE_PORT=${SHARED_SKILL_KNOWLEDGE_PORT:-8005}
-      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT
+      - JOB_MARKET_INTELLIGENCE_PORT=${JOB_MARKET_INTELLIGENCE_PORT:-8003}
+      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT|JOB_MARKET_INTELLIGENCE_PORT
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     depends_on:
       - auth-service
       - shared-skill-knowledge
+      - job-market-intelligence-engine
       - learning-service
       - interview-service
 

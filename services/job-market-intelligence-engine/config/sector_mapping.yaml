@@ -73,8 +73,10 @@ sites:
 # Every site has its own Agriculture category, so these keywords are not needed to find ads.
 # topjobs' AGD category also lists HSE, environmental, food-safety, mining and hydrogeology jobs,
 # so Agriculture ads without any of these keywords are flagged as possibly not agriculture.
+# A keyword matches the start of a word ("farm" also finds "farming" and "farms").
 agriculture_keywords:
   - agriculture
+  - agricultural
   - plantation
   - agronomy
   - farm

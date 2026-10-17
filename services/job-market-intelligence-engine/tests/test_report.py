@@ -88,7 +88,8 @@ def test_report_file_is_written(storage):
     assert path.name == "quality_report.md" and "# Data quality report" in path.read_text()
 
 
-def test_every_run_refreshes_the_report(tmp_path):
+def test_every_run_refreshes_the_report_and_the_skill_profile(tmp_path):
     store(Storage(tmp_path), "1", "HR", "HAT")
     assert run_main(["--site", "topjobs", "--reparse"], settings=Settings(tmp_path, None)) == 0
-    assert (tmp_path / "processed" / "quality_report.md").exists()
+    for name in ("quality_report.md", "skill_profile.md", "skill_profile.json"):
+        assert (tmp_path / "processed" / name).exists(), name
