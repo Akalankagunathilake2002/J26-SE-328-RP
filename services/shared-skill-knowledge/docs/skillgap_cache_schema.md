@@ -113,6 +113,52 @@ curl -X GET "http://localhost:8005/ssks/snapshots/export?consumer=SkillGap" \
   -H "Accept: application/json"
 ```
 
+**Response (`200 OK`) Excerpt**:
+```json
+{
+  "metadata": {
+    "snapshot_id": "SNAP-SkillGap-v20261017-e4a8b712c930",
+    "consumer": "SkillGap",
+    "version": "v20261017-e4a8b712c930",
+    "generated_at": "2026-10-17T18:00:00Z",
+    "status": "ACTIVE",
+    "counts": {
+      "skills": 1688,
+      "aliases": 2916,
+      "relationships": 842,
+      "domains": 1,
+      "external_ids": 1723,
+      "sources": 2
+    }
+  },
+  "skills": [
+    {
+      "skill_id": "SK-000001",
+      "preferred_name": "Python Programming",
+      "description": "General-purpose, high-level programming language supporting multiple paradigms.",
+      "skill_type": "PROGRAMMING_LANGUAGE",
+      "skill_nature": "TECHNICAL",
+      "domain_codes": ["ENG"],
+      "domain_ids": ["DOM-000001"]
+    },
+    {
+      "skill_id": "SK-000002",
+      "preferred_name": "FastAPI Framework",
+      "description": null,
+      "skill_type": "SOFTWARE_OR_TOOL",
+      "skill_nature": "TECHNICAL",
+      "domain_codes": ["ENG"],
+      "domain_ids": ["DOM-000001"]
+    }
+  ],
+  "aliases": [],
+  "relationships": [],
+  "external_ids": [],
+  "domains": [],
+  "sources": []
+}
+```
+
 ---
 
 ## 4. Proposed SkillGap Local Cache Schema (Design Specification)
@@ -143,6 +189,7 @@ CREATE TABLE IF NOT EXISTS skillgap_cached_skills (
     snapshot_version VARCHAR(50) NOT NULL,
     skill_id VARCHAR(50) NOT NULL,
     preferred_name VARCHAR(255) NOT NULL,
+    description TEXT,
     skill_type VARCHAR(100) NOT NULL,
     skill_nature VARCHAR(50),
     domain_codes TEXT[] NOT NULL DEFAULT '{}',
@@ -201,6 +248,14 @@ CREATE INDEX IF NOT EXISTS ix_skillgap_cached_rel_type
     ON skillgap_cached_relationships (snapshot_version, relationship_type);
 ```
 
+### 4.1 Embedding Generation & Semantic Matching
+
+SkillGap generates dense vector embeddings for skills to perform semantic, relationship-aware readiness matching. For each cached skill, the embedding model consumes the combined textual context:
+- `preferred_name` (e.g. `"Python Programming"`)
+- `description` (e.g. `"General-purpose, high-level programming language..."`)
+
+When `description` is `NULL`, SkillGap falls back to `preferred_name` for embedding generation.
+
 ---
 
 ## 5. Architectural Guarantees & Semantics
@@ -211,5 +266,5 @@ CREATE INDEX IF NOT EXISTS ix_skillgap_cached_rel_type
    - `BROADER_THAN` / `NARROWER_THAN`: Strict hierarchical direction.
    - `RELATED_TO`: Conceptual association only.
    - Reverse records are not automatically synthesized by SSKS.
-3. **Deterministic Versioning**: The version string `v{YYYYMMDD}-{hash[:12]}` is derived by computing a SHA-256 digest over the sorted canonical IDs, ensuring that identical SSKS state generates identical version strings.
+3. **Deterministic Content-Aware Versioning**: The version string `v{YYYYMMDD}-{hash[:12]}` is derived by computing a SHA-256 digest over all exported content attributes (including skill `description`, `preferred_name`, `skill_type`, `skill_nature`, domain mappings, aliases, and relationships). Changes to a skill's description produce a new snapshot version hash even if `skill_id` remains unchanged.
 4. **Zero-Downtime Cache Rotation**: SkillGap can ingest new snapshots into an inactive version partition, verify record integrity, and atomically swap `is_active = TRUE` to the new version.

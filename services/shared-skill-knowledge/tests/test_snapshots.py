@@ -1,6 +1,9 @@
 import pytest
 from httpx import AsyncClient
 
+from app.models.core import Skill
+from tests.conftest import TestingSessionLocal
+
 
 async def seed_knowledge_data(client: AsyncClient):
     # 1. Create Domain
@@ -16,6 +19,7 @@ async def seed_knowledge_data(client: AsyncClient):
         json={
             "skill_id": "SK-SNAP-1",
             "preferred_name": "Python Programming",
+            "description": "General-purpose programming language for backend and data science.",
             "skill_type": "PROGRAMMING_LANGUAGE",
             "skill_nature": "TECHNICAL",
             "status": "ACTIVE",
@@ -112,10 +116,15 @@ async def test_snapshot_export_contents_and_schema(client: AsyncClient):
 
     s1 = next(s for s in data["skills"] if s["skill_id"] == "SK-SNAP-1")
     assert s1["preferred_name"] == "Python Programming"
+    assert s1["description"] == "General-purpose programming language for backend and data science."
     assert s1["skill_type"] == "PROGRAMMING_LANGUAGE"
     assert s1["skill_nature"] == "TECHNICAL"
     assert "ENG" in s1["domain_codes"]
     assert "DOM-TEST-1" in s1["domain_ids"]
+
+    s2 = next(s for s in data["skills"] if s["skill_id"] == "SK-SNAP-2")
+    assert s2["preferred_name"] == "FastAPI Framework"
+    assert s2["description"] is None
 
     # Relationships payload
     rel = data["relationships"][0]
@@ -236,3 +245,46 @@ async def test_snapshot_custom_consumer_parameter(client: AsyncClient):
     meta = res.json()["metadata"]
     assert meta["consumer"] == "C03"
     assert meta["snapshot_id"].startswith("SNAP-C03-v")
+
+
+@pytest.mark.anyio
+async def test_snapshot_version_changes_when_skill_description_changes(client: AsyncClient):
+    await seed_knowledge_data(client)
+
+    # 1. Fetch initial metadata version
+    meta1_res = await client.get("/ssks/snapshots/metadata?consumer=SkillGap")
+    assert meta1_res.status_code == 200
+    v1 = meta1_res.json()["version"]
+
+    # 2. Update description for SK-SNAP-1 in the database
+    async with TestingSessionLocal() as session:
+        skill = await session.get(Skill, "SK-SNAP-1")
+        assert skill is not None
+        skill.description = "Updated description for Python embeddings."
+        await session.commit()
+
+    # 3. Fetch metadata version after description change
+    meta2_res = await client.get("/ssks/snapshots/metadata?consumer=SkillGap")
+    assert meta2_res.status_code == 200
+    v2 = meta2_res.json()["version"]
+    assert v1 != v2
+
+    # 4. Verify full export reflects updated description and version
+    export_res = await client.get("/ssks/snapshots/export?consumer=SkillGap")
+    assert export_res.status_code == 200
+    data = export_res.json()
+    assert data["metadata"]["version"] == v2
+    s1 = next(s for s in data["skills"] if s["skill_id"] == "SK-SNAP-1")
+    assert s1["description"] == "Updated description for Python embeddings."
+
+    # 5. Restore original description and verify deterministic version stability
+    async with TestingSessionLocal() as session:
+        skill = await session.get(Skill, "SK-SNAP-1")
+        assert skill is not None
+        skill.description = "General-purpose programming language for backend and data science."
+        await session.commit()
+
+    meta3_res = await client.get("/ssks/snapshots/metadata?consumer=SkillGap")
+    assert meta3_res.status_code == 200
+    v3 = meta3_res.json()["version"]
+    assert v3 == v1
