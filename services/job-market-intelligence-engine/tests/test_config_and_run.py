@@ -39,12 +39,6 @@ def test_choose_sites():
         choose_sites("linkedin", sites)
 
 
-def test_live_collection_needs_a_contact_address(tmp_path, capsys):
-    code = main(["--site", "topjobs", "--sector", "HR", "--limit", "1"], settings=Settings(tmp_path, None))
-    assert code == 2
-    assert "SKILLBRIDGE_CONTACT" in capsys.readouterr().err
-
-
 def test_disabled_site_is_refused_with_its_reason(tmp_path, capsys):
     assert main(["--site", "xpress", "--reparse"], settings=Settings(tmp_path, None)) == 2
     assert "prohibit" in capsys.readouterr().err

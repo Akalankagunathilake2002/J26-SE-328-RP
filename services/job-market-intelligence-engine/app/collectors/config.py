@@ -2,7 +2,7 @@
 
 Environment variables (or a git-ignored ``.env`` file in the service folder):
 
-- ``SKILLBRIDGE_CONTACT``: contact e-mail sent in the User-Agent. Required for live collection.
+- ``SKILLBRIDGE_CONTACT``: optional contact address added to the User-Agent.
 - ``SKILLBRIDGE_DATA_DIR``: where raw/ and processed/ are written. Default: ``<service>/data``.
 """
 

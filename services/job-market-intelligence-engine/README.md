@@ -19,7 +19,8 @@ The site categories for each sector are in [`config/sector_mapping.yaml`](config
 
 - robots.txt is checked before every request
 - a random 3–5 second wait between requests; stop on HTTP 403 or 429
-- an identifying User-Agent with a contact address (`SKILLBRIDGE_CONTACT`)
+- an identifying User-Agent naming the project (`SkillBridge-Research-Bot`); a contact address
+  can be added with `SKILLBRIDGE_CONTACT`
 - no logins, CAPTCHAs or rate limits are bypassed
 - personal data (e-mails, phone numbers, contact names) is removed from processed data;
   collected data (`data/`) is never committed
