@@ -35,6 +35,7 @@ class SnapshotMetadata(BaseModel):
 class SnapshotSkillItem(BaseModel):
     skill_id: str
     preferred_name: str
+    description: str | None = None
     skill_type: str
     skill_nature: str | None = None
     domain_codes: list[str] = Field(default_factory=list)

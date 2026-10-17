@@ -27,12 +27,39 @@ class SnapshotRepository:
 
     def _compute_version(
         self,
-        skill_ids: list[str],
-        alias_ids: list[str],
-        rel_ids: list[str],
+        skills: list[SnapshotSkillItem],
+        aliases: list[SnapshotAliasItem],
+        relationships: list[SnapshotRelationshipItem],
     ) -> str:
         hasher = hashlib.sha256()
-        content = f"skills:{','.join(skill_ids)}|aliases:{','.join(alias_ids)}|rels:{','.join(rel_ids)}"
+
+        skill_tokens: list[str] = []
+        for s in skills:
+            if isinstance(s, SnapshotSkillItem):
+                desc = s.description or ""
+                domains = ",".join(sorted(s.domain_codes))
+                token = f"{s.skill_id}:{s.preferred_name}:{s.skill_type}:{s.skill_nature or ''}:{desc}:{domains}"
+            else:
+                token = str(s)
+            skill_tokens.append(token)
+
+        alias_tokens: list[str] = []
+        for a in aliases:
+            if isinstance(a, SnapshotAliasItem):
+                token = f"{a.alias_id}:{a.skill_id}:{a.alias_text}"
+            else:
+                token = str(a)
+            alias_tokens.append(token)
+
+        rel_tokens: list[str] = []
+        for r in relationships:
+            if isinstance(r, SnapshotRelationshipItem):
+                token = f"{r.relationship_id}:{r.source_skill_id}:{r.target_skill_id}:{r.relationship_type}"
+            else:
+                token = str(r)
+            rel_tokens.append(token)
+
+        content = f"skills:{';'.join(skill_tokens)}|aliases:{';'.join(alias_tokens)}|rels:{';'.join(rel_tokens)}"
         hasher.update(content.encode("utf-8"))
         digest = hasher.hexdigest()[:12]
         date_prefix = datetime.now(timezone.utc).strftime("%Y%m%d")
@@ -67,6 +94,7 @@ class SnapshotRepository:
                 SnapshotSkillItem(
                     skill_id=s.skill_id,
                     preferred_name=s.preferred_name,
+                    description=s.description,
                     skill_type=s.skill_type,
                     skill_nature=s.skill_nature,
                     domain_codes=skill_domain_codes.get(s.skill_id, []),
@@ -170,9 +198,9 @@ class SnapshotRepository:
 
         # 8. Compute version and metadata
         version = self._compute_version(
-            skill_ids=[s.skill_id for s in snapshot_skills],
-            alias_ids=[a.alias_id for a in snapshot_aliases],
-            rel_ids=[r.relationship_id for r in snapshot_rels],
+            skills=snapshot_skills,
+            aliases=snapshot_aliases,
+            relationships=snapshot_rels,
         )
 
         counts = SnapshotCounts(
