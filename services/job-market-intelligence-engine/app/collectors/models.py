@@ -46,6 +46,7 @@ class ListingEntry:
     company: str | None = None
     posted_date: str | None = None  # ISO date (yyyy-mm-dd)
     closing_date: str | None = None  # ISO date (yyyy-mm-dd)
+    location: str | None = None
 
 
 @dataclass

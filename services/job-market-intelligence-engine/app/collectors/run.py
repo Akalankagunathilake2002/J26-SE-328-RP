@@ -4,8 +4,8 @@
     python -m app.collectors.run --site all --sector all --limit 25
     python -m app.collectors.run --site all --reparse     # offline: rebuild processed/ from raw/
 
-Live collection needs SKILLBRIDGE_CONTACT (a contact e-mail for the User-Agent), set in the
-environment or in the service's .env file.
+The User-Agent names the project. Set SKILLBRIDGE_CONTACT (in the environment or the service's
+.env file) to add a contact address to it.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ from collections.abc import Sequence
 from app.collectors.base import BaseCollector, CollectResult
 from app.collectors.config import Settings, load_sectors, load_settings, load_sites
 from app.collectors.dedup import deduplicate
-from app.collectors.http import PoliteClient, SiteBlocked, build_user_agent
+from app.collectors.http import PoliteClient, SiteBlocked
 from app.collectors.models import JobAd, SiteConfig
 from app.collectors.storage import Storage
 from app.collectors.text_utils import clean_ad
@@ -73,8 +73,6 @@ def main(
 
     try:
         names = choose_sites(args.site, sites)
-        if not args.reparse:
-            build_user_agent(settings.contact)  # refuse to collect without a contact address
     except ValueError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

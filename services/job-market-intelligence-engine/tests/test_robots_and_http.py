@@ -121,10 +121,10 @@ def make_client(routes, robots="User-agent: *\nDisallow: /private\n"):
     return client, client.session, sleeps
 
 
-def test_user_agent_needs_a_contact_address():
-    with pytest.raises(ValueError):
-        build_user_agent(None)
-    assert "researcher@example.com" in UA and UA.startswith("SkillBridge-Research-Bot/")
+def test_user_agent_names_the_project_with_an_optional_contact():
+    assert build_user_agent() == "SkillBridge-Research-Bot/0.1 (SLIIT student project; academic research)"
+    assert UA.endswith("; contact: researcher@example.com)")
+    assert "contact" not in PoliteClient(BASE).user_agent
 
 
 def test_robots_is_checked_before_fetching():

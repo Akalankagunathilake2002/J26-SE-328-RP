@@ -23,7 +23,7 @@ import requests
 from app.collectors.robots import RobotsPolicy
 
 USER_AGENT_PRODUCT = "SkillBridge-Research-Bot"
-USER_AGENT = USER_AGENT_PRODUCT + "/0.1 (SLIIT student project; academic research; contact: {contact})"
+USER_AGENT = USER_AGENT_PRODUCT + "/0.1 (SLIIT student project; academic research)"
 
 
 class CollectionError(Exception):
@@ -50,18 +50,18 @@ class Session(Protocol):
     def get(self, url: str, *, headers: dict[str, str], timeout: float) -> requests.Response: ...
 
 
-def build_user_agent(contact: str | None) -> str:
-    """The User-Agent names the project and a contact address, so the site can reach us."""
-    if not contact or "@" not in contact:
-        raise ValueError("Set SKILLBRIDGE_CONTACT to a contact e-mail address before collecting.")
-    return USER_AGENT.format(contact=contact)
+def build_user_agent(contact: str | None = None) -> str:
+    """The User-Agent names the project; a contact address is added if one is set."""
+    if not contact:
+        return USER_AGENT
+    return USER_AGENT.removesuffix(")") + f"; contact: {contact})"
 
 
 class PoliteClient:
     def __init__(
         self,
         base_url: str,
-        contact: str | None,
+        contact: str | None = None,
         *,
         min_delay: float = 3.0,
         max_delay: float = 5.0,
