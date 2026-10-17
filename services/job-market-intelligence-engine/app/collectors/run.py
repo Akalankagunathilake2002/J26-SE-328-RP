@@ -4,6 +4,8 @@
     python -m app.collectors.run --site all --sector all --limit 25
     python -m app.collectors.run --site all --reparse     # offline: rebuild processed/ from raw/
 
+Every run ends by refreshing data/processed/quality_report.md.
+
 The User-Agent names the project. Set SKILLBRIDGE_CONTACT (in the environment or the service's
 .env file) to add a contact address to it.
 """
@@ -15,11 +17,12 @@ import logging
 import sys
 from collections.abc import Sequence
 
-from app.collectors.base import BaseCollector, CollectResult
+from app.collectors.base import BaseCollector, CollectResult, utc_now
 from app.collectors.config import Settings, load_sectors, load_settings, load_sites
 from app.collectors.dedup import deduplicate
 from app.collectors.http import PoliteClient, SiteBlocked
 from app.collectors.models import JobAd, SiteConfig
+from app.collectors.report import write_report
 from app.collectors.storage import Storage
 from app.collectors.text_utils import clean_ad
 from app.collectors.topjobs import TopjobsCollector
@@ -84,17 +87,22 @@ def main(
             client = PoliteClient(sites[name].base_url, settings.contact)
             collector = COLLECTORS[name](sites[name], client, storage)
             try:
-                report(name, collector.collect(sectors, args.limit))
+                result = collector.collect(sectors, args.limit)
             except SiteBlocked as exc:
                 log.error("%s: stopped, the site asked us to stop (%s)", name, exc)
                 exit_code = 1
+                continue
+            log_result(name, result)
+            storage.record_listing_counts(name, result.listed, utc_now())
 
     ads = [ad for name in names for ad in COLLECTORS[name](sites[name], OfflineClient(), storage).reparse()]
     write_processed(storage, names, ads)
+    for name in names:
+        log.info("%s: data quality report in %s", name, write_report(storage, name, sector_names))
     return exit_code
 
 
-def report(site: str, result: CollectResult) -> None:
+def log_result(site: str, result: CollectResult) -> None:
     for sector, new in result.new_ads.items():
         listed = result.listed.get(sector, 0)
         log.info("%s / %s: %d listed, %d new ads downloaded", site, sector, listed, new)

@@ -6,7 +6,9 @@
     Keep raw/ private: pages contain recruiters' contact details as published.
 
 ``processed/``
-    ``<site>.jsonl`` and ``combined.csv`` (cleaned ad records) and ``dedup_log.csv``.
+    ``<site>.jsonl`` and ``combined.csv`` (cleaned ad records), ``dedup_log.csv``,
+    ``listing_counts.json`` (ads on each sector's listing pages at the last run) and
+    ``quality_report.md``.
 """
 
 from __future__ import annotations
@@ -151,6 +153,26 @@ class Storage:
             writer.writeheader()
             writer.writerows(rows)
         return path
+
+    def read_dedup_log(self) -> list[dict]:
+        path = self.processed_dir / "dedup_log.csv"
+        if not path.exists():
+            return []
+        with path.open(encoding="utf-8", newline="") as rows:
+            return list(csv.DictReader(rows))
+
+    def record_listing_counts(self, site: str, counts: dict[str, int], checked_at: str) -> Path:
+        """Remember how many ads each sector's listing pages showed (kept per sector across runs)."""
+        path = self._processed_path("listing_counts.json")
+        data = self.listing_counts()
+        for sector, listed in counts.items():
+            data.setdefault(site, {})[sector] = {"listed": listed, "checked_at": checked_at}
+        path.write_text(json.dumps(data, indent=2), encoding="utf-8")
+        return path
+
+    def listing_counts(self) -> dict:
+        path = self.processed_dir / "listing_counts.json"
+        return json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
 
     def _processed_path(self, name: str) -> Path:
         self.processed_dir.mkdir(parents=True, exist_ok=True)
