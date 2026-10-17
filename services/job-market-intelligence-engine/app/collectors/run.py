@@ -4,6 +4,7 @@
     python -m app.collectors.run --site all --sector all --limit 25
     python -m app.collectors.run --site all --reparse     # offline: rebuild processed/ from raw/
 
+Image ads get their text from the saved flyer with OCR (Tesseract; skip with --no-ocr).
 Every run ends by refreshing data/processed/quality_report.md.
 
 The User-Agent names the project. Set SKILLBRIDGE_CONTACT (in the environment or the service's
@@ -25,6 +26,7 @@ from app.collectors.models import JobAd, SiteConfig
 from app.collectors.report import write_report
 from app.collectors.storage import Storage
 from app.collectors.text_utils import clean_ad
+from app.processing.ocr import add_ocr_text, tesseract_available
 from app.collectors.topjobs import TopjobsCollector
 
 COLLECTORS: dict[str, type[BaseCollector]] = {"topjobs": TopjobsCollector}
@@ -45,6 +47,7 @@ def parse_args(argv: Sequence[str] | None, sectors: list[str]) -> argparse.Names
     parser.add_argument("--sector", default="all", choices=[*sectors, "all"])
     parser.add_argument("--limit", type=int, default=25, help="new ads per sector (default: 25)")
     parser.add_argument("--reparse", action="store_true", help="no network: rebuild processed/ from raw/")
+    parser.add_argument("--no-ocr", action="store_true", help="don't read text from flyer images")
     return parser.parse_args(argv)
 
 
@@ -96,6 +99,8 @@ def main(
             storage.record_listing_counts(name, result.listed, utc_now())
 
     ads = [ad for name in names for ad in COLLECTORS[name](sites[name], OfflineClient(), storage).reparse()]
+    if not args.no_ocr:
+        run_ocr(ads)
     write_processed(storage, names, ads)
     for name in names:
         log.info("%s: data quality report in %s", name, write_report(storage, name, sector_names))
@@ -117,6 +122,17 @@ def log_result(site: str, result: CollectResult) -> None:
     )
     for skipped in result.skipped:
         log.info("  skipped %s", skipped)
+
+
+def run_ocr(ads: list[JobAd]) -> None:
+    if not tesseract_available():
+        log.warning("Tesseract not found (install it: brew install tesseract); image ads keep no text.")
+        return
+    stats = add_ocr_text(ads)
+    log.info(
+        "OCR: %d flyers read, %d from cache, %d without text, %d failed",
+        stats.read, stats.cached, stats.no_text, stats.failed,
+    )
 
 
 def write_processed(storage: Storage, sites: list[str], ads: list[JobAd]) -> None:

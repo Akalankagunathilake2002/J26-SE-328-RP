@@ -29,32 +29,44 @@ CONTACT_LINE = re.compile(
     r"|tel(?:ephone)?|mobile|phone|hotline|whats[ \t]*app|fax)\b(?=[^\n]*[:\d@])[^\n]*$",
     re.IGNORECASE | re.MULTILINE,
 )
-TITLED_NAME = re.compile(r"\b(?:Mr|Mrs|Ms|Miss|Dr|Prof)\.?[ \t]+(?:[A-Z][\w.'-]*[ \t]?){1,3}")
+# "Ms Word", "MS Excel" etc. are skills, not people.
+OFFICE_PRODUCTS = r"(?:Word|Excel|Office|Power[ \t]*Point|Outlook|Access|Project|Teams|SQL|Dynamics|Visio)\b"
+TITLED_NAME = re.compile(
+    rf"\b(?:Mr|Mrs|Ms|Miss|Dr|Prof)\.?[ \t]+(?!{OFFICE_PRODUCTS})(?:[A-Z][\w.'-]*[ \t]?){{1,3}}"
+)
 
-# A heading stands on its own line, or ends with ":" followed by content on the same line.
-REQUIREMENT_HEADING = re.compile(
-    r"^(?:job[ \t]+|minimum[ \t]+|basic[ \t]+|key[ \t]+|essential[ \t]+)?"
-    r"(?:requirements?|qualifications?(?:[ \t]*(?:&|and)[ \t]*experience)?"
-    r"|(?:required[ \t]+)?skills(?:[ \t]*(?:&|and)[ \t]*(?:competencies|experience))?"
+REQUIREMENT_TERMS = (
+    # "requ\w*ments" also catches OCR misspellings such as "Requrements"
+    r"(?:(?:job|minimum|basic|key|essential|candidate|required)[ \t]+)?"
+    r"(?:requ\w*ments?|qualifications?(?:[ \t]*(?:&|and)[ \t]*experience)?"
+    r"|skills(?:[ \t]*(?:&|and)[ \t]*(?:competencies|experience))?)"
+    r"|experience[ \t]*(?:&|and)[ \t]*qualifications?"
     r"|(?:the[ \t]+)?ideal[ \t]+candidate|candidate[ \t]+profile|eligibility"
     r"|you[ \t]+(?:should|must)[ \t]+have"
-    r"|what[ \t]+(?:we(?:'re|[ \t]+are)[ \t]+looking[ \t]+for|you(?:'ll)?[ \t]+need))"
-    r"[ \t]*(?:[:\-–][ \t]*(?P<rest>.*))?$",
+    r"|what[ \t]+(?:we(?:'re|[ \t]+are)[ \t]+looking[ \t]+for|you(?:'ll)?[ \t]+need)"
+)
+# A heading is the phrase alone on its line, the phrase followed by ":" (or a dash) and content,
+# or the phrase plus a few words ending with ":" ("The ideal candidate should possess the following:").
+REQUIREMENT_HEADING = re.compile(
+    rf"^(?:{REQUIREMENT_TERMS})[ \t]*"
+    r"(?:$|[:\-–][ \t]*(?P<rest>.*)$|[^:\n]{1,40}:[ \t]*(?P<rest_after_words>.*)$)",
     re.IGNORECASE,
 )
 SECTION_END = re.compile(
     r"^(?:benefits|perks|(?:what[ \t]+)?we[ \t]+offer|how[ \t]+to[ \t]+apply|to[ \t]+apply"
     r"|apply[ \t]+(?:now|before)|about[ \t]+(?:us|the[ \t]+company)|salary|remuneration|privacy"
-    r"|closing[ \t]+date)\b",
+    r"|closing[ \t]+date|(?:key[ \t]+|job[ \t]+)?responsibilit\w*|key[ \t]+respon\w*|interested[ \t]+candidates"
+    r"|candidates[ \t]+meeting|send[ \t]+(?:us[ \t]+)?(?:your[ \t]+)?cvs?)\b",
     re.IGNORECASE,
 )
+BULLET = re.compile(r"^[\s\-–—=*+•·©¢°>~»]+")  # list markers, including ones OCR misreads
 
 YEARS = r"years?"
 EXPERIENCE_PATTERNS = [
     (re.compile(rf"(\d{{1,2}})\s*(?:-|–|to)\s*(\d{{1,2}})\s*\+?\s*{YEARS}", re.I), "{0}–{1} years"),
     (re.compile(rf"(\d{{1,2}})\s*(?:\+|plus)\s*{YEARS}", re.I), "{0}+ years"),
     (
-        re.compile(rf"(?:minimum|at\s+least|over|more\s+than)\s+(?:of\s+)?(\d{{1,2}})\s*{YEARS}", re.I),
+        re.compile(rf"(?:minimum|at[\s-]+least|over|more\s+than)\s+(?:of\s+)?(\d{{1,2}})\s*{YEARS}", re.I),
         "{0}+ years",
     ),
     (re.compile(rf"(\d{{1,2}})\s*{YEARS}", re.I), "{0} years"),
@@ -92,14 +104,16 @@ def extract_requirements(text: str | None) -> str | None:
     collected: list[str] = []
     inside = False
     for line in text.splitlines():
-        heading = REQUIREMENT_HEADING.match(line.strip())
+        line = BULLET.sub("", line).strip()
+        heading = REQUIREMENT_HEADING.match(line)
         if heading:
             inside = True
-            if heading.group("rest"):
-                collected.append(heading.group("rest").strip())
-        elif inside and SECTION_END.match(line.strip()):
+            rest = heading.group("rest") or heading.group("rest_after_words")
+            if rest and rest.strip():
+                collected.append(rest.strip())
+        elif inside and SECTION_END.match(line):
             break
-        elif inside:
+        elif inside and line:
             collected.append(line)
     return "\n".join(collected) or None
 

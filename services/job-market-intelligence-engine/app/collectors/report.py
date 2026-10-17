@@ -112,6 +112,7 @@ def render(site: str, rows: list[SectorQuality], listed_at: str | None, generate
         "- **Collected:** ads stored for the sector. An ad listed under two sectors counts in both.",
         "- **Image / text ads:** after duplicates were removed. Image ads need OCR before their "
         "requirements and skills can be read.",
+        f"- **OCR:** text was read from {_ocr_read(rows)} image ads.",
         "",
         "## Missing values (% of ads)",
         "",
@@ -123,8 +124,8 @@ def render(site: str, rows: list[SectorQuality], listed_at: str | None, generate
         lines.append(f"| {row.sector} | " + " | ".join(cells) + " |")
     lines += [
         "",
-        'A missing **company** means the ad says "Company Name Withheld". Before OCR, description, '
-        "requirements and experience are missing for every image ad.",
+        'A missing **company** means the ad says "Company Name Withheld". Description, '
+        "requirements and experience stay missing for image ads whose flyer has no readable text.",
         "",
     ]
     return "\n".join(lines)
@@ -138,6 +139,12 @@ def write_report(storage: Storage, site: str, sectors: Sequence[str]) -> Path:
     storage.processed_dir.mkdir(parents=True, exist_ok=True)
     path.write_text(render(site, rows, max(checked) if checked else None, generated_at), encoding="utf-8")
     return path
+
+
+def _ocr_read(rows: list[SectorQuality]) -> str:
+    image_ads = {ad.key: ad for row in rows for ad in row.ads if ad.is_image_ad}
+    with_text = sum(bool(ad.description_text) for ad in image_ads.values())
+    return f"{with_text} of {len(image_ads)}"
 
 
 def _count(value: int | None) -> str:
