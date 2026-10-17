@@ -1,0 +1,101 @@
+# Job titles → canonical roles, so differently worded titles count as one role
+# ("HR Executive", "Executive – Human Resources" and "HR & Admin Executive" are all
+# "HR Executive / Officer").
+#
+# Patterns are case-insensitive regular expressions searched in the job title.
+# The first matching role wins, so list specific roles before general ones.
+# `sectors` (optional) limits a role to ads from those sectors.
+# Titles that match no role keep their own (cleaned) title and are marked as unmapped in the
+# skill profile, so this list can be extended.
+
+roles:
+  # --- HR ----------------------------------------------------------------------------------
+  - role: HR Manager
+    patterns:
+      - '\b(hr|human resources?)\b.*\b(manager|head|lead)\b'
+      - '\b(manager|head)\b.*\b(hr|human resources?)\b'
+  - role: Recruitment / Talent Acquisition
+    patterns: ['recruit', 'talent acquisition', 'head ?hunt', 'sourcing specialist']
+  - role: Payroll
+    patterns: ['payroll']
+  - role: Training & Development
+    patterns: ['\btraining\b', 'learning (and|&) development', '\bl ?& ?d\b']
+  - role: HR Assistant
+    patterns: ['\b(hr|human resources?)\b.*\b(assistant|clerk|intern|trainee)\b', '\b(assistant|intern|trainee)\b.*\b(hr|human resources?)\b']
+  - role: HR Executive / Officer
+    patterns: ['\b(hr|human resources?)\b', 'personnel', 'employee relations']
+
+  # --- IT ----------------------------------------------------------------------------------
+  - role: QA / Test Engineer
+    sectors: [IT]
+    patterns: ['\b(qa|quality assurance|test(ing)?|sdet)\b']
+  - role: DevOps / Cloud Engineer
+    sectors: [IT]
+    patterns: ['devops', '\bcloud\b', '\bsre\b', 'site reliability']
+  - role: Data Analyst / Scientist
+    sectors: [IT, Management]
+    patterns: ['\bdata\b', 'business intelligence', '\bbi\b', 'machine learning', '\bai\b']
+  - role: Business Analyst
+    patterns: ['business (systems )?analyst']
+  - role: UI/UX / Graphic Designer
+    sectors: [IT]
+    patterns: ['\bui\b', '\bux\b', 'designer', 'graphic']
+  - role: Network / Systems Administrator
+    sectors: [IT]
+    patterns: ['network', 'system(s)? (administrator|admin|engineer)', 'it support', 'help ?desk', 'technical support', 'infrastructure']
+  - role: Software Engineer / Developer
+    sectors: [IT]
+    patterns: ['software', 'developer', 'programmer', '\b(full|back|front) ?-?end\b', '\bmobile\b.*\bengineer\b', '\b(java|python|php|\.net|react|node)\b']
+  - role: GIS Specialist
+    sectors: [IT]
+    patterns: ['\bgis\b']
+  - role: IT Manager
+    sectors: [IT]
+    patterns: ['\b(it|technology|engineering)\b.*\b(manager|head|director|lead)\b']
+
+  # --- Management --------------------------------------------------------------------------
+  - role: Management Trainee
+    patterns: ['management trainee']
+  - role: Project Manager / Coordinator
+    patterns: ['project (manager|management|coordinator|lead)', 'programme manager', 'scrum master']
+  - role: General Manager / Director
+    sectors: [Management]
+    patterns: ['general manager', '\bdirector\b', '\b(ceo|coo|cfo|chief)\b', 'country manager', 'head of']
+  - role: Operations Manager
+    sectors: [Management]
+    patterns: ['operations?']
+  - role: Business Development / Sales Manager
+    sectors: [Management]
+    patterns: ['business development', '\bsales\b', 'key account']
+  - role: Finance / Accounting
+    sectors: [Management]
+    patterns: ['financ', 'account', 'audit']
+  - role: Analyst
+    sectors: [Management]
+    patterns: ['analyst']
+
+  # --- Agriculture (topjobs' AGD category also lists HSE, environmental and food-safety jobs) --
+  - role: HSE / Safety Officer
+    sectors: [Agriculture]
+    patterns: ['\b(hse|ehs|she|osh)\b', 'safety officer', 'health (and|&) safety']
+  - role: Food Safety / Quality
+    sectors: [Agriculture]
+    patterns: ['food safety', 'quality', '\b(qa|qc)\b', 'haccp']
+  - role: Environmental Officer
+    sectors: [Agriculture]
+    patterns: ['environment']
+  - role: Agriculture / Plantation Officer
+    sectors: [Agriculture]
+    patterns: ['agri', 'agronom', 'plantation', 'estate', 'farm', 'crop', 'livestock', 'dairy', 'veterinar', 'horticult']
+
+# Seniority, read from the same title. The first match wins.
+seniority:
+  - level: Trainee / Intern
+    patterns: ['trainee', '\bintern(ship)?\b']
+  - level: Assistant / Junior
+    patterns: ['assistant', 'junior', '\bjr\b', 'associate']
+  - level: Senior / Lead
+    patterns: ['senior', '\bsr\b', '\blead\b', 'principal']
+  - level: Manager / Head
+    patterns: ['manager', '\bhead\b', 'director', '\bchief\b']
+default_seniority: Executive / Officer

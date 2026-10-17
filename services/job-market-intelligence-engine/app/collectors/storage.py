@@ -7,8 +7,8 @@
 
 ``processed/``
     ``<site>.jsonl`` and ``combined.csv`` (cleaned ad records), ``dedup_log.csv``,
-    ``listing_counts.json`` (ads on each sector's listing pages at the last run) and
-    ``quality_report.md``.
+    ``listing_counts.json`` (ads on each sector's listing pages at the last run),
+    ``quality_report.md`` and ``skill_profile.md``/``.json``.
 """
 
 from __future__ import annotations

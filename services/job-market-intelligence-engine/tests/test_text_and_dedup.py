@@ -22,6 +22,10 @@ def test_removes_emails_and_phone_numbers():
     assert scrubbed.count("[phone removed]") == 2
 
 
+def test_removes_emails_whose_dot_was_lost_in_ocr():
+    assert scrub_personal_data("Apply Now: ta@career4icom") == "Apply Now: [email removed]"
+
+
 def test_keeps_job_codes_that_only_look_like_phone_numbers():
     assert "0001174519" in scrub_personal_data("Job reference 0001174519")
 

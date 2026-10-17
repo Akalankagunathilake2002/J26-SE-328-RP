@@ -1,0 +1,310 @@
+# Skills searched for in job ads. Each ad counts a skill at most once, however often it is mentioned.
+#
+#   skill     the name shown in the skill profile
+#   category  Technical | Tool | Domain knowledge | Soft skill | Language | Qualification
+#   aliases   plain phrases, case-insensitive, matched as whole words
+#             (spaces also match hyphens: "problem solving" finds "problem-solving")
+#   patterns  (optional) regular expressions, for spellings the aliases can't express
+#   sectors   (optional) only counted in ads from these sectors
+#             ("networking" means building relationships in HR and sales ads)
+#   ssk_id    the skill's ID in the Shared Skill Knowledge service; linked in step 7
+#
+# Notes: OCR misreads are added as aliases where they are common ("AIL" for "A/L").
+# One-letter or everyday words (R, Go, Word, Access, Teams) are only matched in a longer phrase.
+
+skills:
+  # --- Soft skills ---------------------------------------------------------------------------
+  - {skill: Communication, category: Soft skill, ssk_id: null,
+     aliases: [communication, communicate, communicating, written and spoken, verbal and written]}
+  - {skill: Interpersonal skills, category: Soft skill, ssk_id: null,
+     aliases: [interpersonal, people skills]}
+  - {skill: Teamwork, category: Soft skill, ssk_id: null,
+     aliases: [teamwork, team work, team player, work in a team, work as a team, collaboration, collaborative]}
+  - {skill: Leadership, category: Soft skill, ssk_id: null,
+     aliases: [leadership, lead a team, leading a team, leading teams]}
+  - {skill: Problem solving, category: Soft skill, ssk_id: null,
+     aliases: [problem solving, solve problems, problem solver]}
+  - {skill: Analytical thinking, category: Soft skill, ssk_id: null,
+     aliases: [analytical, critical thinking, analytic skills]}
+  - {skill: Attention to detail, category: Soft skill, ssk_id: null,
+     aliases: [attention to detail, detail oriented, eye for detail, accuracy]}
+  - {skill: Time management, category: Soft skill, ssk_id: null,
+     aliases: [time management, deadlines, deadline driven, prioritise, prioritize, prioritising, prioritizing]}
+  - {skill: Organisational skills, category: Soft skill, ssk_id: null,
+     aliases: [highly organised, highly organized, well organised, well organized],
+     patterns: ['\borgani[sz]ational\s+(?:skills?|abilit\w*|and\b)', '\borgani[sz]ed\s+(?:and|with|person|individual)\b']}
+  - {skill: Multitasking, category: Soft skill, ssk_id: null,
+     aliases: [multitask, multitasking, multi task, multi tasking, mutitsk]}
+  - {skill: Working independently, category: Soft skill, ssk_id: null,
+     aliases: [work independently, working independently, self motivated, self starter, proactive, minimal supervision]}
+  - {skill: Working under pressure, category: Soft skill, ssk_id: null,
+     aliases: [under pressure, fast paced]}
+  - {skill: Confidentiality, category: Soft skill, ssk_id: null,
+     aliases: [confidentiality, discretion, sensitive information]}
+  - {skill: Negotiation, category: Soft skill, ssk_id: null,
+     aliases: [negotiation, negotiations, negotiate, negotiating]}
+  - {skill: Customer service, category: Soft skill, ssk_id: null,
+     aliases: [customer service, customer care, client service, customer focus, customer focused, customer oriented]}
+  - {skill: Presentation skills, category: Soft skill, ssk_id: null,
+     aliases: [presentation skills, presentations, presenting, public speaking]}
+  - {skill: Decision making, category: Soft skill, ssk_id: null,
+     aliases: [decision making, decision maker, sound judgement, sound judgment]}
+  - {skill: Adaptability, category: Soft skill, ssk_id: null,
+     aliases: [adaptability, adaptable, adapt to change, flexibility]}
+  - {skill: Discipline & work ethic, category: Soft skill, ssk_id: null,
+     aliases: [discipline, disciplined, work ethic, punctual, punctuality, reliable, dependable]}
+  - {skill: Relationship & stakeholder management, category: Soft skill, ssk_id: null,
+     aliases: [stakeholder management, stakeholders, relationship building, relationship management,
+               build relationships, building relationships, long term relationships, relationship builder]}
+  - {skill: Coordination & planning, category: Soft skill, ssk_id: null,
+     aliases: [coordination, coordinate, coordinating, planning and organising, planning and organizing]}
+  - {skill: Coaching & mentoring, category: Soft skill, ssk_id: null,
+     aliases: [coaching, mentoring, mentor, coach]}
+  - {skill: Creativity & innovation, category: Soft skill, ssk_id: null,
+     aliases: [creativity, creative thinking, innovative, innovation]}
+
+  # --- Languages ------------------------------------------------------------------------------
+  - {skill: English, category: Language, ssk_id: null, aliases: [english]}
+  - {skill: Sinhala, category: Language, ssk_id: null, aliases: [sinhala, sinhalese]}
+  - {skill: Tamil, category: Language, ssk_id: null, aliases: [tamil]}
+
+  # --- Qualifications -------------------------------------------------------------------------
+  - {skill: Bachelor's degree, category: Qualification, ssk_id: null,
+     aliases: [bachelor, bachelors, bachelor's, bsc, b.sc, bba, graduate, degree holder],
+     patterns: ['(?<!master''s\s)(?<!masters\s)(?<!postgraduate\s)\bdegree']}
+  - {skill: Master's degree, category: Qualification, ssk_id: null,
+     aliases: [master's degree, masters degree, master's, masters in, msc, m.sc, mba, postgraduate, post graduate]}
+  - {skill: Undergraduate (studying), category: Qualification, ssk_id: null,
+     aliases: [undergraduate, undergrad, reading for a degree, following a degree, final year student]}
+  - {skill: Diploma / HND, category: Qualification, ssk_id: null,
+     aliases: [diploma, hnd, higher national diploma]}
+  - {skill: G.C.E. A/L, category: Qualification, ssk_id: null,
+     aliases: [a/l, ail, a\l, advanced level, g.c.e a/l, gce a/l]}
+  - {skill: G.C.E. O/L, category: Qualification, ssk_id: null,
+     aliases: [o/l, ordinary level, g.c.e o/l, gce o/l]}
+  - {skill: Professional HR qualification, category: Qualification, ssk_id: null,
+     aliases: [cipm, ipm, chrm, shrm],
+     patterns: ['professional\s+(?:hr\s+)?(?:qualifications?|certifications?)\s+(?:in\s+)?(?:hr|human)',
+                'professional\s+hr\s+(?:qualifications?|certifications?)', '\bhr\s+certifications?']}
+  - {skill: Accounting qualification (CIMA / ACCA / CA / AAT), category: Qualification, ssk_id: null,
+     aliases: [cima, acca, aat, chartered accountant, ca sri lanka, cma, part qualified]}
+  - {skill: Project management certification (PMP / PRINCE2), category: Qualification, ssk_id: null,
+     aliases: [pmp, prince2, capm]}
+  - {skill: Driving licence, category: Qualification, ssk_id: null,
+     aliases: [driving licence, driving license, valid licence, valid license]}
+
+  # --- HR ---------------------------------------------------------------------------------------
+  - {skill: Human resource management (HRM), category: Domain knowledge, ssk_id: null,
+     aliases: [human resource management, human resources management, hr management, hrm,
+               hr principles, hr practices, human resources principles, hr related matters, hr matters, hr functions]}
+  - {skill: HR administration & records, category: Domain knowledge, ssk_id: null,
+     aliases: [hr administration, hr operations, hr admin, employee records, personnel records, personnel files,
+               hr records, hr documentation, employee files]}
+  - {skill: Recruitment & talent acquisition, category: Domain knowledge, ssk_id: null,
+     aliases: [recruitment, recruiting, recruit, talent acquisition, sourcing, headhunting, headhunt,
+               candidate screening, screening, recruitment and selection, talent mapping]}
+  - {skill: Payroll, category: Domain knowledge, ssk_id: null, aliases: [payroll, salary processing]}
+  - {skill: UK payroll & tax (PAYE / NI / pensions), category: Domain knowledge, ssk_id: null,
+     aliases: [paye, national insurance, workplace pensions, workplace pension, uk payroll, p45, p45s]}
+  - {skill: Employee engagement & welfare, category: Domain knowledge, ssk_id: null,
+     aliases: [employee engagement, staff engagement, welfare, employee wellbeing, employee well being]}
+  - {skill: Labour law & statutory compliance, category: Domain knowledge, ssk_id: null,
+     aliases: [labour law, labor law, labour laws, labor laws, employment law, labour legislation, statutory,
+               epf, etf, gratuity, legal regulations, shop and office act]}
+  - {skill: Industrial / employee relations, category: Domain knowledge, ssk_id: null,
+     aliases: [employee relations, industrial relations, grievance, grievances, grievance handling,
+               disciplinary, trade union, trade unions]}
+  - {skill: Training & development, category: Domain knowledge, ssk_id: null,
+     aliases: [training and development, training & development, training needs, learning and development,
+               l&d, training programmes, training programs]}
+  - {skill: Performance management, category: Domain knowledge, ssk_id: null,
+     aliases: [performance management, performance appraisal, performance appraisals, appraisals, performance reviews]}
+  - {skill: Compensation & benefits, category: Domain knowledge, ssk_id: null,
+     aliases: [compensation, compensation and benefits, compensation management, benefits administration,
+               salary administration, reward management]}
+  - {skill: Onboarding & induction, category: Domain knowledge, ssk_id: null,
+     aliases: [onboarding, on boarding, induction, orientation]}
+  - {skill: HR policies & procedures, category: Domain knowledge, ssk_id: null,
+     aliases: [hr policies, hr policy, policies and procedures, company policies]}
+  - {skill: Attendance & leave management, category: Domain knowledge, ssk_id: null,
+     aliases: [attendance, leave management, time and attendance, timesheets, timesheet, holiday pay]}
+  - {skill: Career & succession planning, category: Domain knowledge, ssk_id: null,
+     aliases: [career planning, succession planning, career development, talent management]}
+
+  # --- Business and management ----------------------------------------------------------------------
+  - {skill: Project management, category: Domain knowledge, ssk_id: null,
+     aliases: [project management, project planning, manage projects, managing projects, project coordination]}
+  - {skill: Strategic planning, category: Domain knowledge, ssk_id: null,
+     aliases: [strategic planning, strategy, strategic, business planning]}
+  - {skill: Budgeting & cost control, category: Domain knowledge, ssk_id: null,
+     aliases: [budget, budgets, budgeting, cost control, cost management, financial management]}
+  - {skill: Business development, category: Domain knowledge, ssk_id: null,
+     aliases: [business development, lead generation, new business, business growth]}
+  - {skill: Sales, category: Domain knowledge, ssk_id: null,
+     aliases: [sales, selling, sales targets, key accounts, key account management]}
+  - {skill: Marketing, category: Domain knowledge, ssk_id: null,
+     aliases: [marketing, brand management, branding]}
+  - {skill: Digital marketing, category: Domain knowledge, ssk_id: null,
+     aliases: [digital marketing, social media marketing, seo, sem, google ads, social media]}
+  - {skill: Market research & analysis, category: Domain knowledge, ssk_id: null,
+     aliases: [market research, market analysis, competitor research, competitor analysis, market intelligence]}
+  - {skill: Operations management, category: Domain knowledge, ssk_id: null,
+     aliases: [operations management, operational management, day to day operations, business operations]}
+  - {skill: Supply chain & logistics, category: Domain knowledge, ssk_id: null,
+     aliases: [supply chain, logistics, procurement, purchasing, inventory, warehouse, warehousing]}
+  - {skill: Accounting & bookkeeping, category: Domain knowledge, ssk_id: null,
+     aliases: [accounting, bookkeeping, book keeping, ledger, ledgers, reconciliation, reconciliations,
+               reconcile, accounts payable, accounts receivable, invoicing]}
+  - {skill: Financial reporting & analysis, category: Domain knowledge, ssk_id: null,
+     aliases: [financial reporting, financial analysis, financial statements, management accounts, forecasting,
+               variance analysis]}
+  - {skill: Auditing, category: Domain knowledge, ssk_id: null, aliases: [audit, audits, auditing, internal audit]}
+  - {skill: Taxation, category: Domain knowledge, ssk_id: null, aliases: [tax, taxation, vat, income tax]}
+  - {skill: Risk management, category: Domain knowledge, ssk_id: null,
+     aliases: [risk management, risk assessment, risk assessments, risk analysis]}
+  - {skill: Change management, category: Domain knowledge, ssk_id: null,
+     aliases: [change management, organisational development, organizational development]}
+  - {skill: People / team management, category: Domain knowledge, ssk_id: null,
+     aliases: [people management, team management, manage a team, managing a team, managing teams,
+               supervise, supervising, supervision, supervisory]}
+  - {skill: Report writing & documentation, category: Domain knowledge, ssk_id: null,
+     aliases: [report writing, documentation, prepare reports, preparing reports, mis reports],
+     patterns: ['\breporting\b(?!\s+(?:to|line|directly))']}
+  - {skill: Office administration, category: Domain knowledge, ssk_id: null,
+     aliases: [administrative, office management, office administration, clerical],
+     patterns: ['(?<!business\s)(?<!hr\s)(?<!public\s)\badministration\b']}
+  - {skill: Business analysis, category: Domain knowledge, ssk_id: null,
+     aliases: [business analysis, requirements gathering, requirement gathering, requirements analysis, process mapping]}
+  - {skill: Data analysis, category: Domain knowledge, ssk_id: null,
+     aliases: [data analysis, data analytics, analyse data, analyze data, data driven, statistical analysis]}
+  - {skill: Lean / Six Sigma / continuous improvement, category: Domain knowledge, ssk_id: null,
+     aliases: [lean, six sigma, kaizen, 5s, continuous improvement, process improvement]}
+  - {skill: Quality management (ISO 9001), category: Domain knowledge, ssk_id: null,
+     aliases: [quality management, qms, iso 9001, total quality management, tqm]}
+  - {skill: Quality assurance / control, category: Domain knowledge, ssk_id: null,
+     aliases: [quality assurance, quality control, qa/qc, qc, quality checks, quality inspection]}
+
+  # --- Agriculture, environment, health and safety --------------------------------------------------
+  - {skill: Agronomy & crop management, category: Domain knowledge, ssk_id: null,
+     aliases: [agronomy, crop management, crops, crop, cultivation, fertilizer, fertiliser, fertilizers, fertilisers,
+               pest management, pest control, irrigation, soil, harvesting, nursery management]}
+  - {skill: Plantation / estate management, category: Domain knowledge, ssk_id: null,
+     aliases: [plantation, plantations, estate management, tea estate, tea plantation, rubber, coconut, field management]}
+  - {skill: Livestock & dairy, category: Domain knowledge, ssk_id: null,
+     aliases: [livestock, dairy, poultry, animal husbandry, veterinary, cattle, milk collection]}
+  - {skill: Food safety (HACCP / ISO 22000 / GMP), category: Domain knowledge, ssk_id: null,
+     aliases: [food safety, haccp, iso 22000, gmp, fssc, fssc 22000, food hygiene, brc]}
+  - {skill: Health & safety (HSE / OSH), category: Domain knowledge, ssk_id: null,
+     aliases: [health and safety, health & safety, occupational health, occupational safety, hse, ehs, osh, osha,
+               nebosh, iosh, iso 45001, ohsas, safety standards, safety regulations, fire safety]}
+  - {skill: Environmental management (ISO 14001), category: Domain knowledge, ssk_id: null,
+     aliases: [environmental management, iso 14001, waste management, wastewater, environmental compliance,
+               environmental impact, eia, sustainability, environmental monitoring]}
+  - {skill: Laboratory & testing, category: Domain knowledge, ssk_id: null,
+     aliases: [laboratory, lab testing, microbiology, microbiological, chemical analysis, sampling]}
+  - {skill: GIS & remote sensing, category: Technical, ssk_id: null,
+     aliases: [gis, arcgis, qgis, remote sensing, geographic information]}
+
+  # --- IT: languages and frameworks ----------------------------------------------------------------
+  - {skill: Python, category: Technical, ssk_id: null, aliases: [python]}
+  - {skill: Java, category: Technical, ssk_id: null, aliases: [java, j2ee, jee]}
+  - {skill: JavaScript, category: Technical, ssk_id: null, aliases: [javascript, java script, es6, jquery]}
+  - {skill: TypeScript, category: Technical, ssk_id: null, aliases: [typescript]}
+  - {skill: C#, category: Technical, ssk_id: null, patterns: ['(?<![\w#])c\s?#(?![\w#])', '\bc[ -]?sharp\b']}
+  - {skill: C / C++, category: Technical, ssk_id: null, aliases: [c++, cpp], patterns: ['\bc\s*/\s*c\+\+']}
+  - {skill: .NET, category: Technical, ssk_id: null,
+     aliases: [asp.net, dotnet, .net core, .net framework], patterns: ['(?<![\w.])\.net(?![\w])']}
+  - {skill: PHP, category: Technical, ssk_id: null, aliases: [php]}
+  - {skill: Kotlin, category: Technical, ssk_id: null, aliases: [kotlin]}
+  - {skill: Swift / iOS, category: Technical, ssk_id: null, sectors: [IT], aliases: [swift, ios, swiftui, objective c]}
+  - {skill: Android, category: Technical, ssk_id: null, aliases: [android]}
+  - {skill: Flutter / Dart, category: Technical, ssk_id: null, aliases: [flutter, dart]}
+  - {skill: React Native, category: Technical, ssk_id: null, aliases: [react native]}
+  - {skill: Go, category: Technical, ssk_id: null, aliases: [golang]}
+  - {skill: React, category: Technical, ssk_id: null, sectors: [IT], aliases: [react, reactjs, react.js, next.js, nextjs]}
+  - {skill: Angular, category: Technical, ssk_id: null, aliases: [angular, angularjs]}
+  - {skill: Vue.js, category: Technical, ssk_id: null, aliases: [vue, vue.js, vuejs, nuxt]}
+  - {skill: Node.js, category: Technical, ssk_id: null, aliases: [node.js, nodejs, node js, express.js, expressjs, nestjs]}
+  - {skill: Spring Boot, category: Technical, ssk_id: null, aliases: [spring boot, springboot, spring framework, hibernate]}
+  - {skill: Django / Flask / FastAPI, category: Technical, ssk_id: null, aliases: [django, flask, fastapi]}
+  - {skill: Laravel, category: Technical, ssk_id: null, aliases: [laravel, codeigniter, symfony]}
+  - {skill: HTML & CSS, category: Technical, ssk_id: null, aliases: [html, html5, css, css3, tailwind, bootstrap, sass]}
+  - {skill: REST APIs, category: Technical, ssk_id: null,
+     aliases: [rest api, rest apis, restful, web services, api development, apis, graphql]}
+  - {skill: Microservices, category: Technical, ssk_id: null, aliases: [microservices, micro services, microservice]}
+  - {skill: Object-oriented programming, category: Technical, ssk_id: null,
+     aliases: [oop, object oriented, design patterns, solid principles]}
+  - {skill: Software development life cycle (SDLC), category: Technical, ssk_id: null,
+     aliases: [sdlc, software development life cycle, software development lifecycle]}
+
+  # --- IT: data -----------------------------------------------------------------------------------
+  - {skill: SQL, category: Technical, ssk_id: null, aliases: [sql, t-sql, pl/sql, plsql, stored procedures]}
+  - {skill: MySQL, category: Technical, ssk_id: null, aliases: [mysql, mariadb]}
+  - {skill: PostgreSQL, category: Technical, ssk_id: null, aliases: [postgresql, postgres]}
+  - {skill: Microsoft SQL Server, category: Technical, ssk_id: null, aliases: [sql server, ms sql, mssql]}
+  - {skill: Oracle Database, category: Technical, ssk_id: null, sectors: [IT], aliases: [oracle, oracle database, oracle db]}
+  - {skill: NoSQL / MongoDB, category: Technical, ssk_id: null, aliases: [nosql, mongodb, mongo db, redis, firebase, dynamodb]}
+  - {skill: Power BI / Tableau, category: Tool, ssk_id: null,
+     aliases: [power bi, powerbi, tableau, looker, data visualisation, data visualization, dashboards]}
+  - {skill: Machine learning & AI, category: Technical, ssk_id: null,
+     aliases: [machine learning, deep learning, artificial intelligence, nlp, computer vision, tensorflow, pytorch,
+               scikit learn, llm, llms, generative ai]}
+  - {skill: Statistics tools (SPSS / R / Stata), category: Tool, ssk_id: null,
+     aliases: [spss, stata, rstudio, r studio, minitab], patterns: ['\br\s+programming\b', '\b(?:python|sql)\s*(?:,|/|and|or)\s*r\b']}
+
+  # --- IT: infrastructure ---------------------------------------------------------------------------
+  - {skill: Git, category: Tool, ssk_id: null, aliases: [git, github, gitlab, bitbucket, version control]}
+  - {skill: Docker & Kubernetes, category: Technical, ssk_id: null, aliases: [docker, kubernetes, k8s, containerization, containerisation]}
+  - {skill: CI/CD, category: Technical, ssk_id: null, aliases: [ci/cd, ci cd, jenkins, github actions, gitlab ci, azure devops, devops]}
+  - {skill: AWS, category: Technical, ssk_id: null, aliases: [aws, amazon web services, aws lambda]}
+  - {skill: Microsoft Azure, category: Technical, ssk_id: null, aliases: [azure]}
+  - {skill: Google Cloud, category: Technical, ssk_id: null, aliases: [google cloud, gcp]}
+  - {skill: Linux, category: Technical, ssk_id: null, aliases: [linux, unix, ubuntu, centos, red hat, bash, shell scripting]}
+  - {skill: Networking, category: Technical, ssk_id: null, sectors: [IT],
+     aliases: [networking, computer networks, network administration, tcp/ip, lan, wan, vpn, routing, switching,
+               ccna, ccnp, firewalls, firewall]}
+  - {skill: System administration, category: Technical, ssk_id: null,
+     aliases: [system administration, systems administration, windows server, active directory, vmware, virtualization]}
+  - {skill: Cybersecurity, category: Technical, ssk_id: null,
+     aliases: [cyber security, cybersecurity, information security, penetration testing, vulnerability assessment,
+               iso 27001, siem, soc]}
+  - {skill: IT support & troubleshooting, category: Technical, ssk_id: null,
+     aliases: [troubleshooting, troubleshoot, technical support, it support, help desk, helpdesk, computer hardware, desktop support]}
+
+  # --- IT: testing, design and delivery --------------------------------------------------------------
+  - {skill: Software testing (QA), category: Technical, ssk_id: null, sectors: [IT],
+     aliases: [software testing, manual testing, test cases, test plans, regression testing, quality assurance, qa,
+               bug tracking, istqb]}
+  - {skill: Test automation, category: Technical, ssk_id: null,
+     aliases: [test automation, automation testing, automated testing, selenium, cypress, playwright, appium, junit,
+               testng, jest, pytest]}
+  - {skill: Agile / Scrum, category: Technical, ssk_id: null, aliases: [agile, scrum, kanban, sprint planning]}
+  - {skill: UI/UX design, category: Technical, ssk_id: null,
+     aliases: [ui/ux, ux/ui, ux, user experience, user interface design, ui design, wireframes, wireframing,
+               prototyping, figma, adobe xd]}
+  - {skill: Graphic design (Adobe tools), category: Tool, ssk_id: null,
+     aliases: [graphic design, photoshop, illustrator, indesign, adobe creative, premiere pro, after effects, canva]}
+  - {skill: AutoCAD, category: Tool, ssk_id: null, aliases: [autocad, auto cad, revit]}
+
+  # --- Office and business tools ---------------------------------------------------------------------
+  - {skill: Microsoft Office, category: Tool, ssk_id: null,
+     aliases: [ms office, microsoft office, ms word, microsoft word, ms powerpoint, powerpoint, power point,
+               ms outlook, office applications, office packages, office 365, microsoft 365, google workspace,
+               computer literacy, computer literate, it literacy]}
+  - {skill: Microsoft Excel, category: Tool, ssk_id: null,
+     aliases: [excel, ms excel, microsoft excel, advanced excel, spreadsheets, spreadsheet, google sheets]}
+  - {skill: ERP systems (SAP / Oracle / Odoo), category: Tool, ssk_id: null,
+     aliases: [erp, sap, odoo, dynamics 365, netsuite, oracle erp]}
+  - {skill: Accounting software, category: Tool, ssk_id: null,
+     aliases: [quickbooks, xero, tally, peachtree, accounting software, accounting package]}
+  - {skill: Payroll software (e.g. Sage), category: Tool, ssk_id: null,
+     aliases: [sage, sage payroll, payroll software, payroll system, payroll systems]}
+  - {skill: HRIS / HR software, category: Tool, ssk_id: null,
+     aliases: [hris, hrms, hr system, hr systems, hr software, hr information system]}
+  - {skill: Applicant tracking systems (ATS), category: Tool, ssk_id: null,
+     aliases: [applicant tracking, ats]}
+  - {skill: LinkedIn (sourcing), category: Tool, ssk_id: null,
+     aliases: [linkedin, linkedin recruiter, unkedin]}
+  - {skill: CRM systems, category: Tool, ssk_id: null,
+     aliases: [crm, salesforce, hubspot, zoho, customer relationship management]}
+  - {skill: Jira / Confluence, category: Tool, ssk_id: null, aliases: [jira, confluence, trello, asana]}

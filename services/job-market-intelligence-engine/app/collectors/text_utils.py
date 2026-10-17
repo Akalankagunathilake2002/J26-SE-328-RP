@@ -15,7 +15,7 @@ from app.collectors.models import JobAd
 
 SEP = r"[\s\-./()]*"  # what may sit between the digits of a phone number
 
-EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)*")  # the dot is optional: OCR often drops it
 PHONE = re.compile(
     # Sri Lankan: 0 or (+/00)94, an area or mobile prefix (never 0), then 8 more digits.
     rf"(?<![\w+])(?:(?:\+|00)?94{SEP}|0)[1-9](?:{SEP}\d){{8}}(?!\d)"

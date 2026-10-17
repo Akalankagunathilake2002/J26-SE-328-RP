@@ -11,11 +11,14 @@ dependencies = [
     "rapidfuzz>=3.9",
     "pytesseract>=0.3.13",  # needs the Tesseract program: brew install tesseract
     "Pillow>=10.4",
+    "fastapi>=0.115",  # the Market Pulse API (app/main.py)
+    "uvicorn[standard]>=0.30",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0",
+    "httpx2>=2.13",  # FastAPI's test client
 ]
 
 [build-system]

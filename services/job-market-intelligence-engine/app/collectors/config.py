@@ -53,6 +53,10 @@ def load_sectors(path: Path = DEFAULT_MAPPING) -> list[str]:
     return list(yaml.safe_load(path.read_text(encoding="utf-8"))["sectors"])
 
 
+def load_agriculture_keywords(path: Path = DEFAULT_MAPPING) -> list[str]:
+    return list(yaml.safe_load(path.read_text(encoding="utf-8"))["agriculture_keywords"])
+
+
 def load_sites(path: Path = DEFAULT_MAPPING) -> dict[str, SiteConfig]:
     """Every site in the mapping, enabled or not, with its categories per sector."""
     data = yaml.safe_load(path.read_text(encoding="utf-8"))

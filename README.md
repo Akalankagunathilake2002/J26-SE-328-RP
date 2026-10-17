@@ -123,6 +123,7 @@ npm run dev
 | Web app | http://localhost:3000 |
 | API gateway (single entry point to all services) | http://localhost:8080 |
 | Auth Service, through the gateway | http://localhost:8080/auth/… (API docs at `/auth/docs`) |
+| Job market data (Market Pulse), through the gateway | http://localhost:8080/jobs/… (API docs at `/jobs/docs`) |
 | PostgreSQL | `localhost:15432`, user and password from `infrastructure/.env` |
 
 ### Mock interview: choosing the interviewer
