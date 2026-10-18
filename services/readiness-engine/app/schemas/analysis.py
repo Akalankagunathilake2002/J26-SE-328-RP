@@ -108,3 +108,39 @@ class AnalysisDetailResponse(BaseModel):
     c04_payload: dict[str, Any] | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# Analysis history list item containing lightweight metadata
+class AnalysisHistoryItem(BaseModel):
+    analysisId: str = Field(..., description="Unique UUID string of the analysis")
+    user_id: str = Field(..., description="User UUID string")
+    roleId: str = Field(
+        ..., description="Role identifier from the target industry profile"
+    )
+    roleName: str | None = Field(None, description="Role title if available")
+    readinessScore: float | None = Field(
+        None, description="Overall career readiness score on a 0-100 percentage scale"
+    )
+    status: str = Field(
+        ..., description="Analysis status: PENDING, RUNNING, COMPLETED, or FAILED"
+    )
+    createdAt: datetime = Field(
+        ..., description="Timestamp when analysis was created or started"
+    )
+    completedAt: datetime | None = Field(
+        None, description="Timestamp when analysis completed or failed, if available"
+    )
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+# Paginated list of analysis history items
+class AnalysisHistoryResponse(BaseModel):
+    items: list[AnalysisHistoryItem] = Field(
+        default_factory=list, description="Paginated analysis history items"
+    )
+    total: int = Field(..., ge=0, description="Total number of matching analyses")
+    limit: int = Field(..., ge=1, description="Page size limit")
+    offset: int = Field(..., ge=0, description="Page offset")
+
+    model_config = ConfigDict(populate_by_name=True)

@@ -3,6 +3,8 @@
 from app.schemas.analysis import (
     AnalysisCreateRequest,
     AnalysisDetailResponse,
+    AnalysisHistoryItem,
+    AnalysisHistoryResponse,
     C04AnalysisResponse,
     PrioritySkillOut,
     SkillResultDetailOut,
@@ -20,6 +22,8 @@ from app.schemas.profile_validation import (
 __all__ = [
     "AnalysisCreateRequest",
     "AnalysisDetailResponse",
+    "AnalysisHistoryItem",
+    "AnalysisHistoryResponse",
     "C04AnalysisResponse",
     "IndustryProfileInput",
     "IndustryRequirementInput",

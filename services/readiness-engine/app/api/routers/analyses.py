@@ -2,13 +2,15 @@ import logging
 import uuid
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_db_session
 from app.schemas.analysis import (
     AnalysisCreateRequest,
     AnalysisDetailResponse,
+    AnalysisHistoryItem,
+    AnalysisHistoryResponse,
     C04AnalysisResponse,
     PrioritySkillOut,
     SkillResultDetailOut,
@@ -21,6 +23,83 @@ router = APIRouter(prefix="/analyses", tags=["analyses"])
 analysis_service = AnalysisService()
 
 DbSession = Annotated[AsyncSession, Depends(get_db_session)]
+
+
+# List analysis history with pagination, deterministic ordering, and optional filters
+@router.get(
+    "",
+    response_model=AnalysisHistoryResponse,
+    summary="List analysis history",
+)
+async def list_analyses(
+    session: DbSession,
+    user_id: Annotated[
+        uuid.UUID | None,
+        Query(description="Filter analyses by student user UUID"),
+    ] = None,
+    x_user_id: Annotated[
+        uuid.UUID | None,
+        Header(alias="X-User-Id", description="Authenticated student user UUID"),
+    ] = None,
+    status: Annotated[
+        str | None,
+        Query(description="Filter by status: PENDING, RUNNING, COMPLETED, or FAILED"),
+    ] = None,
+    role_id: Annotated[
+        str | None,
+        Query(description="Filter by canonical or candidate role identifier"),
+    ] = None,
+    limit: Annotated[
+        int,
+        Query(ge=1, le=100, description="Maximum number of records to return (1-100)"),
+    ] = 20,
+    offset: Annotated[
+        int,
+        Query(ge=0, description="Number of initial records to skip (>= 0)"),
+    ] = 0,
+) -> Any:
+    effective_user_id = user_id or x_user_id
+    records, total = await analysis_service.list_analyses(
+        session=session,
+        user_id=effective_user_id,
+        status=status,
+        role_id=role_id,
+        limit=limit,
+        offset=offset,
+    )
+
+    items = []
+    for a in records:
+        ind_prof = a.industry_profile
+        role_id_val = (
+            (ind_prof.role_id or ind_prof.candidate_role_id or str(ind_prof.id))
+            if ind_prof
+            else str(a.industry_profile_id)
+        )
+        role_name_val = (
+            (ind_prof.primary_observed_title or ind_prof.role_name)
+            if ind_prof
+            else None
+        )
+        items.append(
+            AnalysisHistoryItem(
+                analysisId=str(a.analysis_id),
+                user_id=str(a.user_id),
+                roleId=role_id_val,
+                roleName=role_name_val,
+                readinessScore=a.readiness_score,
+                status=a.status,
+                createdAt=a.started_at,
+                completedAt=a.completed_at,
+            )
+        )
+
+    return AnalysisHistoryResponse(
+        items=items,
+        total=total,
+        limit=limit,
+        offset=offset,
+    )
 
 
 # Execute complete analysis pipeline and return C04 target payload
