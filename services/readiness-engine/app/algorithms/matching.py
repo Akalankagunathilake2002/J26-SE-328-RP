@@ -94,11 +94,18 @@ class MatchingPolicy:
     def __post_init__(self) -> None:
         # Partial relationship coefficients must be explicitly validated policy parameters
         for (rel_type, direction), coeff in self.partial_coefficients.items():
-            if rel_type in (RelationshipType.RELATED_TO.value, RelationshipType.PREREQUISITE_OF.value):
-                raise ValueError(f"Relationship type '{rel_type}' cannot award direct readiness coverage by definition")
+            if rel_type in (
+                RelationshipType.RELATED_TO.value,
+                RelationshipType.PREREQUISITE_OF.value,
+            ):
+                raise ValueError(
+                    f"Relationship type '{rel_type}' cannot award direct readiness coverage by definition"
+                )
 
             if not isinstance(coeff, (int, float)) or not (0.0 < float(coeff) < 1.0):
-                raise ValueError(f"Partial coverage coefficient for ({rel_type}, {direction}) must be strictly between 0 and 1, got {coeff}")
+                raise ValueError(
+                    f"Partial coverage coefficient for ({rel_type}, {direction}) must be strictly between 0 and 1, got {coeff}"
+                )
 
 
 @dataclass
@@ -137,7 +144,7 @@ def is_requirement_assessable(req: RequirementInput) -> bool:
     if not req.skill_id or not str(req.skill_id).strip():
         return False
     status = (req.mapping_status or "").strip().upper()
-    return status in ("RESOLVED", "VERIFIED")
+    return status in ("RESOLVED", "VERIFIED", "CANONICAL")
 
 
 # Normalize skill term for case-insensitive and whitespace-invariant alias lookup
@@ -210,7 +217,12 @@ def evaluate_relationship_eligibility(
 
     # RELATED_TO is an informal topical association that does not guarantee capability
     if rel_type == RelationshipType.RELATED_TO.value:
-        return False, 0.0, "", "RELATED_TO relationships provide no direct readiness coverage"
+        return (
+            False,
+            0.0,
+            "",
+            "RELATED_TO relationships provide no direct readiness coverage",
+        )
 
     # PREREQUISITE_OF specifies curricular sequencing, not skill substitutability
     if rel_type == RelationshipType.PREREQUISITE_OF.value:
@@ -224,8 +236,11 @@ def evaluate_relationship_eligibility(
     # EQUIVALENT_TO represents bidirectional semantic equivalence across taxonomies
     if rel_type == RelationshipType.EQUIVALENT_TO.value:
         is_match = (
-            (rel.source_skill_id == student_canonical_id and rel.target_skill_id == required_canonical_id)
-            or (rel.source_skill_id == required_canonical_id and rel.target_skill_id == student_canonical_id)
+            rel.source_skill_id == student_canonical_id
+            and rel.target_skill_id == required_canonical_id
+        ) or (
+            rel.source_skill_id == required_canonical_id
+            and rel.target_skill_id == student_canonical_id
         )
         if is_match:
             return True, 1.0, "EQUIVALENT", "Verified equivalent skill relationship"
@@ -233,9 +248,15 @@ def evaluate_relationship_eligibility(
 
     # Determine relationship direction relative to student and industry requirement
     direction: RelationshipDirection | None = None
-    if rel.source_skill_id == student_canonical_id and rel.target_skill_id == required_canonical_id:
+    if (
+        rel.source_skill_id == student_canonical_id
+        and rel.target_skill_id == required_canonical_id
+    ):
         direction = RelationshipDirection.STUDENT_IS_SOURCE
-    elif rel.source_skill_id == required_canonical_id and rel.target_skill_id == student_canonical_id:
+    elif (
+        rel.source_skill_id == required_canonical_id
+        and rel.target_skill_id == student_canonical_id
+    ):
         direction = RelationshipDirection.STUDENT_IS_TARGET
 
     if not direction:
@@ -243,13 +264,22 @@ def evaluate_relationship_eligibility(
 
     # Validate directional semantics to prevent invalid generalization assumptions
     is_direction_valid = False
-    if rel_type == RelationshipType.NARROWER_THAN.value and direction == RelationshipDirection.STUDENT_IS_SOURCE:
+    if (
+        rel_type == RelationshipType.NARROWER_THAN.value
+        and direction == RelationshipDirection.STUDENT_IS_SOURCE
+    ):
         # Student possesses a specialized skill (e.g. React) satisfying a general requirement (e.g. JavaScript)
         is_direction_valid = True
-    elif rel_type == RelationshipType.BROADER_THAN.value and direction == RelationshipDirection.STUDENT_IS_TARGET:
+    elif (
+        rel_type == RelationshipType.BROADER_THAN.value
+        and direction == RelationshipDirection.STUDENT_IS_TARGET
+    ):
         # Requirement is broad (source) and student possesses a narrower specialization (target)
         is_direction_valid = True
-    elif rel_type == RelationshipType.PART_OF.value and direction == RelationshipDirection.STUDENT_IS_TARGET:
+    elif (
+        rel_type == RelationshipType.PART_OF.value
+        and direction == RelationshipDirection.STUDENT_IS_TARGET
+    ):
         # Student possesses a composite stack (e.g. MERN) containing the required component (e.g. MongoDB)
         is_direction_valid = True
 
@@ -326,16 +356,22 @@ def match_single_requirement(
             if not matched_via_alias:
                 candidates.append(
                     CandidateMatch(
-                        priority=1, student_skill=student_skill, match_type=MatchType.EXACT,
-                        coverage_credit=1.0, relationship=None,
+                        priority=1,
+                        student_skill=student_skill,
+                        match_type=MatchType.EXACT,
+                        coverage_credit=1.0,
+                        relationship=None,
                         explanation=f"Exact canonical skill match ({required_canonical_id})",
                     )
                 )
             else:
                 candidates.append(
                     CandidateMatch(
-                        priority=2, student_skill=student_skill, match_type=MatchType.ALIAS,
-                        coverage_credit=1.0, relationship=None,
+                        priority=2,
+                        student_skill=student_skill,
+                        match_type=MatchType.ALIAS,
+                        coverage_credit=1.0,
+                        relationship=None,
                         explanation=f"Verified alias resolved to required canonical skill ({required_canonical_id})",
                     )
                 )
@@ -356,11 +392,18 @@ def match_single_requirement(
             )
             if eligible:
                 prio = 3 if match_cat == "EQUIVALENT" else 4
-                mtype = MatchType.EQUIVALENT if match_cat == "EQUIVALENT" else MatchType.PARTIAL_RELATIONSHIP
+                mtype = (
+                    MatchType.EQUIVALENT
+                    if match_cat == "EQUIVALENT"
+                    else MatchType.PARTIAL_RELATIONSHIP
+                )
                 candidates.append(
                     CandidateMatch(
-                        priority=prio, student_skill=student_skill, match_type=mtype,
-                        coverage_credit=credit, relationship=rel,
+                        priority=prio,
+                        student_skill=student_skill,
+                        match_type=mtype,
+                        coverage_credit=credit,
+                        relationship=rel,
                         explanation=reason,
                     )
                 )
@@ -399,7 +442,9 @@ def match_single_requirement(
     )
 
     winner = candidates[0]
-    matched_canonical_id, _ = resolve_student_skill_id(winner.student_skill, alias_index)
+    matched_canonical_id, _ = resolve_student_skill_id(
+        winner.student_skill, alias_index
+    )
 
     # Compile diagnostic records for all evaluated candidates
     diagnostics = [
@@ -429,10 +474,18 @@ def match_single_requirement(
         matched_canonical_skill_id=matched_canonical_id,
         matched_skill_name=winner.student_skill.standard_name,
         match_type=winner.match_type.value,
-        selected_relationship_id=winner.relationship.relationship_id if winner.relationship else None,
-        selected_relationship_type=winner.relationship.relationship_type if winner.relationship else None,
-        relationship_source_skill_id=winner.relationship.source_skill_id if winner.relationship else None,
-        relationship_target_skill_id=winner.relationship.target_skill_id if winner.relationship else None,
+        selected_relationship_id=winner.relationship.relationship_id
+        if winner.relationship
+        else None,
+        selected_relationship_type=winner.relationship.relationship_type
+        if winner.relationship
+        else None,
+        relationship_source_skill_id=winner.relationship.source_skill_id
+        if winner.relationship
+        else None,
+        relationship_target_skill_id=winner.relationship.target_skill_id
+        if winner.relationship
+        else None,
         coverage_credit=winner.coverage_credit,
         result_status=result_status,
         explanation=winner.explanation,

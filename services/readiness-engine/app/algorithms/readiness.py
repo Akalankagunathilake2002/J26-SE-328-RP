@@ -395,7 +395,7 @@ def score_readiness(
             selected_student_id = None
             explanation = "No matching result provided"
             is_assessable = (
-                mapping_status.upper() in ("RESOLVED", "VERIFIED")
+                mapping_status.upper() in ("RESOLVED", "VERIFIED", "CANONICAL")
                 and skill_id is not None
             )
 
