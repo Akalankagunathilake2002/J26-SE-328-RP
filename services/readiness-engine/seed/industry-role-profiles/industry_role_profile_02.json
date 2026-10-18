@@ -1,0 +1,317 @@
+{
+  "schema_version": "1.0",
+  "message_id": "MSG-C01-FIXTURE-002",
+  "generated_at": "2026-10-17T20:00:00Z",
+  "source_component": "Job-market-intelligence-engine",
+  "profile_type": "aggregated_role_profile",
+  "data": {
+    "industryRoleProfile": {
+      "roleId": "RL-000015",
+      "candidate_roleId": null,
+      "primary_observed_title": "Junior Web Developer",
+      "observed_titles": [
+        "Junior Web Developer",
+        "Entry-Level Web Developer",
+        "Junior Web Application Developer"
+      ],
+      "mapping_status": "verified",
+      "profile_status": "active",
+      "domain": {
+        "domainId": "DOM-IT",
+        "domainName": "Information Technology"
+      },
+      "careerLevel": "JUNIOR",
+      "profileVersion": "2026-10-17T20:00:00Z",
+      "marketEvidence": {
+        "jobPostingCount": 38,
+        "observationPeriod": {
+          "from": "2026-07-01",
+          "to": "2026-10-15"
+        }
+      },
+      "requirements": [
+        {
+          "skillId": "SK-000165",
+          "candidate_skill_id": null,
+          "standard_name": "JavaScript",
+          "primary_observed_term": "JavaScript",
+          "observed_terms": [
+            "JavaScript",
+            "JS"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.6
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 29,
+            "frequency": 0.763,
+            "requiredCount": 18,
+            "preferredCount": 8,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.91,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000165-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Implement interactive behaviour using JavaScript."
+            },
+            {
+              "sourceId": "SYNTH-SK-000165-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Write and maintain JavaScript for web application features."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001606",
+          "candidate_skill_id": null,
+          "standard_name": "React",
+          "primary_observed_term": "React",
+          "observed_terms": [
+            "React",
+            "React.js",
+            "ReactJS"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.6
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 24,
+            "frequency": 0.632,
+            "requiredCount": 14,
+            "preferredCount": 7,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.86,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-001606-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Build reusable UI components using React."
+            },
+            {
+              "sourceId": "SYNTH-SK-001606-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Use React state and props to implement frontend features."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000657",
+          "candidate_skill_id": null,
+          "standard_name": "CSS",
+          "primary_observed_term": "CSS",
+          "observed_terms": [
+            "CSS",
+            "Cascading Style Sheets"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.55
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 23,
+            "frequency": 0.605,
+            "requiredCount": 13,
+            "preferredCount": 7,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.8,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000657-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Style responsive web pages with CSS."
+            },
+            {
+              "sourceId": "SYNTH-SK-000657-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Apply layout and responsive styling to user interfaces."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000836",
+          "candidate_skill_id": null,
+          "standard_name": "Hypertext markup language HTML",
+          "primary_observed_term": "HTML",
+          "observed_terms": [
+            "HTML",
+            "HTML5"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.55
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 22,
+            "frequency": 0.579,
+            "requiredCount": 13,
+            "preferredCount": 6,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.78,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000836-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Structure pages using semantic HTML."
+            },
+            {
+              "sourceId": "SYNTH-SK-000836-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Create accessible page structures for web interfaces."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001879",
+          "candidate_skill_id": null,
+          "standard_name": "Tailwind CSS",
+          "primary_observed_term": "Tailwind CSS",
+          "observed_terms": [
+            "Tailwind CSS",
+            "Tailwind"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 15,
+            "frequency": 0.395,
+            "requiredCount": 7,
+            "preferredCount": 6,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.6,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-001879-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Use utility classes to implement consistent styling."
+            },
+            {
+              "sourceId": "SYNTH-SK-001879-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Build responsive layouts using Tailwind CSS utilities."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001873",
+          "candidate_skill_id": null,
+          "standard_name": "Express.js",
+          "primary_observed_term": "Express.js",
+          "observed_terms": [
+            "Express.js",
+            "Express"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 14,
+            "frequency": 0.368,
+            "requiredCount": 7,
+            "preferredCount": 5,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.58,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-001873-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Implement basic API routes using Express.js."
+            },
+            {
+              "sourceId": "SYNTH-SK-001873-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Connect frontend requests to backend endpoints."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000390",
+          "candidate_skill_id": null,
+          "standard_name": "TypeScript",
+          "primary_observed_term": "TypeScript",
+          "observed_terms": [
+            "TypeScript",
+            "TypeScript programming language"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 9,
+            "frequency": 0.237,
+            "requiredCount": 3,
+            "preferredCount": 4,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.42,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000390-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Read and maintain TypeScript code in web applications."
+            },
+            {
+              "sourceId": "SYNTH-SK-000390-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Use TypeScript types when implementing frontend or backend features."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

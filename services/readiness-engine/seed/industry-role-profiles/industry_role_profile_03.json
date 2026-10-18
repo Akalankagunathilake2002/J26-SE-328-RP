@@ -1,0 +1,275 @@
+{
+  "schema_version": "1.0",
+  "message_id": "MSG-C01-FIXTURE-003",
+  "generated_at": "2026-10-17T20:00:00Z",
+  "source_component": "Job-market-intelligence-engine",
+  "profile_type": "aggregated_role_profile",
+  "data": {
+    "industryRoleProfile": {
+      "roleId": "RL-000017",
+      "candidate_roleId": null,
+      "primary_observed_title": "Junior Data Analyst",
+      "observed_titles": [
+        "Junior Data Analyst",
+        "Entry-Level Data Analyst"
+      ],
+      "mapping_status": "verified",
+      "profile_status": "active",
+      "domain": {
+        "domainId": "DOM-IT",
+        "domainName": "Information Technology"
+      },
+      "careerLevel": "JUNIOR",
+      "profileVersion": "2026-10-17T20:00:00Z",
+      "marketEvidence": {
+        "jobPostingCount": 31,
+        "observationPeriod": {
+          "from": "2026-07-01",
+          "to": "2026-10-15"
+        }
+      },
+      "requirements": [
+        {
+          "skillId": "SK-000124",
+          "candidate_skill_id": null,
+          "standard_name": "perform data analysis",
+          "primary_observed_term": "perform data analysis",
+          "observed_terms": [
+            "perform data analysis",
+            "data analysis"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.6
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 24,
+            "frequency": 0.774,
+            "requiredCount": 14,
+            "preferredCount": 7,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.9,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000124-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Clean and analyse datasets to answer business questions."
+            },
+            {
+              "sourceId": "SYNTH-SK-000124-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Summarise patterns and findings from structured data."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000151",
+          "candidate_skill_id": null,
+          "standard_name": "apply statistical analysis techniques",
+          "primary_observed_term": "statistical analysis",
+          "observed_terms": [
+            "statistical analysis",
+            "statistical analysis techniques"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.55
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 17,
+            "frequency": 0.548,
+            "requiredCount": 8,
+            "preferredCount": 6,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.75,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000151-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Apply descriptive statistics to datasets."
+            },
+            {
+              "sourceId": "SYNTH-SK-000151-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Select basic statistical methods for analysis tasks."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000862",
+          "candidate_skill_id": null,
+          "standard_name": "Microsoft Excel",
+          "primary_observed_term": "Microsoft Excel",
+          "observed_terms": [
+            "Microsoft Excel",
+            "Excel"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.6
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 21,
+            "frequency": 0.677,
+            "requiredCount": 11,
+            "preferredCount": 7,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.84,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000862-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Use spreadsheets to clean and summarise data."
+            },
+            {
+              "sourceId": "SYNTH-SK-000862-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Create formulas and tables for routine analysis."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001215",
+          "candidate_skill_id": null,
+          "standard_name": "Microsoft Power BI",
+          "primary_observed_term": "Power BI",
+          "observed_terms": [
+            "Power BI",
+            "Microsoft Power BI"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 18,
+            "frequency": 0.581,
+            "requiredCount": 9,
+            "preferredCount": 6,
+            "mentionedCount": 3
+          },
+          "DemandWeight": 0.77,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-001215-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Build dashboards to communicate analysis results."
+            },
+            {
+              "sourceId": "SYNTH-SK-001215-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Create visual reports from prepared datasets."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000919",
+          "candidate_skill_id": null,
+          "standard_name": "Structured query language SQL",
+          "primary_observed_term": "SQL",
+          "observed_terms": [
+            "SQL",
+            "Structured Query Language"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.55
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 17,
+            "frequency": 0.548,
+            "requiredCount": 10,
+            "preferredCount": 5,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.74,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000919-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Query relational tables to retrieve and aggregate data."
+            },
+            {
+              "sourceId": "SYNTH-SK-000919-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Use joins and filtering to answer analysis questions."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000591",
+          "candidate_skill_id": null,
+          "standard_name": "Python (computer programming)",
+          "primary_observed_term": "Python",
+          "observed_terms": [
+            "Python",
+            "Python programming"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 12,
+            "frequency": 0.387,
+            "requiredCount": 5,
+            "preferredCount": 5,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.61,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000591-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Use Python to clean or transform datasets."
+            },
+            {
+              "sourceId": "SYNTH-SK-000591-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Write simple scripts to automate repetitive analysis steps."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
