@@ -28,10 +28,11 @@ import {
 } from "@/lib/ragApi";
 
 interface VivaInspectorViewProps {
+  studentId: string;
   targetRole: string;
 }
 
-export default function VivaInspectorView({ targetRole }: VivaInspectorViewProps) {
+export default function VivaInspectorView({ studentId, targetRole }: VivaInspectorViewProps) {
   const [activeTab, setActiveTab] = useState<"benchmark" | "golden" | "rerank" | "contracts">("benchmark");
 
   // Tab 1: Benchmark Matrix state
@@ -259,7 +260,7 @@ export default function VivaInspectorView({ targetRole }: VivaInspectorViewProps
     setUpstreamResponse(null);
     try {
       const payload = {
-        student_id: "stu_viva_1024",
+        student_id: studentId,
         target_role: upstreamRole,
         readiness_score: upstreamScore,
         identified_weak_skills: upstreamSkills.split(",").map((s) => s.trim()),
@@ -272,7 +273,7 @@ export default function VivaInspectorView({ targetRole }: VivaInspectorViewProps
     } catch (e: any) {
       setUpstreamResponse({
         status: "success (simulated)",
-        student_id: "stu_viva_1024",
+        student_id: studentId,
         target_role: upstreamRole,
         recommended_learning_modules: [
           "Relational Database Indexing: B-Tree, GIN, and BRIN Optimization",
@@ -289,11 +290,11 @@ export default function VivaInspectorView({ targetRole }: VivaInspectorViewProps
   const handleFetchAnalytics = async () => {
     setLoadingAnalytics(true);
     try {
-      const res = await ragApi.fetchPlatformAnalytics("stu_viva_1024");
+      const res = await ragApi.fetchPlatformAnalytics(studentId);
       setAnalyticsData(res);
     } catch {
       setAnalyticsData({
-        student_id: "stu_viva_1024",
+        student_id: studentId,
         target_role: upstreamRole,
         total_learning_queries: 14,
         topics_explored: [

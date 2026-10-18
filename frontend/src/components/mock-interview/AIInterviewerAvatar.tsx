@@ -16,13 +16,14 @@ const CONNECT_TIMEOUT_MS = 20000;
 const JOB_POLL_MS = 800;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const EMPTY_IDS: string[] = [];
 
 interface AIInterviewerAvatarProps {
   currentTextToSpeak?: string;
   /** Increment to make the interviewer speak `currentTextToSpeak` (new question, replay, etc.) */
   speakRequest?: number;
-  /** Local-avatar render the backend already started for `currentTextToSpeak` */
-  avatarJobId?: string | null;
+  /** Local-avatar sentence clips the backend already started for `currentTextToSpeak`, in order */
+  avatarJobIds?: string[];
   interviewState: "idle" | "speaking" | "listening" | "thinking";
   onSpeechEnd?: () => void;
   onSpeechStart?: () => void;
@@ -33,7 +34,7 @@ interface AIInterviewerAvatarProps {
 export default function AIInterviewerAvatar({
   currentTextToSpeak = "",
   speakRequest = 0,
-  avatarJobId = null,
+  avatarJobIds = EMPTY_IDS,
   interviewState = "idle",
   onSpeechEnd,
   onSpeechStart,
@@ -62,9 +63,12 @@ export default function AIInterviewerAvatar({
   const [localStatus, setLocalStatus] = useState("");
   const [needsClickToPlay, setNeedsClickToPlay] = useState(false);
   const idleUrlRef = useRef<string | null>(null);
-  const clipCacheRef = useRef(new Map<string, string>());
-  const jobIdsRef = useRef(new Map<string, string>());
+  const clipCacheRef = useRef(new Map<string, string[]>());   // text -> rendered sentence clip URLs
+  const jobIdsRef = useRef(new Map<string, string[]>());      // text -> sentence clip job ids
+  const currentJobsRef = useRef<string[]>([]);                 // clips of the speech in progress
   const speakTokenRef = useRef(0);
+  const video2Ref = useRef<HTMLVideoElement | null>(null);     // second player for gapless swaps
+  const activeIdxRef = useRef(0);
 
   useEffect(() => {
     callbacksRef.current = { onSpeechStart, onSpeechEnd };
@@ -102,89 +106,147 @@ export default function AIInterviewerAvatar({
     [handleSpeechStart, handleSpeechEnd]
   );
 
-  // Local avatar: silent idle loop (head motion + blinks) whenever the interviewer isn't talking
-  const showIdle = useCallback(() => {
-    const video = videoRef.current;
-    if (!video || !idleUrlRef.current) return;
-    video.onended = null;
-    video.onplaying = null;
-    video.src = idleUrlRef.current;
-    video.loop = true;
-    video.muted = true;
-    video.play().catch(() => {});
+  // Local avatar uses two stacked <video> elements: the next clip loads in the hidden one and the
+  // two swap only once it is actually playing, so sentence clips (and the idle loop) join without
+  // a black frame. videoRef doubles as the HeyGen stream target in "live" mode.
+  const players = () => [videoRef.current, video2Ref.current] as const;
+  const activeVideo = () => players()[activeIdxRef.current];
+  const spareVideo = () => players()[1 - activeIdxRef.current];
+
+  const swapTo = useCallback(async (url: string, opts: { loop: boolean; muted: boolean }) => {
+    const next = spareVideo();
+    const current = activeVideo();
+    if (!next) return null;
+    next.onended = null;
+    if (next.getAttribute("src") !== url) next.src = url;    // may already be preloaded
+    next.loop = opts.loop;
+    next.muted = opts.muted;
+    next.currentTime = 0;
+    await next.play();                                          // rejects if autoplay is blocked
+    next.style.opacity = "1";
+    if (current && current !== next) {
+      current.style.opacity = "0";
+      current.pause();
+    }
+    activeIdxRef.current = 1 - activeIdxRef.current;
+    return next;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const playClip = useCallback(
-    (url: string) => {
-      const video = videoRef.current;
-      if (!video) return;
-      setNeedsClickToPlay(false);
-      video.onplaying = () => {
-        video.onplaying = null;
-        handleSpeechStart();
-      };
-      video.onended = () => {
-        video.onended = null;
-        handleSpeechEnd();
-        showIdle();
-      };
-      video.src = url;
-      video.loop = false;
-      video.muted = isMutedRef.current;
-      // Autoplay with sound can be blocked (e.g. Safari) when the render finished long after the click
-      video.play().catch(() => setNeedsClickToPlay(true));
-    },
-    [handleSpeechStart, handleSpeechEnd, showIdle]
-  );
+  // Silent idle loop (head motion + blinks) whenever the interviewer isn't talking
+  const showIdle = useCallback(() => {
+    if (!idleUrlRef.current) return;
+    swapTo(idleUrlRef.current, { loop: true, muted: true }).catch(() => {});
+  }, [swapTo]);
+
+  // Polls one sentence clip until it is rendered; throws if it failed or was cancelled
+  const waitForClip = useCallback(async (jobId: string, stillWanted: () => boolean, showStatus: () => boolean) => {
+    for (;;) {
+      if (!stillWanted()) throw new Error("superseded");
+      const job = await ragApi.getAvatarJob(jobId);
+      if (job.status === "done" && job.video_url) return apiUrl(job.video_url);
+      if (job.status === "error" || job.status === "cancelled") throw new Error(job.error || `clip ${job.status}`);
+      if (showStatus()) {
+        setLocalStatus(
+          job.status === "queued" && job.queued_ahead
+            ? `Interviewer is preparing… (${job.queued_ahead} ahead)`
+            : "Interviewer is preparing…"
+        );
+      }
+      await sleep(JOB_POLL_MS);
+    }
+  }, []);
 
   const speakLocal = useCallback(
-    async (text: string) => {
+    async (text: string, isRetry = false) => {
       const token = ++speakTokenRef.current;
       const stillWanted = () => token === speakTokenRef.current;
-      // A new question replaces whatever clip is still playing; go quiet until it's ready
-      if (videoRef.current && !videoRef.current.loop) {
+      // A new question replaces whatever is playing: drop the old speech's unrendered clips so
+      // this one renders next, and go quiet until its first sentence is ready
+      const stale = currentJobsRef.current.filter((id) => !(jobIdsRef.current.get(text) ?? []).includes(id));
+      if (stale.length) ragApi.cancelAvatarClips(stale).catch(() => {});
+      if (activeVideo() && !activeVideo()!.loop) {
         if (isSpeakingRef.current) handleSpeechEnd();
         showIdle();
       }
+      setNeedsClickToPlay(false);
+      let started = false;
       try {
-        let url = clipCacheRef.current.get(text);
-        if (!url) {
+        const urls = clipCacheRef.current.get(text);
+        let pending: Promise<string>[];
+        if (urls) {
+          pending = urls.map((u) => Promise.resolve(u));          // replay: already rendered
+        } else {
           setLocalStatus("Interviewer is preparing…");
-          let jobId = jobIdsRef.current.get(text);
-          if (!jobId) {
-            jobId = (await ragApi.renderAvatarClip(text)).job_id;
-            jobIdsRef.current.set(text, jobId);
+          let ids = jobIdsRef.current.get(text);
+          if (!ids?.length) {
+            ids = (await ragApi.renderAvatarClip(text)).job_ids;
+            jobIdsRef.current.set(text, ids);
           }
-          while (!url) {
-            if (!stillWanted()) return;
-            const job = await ragApi.getAvatarJob(jobId);
-            if (job.status === "done" && job.video_url) {
-              url = apiUrl(job.video_url);
-            } else if (job.status === "error") {
-              throw new Error(job.error || "Avatar render failed");
-            } else {
-              setLocalStatus(
-                job.status === "queued" && job.queued_ahead
-                  ? `Interviewer is preparing… (${job.queued_ahead} ahead)`
-                  : "Interviewer is preparing…"
-              );
-              await sleep(JOB_POLL_MS);
-            }
-          }
-          clipCacheRef.current.set(text, url);
+          currentJobsRef.current = ids;
+          // Poll every sentence clip at once, so clip N+1 is known the moment clip N ends
+          pending = ids.map((id) => waitForClip(id, stillWanted, () => !started));
+          pending.forEach((p) => p.catch(() => {}));
         }
-        if (!stillWanted()) return;
-        setLocalStatus("");
-        playClip(url);
+
+        const played: string[] = [];
+        for (let i = 0; i < pending.length; i++) {
+          const url = await pending[i];
+          if (!stillWanted()) return;
+          // Preload the following sentence into the hidden player while this one plays
+          pending[i + 1]?.then((nextUrl) => {
+            const spare = spareVideo();
+            if (stillWanted() && spare && spare.getAttribute("src") !== nextUrl) {
+              spare.src = nextUrl;
+              spare.load();
+            }
+          }).catch(() => {});
+          setLocalStatus("");
+          let video: HTMLVideoElement | null;
+          try {
+            video = await swapTo(url, { loop: false, muted: isMutedRef.current });
+          } catch {
+            // Autoplay with sound blocked (e.g. Safari): the "Play interviewer" button resumes
+            setNeedsClickToPlay(true);
+            return;
+          }
+          if (!video) return;
+          if (!started) {
+            started = true;
+            handleSpeechStart();
+          }
+          await new Promise<void>((resolve) => {
+            video!.onended = () => resolve();
+            const watch = setInterval(() => {
+              if (!stillWanted()) { clearInterval(watch); resolve(); }
+            }, 250);
+            video!.addEventListener("ended", () => clearInterval(watch), { once: true });
+          });
+          if (!stillWanted()) return;
+          played.push(url);
+        }
+        if (played.length === pending.length) clipCacheRef.current.set(text, played);
+        handleSpeechEnd();
+        showIdle();
       } catch (err) {
         if (!stillWanted()) return;
-        jobIdsRef.current.delete(text);
         setLocalStatus("");
-        console.warn("Local avatar clip unavailable, using fallback voice:", err);
-        speakWithBrowser(text);
+        jobIdsRef.current.delete(text);
+        if (started) {
+          // A later sentence failed: end gracefully rather than switch voices mid-question
+          console.warn("Local avatar sentence clip failed:", err);
+          handleSpeechEnd();
+          showIdle();
+        } else if (!isRetry && String(err).includes("cancelled")) {
+          speakLocal(text, true);                                  // clips were cancelled earlier: re-render
+        } else {
+          console.warn("Local avatar clip unavailable, using fallback voice:", err);
+          speakWithBrowser(text);
+        }
       }
     },
-    [playClip, speakWithBrowser, handleSpeechEnd, showIdle]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [swapTo, showIdle, waitForClip, speakWithBrowser, handleSpeechStart, handleSpeechEnd]
   );
 
   const speak = useCallback(
@@ -220,10 +282,13 @@ export default function AIInterviewerAvatar({
   // Silences the interviewer; the speech-ended event then resets the speaking state
   const haltAudio = useCallback(() => {
     if (modeRef.current === "local") {
-      speakTokenRef.current++;            // abandon any clip still rendering
+      speakTokenRef.current++;            // abandon the speech in progress
+      // Its unrendered sentence clips would only delay the next thing the interviewer says
+      if (currentJobsRef.current.length) ragApi.cancelAvatarClips(currentJobsRef.current).catch(() => {});
+      currentJobsRef.current = [];
       setLocalStatus("");
       setNeedsClickToPlay(false);
-      if (videoRef.current && !videoRef.current.loop) showIdle();
+      if (activeVideo() && !activeVideo()!.loop) showIdle();
     }
     if (modeRef.current === "live" && sessionRef.current) {
       try {
@@ -235,6 +300,8 @@ export default function AIInterviewerAvatar({
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
       window.speechSynthesis.cancel();
     }
+    // activeVideo() only reads refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showIdle]);
 
   const stopSpeaking = useCallback(() => {
@@ -255,7 +322,10 @@ export default function AIInterviewerAvatar({
       if (next === "fallback") {
         speakTokenRef.current++;
         setLocalStatus("");
-        videoRef.current?.pause();
+        for (const v of [videoRef.current, video2Ref.current]) {
+          v?.pause();
+          if (v) v.style.opacity = "";      // let the mode classes hide the players again
+        }
         const session = sessionRef.current;
         sessionRef.current = null;
         session?.stop().catch(() => {});
@@ -344,9 +414,12 @@ export default function AIInterviewerAvatar({
     }, CONNECT_TIMEOUT_MS);
 
     const speakToken = speakTokenRef;
+    const pendingJobs = currentJobsRef;
     return () => {
       cancelled = true;
       speakToken.current++;               // abandon any clip still rendering
+      // Interview ended or page left: unrendered clips would only delay the next interview
+      if (pendingJobs.current.length) ragApi.cancelAvatarClips(pendingJobs.current).catch(() => {});
       clearTimeout(startTimer);
       clearTimeout(connectTimeout);
       sessionRef.current = null;
@@ -392,8 +465,8 @@ export default function AIInterviewerAvatar({
   // Remember the render the backend started for this question (declared before the speak
   // effect below so the job id is known by the time that effect runs in the same render)
   useEffect(() => {
-    if (avatarJobId && currentTextToSpeak) jobIdsRef.current.set(currentTextToSpeak, avatarJobId);
-  }, [avatarJobId, currentTextToSpeak]);
+    if (avatarJobIds.length && currentTextToSpeak) jobIdsRef.current.set(currentTextToSpeak, avatarJobIds);
+  }, [avatarJobIds, currentTextToSpeak]);
 
   // Speak whenever the studio requests it (new question)
   useEffect(() => {
@@ -420,7 +493,7 @@ export default function AIInterviewerAvatar({
   // Mute only silences the live stream's audio; the avatar keeps its natural idle motion.
   // The local idle loop is always silent; only spoken clips follow the mute toggle.
   useEffect(() => {
-    const video = videoRef.current;
+    const video = mode === "local" ? players()[activeIdxRef.current] : videoRef.current;
     if (!video) return;
     video.muted = mode === "local" && video.loop ? true : isMuted;
   }, [isMuted, mode]);
@@ -483,6 +556,14 @@ export default function AIInterviewerAvatar({
             showsVideo ? "opacity-100" : "opacity-0"
           }`}
         />
+        {/* Second local-avatar player: the next sentence clip loads here, then the two swap */}
+        <video
+          ref={video2Ref}
+          playsInline
+          preload="auto"
+          className={`absolute inset-0 h-full w-full object-contain ${mode === "local" ? "" : "hidden"}`}
+          style={{ opacity: 0 }}
+        />
 
         {!showsVideo && (
           <Image
@@ -528,7 +609,8 @@ export default function AIInterviewerAvatar({
           <button
             onClick={() => {
               setNeedsClickToPlay(false);
-              videoRef.current?.play().catch(() => setNeedsClickToPlay(true));
+              // Replays the current speech now that the user has clicked (autoplay was blocked)
+              speakLocal(currentTextToSpeak);
             }}
             className="hard-shadow absolute z-10 flex items-center gap-2 bg-lime px-4 py-2 font-condensed text-sm font-bold uppercase tracking-wider text-ink"
           >

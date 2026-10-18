@@ -47,6 +47,13 @@ export interface LearningResponse {
   context_compression_applied?: boolean;
 }
 
+/** A curriculum document the learning assistant can ground answers in */
+export interface LearningTopic {
+  title: string;
+  topic: string;
+  target_role: string;
+}
+
 export interface BenchmarkResponse {
   question: string;
   baseline_answer: string;
@@ -127,8 +134,8 @@ export interface InterviewQuestionResponse {
   question: string;
   rubric_criteria: string[];
   context_or_reason?: string;
-  /** Local avatar render already started for this question (see getAvatarJob) */
-  avatar_job_id?: string | null;
+  /** Local-avatar sentence clips already rendering for this question, in playback order */
+  avatar_job_ids?: string[];
 }
 
 export interface EvaluationResponse {
@@ -148,6 +155,10 @@ export interface EvaluationResponse {
   eye_contact_ratio?: number;
   pacing_assessment?: string;
   overall_score?: number;
+  /** What the interviewer says out loud after the answer */
+  spoken_feedback?: string | null;
+  /** Local-avatar sentence clips of spoken_feedback, already rendering, in playback order */
+  avatar_job_ids?: string[];
 }
 
 export interface UpstreamProfilePayload {
@@ -188,7 +199,7 @@ export interface AvatarConfig {
 
 export interface AvatarJob {
   job_id: string;
-  status: "queued" | "running" | "done" | "error";
+  status: "queued" | "running" | "done" | "error" | "cancelled";
   message?: string | null;
   queued_ahead?: number | null;
   video_url?: string | null;
@@ -196,11 +207,63 @@ export interface AvatarJob {
   error?: string | null;
 }
 
-/** Context from the previous turn so the interviewer can acknowledge it and follow up */
+/** Context from the previous turn (follow-ups) and the candidate's CV (tailoring) */
 export interface PreviousTurnContext {
   previous_question?: string;
   previous_answer?: string;
   previous_missing_concepts?: string[];
+  candidate_background?: string;
+}
+
+export interface RoleInfo {
+  role: string;
+  questions: number;
+  levels: Record<string, number>;
+}
+
+export interface CVProfile {
+  name: string;
+  skills: string[];
+  suggested_role: string;
+  experience_level: string;
+  summary: string;
+  method: "llm" | "keyword";
+  characters_read: number;
+}
+
+/** Observable delivery cues measured in the browser (camera + mic); no emotions are inferred */
+export interface DeliveryTelemetry {
+  speaking_duration_seconds?: number;
+  words_per_minute?: number;
+  filler_words_count?: number;
+  pause_ratio?: number;
+  eye_contact_ratio?: number;
+  face_visible_ratio?: number;
+  smile_ratio?: number;
+  brow_tension_ratio?: number;
+  blink_rate_per_min?: number;
+  head_steadiness?: number;
+}
+
+export interface InterviewReport {
+  session_id: string;
+  questions_asked: number;
+  turns_completed: number;
+  overall_scores: { technical_accuracy: number; relevance: number; explanation_quality: number; clarity: number };
+  turns: {
+    turn_id: string;
+    question: string;
+    topic: string;
+    transcript: string | null;
+    evaluated: boolean;
+    technical_accuracy: number | null;
+    relevance: number | null;
+    explanation_quality: number | null;
+    clarity: number | null;
+    strengths: string[];
+    missing_concepts: string[];
+    areas_for_improvement: string[];
+  }[];
 }
 
 /** Prefer the backend's own explanation (FastAPI `detail`) over the bare status text */
@@ -225,7 +288,15 @@ export const ragApi = {
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
-      throw new Error(`Learning API error: ${res.statusText}`);
+      throw await apiError(res, "Learning assistant error");
+    }
+    return res.json();
+  },
+
+  async getLearningTopics(targetRole: string): Promise<LearningTopic[]> {
+    const res = await fetch(`${API_BASE}/api/v1/learning/topics?target_role=${encodeURIComponent(targetRole)}`);
+    if (!res.ok) {
+      throw await apiError(res, "Learning topics error");
     }
     return res.json();
   },
@@ -355,13 +426,44 @@ export const ragApi = {
 
   async transcribeAudio(file: Blob): Promise<{ transcript: string; domain_terms_detected?: string[] }> {
     const formData = new FormData();
-    formData.append("file", file, "answer.webm");
+    // Safari records MP4/AAC, Chrome and Firefox WebM/Opus; name the file after what was recorded
+    const ext = file.type.includes("mp4") ? "m4a" : file.type.includes("ogg") ? "ogg" : "webm";
+    formData.append("file", file, `answer.${ext}`);
     const res = await fetch(`${API_BASE}/api/v1/interview/transcribe`, {
       method: "POST",
       body: formData,
     });
     if (!res.ok) {
       throw await apiError(res, "Audio transcription error");
+    }
+    return res.json();
+  },
+
+  /** Job roles covered by the interview question bank (for the role dropdown) */
+  async getInterviewRoles(): Promise<RoleInfo[]> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/roles`);
+    if (!res.ok) {
+      throw await apiError(res, "Roles error");
+    }
+    return res.json();
+  },
+
+  /** Reads a CV (PDF, DOCX, TXT) on the server, in memory, and returns an interview profile */
+  async analyzeCV(file: File): Promise<CVProfile> {
+    const formData = new FormData();
+    formData.append("file", file, file.name);
+    const res = await fetch(`${API_BASE}/api/v1/interview/cv/analyze`, { method: "POST", body: formData });
+    if (!res.ok) {
+      throw await apiError(res, "CV analysis error");
+    }
+    return res.json();
+  },
+
+  /** Marks the interview completed and returns its report */
+  async endInterview(sessionId: string): Promise<InterviewReport> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/${encodeURIComponent(sessionId)}/end`, { method: "POST" });
+    if (!res.ok) {
+      throw await apiError(res, "End interview error");
     }
     return res.json();
   },
@@ -374,7 +476,7 @@ export const ragApi = {
     return res.json();
   },
 
-  async renderAvatarClip(text: string): Promise<AvatarJob> {
+  async renderAvatarClip(text: string): Promise<{ job_ids: string[] }> {
     const res = await fetch(`${API_BASE}/api/v1/interview/avatar/render`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -384,6 +486,16 @@ export const ragApi = {
       throw await apiError(res, "Avatar render error");
     }
     return res.json();
+  },
+
+  /** Drops clips that haven't started rendering (the candidate moved on) */
+  async cancelAvatarClips(jobIds: string[]): Promise<void> {
+    if (!jobIds.length) return;
+    await fetch(`${API_BASE}/api/v1/interview/avatar/cancel`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ job_ids: jobIds }),
+    });
   },
 
   async getAvatarJob(jobId: string): Promise<AvatarJob> {
@@ -408,12 +520,7 @@ export const ragApi = {
     turnId: string,
     transcript: string,
     studentId: string,
-    telemetry?: {
-      speaking_duration_seconds?: number;
-      eye_contact_ratio?: number;
-      words_per_minute?: number;
-      filler_words_count?: number;
-    }
+    telemetry?: DeliveryTelemetry
   ): Promise<EvaluationResponse> {
     const res = await fetch(`${API_BASE}/api/v1/interview/evaluate`, {
       method: "POST",

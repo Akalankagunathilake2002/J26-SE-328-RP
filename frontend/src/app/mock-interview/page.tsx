@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { Navbar } from "@/components/home/Navbar";
 import { Footer } from "@/components/home/Footer";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import MockInterviewClient from "@/components/mock-interview/MockInterviewClient";
 
 export const metadata: Metadata = {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MockInterviewPage() {
-  const user = await getCurrentUser();
+  const user = await requireUser("/mock-interview");
 
   return (
     <div className="flex min-h-screen flex-col bg-page">

@@ -1,29 +1,39 @@
 "use client";
 
 import React, { useState } from "react";
-import { Mic, BookOpen, Activity, Sparkles, ChevronRight } from "lucide-react";
+import { Mic, BookOpen, Activity } from "lucide-react";
 import StudentContextBanner from "./StudentContextBanner";
 import InterviewStudio from "./InterviewStudio";
+import InterviewSetup, { type InterviewProfile } from "./InterviewSetup";
 import PersonalizedLearningView from "./PersonalizedLearningView";
 import VivaInspectorView from "./VivaInspectorView";
 import type { User } from "@/lib/auth";
 
 interface MockInterviewClientProps {
-  user?: User | null;
+  /** The logged-in user (the page requires a session) */
+  user: User;
 }
 
 export default function MockInterviewClient({ user }: MockInterviewClientProps) {
   const [activeTab, setActiveTab] = useState<"interview" | "learning" | "inspector">("interview");
+  // Set by the interview setup (CV + role + level); null shows the setup screen
+  const [profile, setProfile] = useState<InterviewProfile | null>(null);
+  const [interviewKey, setInterviewKey] = useState(0);
 
-  const studentName = user?.full_name || "Dilmith";
-  const studentId = user?.id ? `stu_${user.id.slice(0, 6)}` : "stu_1024";
-  const targetRole = "Backend Developer";
-  const studentSkills = ["Java", "Spring Boot", "MySQL"];
+  // Sessions, answers and learning history are stored against the account id
+  const studentId = user.id;
+  const studentName = user.full_name || user.email;
+  const targetRole = profile?.role || "";
+  const studentSkills = profile?.skills ?? [];
   const learningPriority = "Database Connection Management & Scalability";
+
+  const tabClass = (active: boolean, color: string) =>
+    `flex items-center gap-2 px-5 py-3 font-condensed text-base font-bold uppercase tracking-wider transition-transform hover:-translate-y-0.5 ${
+      active ? `hard-shadow ${color} text-ink` : "border-2 border-ink bg-white text-muted hover:text-ink shadow-[2px_2px_0_var(--color-ink)]"
+    }`;
 
   return (
     <div className="mx-auto max-w-[1440px] space-y-6">
-      {/* Top Banner with Student Context */}
       <StudentContextBanner
         studentId={studentId}
         studentName={studentName}
@@ -32,55 +42,33 @@ export default function MockInterviewClient({ user }: MockInterviewClientProps) 
         learningPriority={learningPriority}
       />
 
-      {/* Tab Navigation Navigation Bar in Skillaro Neo-Brutalist Style */}
       <div className="flex flex-wrap items-center gap-2 border-b-2 border-ink pb-4">
-        <button
-          onClick={() => setActiveTab("interview")}
-          className={`flex items-center gap-2 px-5 py-3 font-condensed text-base font-bold uppercase tracking-wider transition-transform hover:-translate-y-0.5 ${
-            activeTab === "interview"
-              ? "hard-shadow bg-lime text-ink"
-              : "border-2 border-ink bg-white text-muted hover:text-ink shadow-[2px_2px_0_var(--color-ink)]"
-          }`}
-        >
-          <Mic className="size-4" />
-          AI Mock Interview Studio
+        <button onClick={() => setActiveTab("interview")} className={tabClass(activeTab === "interview", "bg-lime")}>
+          <Mic className="size-4" /> AI Mock Interview Studio
         </button>
-
-        <button
-          onClick={() => setActiveTab("learning")}
-          className={`flex items-center gap-2 px-5 py-3 font-condensed text-base font-bold uppercase tracking-wider transition-transform hover:-translate-y-0.5 ${
-            activeTab === "learning"
-              ? "hard-shadow bg-butter text-ink"
-              : "border-2 border-ink bg-white text-muted hover:text-ink shadow-[2px_2px_0_var(--color-ink)]"
-          }`}
-        >
-          <BookOpen className="size-4" />
-          Personalized Learning Assistant
+        <button onClick={() => setActiveTab("learning")} className={tabClass(activeTab === "learning", "bg-butter")}>
+          <BookOpen className="size-4" /> Personalized Learning Assistant
         </button>
-
-        <button
-          onClick={() => setActiveTab("inspector")}
-          className={`flex items-center gap-2 px-5 py-3 font-condensed text-base font-bold uppercase tracking-wider transition-transform hover:-translate-y-0.5 ${
-            activeTab === "inspector"
-              ? "hard-shadow bg-cyan text-ink"
-              : "border-2 border-ink bg-white text-muted hover:text-ink shadow-[2px_2px_0_var(--color-ink)]"
-          }`}
-        >
-          <Activity className="size-4" />
-          50% Viva RAG Inspector
+        <button onClick={() => setActiveTab("inspector")} className={tabClass(activeTab === "inspector", "bg-cyan")}>
+          <Activity className="size-4" /> 50% Viva RAG Inspector
         </button>
       </div>
 
-      {/* Active Tab View */}
       <div>
-        {activeTab === "interview" && (
-          <InterviewStudio
-            studentId={studentId}
-            studentName={studentName}
-            targetRole={targetRole}
-            skills={studentSkills}
-          />
-        )}
+        {activeTab === "interview" &&
+          (profile ? (
+            <InterviewStudio
+              key={interviewKey}
+              studentId={studentId}
+              profile={profile}
+              onExit={() => {
+                setProfile(null);
+                setInterviewKey((k) => k + 1);
+              }}
+            />
+          ) : (
+            <InterviewSetup candidateName={studentName} onStart={setProfile} />
+          ))}
 
         {activeTab === "learning" && (
           <PersonalizedLearningView
@@ -91,7 +79,7 @@ export default function MockInterviewClient({ user }: MockInterviewClientProps) 
           />
         )}
 
-        {activeTab === "inspector" && <VivaInspectorView targetRole={targetRole} />}
+        {activeTab === "inspector" && <VivaInspectorView studentId={studentId} targetRole={targetRole} />}
       </div>
     </div>
   );

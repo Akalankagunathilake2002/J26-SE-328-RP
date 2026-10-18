@@ -5,7 +5,7 @@ import { User, Target, Layers, Compass, Sparkles } from "lucide-react";
 
 interface StudentContextBannerProps {
   studentId: string;
-  studentName?: string;
+  studentName: string;
   targetRole: string;
   skills: string[];
   learningPriority: string;
@@ -13,7 +13,7 @@ interface StudentContextBannerProps {
 
 export default function StudentContextBanner({
   studentId,
-  studentName = "Dilmith",
+  studentName,
   targetRole,
   skills,
   learningPriority,
@@ -32,15 +32,17 @@ export default function StudentContextBanner({
                 {studentName}
               </span>
               <span className="border border-ink bg-lime px-2 py-0.5 text-[11px] font-bold font-mono text-ink">
-                {studentId}
+                #{studentId.slice(0, 8)}
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-xs font-semibold text-muted mt-0.5">
               <Target className="size-3.5 text-brand-blue" />
               <span>Target Role:</span>
-              <span className="text-ink font-bold underline decoration-brand-blue decoration-2">
-                {targetRole}
-              </span>
+              {targetRole ? (
+                <span className="text-ink font-bold underline decoration-brand-blue decoration-2">{targetRole}</span>
+              ) : (
+                <span className="italic">choose one in the interview setup</span>
+              )}
             </div>
           </div>
         </div>
@@ -51,6 +53,9 @@ export default function StudentContextBanner({
             <Layers className="size-3.5 text-folder" />
             <span>Profile Skills:</span>
           </div>
+          {skills.length === 0 && (
+            <span className="text-xs font-semibold italic text-muted">Upload your CV to add skills</span>
+          )}
           {skills.map((skill) => (
             <span
               key={skill}

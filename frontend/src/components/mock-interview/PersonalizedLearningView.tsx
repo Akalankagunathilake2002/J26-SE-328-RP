@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { BookOpen, Send, Sparkles, RefreshCw, Bookmark, ArrowRight, Clock, FileCheck } from "lucide-react";
-import { ragApi, LearningResponse } from "@/lib/ragApi";
+import React, { useEffect, useMemo, useState } from "react";
+import { Send, Sparkles, RefreshCw, Bookmark, ArrowRight, Clock, AlertTriangle } from "lucide-react";
+import { ragApi, LearningResponse, LearningTopic } from "@/lib/ragApi";
 
 interface PersonalizedLearningViewProps {
   studentId: string;
@@ -10,6 +10,8 @@ interface PersonalizedLearningViewProps {
   skills: string[];
   learningPriority: string;
 }
+
+const MAX_SUGGESTIONS = 4;
 
 export default function PersonalizedLearningView({
   studentId,
@@ -20,17 +22,42 @@ export default function PersonalizedLearningView({
   const [question, setQuestion] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<LearningResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [topics, setTopics] = useState<LearningTopic[]>([]);
 
-  const sampleQuestions = [
-    "How does HikariCP handle connection leaks and pool starvation under spike traffic?",
-    "Explain the difference between JWT stateless tokens and session-based authentication in Spring Boot.",
-    "What are best practices for MySQL composite indexing when querying large backend tables?",
-  ];
+  const roleLabel = targetRole || "software engineer";
+
+  // Curriculum documents for the chosen role, so every suggestion has material behind it
+  useEffect(() => {
+    let cancelled = false;
+    ragApi
+      .getLearningTopics(targetRole)
+      .then((t) => !cancelled && setTopics(t))
+      .catch(() => !cancelled && setTopics([]));
+    return () => {
+      cancelled = true;
+    };
+  }, [targetRole]);
+
+  // Documents that mention one of the candidate's skills come first, one per topic so the
+  // suggestions span the curriculum rather than one section of it
+  const sampleQuestions = useMemo(() => {
+    const lowered = skills.map((s) => s.toLowerCase());
+    const matchesSkill = (t: LearningTopic) =>
+      lowered.some((s) => `${t.title} ${t.topic}`.toLowerCase().includes(s));
+    const seenTopics = new Set<string>();
+    return [...topics]
+      .sort((a, b) => Number(matchesSkill(b)) - Number(matchesSkill(a)))
+      .filter((t) => !seenTopics.has(t.topic) && seenTopics.add(t.topic))
+      .slice(0, MAX_SUGGESTIONS)
+      .map((t) => `What should a ${roleLabel} know about ${t.title}?`);
+  }, [topics, skills, roleLabel]);
 
   const handleAsk = async (queryText?: string) => {
     const q = (queryText || question).trim();
     if (!q) return;
     setLoading(true);
+    setError(null);
 
     try {
       const res = await ragApi.askLearning({
@@ -41,40 +68,9 @@ export default function PersonalizedLearningView({
         question: q,
       });
       setResult(res);
-    } catch {
-      // Fallback response if gateway is starting up
-      const mockRes: LearningResponse = {
-        answer:
-          "In high-concurrency Spring Boot microservices, connection pooling via HikariCP optimizes database connectivity by retaining a pool of pre-authenticated TCP connections. To mitigate starvation under spike traffic:\n\n1. Set `maximumPoolSize` based on core count and IOPS rather than blindly increasing it, which creates thread thrashing.\n2. Configure `connectionTimeout` to 20–30 seconds so blocked requests fail fast instead of piling up indefinitely.\n3. Utilize `leakDetectionThreshold` (e.g., 2000ms) to alert engineers if queries fail to return connections promptly to the pool.",
-        recommended_next_topic: "Spring Boot Transaction Management & Propagation Levels (@Transactional)",
-        sources: [
-          {
-            title: "HikariCP High-Performance Connection Pool Architecture & Tuning Guide",
-            source: "backend/hikaricp_performance_guide.md",
-            topic: "Database Connection Management",
-          },
-          {
-            title: "High Performance Java Persistence & Connection Lifecycle",
-            source: "backend/java_persistence_tuning.md",
-            topic: "Database Management",
-          },
-        ],
-        retrieved_chunks: [
-          {
-            chunk_id: "chunk_014",
-            content_preview:
-              "HikariCP uses fast-path lock-free bytecode generation and thread-local caching to minimize latency in connection allocation...",
-            similarity_score: 0.892,
-            source: "backend/hikaricp_performance_guide.md",
-            topic: "Database Management",
-          },
-        ],
-        retrieval_latency_ms: 124,
-        generation_latency_ms: 640,
-        total_latency_ms: 764,
-        retrieval_strategy: "Hybrid RRF (Dense Vector + BM25)",
-      };
-      setResult(mockRes);
+    } catch (e) {
+      setResult(null);
+      setError(e instanceof Error ? e.message : "The learning assistant didn't respond.");
     } finally {
       setLoading(false);
     }
@@ -111,7 +107,7 @@ export default function PersonalizedLearningView({
               rows={3}
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              placeholder="e.g. How does HikariCP connection pooling prevent resource exhaustion in Spring Boot?"
+              placeholder={`Ask anything about ${roleLabel} topics, e.g. how connection pooling works`}
               className="flex-1 border-2 border-ink bg-cream p-3 text-sm font-medium text-ink shadow-[2px_2px_0_var(--color-ink)] focus:outline-none focus:bg-white"
             />
             <button
@@ -125,27 +121,42 @@ export default function PersonalizedLearningView({
           </div>
         </div>
 
-        {/* Quick sample questions */}
-        <div className="pt-2">
-          <span className="text-xs font-bold uppercase text-muted block mb-2">
-            Quick Recommended Questions:
-          </span>
-          <div className="flex flex-wrap gap-2">
-            {sampleQuestions.map((sq, idx) => (
-              <button
-                key={idx}
-                onClick={() => {
-                  setQuestion(sq);
-                  handleAsk(sq);
-                }}
-                className="border border-ink bg-sand px-3 py-1.5 text-xs font-medium text-ink shadow-[2px_2px_0_var(--color-ink)] text-left hover:bg-butter transition-colors"
-              >
-                💡 {sq}
-              </button>
-            ))}
+        {/* Suggested questions from the curriculum for this role */}
+        {sampleQuestions.length > 0 && (
+          <div className="pt-2">
+            <span className="text-xs font-bold uppercase text-muted block mb-2">
+              Suggested for {roleLabel}:
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {sampleQuestions.map((sq, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setQuestion(sq);
+                    handleAsk(sq);
+                  }}
+                  className="border border-ink bg-sand px-3 py-1.5 text-xs font-medium text-ink shadow-[2px_2px_0_var(--color-ink)] text-left hover:bg-butter transition-colors"
+                >
+                  💡 {sq}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {error && (
+        <div className="flex items-start gap-3 border-2 border-ink bg-peach p-4 text-sm text-ink shadow-[3px_3px_0_var(--color-ink)]">
+          <AlertTriangle className="mt-0.5 size-4 shrink-0" />
+          <div>
+            <p className="font-bold">The learning assistant couldn&apos;t answer.</p>
+            <p className="mt-0.5 text-muted">{error}</p>
+            <p className="mt-1 text-xs text-muted">
+              Check that the learning service and the local LLM (Huggingbay/start-llm.sh) are running, then try again.
+            </p>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Response card */}
       {result && (
@@ -185,7 +196,7 @@ export default function PersonalizedLearningView({
               </div>
               <button
                 onClick={() => {
-                  const nextQ = `Explain ${result.recommended_next_topic} in depth with backend engineering examples.`;
+                  const nextQ = `Explain ${result.recommended_next_topic} in depth with examples for a ${roleLabel}.`;
                   setQuestion(nextQ);
                   handleAsk(nextQ);
                 }}

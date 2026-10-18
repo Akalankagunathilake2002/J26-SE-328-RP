@@ -44,3 +44,6 @@ next-env.d.ts
 # AI coding-assistant notes that `next dev` creates; kept local, not pushed
 /AGENTS.md
 /CLAUDE.md
+
+# MediaPipe runtime + model, fetched by scripts/setup-mediapipe.mjs
+/public/mediapipe/
