@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from enum import Enum
 from typing import TYPE_CHECKING
 
 from sqlalchemy import (
@@ -26,18 +27,33 @@ if TYPE_CHECKING:
     )
 
 
+class AnalysisStatus(str, Enum):
+    PENDING = "PENDING"
+    RUNNING = "RUNNING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+
+
 class Analysis(Base):
     __tablename__ = "analyses"
 
     analysis_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
     user_skill_profile_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("user_skill_profiles.id"), nullable=False, index=True
+        UUID(as_uuid=True),
+        ForeignKey("user_skill_profiles.id"),
+        nullable=False,
+        index=True,
     )
     industry_profile_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), ForeignKey("industry_profiles.id"), nullable=False, index=True
+        UUID(as_uuid=True),
+        ForeignKey("industry_profiles.id"),
+        nullable=False,
+        index=True,
     )
     snapshot_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -45,14 +61,18 @@ class Analysis(Base):
         nullable=False,
         index=True,
     )
-    matching_method: Mapped[str] = mapped_column(String(50), default="RELATIONSHIP_AWARE")
+    matching_method: Mapped[str] = mapped_column(
+        String(50), default="RELATIONSHIP_AWARE"
+    )
     scoring_config_version: Mapped[str] = mapped_column(String(50), default="1.0")
     readiness_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     status: Mapped[str] = mapped_column(String(30), default="PENDING", index=True)
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     user_skill_profile: Mapped["UserSkillProfile"] = relationship("UserSkillProfile")
@@ -76,7 +96,9 @@ class Analysis(Base):
 class AnalysisSkillResult(Base):
     __tablename__ = "analysis_skill_results"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     analysis_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("analyses.analysis_id", ondelete="CASCADE"),
@@ -118,7 +140,9 @@ class AnalysisSkillResult(Base):
 class AnalysisPrioritySkill(Base):
     __tablename__ = "analysis_priority_skills"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     analysis_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("analyses.analysis_id", ondelete="CASCADE"),
@@ -139,7 +163,9 @@ class AnalysisPrioritySkill(Base):
 class AnalysisReport(Base):
     __tablename__ = "analysis_reports"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     analysis_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("analyses.analysis_id", ondelete="CASCADE"),
@@ -160,7 +186,9 @@ class AnalysisReport(Base):
 class CandidateDiscoveryRun(Base):
     __tablename__ = "candidate_discovery_runs"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     analysis_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("analyses.analysis_id", ondelete="CASCADE"),
@@ -174,6 +202,10 @@ class CandidateDiscoveryRun(Base):
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
-    analysis: Mapped["Analysis"] = relationship(back_populates="candidate_discovery_runs")
+    analysis: Mapped["Analysis"] = relationship(
+        back_populates="candidate_discovery_runs"
+    )

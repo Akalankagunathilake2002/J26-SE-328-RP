@@ -26,11 +26,17 @@ class KnowledgeSnapshot(Base):
     snapshot_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
     )
-    version: Mapped[str] = mapped_column(String(50), nullable=False, unique=True, index=True)
+    version: Mapped[str] = mapped_column(
+        String(50), nullable=False, unique=True, index=True
+    )
     ssks_snapshot_id: Mapped[str | None] = mapped_column(String(100), nullable=True)
     consumer: Mapped[str] = mapped_column(String(50), default="ReadinessEngine")
-    generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
-    imported_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    generated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False
+    )
+    imported_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     status: Mapped[str] = mapped_column(String(20), default="ACTIVE")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     skill_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -84,7 +90,9 @@ class CachedAlias(Base):
     alias_id: Mapped[str] = mapped_column(String(50), primary_key=True)
     skill_id: Mapped[str] = mapped_column(String(50), nullable=False)
     alias_text: Mapped[str] = mapped_column(String(255), nullable=False)
-    normalized_alias: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
+    normalized_alias: Mapped[str] = mapped_column(
+        String(255), nullable=False, index=True
+    )
 
     # Scoped composite foreign key to guarantee alias resolves to skill in the same snapshot
     __table_args__ = (
@@ -100,8 +108,12 @@ class CachedAlias(Base):
         ),
     )
 
-    snapshot: Mapped["KnowledgeSnapshot"] = relationship(back_populates="aliases", overlaps="aliases")
-    skill: Mapped["CachedSkill"] = relationship(back_populates="aliases", overlaps="aliases,snapshot")
+    snapshot: Mapped["KnowledgeSnapshot"] = relationship(
+        back_populates="aliases", overlaps="aliases"
+    )
+    skill: Mapped["CachedSkill"] = relationship(
+        back_populates="aliases", overlaps="aliases,snapshot"
+    )
 
 
 class CachedRelationship(Base):
@@ -168,5 +180,9 @@ class CachedSkillEmbedding(Base):
         ),
     )
 
-    snapshot: Mapped["KnowledgeSnapshot"] = relationship(back_populates="embeddings", overlaps="embeddings")
-    skill: Mapped["CachedSkill"] = relationship(back_populates="embeddings", overlaps="embeddings,snapshot")
+    snapshot: Mapped["KnowledgeSnapshot"] = relationship(
+        back_populates="embeddings", overlaps="embeddings"
+    )
+    skill: Mapped["CachedSkill"] = relationship(
+        back_populates="embeddings", overlaps="embeddings,snapshot"
+    )

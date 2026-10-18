@@ -37,7 +37,11 @@ def test_user_skill_profile_schema_fields():
     assert "profile_version" in usp_table.columns
     assert "student_id" not in usp_table.columns
     # Uniqueness constraint on (user_id, profile_version)
-    uq_names = [uc.name for uc in usp_table.constraints if uc.__class__.__name__ == "UniqueConstraint"]
+    uq_names = [
+        uc.name
+        for uc in usp_table.constraints
+        if uc.__class__.__name__ == "UniqueConstraint"
+    ]
     assert "uq_user_skill_profile_version" in uq_names
 
     # 2. user_skill_profile_skills table and foreign key
@@ -45,8 +49,7 @@ def test_user_skill_profile_schema_fields():
     assert "user_skill_profile_id" in usps_table.columns
     assert "student_profile_id" not in usps_table.columns
     assert any(
-        fk.target_fullname == "user_skill_profiles.id"
-        for fk in usps_table.foreign_keys
+        fk.target_fullname == "user_skill_profiles.id" for fk in usps_table.foreign_keys
     )
 
     # 3. skill_evidence foreign key

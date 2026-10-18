@@ -24,9 +24,13 @@ from app.db.base import Base
 class UserSkillProfile(Base):
     __tablename__ = "user_skill_profiles"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     # User ID from C02 / shared auth system; not an FK because auth_db is a separate PostgreSQL database
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False, index=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), nullable=False, index=True
+    )
     profile_version: Mapped[str] = mapped_column(String(100), nullable=False)
     domain_id: Mapped[str | None] = mapped_column(String(50), nullable=True)
     domain_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -38,7 +42,9 @@ class UserSkillProfile(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint("user_id", "profile_version", name="uq_user_skill_profile_version"),
+        UniqueConstraint(
+            "user_id", "profile_version", name="uq_user_skill_profile_version"
+        ),
     )
 
     skills: Mapped[list["UserSkillProfileSkill"]] = relationship(
@@ -49,7 +55,9 @@ class UserSkillProfile(Base):
 class UserSkillProfileSkill(Base):
     __tablename__ = "user_skill_profile_skills"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     user_skill_profile_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("user_skill_profiles.id", ondelete="CASCADE"),
@@ -69,10 +77,14 @@ class UserSkillProfileSkill(Base):
     verification_status: Mapped[str] = mapped_column(String(50), default="UNVERIFIED")
 
     __table_args__ = (
-        Index("ix_user_skill_profile_skill_lookup", "user_skill_profile_id", "skill_id"),
+        Index(
+            "ix_user_skill_profile_skill_lookup", "user_skill_profile_id", "skill_id"
+        ),
     )
 
-    user_skill_profile: Mapped["UserSkillProfile"] = relationship(back_populates="skills")
+    user_skill_profile: Mapped["UserSkillProfile"] = relationship(
+        back_populates="skills"
+    )
     evidence: Mapped[list["SkillEvidence"]] = relationship(
         back_populates="profile_skill", cascade="all, delete-orphan"
     )
@@ -81,7 +93,9 @@ class UserSkillProfileSkill(Base):
 class SkillEvidence(Base):
     __tablename__ = "skill_evidence"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     user_skill_profile_skill_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("user_skill_profile_skills.id", ondelete="CASCADE"),
@@ -96,15 +110,21 @@ class SkillEvidence(Base):
     strength: Mapped[float] = mapped_column(Float, nullable=False)
     verified: Mapped[bool] = mapped_column(Boolean, default=False)
 
-    profile_skill: Mapped["UserSkillProfileSkill"] = relationship(back_populates="evidence")
+    profile_skill: Mapped["UserSkillProfileSkill"] = relationship(
+        back_populates="evidence"
+    )
 
 
 class IndustryProfile(Base):
     __tablename__ = "industry_profiles"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     role_id: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
-    candidate_role_id: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
+    candidate_role_id: Mapped[str | None] = mapped_column(
+        String(50), nullable=True, index=True
+    )
     role_name: Mapped[str | None] = mapped_column(String(255), nullable=True)
     primary_observed_title: Mapped[str] = mapped_column(String(255), nullable=False)
     observed_titles: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
@@ -149,7 +169,9 @@ class IndustryProfile(Base):
 class IndustryProfileRequirement(Base):
     __tablename__ = "industry_profile_requirements"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     industry_profile_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("industry_profiles.id", ondelete="CASCADE"),
@@ -164,7 +186,9 @@ class IndustryProfileRequirement(Base):
     mapping_status: Mapped[str] = mapped_column(String(50), nullable=False)
     skill_type: Mapped[str] = mapped_column(String(100), nullable=False)
     required_proficiency_level: Mapped[str] = mapped_column(String(50), nullable=False)
-    required_proficiency_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    required_proficiency_score: Mapped[float | None] = mapped_column(
+        Float, nullable=True
+    )
     demand_weight: Mapped[float] = mapped_column(Float, nullable=False)
     demand_frequency: Mapped[float | None] = mapped_column(Float, nullable=True)
     job_ads_containing_skill: Mapped[int | None] = mapped_column(Integer, nullable=True)
@@ -176,7 +200,9 @@ class IndustryProfileRequirement(Base):
         Index("ix_industry_req_lookup", "industry_profile_id", "skill_id"),
     )
 
-    industry_profile: Mapped["IndustryProfile"] = relationship(back_populates="requirements")
+    industry_profile: Mapped["IndustryProfile"] = relationship(
+        back_populates="requirements"
+    )
     sample_evidence: Mapped[list["IndustrySkillEvidence"]] = relationship(
         back_populates="requirement", cascade="all, delete-orphan"
     )
@@ -185,7 +211,9 @@ class IndustryProfileRequirement(Base):
 class IndustrySkillEvidence(Base):
     __tablename__ = "industry_skill_evidence"
 
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     requirement_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("industry_profile_requirements.id", ondelete="CASCADE"),

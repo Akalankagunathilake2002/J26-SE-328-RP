@@ -121,9 +121,11 @@ async def generate_skill_embeddings(
             snapshot = (await session.execute(snap_stmt)).scalar_one_or_none()
 
             if not snapshot:
-                fallback_stmt = select(KnowledgeSnapshot).order_by(
-                    KnowledgeSnapshot.imported_at.desc()
-                ).limit(1)
+                fallback_stmt = (
+                    select(KnowledgeSnapshot)
+                    .order_by(KnowledgeSnapshot.imported_at.desc())
+                    .limit(1)
+                )
                 snapshot = (await session.execute(fallback_stmt)).scalar_one_or_none()
 
             if not snapshot:
@@ -216,23 +218,31 @@ async def generate_skill_embeddings(
                             continue
 
                         # Upsert embedding row idempotently
-                        stmt = pg_insert(CachedSkillEmbedding).values(
-                            snapshot_id=snapshot.snapshot_id,
-                            skill_id=skill.skill_id,
-                            embedding_model=model_id,
-                            embedding_dimension=expected_dim,
-                            embedding_text_hash=text_hash,
-                            embedding_text=text,
-                            embedding=clean_vec,
-                        ).on_conflict_do_update(
-                            index_elements=["snapshot_id", "skill_id", "embedding_model"],
-                            set_={
-                                "embedding_dimension": expected_dim,
-                                "embedding_text_hash": text_hash,
-                                "embedding_text": text,
-                                "embedding": clean_vec,
-                                "generated_at": func.now(),
-                            },
+                        stmt = (
+                            pg_insert(CachedSkillEmbedding)
+                            .values(
+                                snapshot_id=snapshot.snapshot_id,
+                                skill_id=skill.skill_id,
+                                embedding_model=model_id,
+                                embedding_dimension=expected_dim,
+                                embedding_text_hash=text_hash,
+                                embedding_text=text,
+                                embedding=clean_vec,
+                            )
+                            .on_conflict_do_update(
+                                index_elements=[
+                                    "snapshot_id",
+                                    "skill_id",
+                                    "embedding_model",
+                                ],
+                                set_={
+                                    "embedding_dimension": expected_dim,
+                                    "embedding_text_hash": text_hash,
+                                    "embedding_text": text,
+                                    "embedding": clean_vec,
+                                    "generated_at": func.now(),
+                                },
+                            )
                         )
                         await session.execute(stmt)
                         summary["inserted_or_updated"] += 1
