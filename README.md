@@ -38,7 +38,7 @@ when development starts.
 
 | Component | Folder | What it does |
 |---|---|---|
-| C01 Industry Skill Extraction | planned: `services/c01-industry-skill-extraction/` | Extracts the skills industry roles require and produces an industry skill profile for each role, with each skill's importance and required proficiency. |
+| C01 Industry Skill Extraction | `services/job-market-intelligence-engine/` (steps 1–6 of 8 done; see its README) | Extracts the skills industry roles require and produces an industry skill profile for each role, with each skill's importance and required proficiency. |
 | C02 Student Skill Profile | planned: `services/c02-student-skill-profile/` | Builds an evidence-based profile of a student's skills: their proficiency, how confident the evidence is, and where the evidence came from. |
 | C03 Skill Gap Analysis and Career Readiness | planned: `services/c03-skill-gap-readiness/` | Compares an industry skill profile with a student skill profile, identifies skill gaps, measures career readiness and decides learning priorities. |
 | C04 Learning Skill Tree | planned: `services/c04-learning-skill-tree/` | Turns the learning priorities from C03 into a learning path for the student. |
@@ -92,6 +92,7 @@ Similarity between skill embeddings alone never does.
 ├── frontend/                            Next.js + TypeScript web application
 ├── services/                            One folder per backend microservice
 │   ├── auth-service/                    Working
+│   ├── job-market-intelligence-engine/  C01: working (steps 1–6 of 8)
 │   └── shared-skill-knowledge/          Plan only (README); C01–C04 are added here when built
 ├── shared/                              Contracts shared between services (schemas, message formats)
 ├── infrastructure/                      Docker Compose, API gateway (gateway/nginx.conf), database setup
@@ -155,4 +156,6 @@ exposes it to your local network).
 ## Status
 
 The project is at an early stage. The home page, login and registration work end to end with the
-Auth Service. C01–C04 and the Shared Skill Knowledge service are not implemented yet.
+Auth Service. C01 (`services/job-market-intelligence-engine/`) collects job ads from topjobs.lk and
+shows the skills each job role asks for on the Market Pulse page; see its README for what is done
+and what is left. C02–C04 and the Shared Skill Knowledge service are not implemented yet.

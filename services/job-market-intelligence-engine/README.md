@@ -3,9 +3,9 @@
 Collects job advertisements from Sri Lankan job sites, responsibly, and works out which skills
 each job role demands in four sectors: **IT / Software, HR, Management and Agriculture**.
 
-**Status:** steps 1–6 built: collection from topjobs.lk, data quality report, OCR of flyer ads,
-the skill profile per job role and the sync (active / expired / removed ads). The PostgreSQL
-loader and scheduling come next.
+**Status:** steps 1–6 of 8 done. Ads are collected from topjobs.lk, read with OCR, kept up to date
+by a sync, and turned into a skill demand profile per job role that the Market Pulse page shows.
+Next: the PostgreSQL loader and the scheduled daily sync. See [Progress](#progress).
 
 ## Sources
 
@@ -32,20 +32,22 @@ The site categories for each sector are in [`config/sector_mapping.yaml`](config
 ```text
 job-market-intelligence-engine/
 ├── app/
-│   ├── collectors/          collecting ads (scraper, storage, deduplication)
-│   └── processing/          analysis (OCR, job roles, skill demand)
+│   ├── collectors/          collecting ads (scraper, sync, storage, deduplication, quality report)
+│   ├── processing/          analysis (OCR, job roles, skill demand)
+│   └── main.py              the Market Pulse API
 ├── config/
 │   ├── sector_mapping.yaml  site categories → the four sectors
 │   ├── role_taxonomy.yaml   job titles → roles and seniority (editable)
 │   └── skills_lexicon.yaml  skills with their aliases (editable)
-├── scripts/                 scheduled refresh scripts
-├── tests/
+├── scripts/sync.sh          sync with a log file
+├── tests/                   134 tests on saved pages; no live requests
+├── Dockerfile
 └── pyproject.toml
 ```
 
 ## Setup
 
-Requires Python 3.11+.
+Requires Python 3.11+, and Tesseract for reading flyer images (`brew install tesseract`).
 
 ```bash
 cd services/job-market-intelligence-engine
@@ -76,16 +78,55 @@ Outputs in `data/processed/`: the cleaned ads (`topjobs.jsonl`, `combined.csv`),
 (`skill_profile.md`, and `skill_profile.json` for the Market Pulse page). Sync logs are in
 `data/logs/`.
 
-## Development plan
+## Market Pulse API
 
-One branch per step, merged into `main` before the next one starts
-(`Akalanka-Job-market-intelligence-engine/<step>`):
+The Market Pulse page gets its data from this service, through the API gateway:
 
-1. `project-setup` — folders, `pyproject.toml`, `.gitignore`, sector mapping
-2. `web-scrapping` — polite HTTP client, robots.txt, topjobs scraper, storage, deduplication, CLI
-3. `data-quality-report` — data quality report
-4. `ocr` — text from image flyers (Tesseract)
-5. `skill-profile` — job roles and the skills each role's ads ask for
-6. `scraper-sync` — active / expired / removed status and new-ad collection
-7. `postgres-loader` — load ads and skills into PostgreSQL
-8. `scheduled-sync` — daily sync on a schedule
+| Endpoint | Returns |
+|---|---|
+| `GET /jobs/health` | service status |
+| `GET /jobs/market-pulse` | skill demand per job role and sector, totals, and the job sites with their status |
+
+In Docker the service runs on port 8003 (`JOB_MARKET_INTELLIGENCE_PORT`) and is reached at
+http://localhost:8080/jobs/ (API docs at `/jobs/docs`). Docker Compose mounts only
+`data/processed/`, read-only: ads are collected on the host with the commands above, and a
+refresh of the page shows the new data.
+
+## Progress
+
+One branch per step (`Akalanka-Job-market-intelligence-engine/<step>`), merged into `main`
+before the next one starts.
+
+| # | Step | What it adds | Status |
+|--:|---|---|---|
+| 1 | `project-setup` | Folders, `pyproject.toml`, `.gitignore`, sector mapping | ✅ Done |
+| 2 | `web-scrapping` | Polite HTTP client, robots.txt, topjobs scraper, storage, deduplication, CLI | ✅ Done |
+| 3 | `data-quality-report` | Data quality report per sector | ✅ Done |
+| 4 | `ocr` | Text from flyer images (Tesseract), with personal data removed | ✅ Done |
+| 5 | `skill-profile` | Job roles, skills per role, the Market Pulse API and page | ✅ Done |
+| 6 | `scraper-sync` | Active / expired / removed ads, new ads only, sync log | ✅ Done |
+| 7 | `postgres-loader` | Load ads, statuses and skills into PostgreSQL; link each skill to the Shared Skill Knowledge service (`ssk_id`) | ⏳ Next |
+| 8 | `scheduled-sync` | Run the sync automatically every day | ⏳ To do |
+
+### Still to do
+
+- **First full sync:** `scripts/sync.sh` collects about 100 ads across the four sectors
+  (~15 minutes). Only 5 HR ads have been collected so far, so the Market Pulse percentages are
+  only indicative.
+- **Steps 7 and 8** in the table above.
+- **Dead skills on Market Pulse:** skills that ads ask for less and less. Needs a few weeks of
+  daily syncs first.
+- **Data improvements:** collect roles with no ads yet (e.g. Software Engineer), filter the
+  non-agriculture ads out of topjobs' Agriculture category (already flagged), and tune the skill
+  list on the larger sample.
+- **Evaluation:** compare the extracted skills with about 30 ads checked by hand, to measure
+  accuracy.
+
+### Known limitations
+
+- Only topjobs.lk is collected (see [Sources](#sources)).
+- Almost every topjobs ad is a flyer image, so skills depend on OCR. Badly designed or garbled
+  flyers give fewer or wrong skills, and only English text is read.
+- Skills are found by matching the skill list, so a skill missing from
+  `config/skills_lexicon.yaml` is not counted.
+- Agency ads can't be confirmed as removed, so they stay active until their closing date.
