@@ -15,6 +15,7 @@ from app.schemas.analysis import (
     PrioritySkillOut,
     SkillResultDetailOut,
 )
+from app.schemas.report import AnalysisReportResponse
 from app.services.analysis_service import AnalysisService
 
 logger = logging.getLogger(__name__)
@@ -182,7 +183,10 @@ async def get_analysis(
         for ps in sorted(analysis.priority_skills, key=lambda p: p.priority_rank)
     ]
 
-    c04_payload = analysis.reports[0].report_payload if analysis.reports else None
+    c04_payload = next(
+        (r.report_payload for r in analysis.reports if r.report_version == "1.0"),
+        analysis.reports[0].report_payload if analysis.reports else None,
+    )
 
     return AnalysisDetailResponse(
         analysis_id=analysis.analysis_id,
@@ -226,10 +230,53 @@ async def get_analysis_c04(
             detail=f"Analysis has not completed successfully (current status: {analysis.status})",
         )
 
-    if analysis.reports:
-        return analysis.reports[0].report_payload
+    c04_report = next(
+        (r for r in analysis.reports if r.report_version == "1.0"),
+        analysis.reports[0] if analysis.reports else None,
+    )
+    if c04_report:
+        return c04_report.report_payload
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
         detail="No C04 report payload found for this completed analysis",
     )
+
+
+# Retrieve deterministic explanation report for completed analysis
+@router.get(
+    "/{analysis_id}/report",
+    response_model=AnalysisReportResponse,
+    summary="Get analysis explanation report",
+)
+async def get_analysis_report(
+    analysis_id: uuid.UUID,
+    session: DbSession,
+) -> Any:
+    analysis = await analysis_service.get_analysis_by_id(session, analysis_id)
+    if analysis is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Analysis with ID '{analysis_id}' not found",
+        )
+
+    if analysis.status != "COMPLETED":
+        err_suffix = (
+            f". Error: {analysis.error_message}" if analysis.error_message else ""
+        )
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Analysis has not completed successfully (current status: {analysis.status}){err_suffix}",
+        )
+
+    (
+        _analysis,
+        report_response,
+    ) = await analysis_service.get_or_generate_explanation_report(session, analysis_id)
+    if report_response is None:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to generate explanation report for completed analysis",
+        )
+
+    return report_response

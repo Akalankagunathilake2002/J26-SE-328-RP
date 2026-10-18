@@ -18,17 +18,29 @@ from app.schemas.profile_validation import (
     validate_industry_profile,
     validate_user_skill_profile,
 )
+from app.schemas.report import (
+    AnalysisReportResponse,
+    PriorityExplanationOut,
+    ReadinessSummaryOut,
+    RelationshipExplanationOut,
+    SkillExplanationOut,
+)
 
 __all__ = [
     "AnalysisCreateRequest",
     "AnalysisDetailResponse",
     "AnalysisHistoryItem",
     "AnalysisHistoryResponse",
+    "AnalysisReportResponse",
     "C04AnalysisResponse",
     "IndustryProfileInput",
     "IndustryRequirementInput",
+    "PriorityExplanationOut",
     "PrioritySkillOut",
     "ProfileValidationError",
+    "ReadinessSummaryOut",
+    "RelationshipExplanationOut",
+    "SkillExplanationOut",
     "SkillResultDetailOut",
     "UserSkillInput",
     "UserSkillProfileInput",
