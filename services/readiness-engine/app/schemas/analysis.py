@@ -27,10 +27,10 @@ class AnalysisCreateRequest(BaseModel):
         validation_alias=AliasChoices("role_id", "roleId"),
         description="Canonical or candidate role identifier (e.g., RL-000003)",
     )
-    matching_method: str = Field(
-        "RELATIONSHIP_AWARE",
+    matching_method: str | None = Field(
+        None,
         validation_alias=AliasChoices("matching_method", "matchingMethod"),
-        description="Matching method: RELATIONSHIP_AWARE or EXACT_BASELINE",
+        description="Optional matching method override; backend automatically controls dual matching",
     )
     scoring_config_version: str = Field(
         "1.0",
@@ -85,6 +85,9 @@ class C04AnalysisResponse(BaseModel):
     readinessScore: float | None = Field(
         None, description="Overall career readiness score on a 0-100 percentage scale"
     )
+    baselineReadinessScore: float | None = Field(
+        None, description="Baseline readiness score using exact matching only"
+    )
     prioritySkills: list[PrioritySkillOut] = Field(
         default_factory=list,
         description="Ranked list of actionable skill gaps for learning",
@@ -123,6 +126,7 @@ class AnalysisDetailResponse(BaseModel):
     matching_method: str
     scoring_config_version: str
     readiness_score: float | None
+    baseline_readiness_score: float | None = None
     status: str
     started_at: datetime
     completed_at: datetime | None
