@@ -61,8 +61,7 @@ def get_snapshot_service(session: AsyncSession = Depends(get_session)) -> Snapsh
     return SnapshotService(repo=SnapshotRepository(session))
 
 def verify_reviewer(x_reviewer_id: str | None = Header(None, alias="X-Reviewer-Id")) -> str:
-    # TEMPORARY DEVELOPMENT MECHANISM: Real authentication and authorization is pending integration
-    # with central auth-service. This check requires the X-Reviewer-Id header to prevent unrestricted access.
+    # Temporary check requiring a reviewer ID header until central auth-service is integrated.
     if not x_reviewer_id or not x_reviewer_id.strip():
         raise HTTPException(
             status_code=403,

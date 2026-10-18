@@ -44,6 +44,7 @@ class CandidateRepository:
         return result.scalars().all()
 
     async def _generate_next_candidate_id(self) -> str:
+        # Find the highest existing CE sequence number and increment it.
         stmt = select(CandidateEntity.candidate_entity_id).where(CandidateEntity.candidate_entity_id.like("CE-%"))
         result = await self.session.execute(stmt)
         ids = result.scalars().all()
@@ -55,6 +56,7 @@ class CandidateRepository:
         return f"CE-{max_num + 1:06d}"
 
     async def _generate_next_skill_id(self) -> str:
+        # Find the highest existing SK sequence number and increment it.
         stmt = select(Skill.skill_id).where(Skill.skill_id.like("SK-%"))
         result = await self.session.execute(stmt)
         ids = result.scalars().all()
@@ -66,6 +68,7 @@ class CandidateRepository:
         return f"SK-{max_num + 1:06d}"
 
     async def _generate_next_role_id(self) -> str:
+        # Find the highest existing RL sequence number and increment it.
         stmt = select(Role.role_id).where(Role.role_id.like("RL-%"))
         result = await self.session.execute(stmt)
         ids = result.scalars().all()
@@ -102,6 +105,7 @@ class CandidateRepository:
     async def approve_skill(
         self, candidate: CandidateEntity, skill_type: str, skill_nature: str | None, review_note: str | None
     ) -> CandidateEntity:
+        # Promote the candidate into an active canonical skill and link its new ID.
         skill_id = await self._generate_next_skill_id()
         skill = Skill(
             skill_id=skill_id,
@@ -129,6 +133,7 @@ class CandidateRepository:
     async def approve_role(
         self, candidate: CandidateEntity, review_note: str | None
     ) -> CandidateEntity:
+        # Promote the candidate into an active canonical role and link its new ID.
         role_id = await self._generate_next_role_id()
         role = Role(
             role_id=role_id,

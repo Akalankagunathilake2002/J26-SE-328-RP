@@ -11,14 +11,17 @@ class SnapshotService:
         self.repo = repo
 
     async def export_snapshot(self, consumer: str = "SkillGap") -> KnowledgeSnapshotExport:
+        # Export the full authoritative knowledge graph payload for consumer local caching.
         return await self.repo.get_snapshot_data(consumer=consumer)
 
     async def get_metadata(self, consumer: str = "SkillGap") -> SnapshotMetadata:
+        # Return snapshot metadata, version, and entity counts without the full payload.
         return await self.repo.get_metadata_only(consumer=consumer)
 
     async def validate_version(
         self, version: str, consumer: str = "SkillGap"
     ) -> SnapshotValidationResult:
+        # Check whether a consumer's cached snapshot version matches the authoritative version.
         metadata = await self.get_metadata(consumer=consumer)
         is_current = metadata.version == version
         message = (

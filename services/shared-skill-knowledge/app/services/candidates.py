@@ -35,9 +35,11 @@ class CandidateService:
         return candidate
 
     async def create_candidate(self, data: CandidateEntityCreate) -> CandidateEntity:
+        # Validate and submit a new candidate entity for review.
         norm = normalize_name(data.submitted_name)
 
         if data.entity_type == "SKILL":
+            # Reject if the name already matches an existing canonical skill or verified alias.
             canonical_skills = (await self.session.execute(select(Skill))).scalars().all()
             for skill in canonical_skills:
                 if normalize_name(skill.preferred_name) == norm:
@@ -60,6 +62,7 @@ class CandidateService:
                 )
 
         elif data.entity_type == "ROLE":
+            # Reject if the name already matches an existing canonical role or verified alias.
             canonical_roles = (await self.session.execute(select(Role))).scalars().all()
             for role in canonical_roles:
                 if normalize_name(role.preferred_name) == norm:
@@ -81,6 +84,7 @@ class CandidateService:
                     detail=f"A verified role alias already exists for '{data.submitted_name}' (Role ID: {existing_alias.role_id})"
                 )
 
+        # Reject if a candidate with the same normalized name is already awaiting review.
         existing_pending = await self.candidate_repo.get_pending_by_normalized_name(
             entity_type=data.entity_type,
             normalized_name=norm,
@@ -96,8 +100,10 @@ class CandidateService:
     async def review_candidate(
         self, candidate_entity_id: str, review_data: CandidateEntityReview
     ) -> CandidateEntity:
+        # Process an approval or rejection decision for a pending candidate entity.
         candidate = await self.get_candidate(candidate_entity_id)
 
+        # Only pending candidates can be reviewed.
         if candidate.review_status != "PENDING":
             raise HTTPException(
                 status_code=409,
@@ -107,6 +113,7 @@ class CandidateService:
         if review_data.action == "REJECT":
             return await self.candidate_repo.reject(candidate, review_note=review_data.review_note)
 
+        # An approved candidate is promoted to an active canonical entity.
         if review_data.action == "APPROVE":
             if candidate.entity_type == "SKILL":
                 skill_type = review_data.skill_type or candidate.proposed_skill_type
