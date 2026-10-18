@@ -1,4 +1,51 @@
-"""Database models for C03 Readiness Engine."""
-from app.db.base import Base
+"""Database models for Readiness Engine."""
 
-__all__ = ["Base"]
+from app.db.base import Base
+from app.models.analysis import (
+    Analysis,
+    AnalysisPrioritySkill,
+    AnalysisReport,
+    AnalysisSkillResult,
+    CandidateDiscoveryRun,
+)
+from app.models.cache import (
+    CachedAlias,
+    CachedRelationship,
+    CachedSkill,
+    CachedSkillEmbedding,
+    KnowledgeSnapshot,
+)
+from app.models.profiles import (
+    IndustryProfile,
+    IndustryProfileRequirement,
+    IndustrySkillEvidence,
+    SkillEvidence,
+    UserSkillProfile,
+    UserSkillProfileSkill,
+)
+
+# Backward-compatibility aliases
+StudentProfile = UserSkillProfile
+StudentProfileSkill = UserSkillProfileSkill
+
+__all__ = [
+    "Analysis",
+    "AnalysisPrioritySkill",
+    "AnalysisReport",
+    "AnalysisSkillResult",
+    "Base",
+    "CachedAlias",
+    "CachedRelationship",
+    "CachedSkill",
+    "CachedSkillEmbedding",
+    "CandidateDiscoveryRun",
+    "IndustryProfile",
+    "IndustryProfileRequirement",
+    "IndustrySkillEvidence",
+    "KnowledgeSnapshot",
+    "SkillEvidence",
+    "StudentProfile",
+    "StudentProfileSkill",
+    "UserSkillProfile",
+    "UserSkillProfileSkill",
+]

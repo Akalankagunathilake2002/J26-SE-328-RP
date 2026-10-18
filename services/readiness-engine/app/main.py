@@ -1,4 +1,5 @@
 import contextlib
+
 from fastapi import APIRouter, FastAPI
 
 from app.api.routers import health_router
@@ -7,9 +8,11 @@ from app.config.settings import get_settings
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
-    yield
-    from app.db.session import dispose_engine
+    from app.db.session import create_tables, dispose_engine
 
+    # Ensure database schema is initialized on startup, matching shared-skill-knowledge
+    await create_tables()
+    yield
     await dispose_engine()
 
 

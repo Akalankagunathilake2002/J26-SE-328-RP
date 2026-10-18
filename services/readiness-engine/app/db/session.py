@@ -1,6 +1,7 @@
 from collections.abc import AsyncIterator
 from functools import lru_cache
 
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -28,7 +29,13 @@ async def get_session() -> AsyncIterator[AsyncSession]:
 
 
 async def create_tables() -> None:
+    # Registers models on metadata before creating tables
+    import app.models  # noqa: F401
+
     async with get_engine().begin() as connection:
+        if connection.dialect.name == "postgresql":
+            await connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
+            await connection.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'))
         await connection.run_sync(Base.metadata.create_all)
 
 
