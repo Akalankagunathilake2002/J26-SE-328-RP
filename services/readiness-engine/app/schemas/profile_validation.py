@@ -20,6 +20,9 @@ CANONICAL_MAPPING_STATUSES = {"verified", "resolved", "canonical"}
 UNASSESSED_MAPPING_STATUSES = {"unresolved", "unmapped", "candidate", "provisional"}
 VALID_MAPPING_STATUSES = CANONICAL_MAPPING_STATUSES | UNASSESSED_MAPPING_STATUSES
 
+# Standard recognized skill proficiency tiers
+VALID_PROFICIENCY_LEVELS = {"BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"}
+
 
 # Specific validation error identifying affected profile, field, and constraint
 class ProfileValidationError(ValueError):
@@ -109,7 +112,7 @@ class IndustryRequirementInput(BaseModel):
         if not isinstance(data, dict):
             return data
 
-        # Extract nested required_proficiency object if flat score not provided
+        # Extract nested required_proficiency object if flat score or level not provided
         if (
             "required_proficiency_score" not in data
             and "requiredProficiencyScore" not in data
@@ -122,6 +125,35 @@ class IndustryRequirementInput(BaseModel):
                     data["required_proficiency_score"] = req_prof["score"]
                 if "level" in req_prof and "required_proficiency_level" not in data:
                     data["required_proficiency_level"] = req_prof["level"]
+        elif (
+            "required_proficiency_level" not in data
+            and "requiredProficiencyLevel" not in data
+        ):
+            req_prof = data.get("required_proficiency") or data.get(
+                "requiredProficiency"
+            )
+            if isinstance(req_prof, dict) and "level" in req_prof:
+                data["required_proficiency_level"] = req_prof["level"]
+
+        # Validate required_proficiency_level if present
+        prof_level_raw = data.get("required_proficiency_level")
+        if prof_level_raw is None:
+            prof_level_raw = data.get("requiredProficiencyLevel")
+        if prof_level_raw is not None:
+            std_name = data.get("standard_name", "unknown")
+            if not isinstance(prof_level_raw, str) or not prof_level_raw.strip():
+                raise ProfileValidationError(
+                    f"[IndustryProfile] requirement '{std_name}': required_proficiency_level cannot be empty",
+                    profile_type="industry_profile",
+                    field="required_proficiency_level",
+                )
+            if prof_level_raw.strip().upper() not in VALID_PROFICIENCY_LEVELS:
+                raise ProfileValidationError(
+                    f"[IndustryProfile] requirement '{std_name}': invalid required_proficiency_level '{prof_level_raw}'",
+                    profile_type="industry_profile",
+                    field="required_proficiency_level",
+                )
+            data["required_proficiency_level"] = prof_level_raw.strip().upper()
 
         # Validate mapping status
         raw_status = data.get("mapping_status", "verified")
@@ -349,7 +381,7 @@ class UserSkillInput(BaseModel):
         if not isinstance(data, dict):
             return data
 
-        # Extract nested proficiency object if flat score not provided
+        # Extract nested proficiency object if flat score or level not provided
         if "proficiency_score" not in data and "proficiencyScore" not in data:
             prof = data.get("proficiency")
             if isinstance(prof, dict):
@@ -357,6 +389,30 @@ class UserSkillInput(BaseModel):
                     data["proficiency_score"] = prof["score"]
                 if "level" in prof and "proficiency_level" not in data:
                     data["proficiency_level"] = prof["level"]
+        elif "proficiency_level" not in data and "proficiencyLevel" not in data:
+            prof = data.get("proficiency")
+            if isinstance(prof, dict) and "level" in prof:
+                data["proficiency_level"] = prof["level"]
+
+        # Validate proficiency_level if present
+        prof_level_raw = data.get("proficiency_level")
+        if prof_level_raw is None:
+            prof_level_raw = data.get("proficiencyLevel")
+        if prof_level_raw is not None:
+            std_name = data.get("standard_name", "unknown")
+            if not isinstance(prof_level_raw, str) or not prof_level_raw.strip():
+                raise ProfileValidationError(
+                    f"[UserSkillProfile] skill '{std_name}': proficiency_level cannot be empty",
+                    profile_type="user_skill_profile",
+                    field="proficiency_level",
+                )
+            if prof_level_raw.strip().upper() not in VALID_PROFICIENCY_LEVELS:
+                raise ProfileValidationError(
+                    f"[UserSkillProfile] skill '{std_name}': invalid proficiency_level '{prof_level_raw}'",
+                    profile_type="user_skill_profile",
+                    field="proficiency_level",
+                )
+            data["proficiency_level"] = prof_level_raw.strip().upper()
 
         # Validate mapping status
         raw_status = data.get("mapping_status", "verified")
@@ -594,6 +650,20 @@ def validate_industry_profile(profile: Any) -> None:
                 field="required_proficiency_score",
             )
 
+        prof_level = getattr(req, "required_proficiency_level", None)
+        if not prof_level or not isinstance(prof_level, str) or not prof_level.strip():
+            raise ProfileValidationError(
+                f"[IndustryProfile: role_id={role_id}] requirement '{std_name}': required_proficiency_level is required and cannot be empty",
+                profile_type="industry_profile",
+                field="required_proficiency_level",
+            )
+        if prof_level.strip().upper() not in VALID_PROFICIENCY_LEVELS:
+            raise ProfileValidationError(
+                f"[IndustryProfile: role_id={role_id}] requirement '{std_name}': invalid required_proficiency_level '{prof_level}'",
+                profile_type="industry_profile",
+                field="required_proficiency_level",
+            )
+
         if skill_id:
             if skill_id in seen_skills:
                 raise ProfileValidationError(
@@ -671,6 +741,20 @@ def validate_user_skill_profile(profile: Any) -> None:
                 f"[UserSkillProfile: user_id={user_id}] skill '{std_name}': evidence_confidence {conf} must be between 0.0 and 1.0",
                 profile_type="user_skill_profile",
                 field="evidence_confidence",
+            )
+
+        prof_level = getattr(sk, "proficiency_level", None)
+        if not prof_level or not isinstance(prof_level, str) or not prof_level.strip():
+            raise ProfileValidationError(
+                f"[UserSkillProfile: user_id={user_id}] skill '{std_name}': proficiency_level is required and cannot be empty",
+                profile_type="user_skill_profile",
+                field="proficiency_level",
+            )
+        if prof_level.strip().upper() not in VALID_PROFICIENCY_LEVELS:
+            raise ProfileValidationError(
+                f"[UserSkillProfile: user_id={user_id}] skill '{std_name}': invalid proficiency_level '{prof_level}'",
+                profile_type="user_skill_profile",
+                field="proficiency_level",
             )
 
         if skill_id:

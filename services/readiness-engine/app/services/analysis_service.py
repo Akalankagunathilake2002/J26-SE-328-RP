@@ -2,7 +2,7 @@ import uuid
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import select, update
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -24,6 +24,7 @@ from app.models.analysis import (
     AnalysisSkillResult,
     AnalysisStatus,
 )
+from app.models.profiles import IndustryProfile
 from app.schemas.analysis import AnalysisCreateRequest
 from app.schemas.profile_validation import (
     validate_industry_profile,
@@ -154,11 +155,7 @@ class AnalysisService:
                 {
                     "id": r.id,
                     "demand_weight": r.demand_weight,
-                    "required_proficiency": (
-                        r.required_proficiency_score
-                        if r.required_proficiency_score is not None
-                        else 0.5
-                    ),
+                    "required_proficiency": r.required_proficiency_score,
                     "skill_id": r.skill_id,
                     "standard_name": r.standard_name,
                     "mapping_status": r.mapping_status,
@@ -168,14 +165,8 @@ class AnalysisService:
             stu_scoring_data = [
                 {
                     "id": s.id,
-                    "student_proficiency": (
-                        s.proficiency_score if s.proficiency_score is not None else 0.5
-                    ),
-                    "evidence_confidence": (
-                        s.evidence_confidence
-                        if s.evidence_confidence is not None
-                        else 1.0
-                    ),
+                    "student_proficiency": s.proficiency_score,
+                    "evidence_confidence": s.evidence_confidence,
                 }
                 for s in user_profile.skills
             ]
@@ -346,3 +337,56 @@ class AnalysisService:
         )
         res = await session.execute(stmt)
         return res.scalars().first()
+
+    # Retrieve paginated history of analyses with deterministic sorting and optional filters
+    async def list_analyses(
+        self,
+        session: AsyncSession,
+        user_id: uuid.UUID | None = None,
+        status: str | None = None,
+        role_id: str | None = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> tuple[list[Analysis], int]:
+        filter_conditions = []
+        if user_id is not None:
+            filter_conditions.append(Analysis.user_id == user_id)
+        if status is not None:
+            filter_conditions.append(Analysis.status == status.strip().upper())
+
+        # Count total matching records
+        count_stmt = select(func.count(Analysis.analysis_id))
+        if role_id is not None:
+            count_stmt = count_stmt.join(Analysis.industry_profile).where(
+                or_(
+                    IndustryProfile.role_id == role_id,
+                    IndustryProfile.candidate_role_id == role_id,
+                )
+            )
+        if filter_conditions:
+            count_stmt = count_stmt.where(*filter_conditions)
+
+        total_res = await session.execute(count_stmt)
+        total = total_res.scalar_one()
+
+        # Query paginated analysis records with joined industry profile metadata
+        items_stmt = select(Analysis).options(selectinload(Analysis.industry_profile))
+        if role_id is not None:
+            items_stmt = items_stmt.join(Analysis.industry_profile).where(
+                or_(
+                    IndustryProfile.role_id == role_id,
+                    IndustryProfile.candidate_role_id == role_id,
+                )
+            )
+        if filter_conditions:
+            items_stmt = items_stmt.where(*filter_conditions)
+
+        items_stmt = (
+            items_stmt.order_by(Analysis.started_at.desc(), Analysis.analysis_id.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        records_res = await session.execute(items_stmt)
+        records = list(records_res.scalars().all())
+
+        return records, total

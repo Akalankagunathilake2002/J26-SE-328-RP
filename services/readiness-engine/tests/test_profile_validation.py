@@ -652,3 +652,107 @@ def test_14_sqlalchemy_model_validation_functions():
         match="proficiency_score 1.5 must be between 0.0 and 1.0",
     ):
         validate_user_skill_profile(user_prof)
+
+
+def test_15_proficiency_level_validation():
+    # 1. Industry profile requirement missing required_proficiency_level
+    role = IndustryProfile(
+        id=uuid.uuid4(),
+        role_id="RL-000100",
+        primary_observed_title="Data Scientist",
+        mapping_status="verified",
+        career_level="ENTRY_LEVEL",
+        profile_version="v1",
+        raw_payload={},
+    )
+    req = IndustryProfileRequirement(
+        id=uuid.uuid4(),
+        industry_profile_id=role.id,
+        skill_id="SK-000100",
+        standard_name="Python",
+        primary_observed_term="Python",
+        observed_terms=[],
+        mapping_status="verified",
+        skill_type="TECHNICAL",
+        required_proficiency_level=None,  # Missing!
+        required_proficiency_score=0.8,
+        demand_weight=0.9,
+    )
+    role.requirements.append(req)
+
+    with pytest.raises(
+        ProfileValidationError,
+        match="required_proficiency_level is required and cannot be empty",
+    ):
+        validate_industry_profile(role)
+
+    # Invalid required_proficiency_level
+    req.required_proficiency_level = "SUPER_HERO"
+    with pytest.raises(
+        ProfileValidationError,
+        match="invalid required_proficiency_level 'SUPER_HERO'",
+    ):
+        validate_industry_profile(role)
+
+    # 2. User skill profile missing proficiency_level
+    user_prof = UserSkillProfile(
+        id=uuid.uuid4(),
+        user_id=uuid.uuid4(),
+        profile_version="v1",
+        raw_payload={},
+    )
+    skill = UserSkillProfileSkill(
+        id=uuid.uuid4(),
+        user_skill_profile_id=user_prof.id,
+        skill_id="SK-000100",
+        standard_name="Python",
+        primary_observed_term="Python",
+        observed_terms=[],
+        mapping_status="verified",
+        skill_type="TECHNICAL",
+        proficiency_level="",  # Empty!
+        proficiency_score=0.8,
+        evidence_confidence=0.9,
+    )
+    user_prof.skills.append(skill)
+
+    with pytest.raises(
+        ProfileValidationError,
+        match="proficiency_level is required and cannot be empty",
+    ):
+        validate_user_skill_profile(user_prof)
+
+    # Invalid user proficiency_level
+    skill.proficiency_level = "UNKNOWN_TIER"
+    with pytest.raises(
+        ProfileValidationError,
+        match="invalid proficiency_level 'UNKNOWN_TIER'",
+    ):
+        validate_user_skill_profile(user_prof)
+
+    # 3. Dictionary payload validation
+    req_dict_invalid = {
+        "skill_id": "SK-000100",
+        "standard_name": "Python",
+        "required_proficiency_level": "INVALID_TIER",
+        "required_proficiency_score": 0.8,
+        "demand_weight": 0.9,
+    }
+    with pytest.raises(
+        ProfileValidationError,
+        match="invalid required_proficiency_level 'INVALID_TIER'",
+    ):
+        validate_industry_requirement_data(req_dict_invalid)
+
+    user_dict_invalid = {
+        "skill_id": "SK-000100",
+        "standard_name": "Python",
+        "proficiency_level": "INVALID_TIER",
+        "proficiency_score": 0.8,
+        "evidence_confidence": 0.9,
+    }
+    with pytest.raises(
+        ProfileValidationError,
+        match="invalid proficiency_level 'INVALID_TIER'",
+    ):
+        validate_user_skill_data(user_dict_invalid)
