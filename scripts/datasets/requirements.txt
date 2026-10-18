@@ -1,0 +1,4 @@
+# Tools for fetch_datasets.sh and build_learning_corpus.py (installed into RAW_DIR/../.venv)
+pyarrow>=22,<30
+beautifulsoup4>=4.12,<5
+markdownify>=0.13,<2

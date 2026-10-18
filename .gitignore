@@ -27,3 +27,11 @@ out/
 
 # Logs
 *.log
+
+# Large Model Weights (exceed GitHub size limits, trained/exported via scripts/training)
+*.onnx
+*.onnx_data
+*.bin
+*.pt
+*.safetensors
+
