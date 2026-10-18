@@ -3,8 +3,9 @@
 Collects job advertisements from Sri Lankan job sites, responsibly, and works out which skills
 each job role demands in four sectors: **IT / Software, HR, Management and Agriculture**.
 
-**Status:** steps 1–5 built: collection from topjobs.lk, data quality report, OCR of flyer ads and
-the skill profile per job role. Sync, the PostgreSQL loader and scheduling come next.
+**Status:** steps 1–6 built: collection from topjobs.lk, data quality report, OCR of flyer ads,
+the skill profile per job role and the sync (active / expired / removed ads). The PostgreSQL
+loader and scheduling come next.
 
 ## Sources
 
@@ -58,13 +59,22 @@ pytest
 
 ```bash
 python -m app.collectors.run --site topjobs --sector HR --limit 25   # collect new ads
+scripts/sync.sh                                                      # sync: statuses + new ads, logged
 python -m app.collectors.run --site topjobs --reparse                # offline: rebuild from data/raw/
 python -m app.processing.skills                                      # skill profile only
 ```
 
+A sync (`scripts/sync.sh`, or `run --sync`) marks every stored ad **active**, **expired**
+(closing date passed) or **removed** (taken down early), and downloads new ads only. An ad counts
+as removed only if it is missing from both its category page and the topjobs homepage, which lists
+every live ad posted directly by an employer. Ads posted through recruitment agencies are not on
+the homepage, so they are never marked removed; they expire at their closing date. Ads are never
+deleted, so their history stays available.
+
 Outputs in `data/processed/`: the cleaned ads (`topjobs.jsonl`, `combined.csv`),
-`quality_report.md`, and the skill demand per job role (`skill_profile.md`, and
-`skill_profile.json` for the Market Pulse page).
+`quality_report.md`, `sync_log.csv` (one row per sync), and the skill demand per job role
+(`skill_profile.md`, and `skill_profile.json` for the Market Pulse page). Sync logs are in
+`data/logs/`.
 
 ## Development plan
 
