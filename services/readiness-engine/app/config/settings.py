@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     service_name: str = "readiness-engine"
     version: str = "0.1.0"
-    database_url: str = "postgresql+asyncpg://skillbridge:skillbridge@localhost:5432/readiness_db"
+    database_url: str = "postgresql+asyncpg://skillbridge:skillbridge@localhost:5432/readiness_engine_db"
 
 
 @lru_cache

@@ -15,14 +15,14 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-skillbridge}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}
-      POSTGRES_DB: auth_db  # each service gets its own database; auth-service uses auth_db
+      POSTGRES_DB: auth_db # each service gets its own database; auth-service uses auth_db
     ports:
-      - "127.0.0.1:${POSTGRES_HOST_PORT:-15432}:5432"  # only reachable from this computer
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-15432}:5432" # only reachable from this computer
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./postgres/init-dbs.sh:/docker-entrypoint-initdb.d/init-dbs.sh:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d auth_db"]
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d auth_db" ]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -107,6 +107,15 @@ services:
       postgres:
         condition: service_healthy
 
+  readiness-engine:
+    build: ../services/readiness-engine
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-skillbridge}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}@postgres:5432/readiness_engine_db
+      READINESS_ENGINE_PORT: ${READINESS_ENGINE_PORT:-8010}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   api-gateway:
     image: nginx:1.28-alpine
     ports:
@@ -116,7 +125,8 @@ services:
       - INTERVIEW_SERVICE_PORT=${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
       - SHARED_SKILL_KNOWLEDGE_PORT=${SHARED_SKILL_KNOWLEDGE_PORT:-8005}
       - JOB_MARKET_INTELLIGENCE_PORT=${JOB_MARKET_INTELLIGENCE_PORT:-8003}
-      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT|JOB_MARKET_INTELLIGENCE_PORT
+      - READINESS_ENGINE_PORT=${READINESS_ENGINE_PORT:-8010}
+      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT|JOB_MARKET_INTELLIGENCE_PORT|READINESS_ENGINE_PORT
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     depends_on:
@@ -125,6 +135,7 @@ services:
       - job-market-intelligence-engine
       - learning-service
       - interview-service
+      - readiness-engine
 
 volumes:
   postgres-data:
