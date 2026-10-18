@@ -34,7 +34,7 @@ The database layer is aligned with the `shared-skill-knowledge` service pattern:
 
 - **Automatic Initialization:** All 16 application tables are automatically created on service startup via SQLAlchemy `Base.metadata.create_all()` within the FastAPI application `lifespan` handler.
 - **PostgreSQL Extensions:** When connected to PostgreSQL, `create_tables()` automatically ensures the required `vector` (`pgvector`) and `uuid-ossp` extensions are installed (`CREATE EXTENSION IF NOT EXISTS`).
-- **No Migration Tool Overhead:** Following the SSKS architecture, the service does not require Alembic commands or migration scripts to create tables. Any legacy migration table (`alembic_version`) in existing environments remains intact and harmless.
+- **No Migration Tool Overhead:** Following the SSKS architecture, the service does not require Alembic or external migration tooling; the schema is managed directly via SQLAlchemy declarative models.
 - **Idempotency:** Startup schema creation is safe and idempotent across container restarts and test environments.
 
 ### Managed Tables (16 Application Entities)
@@ -80,3 +80,4 @@ On startup, all database tables and required extensions will be initialized auto
 ```bash
 pytest tests/ -v
 ```
+

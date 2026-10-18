@@ -28,11 +28,12 @@ async def get_session() -> AsyncIterator[AsyncSession]:
         yield session
 
 
-async def create_tables() -> None:
+async def create_tables(engine: AsyncEngine | None = None) -> None:
     # Registers models on metadata before creating tables
     import app.models  # noqa: F401
 
-    async with get_engine().begin() as connection:
+    target_engine = engine or get_engine()
+    async with target_engine.begin() as connection:
         if connection.dialect.name == "postgresql":
             await connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
             await connection.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'))

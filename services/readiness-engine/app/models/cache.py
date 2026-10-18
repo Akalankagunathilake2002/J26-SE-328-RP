@@ -70,10 +70,10 @@ class CachedSkill(Base):
 
     snapshot: Mapped["KnowledgeSnapshot"] = relationship(back_populates="skills")
     aliases: Mapped[list["CachedAlias"]] = relationship(
-        back_populates="skill", cascade="all, delete-orphan"
+        back_populates="skill", cascade="all, delete-orphan", overlaps="aliases"
     )
     embeddings: Mapped[list["CachedSkillEmbedding"]] = relationship(
-        back_populates="skill", cascade="all, delete-orphan"
+        back_populates="skill", cascade="all, delete-orphan", overlaps="embeddings"
     )
 
 
@@ -100,8 +100,8 @@ class CachedAlias(Base):
         ),
     )
 
-    snapshot: Mapped["KnowledgeSnapshot"] = relationship(back_populates="aliases")
-    skill: Mapped["CachedSkill"] = relationship(back_populates="aliases")
+    snapshot: Mapped["KnowledgeSnapshot"] = relationship(back_populates="aliases", overlaps="aliases")
+    skill: Mapped["CachedSkill"] = relationship(back_populates="aliases", overlaps="aliases,snapshot")
 
 
 class CachedRelationship(Base):
@@ -168,5 +168,5 @@ class CachedSkillEmbedding(Base):
         ),
     )
 
-    snapshot: Mapped["KnowledgeSnapshot"] = relationship(back_populates="embeddings")
-    skill: Mapped["CachedSkill"] = relationship(back_populates="embeddings")
+    snapshot: Mapped["KnowledgeSnapshot"] = relationship(back_populates="embeddings", overlaps="embeddings")
+    skill: Mapped["CachedSkill"] = relationship(back_populates="embeddings", overlaps="embeddings,snapshot")
