@@ -40,7 +40,9 @@ def test_market_pulse(data_dir):
     body = client.get("/jobs/market-pulse").json()
 
     assert body["totals"]["ads"] == 1 and body["roles"][0]["role"] == "HR Executive / Officer"
-    assert {"skill": "Communication", "category": "Soft skill", "ssk_id": None, "ads": 1, "share": 1.0} in body["skills"]
+    assert {"skill": "Communication", "category": "Soft skill", "ssk_id": None, "ssk_ids": [], "source": "lexicon",
+            "ads": 1, "share": 1.0} in body["skills"]
+    assert body["extraction"]["extractor"] == "lexicon" and body["unverified"] == []
     assert [s["sector"] for s in body["sectors"]] == ["IT", "HR", "Management", "Agriculture"]
     sources = {source["site"]: source for source in body["sources"]}
     assert sources["topjobs"]["name"] == "topjobs.lk" and sources["topjobs"]["collected"] is True

@@ -20,6 +20,10 @@ dev = [
     "pytest>=8.0",
     "httpx2>=2.13",  # FastAPI's test client
 ]
+# NER skill extraction (SKILLBRIDGE_SKILL_EXTRACTOR=ner or both). Needs Python 3.12: spaCy and
+# PyTorch don't support 3.14 yet. ner-transformers is only for the JobBERT model.
+ner = ["spacy>=3.8,<4"]
+ner-transformers = ["transformers>=4.45", "torch>=2.4"]
 
 [build-system]
 requires = ["setuptools>=69"]

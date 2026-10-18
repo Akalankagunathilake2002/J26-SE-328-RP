@@ -248,7 +248,8 @@ def test_profile_totals(profile):
     assert hr_skills["Communication"] == 1.0 and "Customer service" not in hr_skills
     assert profile["roles"][1]["role"] == "Barista" and profile["roles"][1]["mapped"] is False
     assert profile["skills"][0] == {
-        "skill": "Communication", "category": "Soft skill", "ssk_id": None, "ads": 2, "share": 0.667
+        "skill": "Communication", "category": "Soft skill", "ssk_id": None, "ssk_ids": [], "source": "lexicon",
+        "ads": 2, "share": 0.667,
     }
 
 

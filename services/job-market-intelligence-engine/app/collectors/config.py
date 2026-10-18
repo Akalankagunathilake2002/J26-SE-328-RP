@@ -4,6 +4,10 @@ Environment variables (or a git-ignored ``.env`` file in the service folder):
 
 - ``SKILLBRIDGE_CONTACT``: optional contact address added to the User-Agent.
 - ``SKILLBRIDGE_DATA_DIR``: where raw/ and processed/ are written. Default: ``<service>/data``.
+- ``SKILLBRIDGE_SKILL_EXTRACTOR``: ``lexicon`` (default), ``ner`` or ``both`` (see app/processing/skills.py).
+- ``SKILLBRIDGE_NER_MODEL``: folder of the trained NER model, needed for ``ner`` and ``both``.
+- ``SKILLBRIDGE_SSKS_URL``: the Shared Skill Knowledge Service, e.g. http://localhost:8080/ssks.
+  Not set: skills are not linked to SSKS IDs.
 """
 
 from __future__ import annotations
@@ -22,18 +26,31 @@ DEFAULT_MAPPING = SERVICE_ROOT / "config" / "sector_mapping.yaml"
 DEFAULT_ENV_FILE = SERVICE_ROOT / ".env"
 
 
+EXTRACTORS = ("lexicon", "ner", "both")
+
+
 @dataclass(frozen=True)
 class Settings:
     data_dir: Path
     contact: str | None
+    skill_extractor: str = "lexicon"
+    ner_model: Path | None = None
+    ssks_url: str | None = None
 
 
 def load_settings(env: Mapping[str, str] | None = None, env_file: Path = DEFAULT_ENV_FILE) -> Settings:
     """Settings from ``env`` (default: the process environment), falling back to ``env_file``."""
     values = {**read_env_file(env_file), **(os.environ if env is None else env)}
+    extractor = (values.get("SKILLBRIDGE_SKILL_EXTRACTOR") or "lexicon").strip().lower()
+    if extractor not in EXTRACTORS:
+        raise ValueError(f"SKILLBRIDGE_SKILL_EXTRACTOR must be one of {', '.join(EXTRACTORS)}, not {extractor!r}")
+    ner_model = values.get("SKILLBRIDGE_NER_MODEL")
     return Settings(
         data_dir=Path(values.get("SKILLBRIDGE_DATA_DIR") or SERVICE_ROOT / "data"),
         contact=values.get("SKILLBRIDGE_CONTACT") or None,
+        skill_extractor=extractor,
+        ner_model=Path(ner_model) if ner_model else None,
+        ssks_url=values.get("SKILLBRIDGE_SSKS_URL") or None,
     )
 
 
