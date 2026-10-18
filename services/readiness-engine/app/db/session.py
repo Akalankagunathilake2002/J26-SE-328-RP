@@ -36,7 +36,9 @@ async def create_tables(engine: AsyncEngine | None = None) -> None:
     async with target_engine.begin() as connection:
         if connection.dialect.name == "postgresql":
             await connection.execute(text("CREATE EXTENSION IF NOT EXISTS vector;"))
-            await connection.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'))
+            await connection.execute(
+                text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+            )
         await connection.run_sync(Base.metadata.create_all)
 
 

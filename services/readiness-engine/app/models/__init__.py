@@ -6,6 +6,7 @@ from app.models.analysis import (
     AnalysisPrioritySkill,
     AnalysisReport,
     AnalysisSkillResult,
+    AnalysisStatus,
     CandidateDiscoveryRun,
 )
 from app.models.cache import (
@@ -33,6 +34,7 @@ __all__ = [
     "AnalysisPrioritySkill",
     "AnalysisReport",
     "AnalysisSkillResult",
+    "AnalysisStatus",
     "Base",
     "CachedAlias",
     "CachedRelationship",
