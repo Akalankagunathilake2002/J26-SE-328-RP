@@ -10,6 +10,7 @@ class ConflictError(Exception):
     pass
 
 async def _insert(session: AsyncSession, obj):
+    # Commit changes and map database integrity errors to ConflictError.
     session.add(obj)
     try:
         await session.commit()
@@ -61,6 +62,7 @@ class SkillRepository:
         if skill_nature:
             stmt = stmt.where(Skill.skill_nature == skill_nature)
         if domain_id:
+            # Filter skills belonging to the specified domain.
             stmt = stmt.where(
                 Skill.skill_id.in_(select(SkillDomain.skill_id).where(SkillDomain.domain_id == domain_id))
             )
@@ -91,6 +93,7 @@ class RoleRepository:
         if status:
             stmt = stmt.where(Role.status == status)
         if domain_id:
+            # Filter roles belonging to the specified domain.
             stmt = stmt.where(
                 Role.role_id.in_(select(RoleDomain.role_id).where(RoleDomain.domain_id == domain_id))
             )

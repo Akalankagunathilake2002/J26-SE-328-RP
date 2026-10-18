@@ -31,6 +31,7 @@ class SnapshotRepository:
         aliases: list[SnapshotAliasItem],
         relationships: list[SnapshotRelationshipItem],
     ) -> str:
+        # Generate a deterministic content hash based on active skills, aliases, and relationships.
         hasher = hashlib.sha256()
 
         skill_tokens: list[str] = []
@@ -66,6 +67,7 @@ class SnapshotRepository:
         return f"v{date_prefix}-{digest}"
 
     async def get_snapshot_data(self, consumer: str = "SkillGap") -> KnowledgeSnapshotExport:
+        # Assemble the full authoritative snapshot of active entities, verified relationships, and metadata.
         now = datetime.now(timezone.utc)
 
         # 1. Fetch active skills

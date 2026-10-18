@@ -55,15 +55,18 @@ class RelationshipService:
         return rel
 
     async def create_relationship(self, data: SkillRelationshipCreate) -> SkillRelationship:
+        # Create a verified relationship between two distinct existing skills.
         if data.source_skill_id == data.target_skill_id:
             raise HTTPException(status_code=422, detail="Source and target skills must be different")
 
+        # Ensure both skills exist before creating the relationship.
         if not await self.skill_repo.get_by_id(data.source_skill_id):
             raise HTTPException(status_code=404, detail=f"Source skill '{data.source_skill_id}' not found")
 
         if not await self.skill_repo.get_by_id(data.target_skill_id):
             raise HTTPException(status_code=404, detail=f"Target skill '{data.target_skill_id}' not found")
 
+        # Prevent duplicate relationships between the same pair of skills.
         existing = await self.rel_repo.find_existing(
             data.source_skill_id, data.target_skill_id, data.relationship_type
         )
@@ -73,6 +76,7 @@ class RelationshipService:
                 detail="A relationship with this source, target, and type already exists",
             )
 
+        # Use the provided relationship ID or generate the next sequential one.
         if data.relationship_id:
             if await self.rel_repo.get_by_id(data.relationship_id):
                 raise HTTPException(
@@ -91,8 +95,10 @@ class RelationshipService:
     async def update_relationship(
         self, relationship_id: str, data: SkillRelationshipUpdate
     ) -> SkillRelationship:
+        # Update relationship attributes while preventing duplicate collisions.
         rel = await self.get_relationship(relationship_id)
 
+        # Ensure changing relationship type does not collide with an existing record.
         if data.relationship_type is not None and data.relationship_type != rel.relationship_type:
             existing = await self.rel_repo.find_existing(
                 rel.source_skill_id, rel.target_skill_id, data.relationship_type
@@ -151,15 +157,18 @@ class CandidateRelationshipService:
     async def submit_candidate(
         self, data: CandidateRelationshipCreate
     ) -> CandidateSkillRelationship:
+        # Submit a proposed skill relationship for editorial review.
         if data.source_skill_id == data.target_skill_id:
             raise HTTPException(status_code=422, detail="Source and target skills must be different")
 
+        # Ensure both skills exist before proposing a relationship.
         if not await self.skill_repo.get_by_id(data.source_skill_id):
             raise HTTPException(status_code=404, detail=f"Source skill '{data.source_skill_id}' not found")
 
         if not await self.skill_repo.get_by_id(data.target_skill_id):
             raise HTTPException(status_code=404, detail=f"Target skill '{data.target_skill_id}' not found")
 
+        # Do not allow proposing a relationship that is already canonical.
         existing_canonical = await self.rel_repo.find_existing(
             data.source_skill_id, data.target_skill_id, data.proposed_relationship_type
         )
@@ -169,6 +178,7 @@ class CandidateRelationshipService:
                 detail="A canonical relationship of this type between these skills already exists",
             )
 
+        # Prevent duplicate pending submissions for the same skill pair and type.
         existing_pending = await self.candidate_repo.get_pending_duplicate(
             data.source_skill_id, data.target_skill_id, data.proposed_relationship_type
         )
@@ -186,8 +196,10 @@ class CandidateRelationshipService:
     async def review_candidate(
         self, candidate_relationship_id: str, review_data: CandidateRelationshipReview
     ) -> CandidateSkillRelationship:
+        # Review a proposed relationship and promote it to canonical if approved.
         candidate = await self.get_candidate(candidate_relationship_id)
 
+        # Only pending candidate relationships can be reviewed.
         if candidate.review_status != "PENDING":
             raise HTTPException(
                 status_code=409,
@@ -198,6 +210,7 @@ class CandidateRelationshipService:
         if norm_action in ("REJECT", "REJECTED"):
             return await self.candidate_repo.reject(candidate, review_note=review_data.review_note)
 
+        # On approval, ensure no canonical record was created in the interim before promoting.
         if norm_action in ("APPROVE", "APPROVED"):
             existing_canonical = await self.rel_repo.find_existing(
                 candidate.source_skill_id,
@@ -249,6 +262,7 @@ class DomainAssociationService:
         return await self.assoc_repo.get_skill_domains(skill_id)
 
     async def associate_skill_domain(self, skill_id: str, domain_id: str) -> SkillDomain:
+        # Associate an active skill with a knowledge domain after verifying both exist.
         if not await self.skill_repo.get_by_id(skill_id):
             raise HTTPException(status_code=404, detail=f"Skill '{skill_id}' not found")
         if not await self.domain_repo.get_by_id(domain_id):
@@ -272,6 +286,7 @@ class DomainAssociationService:
         return await self.assoc_repo.get_role_domains(role_id)
 
     async def associate_role_domain(self, role_id: str, domain_id: str) -> RoleDomain:
+        # Associate an active role with a knowledge domain after verifying both exist.
         if not await self.role_repo.get_by_id(role_id):
             raise HTTPException(status_code=404, detail=f"Role '{role_id}' not found")
         if not await self.domain_repo.get_by_id(domain_id):

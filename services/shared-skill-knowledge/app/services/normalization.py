@@ -12,6 +12,7 @@ from app.schemas.normalization import (
 )
 
 def normalize_name(value: str) -> str:
+    # Standardize text by normalizing unicode, lowercasing, and collapsing spaces.
     return " ".join(unicodedata.normalize("NFKC", value).casefold().split())
 
 class NormalizationService:
@@ -19,6 +20,7 @@ class NormalizationService:
         self.session = session
 
     async def normalize_skills(self, request: BulkNormalizeRequest) -> BulkNormalizeResponse:
+        # Match a batch of skill names against canonical skills and verified aliases.
         return await self._normalize_entities(
             items=request.items,
             model_cls=Skill,
@@ -28,6 +30,7 @@ class NormalizationService:
         )
 
     async def normalize_roles(self, request: BulkNormalizeRequest) -> BulkNormalizeResponse:
+        # Match a batch of role names against canonical roles and verified aliases.
         return await self._normalize_entities(
             items=request.items,
             model_cls=Role,
@@ -44,6 +47,7 @@ class NormalizationService:
         id_attr: str,
         name_attr: str,
     ) -> BulkNormalizeResponse:
+        # Load canonical entities and index them by ID and normalized name.
         canonical_result = await self.session.execute(select(model_cls))
         canonicals = canonical_result.scalars().all()
 
@@ -53,6 +57,7 @@ class NormalizationService:
             for c in canonicals
         }
 
+        # Deduplicate input items to minimize lookup overhead.
         unique_inputs = list(dict.fromkeys(items))
         norm_map = {item: normalize_name(item) for item in unique_inputs}
 
@@ -60,6 +65,7 @@ class NormalizationService:
             norm for norm in norm_map.values() if norm not in canonical_by_norm
         }
 
+        # Look up unmatched inputs against verified aliases.
         alias_by_norm = {}
         if unmatched_norms:
             alias_result = await self.session.execute(
@@ -80,6 +86,7 @@ class NormalizationService:
         for item in unique_inputs:
             norm = norm_map[item]
             if norm in canonical_by_norm:
+                # Exact match on canonical preferred name.
                 cid, cname = canonical_by_norm[norm]
                 cached_results[item] = NormalizeResultItem(
                     input_name=item,
@@ -90,6 +97,7 @@ class NormalizationService:
                     suggestions=[],
                 )
             elif norm in alias_by_norm:
+                # Match found through a verified alias.
                 cid, cname = alias_by_norm[norm]
                 cached_results[item] = NormalizeResultItem(
                     input_name=item,
@@ -100,6 +108,7 @@ class NormalizationService:
                     suggestions=[],
                 )
             else:
+                # Find fuzzy suggestions with at least 80% similarity.
                 suggestions: list[SuggestedMatch] = []
                 for c_norm, (cid, cname) in canonical_norms:
                     score = SequenceMatcher(None, norm, c_norm).ratio()
@@ -133,5 +142,6 @@ class NormalizationService:
                         suggestions=[],
                     )
 
+        # Preserve the original request order, including duplicates.
         ordered_results = [cached_results[item] for item in items]
         return BulkNormalizeResponse(results=ordered_results)

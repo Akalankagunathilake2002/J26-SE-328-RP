@@ -60,6 +60,7 @@ class SkillRelationshipRepository:
         return result.scalars().all()
 
     async def generate_next_relationship_id(self) -> str:
+        # Find the highest existing REL sequence number and increment it.
         stmt = select(SkillRelationship.relationship_id).where(SkillRelationship.relationship_id.like("REL-%"))
         result = await self.session.execute(stmt)
         ids = result.scalars().all()
@@ -166,6 +167,7 @@ class CandidateRelationshipRepository:
         return result.scalars().all()
 
     async def generate_next_candidate_relationship_id(self) -> str:
+        # Find the highest existing CR sequence number and increment it.
         stmt = select(CandidateSkillRelationship.candidate_relationship_id).where(
             CandidateSkillRelationship.candidate_relationship_id.like("CR-%")
         )
@@ -224,6 +226,7 @@ class CandidateRelationshipRepository:
         canonical_relationship_id: str,
         review_note: str | None,
     ) -> tuple[CandidateSkillRelationship, SkillRelationship]:
+        # Atomically promote the candidate relationship to canonical and mark it approved.
         canonical_rel = SkillRelationship(
             relationship_id=canonical_relationship_id,
             source_skill_id=candidate.source_skill_id,
@@ -276,6 +279,7 @@ class DomainAssociationRepository:
         return result.scalars().first()
 
     async def add_skill_domain(self, skill_id: str, domain_id: str) -> SkillDomain:
+        # Return existing association if present, otherwise create a new one.
         existing = await self.get_skill_domain(skill_id, domain_id)
         if existing:
             return existing
@@ -318,6 +322,7 @@ class DomainAssociationRepository:
         return result.scalars().first()
 
     async def add_role_domain(self, role_id: str, domain_id: str) -> RoleDomain:
+        # Return existing association if present, otherwise create a new one.
         existing = await self.get_role_domain(role_id, domain_id)
         if existing:
             return existing
