@@ -1,0 +1,25 @@
+# Raw ESCO files (licence: download, don't redistribute)
+data/esco/
+
+# Student documents are personal data, never commit
+data/cvs/
+data/resumes/
+
+# Local environment
+.venv/
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Trained models
+/models/
+*.pt
+*.bin
+*.safetensors
+*.joblib
+*.pkl
+
+# Personal notes, kept local only
+DEVELOPMENT_GUIDE.md
+VIVA_NOTES.md
