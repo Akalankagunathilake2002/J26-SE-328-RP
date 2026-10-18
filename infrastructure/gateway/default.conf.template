@@ -61,6 +61,12 @@ server {
         proxy_pass $job_market;
     }
 
+    # readiness-engine: skill gap analysis and readiness engine. API docs at /readiness/docs.
+    location /readiness/ {
+        set $readiness_engine http://readiness-engine:${READINESS_ENGINE_PORT};
+        proxy_pass $readiness_engine;
+    }
+
     # RAG: Learning Microservice
     location /api/v1/learning/ {
         if ($request_method = 'OPTIONS') {

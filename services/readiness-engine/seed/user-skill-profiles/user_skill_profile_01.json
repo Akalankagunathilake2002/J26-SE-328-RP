@@ -1,0 +1,347 @@
+{
+  "schema_version": "1.0",
+  "message_id": "MSG-C02-DEMO-WEB-001",
+  "generated_at": "2026-10-17T20:45:00Z",
+  "source_component": "user-skill-profile-service",
+  "profile_type": "user_skill_profile",
+  "data": {
+    "userSkillProfile": {
+      "profileVersion": "2026-10-17T20:45:00Z",
+      "domain": {
+        "domainId": "DOM-IT",
+        "domainName": "Information Technology"
+      },
+      "skills": [
+        {
+          "skillId": "SK-000165",
+          "candidate_skill_id": null,
+          "standard_name": "JavaScript",
+          "primary_observed_term": "JavaScript",
+          "observed_terms": [
+            "JavaScript",
+            "JS"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.82
+          },
+          "evidenceConfidence": 0.91,
+          "verificationStatus": "VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-001",
+              "sourceType": "PROJECT",
+              "sourceName": "Petopia",
+              "evidenceType": "PROJECT_DEMONSTRATED",
+              "excerpt": "Implemented interactive frontend behaviour and form validation using JavaScript.",
+              "strength": 0.88,
+              "verified": true
+            },
+            {
+              "evidenceId": "EV-WEB-002",
+              "sourceType": "CV",
+              "sourceName": "Student CV — internship section",
+              "evidenceType": "SELF_REPORTED",
+              "excerpt": "Used JavaScript to implement and maintain web application features during a software development internship.",
+              "strength": 0.72,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000657",
+          "candidate_skill_id": null,
+          "standard_name": "CSS",
+          "primary_observed_term": "CSS",
+          "observed_terms": [
+            "CSS",
+            "Cascading Style Sheets"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.82
+          },
+          "evidenceConfidence": 0.9,
+          "verificationStatus": "VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-005",
+              "sourceType": "PROJECT",
+              "sourceName": "Petopia",
+              "evidenceType": "PROJECT_DEMONSTRATED",
+              "excerpt": "Implemented responsive layouts and component styling using CSS.",
+              "strength": 0.86,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000836",
+          "candidate_skill_id": null,
+          "standard_name": "Hypertext markup language HTML",
+          "primary_observed_term": "HTML",
+          "observed_terms": [
+            "HTML",
+            "HTML5"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.88
+          },
+          "evidenceConfidence": 0.92,
+          "verificationStatus": "VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-006",
+              "sourceType": "PROJECT",
+              "sourceName": "Petopia",
+              "evidenceType": "PROJECT_DEMONSTRATED",
+              "excerpt": "Created structured page markup for frontend views.",
+              "strength": 0.88,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001879",
+          "candidate_skill_id": null,
+          "standard_name": "Tailwind CSS",
+          "primary_observed_term": "Tailwind CSS",
+          "observed_terms": [
+            "Tailwind CSS",
+            "Tailwind"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.78
+          },
+          "evidenceConfidence": 0.86,
+          "verificationStatus": "VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-007",
+              "sourceType": "PROJECT",
+              "sourceName": "Petopia",
+              "evidenceType": "PROJECT_DEMONSTRATED",
+              "excerpt": "Used Tailwind CSS utility classes to build responsive user interfaces.",
+              "strength": 0.84,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001873",
+          "candidate_skill_id": null,
+          "standard_name": "Express.js",
+          "primary_observed_term": "Express.js",
+          "observed_terms": [
+            "Express.js",
+            "Express"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "BEGINNER",
+            "score": 0.52
+          },
+          "evidenceConfidence": 0.66,
+          "verificationStatus": "PARTIALLY_VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-008",
+              "sourceType": "CV",
+              "sourceName": "Student CV — internship section",
+              "evidenceType": "SELF_REPORTED",
+              "excerpt": "Assisted with basic Express.js routes and API integration during a software development internship.",
+              "strength": 0.62,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001222",
+          "candidate_skill_id": null,
+          "standard_name": "Node.js",
+          "primary_observed_term": "Node.js",
+          "observed_terms": [
+            "Node.js"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "BEGINNER",
+            "score": 0.6
+          },
+          "evidenceConfidence": 0.72,
+          "verificationStatus": "PARTIALLY_VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-009",
+              "sourceType": "CV",
+              "sourceName": "Student CV — internship section",
+              "evidenceType": "SELF_REPORTED",
+              "excerpt": "Worked with basic Node.js application code while supporting backend tasks.",
+              "strength": 0.66,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "skillId": "SK-001189",
+          "candidate_skill_id": null,
+          "standard_name": "Git",
+          "primary_observed_term": "Git",
+          "observed_terms": [
+            "Git"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.76
+          },
+          "evidenceConfidence": 0.86,
+          "verificationStatus": "VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-010",
+              "sourceType": "PROJECT",
+              "sourceName": "Petopia",
+              "evidenceType": "PROJECT_DEMONSTRATED",
+              "excerpt": "Used Git for version control during project development.",
+              "strength": 0.84,
+              "verified": true
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000559",
+          "candidate_skill_id": null,
+          "standard_name": "apply technical communication skills",
+          "primary_observed_term": "Technical communication",
+          "observed_terms": [
+            "technical communication",
+            "explaining technical work"
+          ],
+          "mapping_status": "verified",
+          "skillType": "BEHAVIORAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.72
+          },
+          "evidenceConfidence": 0.78,
+          "verificationStatus": "PARTIALLY_VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-011",
+              "sourceType": "CV",
+              "sourceName": "Student CV — internship section",
+              "evidenceType": "SELF_REPORTED",
+              "excerpt": "Communicated implementation progress and technical issues with internship teammates.",
+              "strength": 0.68,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000736",
+          "candidate_skill_id": null,
+          "standard_name": "Critical Thinking",
+          "primary_observed_term": "Critical Thinking",
+          "observed_terms": [
+            "critical thinking",
+            "analytical problem solving"
+          ],
+          "mapping_status": "verified",
+          "skillType": "BEHAVIORAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.7
+          },
+          "evidenceConfidence": 0.76,
+          "verificationStatus": "PARTIALLY_VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-012",
+              "sourceType": "PROJECT",
+              "sourceName": "Petopia",
+              "evidenceType": "PROJECT_DEMONSTRATED",
+              "excerpt": "Investigated frontend bugs and compared possible implementation approaches.",
+              "strength": 0.72,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000755",
+          "candidate_skill_id": null,
+          "standard_name": "Time Management",
+          "primary_observed_term": "Time Management",
+          "observed_terms": [
+            "time management",
+            "task prioritisation"
+          ],
+          "mapping_status": "verified",
+          "skillType": "BEHAVIORAL",
+          "proficiency": {
+            "level": "INTERMEDIATE",
+            "score": 0.68
+          },
+          "evidenceConfidence": 0.74,
+          "verificationStatus": "PARTIALLY_VERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-013",
+              "sourceType": "CV",
+              "sourceName": "Student CV — internship section",
+              "evidenceType": "SELF_REPORTED",
+              "excerpt": "Managed assigned internship tasks and project deadlines.",
+              "strength": 0.64,
+              "verified": false
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000458",
+          "candidate_skill_id": null,
+          "standard_name": "JavaScript Framework",
+          "primary_observed_term": "JavaScript Framework",
+          "observed_terms": [
+            "JavaScript Framework"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "proficiency": {
+            "level": "BEGINNER",
+            "score": 0.5
+          },
+          "evidenceConfidence": 0.58,
+          "verificationStatus": "UNVERIFIED",
+          "evidence": [
+            {
+              "evidenceId": "EV-WEB-014",
+              "sourceType": "CV",
+              "sourceName": "Student CV — internship section",
+              "evidenceType": "SELF_REPORTED",
+              "excerpt": "Has introductory exposure to JavaScript framework concepts; specific framework proficiency is not established by this evidence.",
+              "strength": 0.48,
+              "verified": false
+            }
+          ]
+        }
+      ],
+      "profileQuality": {
+        "completenessScore": 0.88
+      },
+      "userId": "1f40007d-6a6c-49ff-b8cc-dea297d258f2"
+    }
+  }
+}

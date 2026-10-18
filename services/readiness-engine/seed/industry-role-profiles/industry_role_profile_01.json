@@ -1,0 +1,236 @@
+{
+  "schema_version": "1.0",
+  "message_id": "MSG-C01-FIXTURE-001",
+  "generated_at": "2026-10-17T20:00:00Z",
+  "source_component": "Job-market-intelligence-engine",
+  "profile_type": "aggregated_role_profile",
+  "data": {
+    "industryRoleProfile": {
+      "roleId": "RL-000003",
+      "candidate_roleId": null,
+      "primary_observed_title": "Software Testing Intern",
+      "observed_titles": [
+        "Software Testing Intern",
+        "QA Intern",
+        "Software Tester Intern"
+      ],
+      "mapping_status": "verified",
+      "profile_status": "active",
+      "domain": {
+        "domainId": "DOM-IT",
+        "domainName": "Information Technology"
+      },
+      "careerLevel": "INTERNSHIP",
+      "profileVersion": "2026-10-17T20:00:00Z",
+      "marketEvidence": {
+        "jobPostingCount": 24,
+        "observationPeriod": {
+          "from": "2026-07-01",
+          "to": "2026-10-15"
+        }
+      },
+      "requirements": [
+        {
+          "skillId": "SK-000263",
+          "candidate_skill_id": null,
+          "standard_name": "plan software testing",
+          "primary_observed_term": "plan software testing",
+          "observed_terms": [
+            "plan software testing",
+            "software test planning"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 16,
+            "frequency": 0.667,
+            "requiredCount": 10,
+            "preferredCount": 4,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.82,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000263-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Assist with planning test cases and test activities."
+            },
+            {
+              "sourceId": "SYNTH-SK-000263-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Prepare basic test plans for a web application."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000389",
+          "candidate_skill_id": null,
+          "standard_name": "levels of software testing",
+          "primary_observed_term": "levels of software testing",
+          "observed_terms": [
+            "levels of software testing",
+            "software testing levels"
+          ],
+          "mapping_status": "verified",
+          "skillType": "KNOWLEDGE",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 13,
+            "frequency": 0.542,
+            "requiredCount": 6,
+            "preferredCount": 5,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.7,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000389-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Understand unit, integration and system testing."
+            },
+            {
+              "sourceId": "SYNTH-SK-000389-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Describe appropriate testing levels for application features."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000353",
+          "candidate_skill_id": null,
+          "standard_name": "provide software testing documentation",
+          "primary_observed_term": "software testing documentation",
+          "observed_terms": [
+            "software testing documentation",
+            "test documentation"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.45
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 12,
+            "frequency": 0.5,
+            "requiredCount": 7,
+            "preferredCount": 3,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.68,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000353-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Document test results and reproducible defects."
+            },
+            {
+              "sourceId": "SYNTH-SK-000353-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Maintain clear test evidence and defect notes."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000591",
+          "candidate_skill_id": null,
+          "standard_name": "Python (computer programming)",
+          "primary_observed_term": "Python",
+          "observed_terms": [
+            "Python",
+            "Python programming"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.4
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 9,
+            "frequency": 0.375,
+            "requiredCount": 4,
+            "preferredCount": 3,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.54,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000591-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Use Python for small testing utilities."
+            },
+            {
+              "sourceId": "SYNTH-SK-000591-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Write a basic script to support test execution."
+            }
+          ]
+        },
+        {
+          "skillId": "SK-000919",
+          "candidate_skill_id": null,
+          "standard_name": "Structured query language SQL",
+          "primary_observed_term": "SQL",
+          "observed_terms": [
+            "SQL",
+            "Structured Query Language"
+          ],
+          "mapping_status": "verified",
+          "skillType": "TECHNICAL",
+          "requiredProficiency": {
+            "level": "BEGINNER",
+            "score": 0.4
+          },
+          "demandEvidence": {
+            "jobAdsContainingSkill": 8,
+            "frequency": 0.333,
+            "requiredCount": 4,
+            "preferredCount": 2,
+            "mentionedCount": 2
+          },
+          "DemandWeight": 0.48,
+          "sampleEvidence": [
+            {
+              "sourceId": "SYNTH-SK-000919-01",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-10",
+              "textExcerpt": "Run SQL queries to verify stored test data."
+            },
+            {
+              "sourceId": "SYNTH-SK-000919-02",
+              "company": "Synthetic test fixture",
+              "jobTitle": "Synthetic role-profile test data",
+              "sourceDate": "2026-10-12",
+              "textExcerpt": "Use SELECT queries to check application records."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

@@ -26,7 +26,7 @@ Settings are managed via environment variables or a local `.env` file:
 | Variable | Default | Description |
 |---|---|---|
 | `SERVICE_NAME` | `readiness-engine` | Service identifier |
-| `DATABASE_URL` | `postgresql+asyncpg://skillbridge:skillbridge@localhost:5432/readiness_db` | PostgreSQL connection URL |
+| `DATABASE_URL` | `postgresql+asyncpg://skillbridge:skillbridge@localhost:5432/readiness_engine_db` | PostgreSQL connection URL |
 
 ## Local Development
 
@@ -42,10 +42,10 @@ pip install -r requirements.txt
 ### 2. Run the Service
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8007 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8010 --reload
 ```
 
-Interactive documentation is available at `http://localhost:8007/readiness/docs`.
+Interactive documentation is available at `http://localhost:8010/readiness/docs`.
 
 ### 3. Run Tests
 
