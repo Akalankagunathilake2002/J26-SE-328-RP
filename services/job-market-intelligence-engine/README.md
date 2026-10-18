@@ -5,7 +5,9 @@ each job role demands in four sectors: **IT / Software, HR, Management and Agric
 
 **Status:** steps 1–6 of 8 done. Ads are collected from topjobs.lk, read with OCR, kept up to date
 by a sync, and turned into a skill demand profile per job role that the Market Pulse page shows.
-Next: the PostgreSQL loader and the scheduled daily sync. See [Progress](#progress).
+Also built: NER skill extraction (spaCy and JobBERT, trained on SkillSpan) and linking of skills to
+the Shared Skill Knowledge Service; both are off by default. Next: the topjobs test set for the NER
+comparison, the PostgreSQL loader and the scheduled daily sync. See [Progress](#progress).
 
 ## Sources
 
@@ -33,14 +35,15 @@ The site categories for each sector are in [`config/sector_mapping.yaml`](config
 job-market-intelligence-engine/
 ├── app/
 │   ├── collectors/          collecting ads (scraper, sync, storage, deduplication, quality report)
-│   ├── processing/          analysis (OCR, job roles, skill demand)
+│   ├── processing/          analysis (OCR, job roles, skill demand, NER extractor, SSKS candidates)
+│   ├── integrations/        client for the Shared Skill Knowledge Service (SSKS)
 │   └── main.py              the Market Pulse API
 ├── config/
 │   ├── sector_mapping.yaml  site categories → the four sectors
 │   ├── role_taxonomy.yaml   job titles → roles and seniority (editable)
 │   └── skills_lexicon.yaml  skills with their aliases (editable)
 ├── scripts/sync.sh          sync with a log file
-├── tests/                   134 tests on saved pages; no live requests
+├── tests/                   148 tests on saved pages and a fake SSKS; no live requests
 ├── Dockerfile
 └── pyproject.toml
 ```
@@ -95,6 +98,20 @@ Outputs in `data/processed/`: the cleaned ads (`topjobs.jsonl`, `combined.csv`),
 - `python -m app.processing.ssks_candidates` lists skills SSKS doesn't know (unmatched, seen in 2+
   ads) in `processed/ssks_candidates.csv`. Nothing is sent without `--submit`.
 
+The NER models, their training and the evaluation are in [`ml/c01-skill-ner/`](../../ml/c01-skill-ner/README.md).
+Measured so far ([evaluation report](../../ml/c01-skill-ner/reports/evaluation.md)):
+
+| On the SkillSpan test split (3,569 sentences) | Exact-span F1 | Partial-overlap F1 |
+|---|--:|--:|
+| Lexicon | 0.240 | 0.421 |
+| spaCy NER | 0.475 | 0.731 |
+| JobBERT NER | 0.573 | 0.871 |
+
+- SSKS (its seed: 1,842 skills) gives an ID to 66 of the 145 lexicon skills (46%), but matches
+  only 10–12% of the NER mentions exactly or by alias: NER often returns phrases ("communication
+  and teamwork skills") where SSKS has short names. That is why `lexicon` stays the default.
+- The comparison that matters, on hand-labelled topjobs ads, is still to be done (see below).
+
 ## Market Pulse API
 
 The Market Pulse page gets its data from this service, through the API gateway:
@@ -137,8 +154,11 @@ before the next one starts.
 - **Data improvements:** collect roles with no ads yet (e.g. Software Engineer), filter the
   non-agriculture ads out of topjobs' Agriculture category (already flagged), and tune the skill
   list on the larger sample.
-- **Evaluation:** compare the extracted skills with about 30 ads checked by hand, to measure
-  accuracy.
+- **NER evaluation on topjobs:** once 100+ ads are collected, draw 100 test ads
+  (`ml/c01-skill-ner/src/export_label_studio.py`), label them by hand (`LABELLING.md`) and run
+  the evaluation: lexicon vs spaCy vs JobBERT on Sri Lankan ads. Then decide the extractor.
+- **SSKS:** the SSKS seed has to be loaded in Docker before skills can be linked there, and new
+  skills are proposed as candidates only after the SSKS owner agrees.
 
 ### Known limitations
 
@@ -146,5 +166,7 @@ before the next one starts.
 - Almost every topjobs ad is a flyer image, so skills depend on OCR. Badly designed or garbled
   flyers give fewer or wrong skills, and only English text is read.
 - Skills are found by matching the skill list, so a skill missing from
-  `config/skills_lexicon.yaml` is not counted.
+  `config/skills_lexicon.yaml` is not counted (unless the NER extractor is switched on).
 - Agency ads can't be confirmed as removed, so they stay active until their closing date.
+- Fewer than half of the lexicon skills, and few NER phrases, have an SSKS ID with the current
+  SSKS seed (no agriculture skills, few soft skills).
