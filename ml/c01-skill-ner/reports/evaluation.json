@@ -1,0 +1,325 @@
+{
+  "generated_at": "2026-10-18T11:54:56+00:00",
+  "models": {
+    "spaCy NER 0.1.0": {
+      "model": "spacy-skill-ner",
+      "version": "0.1.0",
+      "trained_at": "2026-10-18T10:59:01+00:00",
+      "training_minutes": 8.9,
+      "seed": 42,
+      "base_pipeline": "en_core_web_md 3.8.0 (tok2vec and vectors reused, NER trained from scratch)",
+      "labels": [
+        "KNOWLEDGE",
+        "SKILL"
+      ],
+      "config": "configs/spacy_ner.cfg",
+      "config_sha256": "eba9f4de80dbe5d430a26db60f0d502b9e0e39346782a3ac3d82776718af1d2e",
+      "training_data": {
+        "dataset": "jjzha/skillspan",
+        "dataset_fingerprints": {
+          "train": "41033491d71add5d",
+          "validation": "710181a5e4826b8e",
+          "test": "eb320322eba8f8b6"
+        },
+        "splits": {
+          "train": {
+            "sentences": 4800,
+            "spans": {
+              "SKILL": 2088,
+              "KNOWLEDGE": 2969
+            },
+            "mean_tokens": {
+              "SKILL": 4.38,
+              "KNOWLEDGE": 1.87
+            },
+            "skill_spans_dropped_for_overlap": 133
+          },
+          "validation": {
+            "sentences": 3174,
+            "spans": {
+              "SKILL": 1041,
+              "KNOWLEDGE": 1093
+            },
+            "mean_tokens": {
+              "SKILL": 4.43,
+              "KNOWLEDGE": 1.84
+            },
+            "skill_spans_dropped_for_overlap": 29
+          },
+          "test": {
+            "sentences": 3569,
+            "spans": {
+              "SKILL": 1079,
+              "KNOWLEDGE": 1174
+            },
+            "mean_tokens": {
+              "SKILL": 3.83,
+              "KNOWLEDGE": 1.78
+            },
+            "skill_spans_dropped_for_overlap": 12
+          }
+        }
+      },
+      "train_file_sha256": "637f18850dcf10532e57bc48f7cb72adc3cf55f3e8bb8081b6c4eaab086a2d6b",
+      "best_validation_scores": {
+        "ents_f": 0.4501591967,
+        "ents_p": 0.4715238584,
+        "ents_r": 0.4306466729,
+        "ents_per_type": {
+          "KNOWLEDGE": {
+            "p": 0.5243088656,
+            "r": 0.5032021958,
+            "f": 0.5135387488
+          },
+          "SKILL": {
+            "p": 0.41,
+            "r": 0.3544668588,
+            "f": 0.3802163833
+          }
+        },
+        "tok2vec_loss": 11262.0615888916,
+        "ner_loss": 2332.5947265625
+      },
+      "versions": {
+        "spacy": "3.8.16",
+        "python": "3.12.13"
+      }
+    },
+    "JobBERT NER 0.1.0": {
+      "model": "jobbert-skill-ner",
+      "version": "0.1.0",
+      "trained_at": "2026-10-18T11:10:09+00:00",
+      "training_minutes": 41.0,
+      "device": "mps",
+      "seed": 42,
+      "base_model": "jjzha/jobbert-base-cased",
+      "tags": [
+        "O",
+        "B-SKILL",
+        "I-SKILL",
+        "B-KNOWLEDGE",
+        "I-KNOWLEDGE"
+      ],
+      "settings": {
+        "epochs": 5,
+        "learning_rate": 5e-05,
+        "batch_size": 16,
+        "weight_decay": 0.01,
+        "warmup": "first 10% of steps",
+        "max_length": 256,
+        "label_on": "first subword of each word"
+      },
+      "train_file_sha256": "33538943238bfef30f0f73f05f3974dd180a4a0c6301d468d472a23a643555ea",
+      "best_validation_scores": {
+        "eval_loss": 0.3408,
+        "eval_precision": 0.5238,
+        "eval_recall": 0.6092,
+        "eval_f1": 0.5633,
+        "eval_runtime": 47.7062,
+        "eval_samples_per_second": 66.532,
+        "eval_steps_per_second": 4.171,
+        "epoch": 5.0
+      },
+      "versions": {
+        "transformers": "5.20.1",
+        "torch": "2.14.1",
+        "python": "3.12.13"
+      }
+    }
+  },
+  "ssks_url": "http://127.0.0.1:8005/ssks",
+  "ssks_snapshot": {
+    "version": "v20261018-3ce7a25c856b",
+    "counts": {
+      "skills": 1842,
+      "aliases": 3361,
+      "relationships": 0,
+      "domains": 3,
+      "external_ids": 1842,
+      "sources": 4
+    }
+  },
+  "skillspan": {
+    "documents": 3569,
+    "gold_spans": 2259,
+    "test_sentences_also_in_train": 812,
+    "gold_spans_in_those": 101,
+    "results": {
+      "Lexicon (baseline)": {
+        "exact": {
+          "precision": 0.33125487139516757,
+          "recall": 0.18813634351482958,
+          "f1": 0.23997741389045738
+        },
+        "partial": {
+          "precision": 0.5993764614185503,
+          "recall": 0.32492253209384686,
+          "f1": 0.42140242256782934
+        },
+        "predicted": 1283,
+        "gold": 2259,
+        "f1_95ci": {
+          "exact": [
+            0.2152974504249292,
+            0.26338639652677276
+          ],
+          "partial": [
+            0.3954823504295794,
+            0.44573014916249964
+          ]
+        }
+      },
+      "spaCy NER 0.1.0": {
+        "exact": {
+          "precision": 0.516900676027041,
+          "recall": 0.4400177069499779,
+          "f1": 0.4753706360593018
+        },
+        "partial": {
+          "precision": 0.764950598023921,
+          "recall": 0.7007525453740593,
+          "f1": 0.7314456287621142
+        },
+        "predicted": 1923,
+        "gold": 2259,
+        "f1_95ci": {
+          "exact": [
+            0.4500243783520234,
+            0.5041070171321287
+          ],
+          "partial": [
+            0.7128071636132676,
+            0.7502389041919921
+          ]
+        }
+      },
+      "JobBERT NER 0.1.0": {
+        "exact": {
+          "precision": 0.5367931835786213,
+          "recall": 0.6135458167330677,
+          "f1": 0.5726089650898574
+        },
+        "partial": {
+          "precision": 0.8381099922540666,
+          "recall": 0.9074811863656486,
+          "f1": 0.8714171558509213
+        },
+        "predicted": 2582,
+        "gold": 2259,
+        "f1_95ci": {
+          "exact": [
+            0.5500998003992016,
+            0.5961096005019869
+          ],
+          "partial": [
+            0.8586522573353895,
+            0.8847402084128668
+          ]
+        }
+      }
+    },
+    "results_unseen": {
+      "Lexicon (baseline)": {
+        "exact": {
+          "precision": 0.3409475465313029,
+          "recall": 0.18674698795180722,
+          "f1": 0.2413173652694611
+        },
+        "partial": {
+          "precision": 0.6116751269035533,
+          "recall": 0.31974050046339203,
+          "f1": 0.41995711785518564
+        },
+        "predicted": 1182,
+        "gold": 2158,
+        "f1_95ci": {
+          "exact": [
+            0.21737671922173768,
+            0.26517668378133497
+          ],
+          "partial": [
+            0.39453046885556003,
+            0.4461576501178747
+          ]
+        }
+      },
+      "spaCy NER 0.1.0": {
+        "exact": {
+          "precision": 0.5046473482777474,
+          "recall": 0.42771084337349397,
+          "f1": 0.4630047654878354
+        },
+        "partial": {
+          "precision": 0.7577911427009295,
+          "recall": 0.6923076923076923,
+          "f1": 0.7235708692247453
+        },
+        "predicted": 1829,
+        "gold": 2158,
+        "f1_95ci": {
+          "exact": [
+            0.4346928239545689,
+            0.48903717826501425
+          ],
+          "partial": [
+            0.7036335493555913,
+            0.7431038508089918
+          ]
+        }
+      },
+      "JobBERT NER 0.1.0": {
+        "exact": {
+          "precision": 0.5277108433734939,
+          "recall": 0.6088971269694161,
+          "f1": 0.5654044750430292
+        },
+        "partial": {
+          "precision": 0.8353413654618473,
+          "recall": 0.9082483781278962,
+          "f1": 0.8702705933585511
+        },
+        "predicted": 2490,
+        "gold": 2158,
+        "f1_95ci": {
+          "exact": [
+            0.5399911621741051,
+            0.5892778023925566
+          ],
+          "partial": [
+            0.8558072092715144,
+            0.8844770699337202
+          ]
+        }
+      }
+    },
+    "unseen_documents": 2757,
+    "unseen_gold_spans": 2158,
+    "ssks": {
+      "Lexicon (baseline)": {
+        "mentions": 1283,
+        "exact": 244,
+        "alias": 74,
+        "fuzzy": 144,
+        "unmatched": 821
+      },
+      "spaCy NER 0.1.0": {
+        "mentions": 1923,
+        "exact": 183,
+        "alias": 35,
+        "fuzzy": 111,
+        "unmatched": 1594
+      },
+      "JobBERT NER 0.1.0": {
+        "mentions": 2582,
+        "exact": 219,
+        "alias": 57,
+        "fuzzy": 170,
+        "unmatched": 2136
+      }
+    }
+  },
+  "lexicon_ssks_coverage": {
+    "skills": 145,
+    "linked": 66
+  }
+}

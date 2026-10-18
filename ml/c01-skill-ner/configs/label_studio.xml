@@ -1,0 +1,8 @@
+<!-- Label Studio labelling interface for the topjobs test set (see LABELLING.md). -->
+<View>
+  <Header value="$job_title ($sectors)"/>
+  <Labels name="label" toName="text">
+    <Label value="SKILL" background="#8c8ffa"/>
+  </Labels>
+  <Text name="text" value="$text" granularity="word"/>
+</View>

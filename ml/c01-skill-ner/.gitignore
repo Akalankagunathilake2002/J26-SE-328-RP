@@ -1,0 +1,6 @@
+# Data and trained models stay out of git (data/ holds job ad text; models are large).
+data/
+models/
+.venv/
+__pycache__/
+*.pyc

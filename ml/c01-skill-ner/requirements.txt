@@ -1,0 +1,8 @@
+# Python 3.12 (spaCy and PyTorch don't support 3.14 yet).
+spacy>=3.8,<4
+datasets>=3.0
+transformers>=4.45
+torch>=2.4
+accelerate>=1.0
+PyYAML>=6.0
+httpx>=0.27

@@ -33,7 +33,7 @@ from app.collectors.storage import Storage
 from app.collectors.text_utils import clean_ad
 from app.collectors.topjobs import TopjobsCollector
 from app.processing.ocr import add_ocr_text, tesseract_available
-from app.processing.skills import write_profile
+from app.processing.skills import extraction_from_settings, write_profile
 
 COLLECTORS: dict[str, type[BaseCollector]] = {"topjobs": TopjobsCollector}
 
@@ -119,7 +119,8 @@ def main(
     write_processed(storage, names, ads)
     for name in names:
         log.info("%s: data quality report in %s", name, write_report(storage, name, sector_names))
-    log.info("skill profile per job role in %s", write_profile(storage, names)[0])
+    extraction = extraction_from_settings(settings, storage)
+    log.info("skill profile per job role in %s", write_profile(storage, names, extraction=extraction)[0])
     return exit_code
 
 

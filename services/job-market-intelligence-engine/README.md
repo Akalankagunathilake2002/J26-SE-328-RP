@@ -78,6 +78,23 @@ Outputs in `data/processed/`: the cleaned ads (`topjobs.jsonl`, `combined.csv`),
 (`skill_profile.md`, and `skill_profile.json` for the Market Pulse page). Sync logs are in
 `data/logs/`.
 
+## Skill extraction and SSKS
+
+| Setting | Values |
+|---|---|
+| `SKILLBRIDGE_SKILL_EXTRACTOR` | `lexicon` (default): the skill list in `config/skills_lexicon.yaml`. `ner`: a trained NER model (`ml/c01-skill-ner/`). `both`: the two combined. |
+| `SKILLBRIDGE_NER_MODEL` | the model folder, for `ner` and `both` (needs `pip install -e ".[ner]"` and Python 3.12) |
+| `SKILLBRIDGE_SSKS_URL` | the Shared Skill Knowledge Service, e.g. `http://localhost:8080/ssks`. Not set: no SSKS IDs. |
+
+- With SSKS, every skill mention is normalized (`POST /ssks/normalize/skills`, cached in
+  `processed/ssks_cache.json`) and stored with its raw text, SSKS ID and match type (exact, alias,
+  fuzzy, unmatched, pending) in `processed/ad_skills.jsonl`.
+- `lexicon` counts skills as before and adds their SSKS IDs. `ner` counts only skills SSKS matches
+  exactly or through a verified alias; the rest are listed as **unverified** (visible, not counted).
+- If SSKS is down, mentions stay "pending" and collection continues; they are looked up on the next run.
+- `python -m app.processing.ssks_candidates` lists skills SSKS doesn't know (unmatched, seen in 2+
+  ads) in `processed/ssks_candidates.csv`. Nothing is sent without `--submit`.
+
 ## Market Pulse API
 
 The Market Pulse page gets its data from this service, through the API gateway:
@@ -105,7 +122,8 @@ before the next one starts.
 | 4 | `ocr` | Text from flyer images (Tesseract), with personal data removed | ✅ Done |
 | 5 | `skill-profile` | Job roles, skills per role, the Market Pulse API and page | ✅ Done |
 | 6 | `scraper-sync` | Active / expired / removed ads, new ads only, sync log | ✅ Done |
-| 7 | `postgres-loader` | Load ads, statuses and skills into PostgreSQL; link each skill to the Shared Skill Knowledge service (`ssk_id`) | ⏳ Next |
+| – | `skill-ner` | NER skill extraction (spaCy, JobBERT) compared with the lexicon; SSKS IDs for skills; candidate proposals | 🔄 In progress: test set labelling |
+| 7 | `postgres-loader` | Load ads, statuses and skills into PostgreSQL | ⏳ Next |
 | 8 | `scheduled-sync` | Run the sync automatically every day | ⏳ To do |
 
 ### Still to do

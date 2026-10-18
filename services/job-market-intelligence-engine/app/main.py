@@ -30,9 +30,20 @@ NO_PROFILE = (
 class SkillDemand(BaseModel):
     skill: str
     category: str
-    ssk_id: str | None
+    ssk_id: str | None  # set when the skill has exactly one SSKS ID
+    ssk_ids: list[str] = []  # every SSKS ID of the skill
+    source: str = "lexicon"  # lexicon, or ner (verified in SSKS)
     ads: int  # ads asking for the skill
     share: float  # of the ads with readable text, 0–1
+
+
+class UnverifiedSkill(BaseModel):
+    """Found by NER but not verified in SSKS: shown, never counted in demand."""
+
+    text: str
+    ads: int
+    match_type: str  # fuzzy, unmatched or pending
+    suggestion: str | None = None
 
 
 class SectorProfile(BaseModel):
@@ -40,6 +51,7 @@ class SectorProfile(BaseModel):
     ads: int
     ads_with_text: int
     skills: list[SkillDemand]
+    unverified: list[UnverifiedSkill] = []
 
 
 class RoleProfile(BaseModel):
@@ -52,6 +64,7 @@ class RoleProfile(BaseModel):
     seniority: dict[str, int]
     experience: dict[str, int]
     skills: list[SkillDemand]
+    unverified: list[UnverifiedSkill] = []
     flags: dict[str, int]
 
 
@@ -77,10 +90,12 @@ class Source(BaseModel):
 class MarketPulse(BaseModel):
     generated_at: str
     ad_statuses: list[str]
+    extraction: dict | None = None  # extractor used and SSKS match rates (see app/processing/skills.py)
     sources: list[Source]
     totals: Totals
     sectors: list[SectorProfile]
     skills: list[SkillDemand]
+    unverified: list[UnverifiedSkill] = []
     roles: list[RoleProfile]
 
 
