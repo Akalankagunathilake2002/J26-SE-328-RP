@@ -2,7 +2,11 @@
 
     python -m app.collectors.run --site topjobs --sector HR --limit 25
     python -m app.collectors.run --site all --sector all --limit 25
+    python -m app.collectors.run --site all --sector all --sync --limit 25   # also refresh statuses
     python -m app.collectors.run --site all --reparse     # offline: rebuild processed/ from raw/
+
+--sync also marks every stored ad active, expired or removed (see app/collectors/base.py) and adds
+a row to data/processed/sync_log.csv. scripts/sync.sh runs it with a log file.
 
 Image ads get their text from the saved flyer with OCR (Tesseract; skip with --no-ocr).
 Every run ends by refreshing data/processed/quality_report.md and the skill profile
@@ -19,7 +23,7 @@ import logging
 import sys
 from collections.abc import Sequence
 
-from app.collectors.base import BaseCollector, CollectResult, utc_now
+from app.collectors.base import BaseCollector, CollectResult, SyncResult, utc_now
 from app.collectors.config import Settings, load_sectors, load_settings, load_sites
 from app.collectors.dedup import deduplicate
 from app.collectors.http import PoliteClient, SiteBlocked
@@ -48,7 +52,9 @@ def parse_args(argv: Sequence[str] | None, sectors: list[str]) -> argparse.Names
     parser.add_argument("--site", default="all", help="a site from config/sector_mapping.yaml, or 'all'")
     parser.add_argument("--sector", default="all", choices=[*sectors, "all"])
     parser.add_argument("--limit", type=int, default=25, help="new ads per sector (default: 25)")
-    parser.add_argument("--reparse", action="store_true", help="no network: rebuild processed/ from raw/")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--sync", action="store_true", help="also update the status of every stored ad")
+    mode.add_argument("--reparse", action="store_true", help="no network: rebuild processed/ from raw/")
     parser.add_argument("--no-ocr", action="store_true", help="don't read text from flyer images")
     return parser.parse_args(argv)
 
@@ -92,13 +98,20 @@ def main(
             client = PoliteClient(sites[name].base_url, settings.contact)
             collector = COLLECTORS[name](sites[name], client, storage)
             try:
-                result = collector.collect(sectors, args.limit)
+                if args.sync:
+                    result, statuses = collector.sync(sectors, args.limit)
+                else:
+                    result, statuses = collector.collect(sectors, args.limit), None
             except SiteBlocked as exc:
                 log.error("%s: stopped, the site asked us to stop (%s)", name, exc)
                 exit_code = 1
                 continue
             log_result(name, result)
-            storage.record_listing_counts(name, result.listed, utc_now())
+            checked_at = utc_now()
+            storage.record_listing_counts(name, result.listed, checked_at)
+            if statuses is not None:
+                log_sync(name, statuses)
+                storage.append_sync_log(sync_log_row(name, checked_at, result, statuses))
 
     ads = [ad for name in names for ad in COLLECTORS[name](sites[name], OfflineClient(), storage).reparse()]
     if not args.no_ocr:
@@ -125,6 +138,37 @@ def log_result(site: str, result: CollectResult) -> None:
     )
     for skipped in result.skipped:
         log.info("  skipped %s", skipped)
+
+
+def log_sync(site: str, statuses: SyncResult) -> None:
+    if statuses.live_on_homepage is None:
+        log.warning("%s: homepage not used, so no ad was marked removed", site)
+    else:
+        log.info("%s: %d ads live on the homepage", site, statuses.live_on_homepage)
+    log.info(
+        "%s: %d stored ads active; this sync: %d expired, %d removed, %d live again",
+        site, statuses.active, len(statuses.expired), len(statuses.removed), len(statuses.reactivated),
+    )
+    if statuses.unconfirmed:
+        log.info(
+            "%s: %d agency ads are missing from their category page but can't be checked on the "
+            "homepage; they stay active until their closing date", site, statuses.unconfirmed,
+        )
+
+
+def sync_log_row(site: str, synced_at: str, result: CollectResult, statuses: SyncResult) -> dict:
+    return {
+        "synced_at": synced_at,
+        "site": site,
+        "live_on_homepage": "" if statuses.live_on_homepage is None else statuses.live_on_homepage,
+        "listed": len(result.seen),
+        "new_ads": sum(result.new_ads.values()),
+        "active": statuses.active,
+        "expired": len(statuses.expired),
+        "removed": len(statuses.removed),
+        "reactivated": len(statuses.reactivated),
+        "unconfirmed": statuses.unconfirmed,
+    }
 
 
 def run_ocr(ads: list[JobAd]) -> None:

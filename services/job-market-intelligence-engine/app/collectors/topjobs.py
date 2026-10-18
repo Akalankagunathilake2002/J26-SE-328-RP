@@ -9,6 +9,12 @@ are ignored.)
 Ad pages: ``#position``, ``#employer``, ``#adview-job-location``, ``#endDate``, the job-type
 labels in ``.ad-status``, and ``#remark``, the ad body, usually a single flyer image.
 
+Homepage: a link (``jc=<job code>``) to every live ad posted directly by an employer (agent code
+``DEFZZZ``, about 3,200 ads), so a sync uses it to confirm that such an ad missing from its
+category page has really been taken down. Ads posted through recruitment agencies (any other agent
+code; a third of the HR ads in October 2026) are mostly not on the homepage, so their removal
+can't be confirmed: they stay active until their closing date.
+
 If topjobs changes its layout, the listing returns no ads and the run reports it, rather than
 collecting the wrong pages. Saved copies of real pages are in tests/fixtures/topjobs/.
 """
@@ -30,7 +36,10 @@ AD_PATH = (  # sic: "Advertisment" is topjobs' own spelling
     "/employer/JobAdvertismentServlet?rid={rid}&ac={agent}&jc={job}&ec={employer}"
     "&pg=applicant/vacancybyfunctionalarea.jsp"
 )
+HOMEPAGE_PATH = "/"
+DIRECT_AGENT = "DEFZZZ"  # agent code of ads posted directly by the employer
 CREATE_ALERT = re.compile(r"createAlert\(\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'\s*,\s*'([^']*)'")
+JOB_CODE_PARAM = re.compile(r"[?&](?:amp;)?jc=(\d+)")  # an ad link: ...JobAdvertismentServlet?...&jc=0001560048
 WITHHELD = re.compile(r"withheld|confidential", re.IGNORECASE)
 MIN_TEXT_AD_CHARS = 200  # an ad body with less text than this beside a flyer is an image ad
 
@@ -79,6 +88,16 @@ class TopjobsCollector(BaseCollector):
                 else None,
             )
         return list(entries.values())
+
+    def homepage_url(self) -> str:
+        return self.config.base_url + HOMEPAGE_PATH
+
+    def parse_live_ids(self, html: str) -> set[str]:
+        """Job codes of the ads linked from the homepage."""
+        return set(JOB_CODE_PARAM.findall(html))
+
+    def listed_on_homepage(self, url: str) -> bool:
+        return parse_qs(urlsplit(url).query).get("ac", [None])[0] == DIRECT_AGENT
 
     def parse_ad(self, html: str, entry: ListingEntry) -> JobAd:
         soup = BeautifulSoup(html, "html.parser")

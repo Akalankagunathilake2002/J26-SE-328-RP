@@ -71,6 +71,8 @@ class JobAd:
     image_path: str | None = None
     status: str = ACTIVE
     collected_at: str | None = None  # when the ad page was downloaded (UTC, ISO 8601)
+    last_seen_at: str | None = None  # last sync that found the ad live on the site
+    status_changed_at: str | None = None  # when the status last changed (None: active since collected)
 
     @property
     def key(self) -> str:

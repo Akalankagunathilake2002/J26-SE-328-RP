@@ -131,7 +131,8 @@ export function DataSourcesCard({ sources }: { sources: Source[] }) {
 
       <p className="mt-5 flex gap-2 rounded-[8px] border-2 border-ink bg-peach p-3 text-[13px] leading-[1.5]">
         <Info className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-        New ads are added when a collection run is started. Automatic daily syncing is coming soon.
+        Each sync adds new ads and drops expired or removed ones from these numbers. Syncs are started by
+        hand for now; automatic daily syncing is coming soon.
       </p>
 
       <div className="mt-6 flex justify-center">

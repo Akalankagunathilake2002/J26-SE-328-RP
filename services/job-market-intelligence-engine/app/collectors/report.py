@@ -17,7 +17,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from app.collectors.config import load_sectors, load_settings
-from app.collectors.models import ACTIVE, JobAd
+from app.collectors.models import ACTIVE, STATUSES, JobAd
 from app.collectors.storage import Storage
 
 # Without OCR, a sector is worth scaling up only if at least this share of its ads is text.
@@ -113,6 +113,8 @@ def render(site: str, rows: list[SectorQuality], listed_at: str | None, generate
         "- **Image / text ads:** after duplicates were removed. Image ads need OCR before their "
         "requirements and skills can be read.",
         f"- **OCR:** text was read from {_ocr_read(rows)} image ads.",
+        f"- **Status:** {_statuses(rows)}. Expired and removed ads are kept for history; the skill "
+        "profile counts active ads only.",
         "",
         "## Missing values (% of ads)",
         "",
@@ -145,6 +147,12 @@ def _ocr_read(rows: list[SectorQuality]) -> str:
     image_ads = {ad.key: ad for row in rows for ad in row.ads if ad.is_image_ad}
     with_text = sum(bool(ad.description_text) for ad in image_ads.values())
     return f"{with_text} of {len(image_ads)}"
+
+
+def _statuses(rows: list[SectorQuality]) -> str:
+    ads = {ad.key: ad for row in rows for ad in row.ads}
+    counts = Counter(ad.status for ad in ads.values())
+    return ", ".join(f"{counts[status]} {status}" for status in STATUSES)
 
 
 def _count(value: int | None) -> str:

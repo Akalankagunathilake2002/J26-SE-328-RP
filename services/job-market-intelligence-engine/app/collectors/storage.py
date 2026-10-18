@@ -5,10 +5,13 @@
     ``<job_id>.meta.json`` with the listing details. Everything can be re-parsed offline from here.
     Keep raw/ private: pages contain recruiters' contact details as published.
 
+    The meta file also holds the ad's status (active / expired / removed), when it was last seen
+    live and its status history, kept up to date by each sync.
+
 ``processed/``
     ``<site>.jsonl`` and ``combined.csv`` (cleaned ad records), ``dedup_log.csv``,
     ``listing_counts.json`` (ads on each sector's listing pages at the last run),
-    ``quality_report.md`` and ``skill_profile.md``/``.json``.
+    ``sync_log.csv`` (one row per sync), ``quality_report.md`` and ``skill_profile.md``/``.json``.
 """
 
 from __future__ import annotations
@@ -19,7 +22,12 @@ from collections.abc import Iterable, Iterator
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
-from app.collectors.models import FIELDS, JobAd, ListingEntry
+from app.collectors.models import ACTIVE, FIELDS, JobAd, ListingEntry
+
+SYNC_LOG_FIELDS = [
+    "synced_at", "site", "live_on_homepage", "listed", "new_ads", "active", "expired", "removed", "reactivated",
+    "unconfirmed",
+]
 
 
 @dataclass
@@ -72,6 +80,9 @@ class Storage:
             "categories": [entry.category],
             "collected_at": collected_at,
             "image_file": image_file,
+            "status": ACTIVE,
+            "last_seen_at": collected_at,
+            "status_history": [{"status": ACTIVE, "at": collected_at}],
         }
         self._write_meta(html_path, meta)
         return html_path
@@ -104,6 +115,10 @@ class Storage:
                     image_path=html_path.parent / image_file if image_file else None,
                     meta=meta,
                 )
+
+    def save_meta(self, raw: RawAd) -> None:
+        """Write back a stored ad's meta file after its status or listing details changed."""
+        self._write_meta(raw.html_path, raw.meta)
 
     @staticmethod
     def _meta_path(html_path: Path) -> Path:
@@ -169,6 +184,24 @@ class Storage:
             data.setdefault(site, {})[sector] = {"listed": listed, "checked_at": checked_at}
         path.write_text(json.dumps(data, indent=2), encoding="utf-8")
         return path
+
+    def append_sync_log(self, row: dict) -> Path:
+        """Add one sync's numbers to processed/sync_log.csv (the history of all syncs)."""
+        path = self._processed_path("sync_log.csv")
+        new_file = not path.exists()
+        with path.open("a", encoding="utf-8", newline="") as out:
+            writer = csv.DictWriter(out, fieldnames=SYNC_LOG_FIELDS)
+            if new_file:
+                writer.writeheader()
+            writer.writerow(row)
+        return path
+
+    def read_sync_log(self) -> list[dict]:
+        path = self.processed_dir / "sync_log.csv"
+        if not path.exists():
+            return []
+        with path.open(encoding="utf-8", newline="") as rows:
+            return list(csv.DictReader(rows))
 
     def listing_counts(self) -> dict:
         path = self.processed_dir / "listing_counts.json"
