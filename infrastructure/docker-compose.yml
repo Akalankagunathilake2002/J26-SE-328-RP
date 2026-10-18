@@ -66,11 +66,20 @@ services:
       POSTGRES_DB: learning_db
       LEARNING_SERVICE_PORT: ${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
       SERVICE_PORT: ${LEARNING_SERVICE_PORT:?Set LEARNING_SERVICE_PORT in infrastructure/.env}
-      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      # Key-free by default like the interview: answers from the local LLM on the host Mac
+      # (Huggingbay/start-llm.sh, port 8082) and local embeddings in this container. Set
+      # LEARNING_LLM_PROVIDER=gemini, LEARNING_EMBEDDING_PROVIDER=gemini and
+      # LEARNING_EMBEDDING_DIMENSION=1536 to use Gemini (the corpus is re-ingested on restart).
+      LLM_PROVIDER: ${LEARNING_LLM_PROVIDER:-local}
       LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
+      LOCAL_LLM_URL: ${LOCAL_LLM_URL:-http://host.docker.internal:8082}
+      LOCAL_LLM_TIMEOUT: 110                  # under the gateway's 120 s for /api/v1/learning/
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-gemini}
+      EMBEDDING_PROVIDER: ${LEARNING_EMBEDDING_PROVIDER:-local}
+      EMBEDDING_DIMENSION: ${LEARNING_EMBEDDING_DIMENSION:-384}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       postgres:
         condition: service_healthy
@@ -85,11 +94,17 @@ services:
       POSTGRES_DB: interview_db
       INTERVIEW_SERVICE_PORT: ${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
       SERVICE_PORT: ${INTERVIEW_SERVICE_PORT:?Set INTERVIEW_SERVICE_PORT in infrastructure/.env}
-      LLM_PROVIDER: ${LLM_PROVIDER:-gemini}
+      # The interview runs key-free by default: questions/evaluation from a local LLM on the host Mac
+      # (Huggingbay/start-llm.sh, port 8082), local embeddings and local Whisper in this container.
+      # Set INTERVIEW_LLM_PROVIDER=gemini (and INTERVIEW_EMBEDDING_PROVIDER=gemini with
+      # INTERVIEW_EMBEDDING_DIMENSION=1536, then re-ingest) to use Gemini instead.
+      LLM_PROVIDER: ${INTERVIEW_LLM_PROVIDER:-local}
       LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
+      LOCAL_LLM_URL: ${LOCAL_LLM_URL:-http://host.docker.internal:8082}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
-      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-gemini}
+      EMBEDDING_PROVIDER: ${INTERVIEW_EMBEDDING_PROVIDER:-local}
+      EMBEDDING_DIMENSION: ${INTERVIEW_EMBEDDING_DIMENSION:-384}
       LIVEAVATAR_API_KEY: ${LIVEAVATAR_API_KEY:-}
       LIVEAVATAR_SANDBOX: ${LIVEAVATAR_SANDBOX:-true}
       LIVEAVATAR_AVATAR_ID: ${LIVEAVATAR_AVATAR_ID:-dd73ea75-1218-4ef3-92ce-606d5f7fbc0a}
@@ -101,6 +116,9 @@ services:
       LOCAL_AVATAR_NAME: ${LOCAL_AVATAR_NAME:-elena}
       LOCAL_AVATAR_VOICE: ${LOCAL_AVATAR_VOICE:-Samantha}
       LOCAL_AVATAR_DECODER: ${LOCAL_AVATAR_DECODER:-fast}
+      # Candidate's spoken answers: "local" = faster-whisper in this container (no key);
+      # "auto" = OpenAI Whisper if OPENAI_API_KEY is set, then local, then Gemini
+      STT_PROVIDER: ${STT_PROVIDER:-local}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
