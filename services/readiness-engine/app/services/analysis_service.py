@@ -200,13 +200,18 @@ class AnalysisService:
                 or industry_profile.role_name
                 or "Target Industry Role"
             )
+            resolved_role_id = (
+                industry_profile.role_id
+                or industry_profile.candidate_role_id
+                or str(industry_profile.id)
+            )
             c04_payload = format_c04_payload(
                 priority_skills=priorities,
                 role_name=role_title,
                 readiness_score=overall_readiness.overall_readiness,
                 analysis_id=analysis.analysis_id,
                 user_id=user_profile.user_id,
-                role_id=industry_profile.role_id,
+                role_id=resolved_role_id,
             )
 
             # Step 6: Atomic Persistence of Detailed Results

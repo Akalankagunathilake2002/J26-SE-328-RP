@@ -2,37 +2,61 @@ import uuid
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AliasChoices, BaseModel, ConfigDict, Field, model_validator
 
 
 # Request payload for initiating a career readiness analysis run
 class AnalysisCreateRequest(BaseModel):
     user_skill_profile_id: uuid.UUID | None = Field(
-        None, description="UUID of the student's UserSkillProfile"
+        None,
+        validation_alias=AliasChoices("user_skill_profile_id", "userSkillProfileId"),
+        description="UUID of the student's UserSkillProfile",
     )
     industry_profile_id: uuid.UUID | None = Field(
-        None, description="UUID of the target IndustryProfile"
+        None,
+        validation_alias=AliasChoices("industry_profile_id", "industryProfileId"),
+        description="UUID of the target IndustryProfile",
     )
     user_id: uuid.UUID | None = Field(
-        None, description="User UUID used to resolve the latest active student profile"
+        None,
+        validation_alias=AliasChoices("user_id", "userId"),
+        description="User UUID used to resolve the latest active student profile",
     )
     role_id: str | None = Field(
-        None, description="Canonical or candidate role identifier (e.g., RL-000003)"
+        None,
+        validation_alias=AliasChoices("role_id", "roleId"),
+        description="Canonical or candidate role identifier (e.g., RL-000003)",
     )
     matching_method: str = Field(
         "RELATIONSHIP_AWARE",
+        validation_alias=AliasChoices("matching_method", "matchingMethod"),
         description="Matching method: RELATIONSHIP_AWARE or EXACT_BASELINE",
     )
     scoring_config_version: str = Field(
         "1.0",
+        validation_alias=AliasChoices("scoring_config_version", "scoringConfigVersion"),
         description="Configuration version for deterministic scoring reproducibility",
     )
     snapshot_id: uuid.UUID | None = Field(
         None,
+        validation_alias=AliasChoices("snapshot_id", "snapshotId"),
         description="Optional SSKS knowledge snapshot UUID; defaults to active snapshot",
     )
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+    # Prevent ambiguous profile selection by requiring explicit student and role targets
+    @model_validator(mode="after")
+    def validate_profile_selection(self) -> "AnalysisCreateRequest":
+        if self.user_skill_profile_id is None and self.user_id is None:
+            raise ValueError(
+                "Ambiguous profile selection: either 'user_skill_profile_id' or 'user_id' must be specified to select a student profile"
+            )
+        if self.industry_profile_id is None and self.role_id is None:
+            raise ValueError(
+                "Ambiguous profile selection: either 'industry_profile_id' or 'role_id' must be specified to select a target industry profile"
+            )
+        return self
 
 
 # Item in the C04 prioritySkills list conforming to the agreed external contract
