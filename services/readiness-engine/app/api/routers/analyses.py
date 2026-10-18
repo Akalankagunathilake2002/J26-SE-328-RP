@@ -91,7 +91,7 @@ async def get_analysis(
         for sr in analysis.skill_results
     ]
 
-    # Format priority skills
+    # Format priority skills ordered by sequential rank
     priority_skills_out = [
         PrioritySkillOut(
             skillId=ps.skill_id,
@@ -100,7 +100,7 @@ async def get_analysis(
             learningPriority=ps.learning_priority_score,
             gap=ps.gap,
         )
-        for ps in analysis.priority_skills
+        for ps in sorted(analysis.priority_skills, key=lambda p: p.priority_rank)
     ]
 
     c04_payload = analysis.reports[0].report_payload if analysis.reports else None

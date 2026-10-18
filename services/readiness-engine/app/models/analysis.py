@@ -83,10 +83,14 @@ class Analysis(Base):
         back_populates="analysis", cascade="all, delete-orphan"
     )
     priority_skills: Mapped[list["AnalysisPrioritySkill"]] = relationship(
-        back_populates="analysis", cascade="all, delete-orphan"
+        back_populates="analysis",
+        cascade="all, delete-orphan",
+        order_by="AnalysisPrioritySkill.priority_rank",
     )
     reports: Mapped[list["AnalysisReport"]] = relationship(
-        back_populates="analysis", cascade="all, delete-orphan"
+        back_populates="analysis",
+        cascade="all, delete-orphan",
+        order_by="AnalysisReport.generated_at.desc()",
     )
     candidate_discovery_runs: Mapped[list["CandidateDiscoveryRun"]] = relationship(
         back_populates="analysis", cascade="all, delete-orphan"

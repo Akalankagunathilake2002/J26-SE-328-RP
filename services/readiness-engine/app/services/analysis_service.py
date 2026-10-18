@@ -248,7 +248,9 @@ class AnalysisService:
                         match_res.selected_relationship_id if match_res else None
                     ),
                     coverage_credit=match_res.coverage_credit if match_res else 0.0,
-                    required_proficiency=req.required_proficiency_level,
+                    required_proficiency=(
+                        req.required_proficiency_level or "INTERMEDIATE"
+                    ),
                     user_proficiency=matched_stu_prof,
                     evidence_confidence=(
                         readiness_item.evidence_confidence if readiness_item else None
