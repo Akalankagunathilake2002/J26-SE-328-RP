@@ -17,7 +17,15 @@ The Readiness Engine evaluates career readiness, identifies skill gaps, and prio
 |---|---|---|
 | `/health` | `GET` | Root health check |
 | `/readiness/health` | `GET` | Service health status under service prefix |
+| `/analyses` | `POST` | Execute analysis pipeline and return C04 contract |
+| `/analyses` | `GET` | List analysis history with pagination |
+| `/analyses/{analysis_id}` | `GET` | Retrieve detailed analysis record and per-skill results |
+| `/analyses/{analysis_id}/c04` | `GET` | Retrieve downstream C04 payload |
+| `/analyses/{analysis_id}/report` | `GET` | Retrieve deterministic explanation and report |
 | `/readiness/docs` | `GET` | Interactive OpenAPI documentation |
+
+All routes are also accessible under the `/readiness` prefix alias (e.g. `/readiness/analyses/{analysis_id}/report`).
+For complete endpoint specifications and payload schemas, see [API Reference](docs/api-reference.md).
 
 ## Configuration
 

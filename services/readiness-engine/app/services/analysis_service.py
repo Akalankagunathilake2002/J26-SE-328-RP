@@ -30,6 +30,8 @@ from app.schemas.profile_validation import (
     validate_industry_profile,
     validate_user_skill_profile,
 )
+from app.schemas.report import AnalysisReportResponse
+from app.services.explanation_service import build_analysis_explanation_report
 from app.services.profile_loader import (
     load_snapshot_knowledge,
     resolve_industry_profile,
@@ -390,3 +392,41 @@ class AnalysisService:
         records = list(records_res.scalars().all())
 
         return records, total
+
+    # Retrieve or generate deterministic explanation report for completed analysis
+    async def get_or_generate_explanation_report(
+        self,
+        session: AsyncSession,
+        analysis_id: uuid.UUID,
+    ) -> tuple[Analysis | None, AnalysisReportResponse | None]:
+        analysis = await self.get_analysis_by_id(session, analysis_id)
+        if analysis is None:
+            return None, None
+
+        if analysis.status != AnalysisStatus.COMPLETED.value:
+            return analysis, None
+
+        # Check if explanation report was already persisted
+        for rep in analysis.reports:
+            if rep.report_version == "explanation_v1.0":
+                return analysis, AnalysisReportResponse.model_validate(
+                    rep.report_payload
+                )
+
+        # Generate deterministic report from persisted results
+        report_response = build_analysis_explanation_report(analysis)
+
+        # Persist report to avoid duplicate generation on repeated requests
+        new_report = AnalysisReport(
+            id=uuid.uuid4(),
+            analysis_id=analysis.analysis_id,
+            report_version="explanation_v1.0",
+            report_payload=report_response.model_dump(mode="json"),
+            generation_method="DETERMINISTIC_TEMPLATES",
+            status="READY",
+        )
+        session.add(new_report)
+        await session.commit()
+        analysis.reports.append(new_report)
+
+        return analysis, report_response
