@@ -1,0 +1,41 @@
+{
+  "base_model": "cross-encoder/stsb-roberta-base",
+  "max_length": 256,
+  "inputs": [
+    "input_ids",
+    "attention_mask"
+  ],
+  "pair_format": "Question: {question} Reference: {reference}",
+  "output": "logit; score = 5 * sigmoid(logit)",
+  "trained_on": "Mohler ASAG train split (55 questions, 1,574 answers)",
+  "metrics": {
+    "valid": {
+      "n": 331,
+      "pearson": 0.581,
+      "spearman": 0.634,
+      "qwk": 0.56,
+      "mae": 0.669,
+      "mean_human": 4.09,
+      "mean_model": 3.92
+    },
+    "test": {
+      "n": 368,
+      "pearson": 0.672,
+      "spearman": 0.616,
+      "qwk": 0.588,
+      "mae": 0.68,
+      "mean_human": 4.12,
+      "mean_model": 3.84
+    },
+    "test_llm": {
+      "n": 148,
+      "pearson": 0.672,
+      "spearman": 0.602,
+      "qwk": 0.614,
+      "mae": 0.759,
+      "mean_human": 3.34,
+      "mean_model": 3.46
+    }
+  },
+  "quantization": "dynamic int8 (onnxruntime quantize_dynamic); fp32 test: Pearson 0.672, QWK 0.588; int8 test: Pearson 0.674, QWK 0.611, MAE 0.668"
+}

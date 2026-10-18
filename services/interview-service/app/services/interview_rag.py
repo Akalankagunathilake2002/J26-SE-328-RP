@@ -1,5 +1,7 @@
 import uuid
 import json
+import random
+import re
 import time
 from typing import Dict, Any, List
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -8,6 +10,9 @@ from app.models.interview import InterviewDocument, InterviewChunk, InterviewSes
 from app.services.embedding_service import embedding_service
 from app.core.config import settings
 from app.schemas.interview import QuestionGenerationRequest, InterviewQuestionResponse
+
+QUESTION_POOL = 60        # closest bank items considered per question
+QUESTION_SHORTLIST = 6    # the pick is random among this many of the best remaining matches
 
 
 class InterviewRAGService:
@@ -69,20 +74,36 @@ class InterviewRAGService:
             .join(InterviewDocument, InterviewChunk.document_id == InterviewDocument.id)
             .where(InterviewDocument.role.ilike(f"%{request.target_role}%"))
             .order_by("distance")
-            .limit(settings.TOP_K)
+            # a wider pool so topic de-duplication and the level preference have room to work
+            # a wide pool: with a large bank the same query would otherwise always pick the same few
+            .limit(QUESTION_POOL)
         )
         result = await session.execute(stmt)
         candidates = result.all()
 
-        # Same query every turn returns the same best match, so skip topics already asked
+        # Skip topics already asked in this session, and questions this student got in earlier sessions
+        # (turns store the bank item's reference answer, which identifies it)
         asked_res = await session.execute(
             select(InterviewTurn.topic).where(InterviewTurn.session_id == uuid.UUID(request.session_id))
         )
         asked_topics = {t for (t,) in asked_res.all() if t}
-        fresh = [c for c in candidates if c.topic not in asked_topics]
+        seen_res = await session.execute(
+            select(InterviewTurn.reference_answer)
+            .join(InterviewSession, InterviewTurn.session_id == InterviewSession.id)
+            .where(InterviewSession.student_id == select(InterviewSession.student_id)
+                   .where(InterviewSession.id == uuid.UUID(request.session_id)).scalar_subquery())
+            .where(InterviewTurn.reference_answer.isnot(None))
+        )
+        seen_refs = {r for (r,) in seen_res.all()}
+        unseen = [c for c in candidates if (c.expected_answer or c.content) not in seen_refs]
+        fresh = [c for c in (unseen or candidates) if c.topic not in asked_topics]
+        # Prefer the candidate's chosen experience level, then any level
+        at_level = [c for c in fresh if c.difficulty == request.experience_level]
 
         if candidates:
-            selected = fresh[0] if fresh else candidates[0]
+            # Random among the closest matches, so interviews vary while staying on the profile
+            preferred = at_level or fresh or candidates
+            selected = random.choice(preferred[:QUESTION_SHORTLIST])
             topic = selected.topic
             difficulty = selected.difficulty
             rubric_dict = selected.rubric if isinstance(selected.rubric, dict) else {}
@@ -103,6 +124,7 @@ class InterviewRAGService:
                 previous_question=request.previous_question,
                 previous_answer=request.previous_answer,
                 previous_missing=request.previous_missing_concepts,
+                background=request.candidate_background,
             )
             context_or_reason = f"Evaluates your understanding of {topic} for an {request.experience_level} {request.target_role} position."
         else:
@@ -114,6 +136,7 @@ class InterviewRAGService:
                 f"to guarantee low latency and resource resilience under high concurrency?"
             )
             context_or_reason = f"Core competency question for {request.target_role} candidates."
+            expected_ref = None
             rubric_criteria = [
                 "Explains connection lifecycle and pooling",
                 "Explains token verification without blocking",
@@ -125,7 +148,9 @@ class InterviewRAGService:
             session_id=uuid.UUID(request.session_id),
             question=question_text,
             topic=topic,
-            difficulty=difficulty
+            difficulty=difficulty,
+            reference_answer=expected_ref,
+            rubric_criteria=rubric_criteria,
         )
         session.add(turn)
         await session.commit()
@@ -150,11 +175,18 @@ class InterviewRAGService:
         previous_question: str | None = None,
         previous_answer: str | None = None,
         previous_missing: List[str] | None = None,
+        background: str | None = None,
     ) -> str:
+        from app.core.roles import is_technical
+        technical = is_technical(role)
+        interviewer = ("a Senior Technical Interviewer assessing" if technical
+                       else "an experienced hiring manager interviewing")
         prompt = (
-            f"You are a Senior Technical Interviewer assessing a candidate for a {level} {role} position.\n"
+            f"You are {interviewer} a candidate for a {level} {role} position.\n"
             f"Candidate Skills: {', '.join(skills)}\n"
-            f"Topic: {topic}\n"
+            + (f"Candidate background (from their CV): {background}\n"
+               "Where it fits naturally, frame the scenario around their experience.\n" if background else "")
+            + f"Topic: {topic}\n"
             f"Reference Concept:\n{reference_concept}\n\n"
         )
         if previous_question and previous_answer:
@@ -162,16 +194,30 @@ class InterviewRAGService:
                 f"Previous question: {previous_question}\n"
                 f"Candidate's answer: {previous_answer[:1500]}\n"
                 + (f"Concepts the answer missed: {', '.join(previous_missing)}\n" if previous_missing else "")
-                + "\nStart with ONE short, natural sentence acknowledging their previous answer "
-                "(no scores, no praise inflation). If a missed concept relates to this topic, probe it.\n"
+                + "\nYou already gave spoken feedback on that answer, so don't assess it again. "
+                "Open with a brief natural transition (e.g. 'Let's build on that.' or 'Moving on.'). "
+                "If a missed concept relates to this topic, probe it.\n"
             )
+        task = ("Formulate ONE clear, scenario-oriented technical interview question testing this concept." if technical
+                else "Formulate ONE clear interview question for this role testing this competency or knowledge: either "
+                     "behavioural (\"Tell me about a time...\") or situational (\"How would you handle...\"), "
+                     "grounded in the reference concept.")
         prompt += (
-            "Task: Formulate ONE clear, scenario-oriented technical interview question testing this concept. "
+            f"Task: {task} "
             "Do not ask multiple questions. Be direct and realistic. It will be spoken aloud by a video "
-            "interviewer, so write plain conversational sentences: no markdown, lists, code or quotes."
+            "interviewer, so write plain conversational sentences: no markdown, lists, code or quotes. "
+            "Keep it under 35 words in total, like a real interviewer speaking."
         )
 
-        if self._llm == "gemini" and self._gemini_client:
+        if settings.LLM_PROVIDER == "local":
+            try:
+                from app.services.local_llm import local_llm
+                text = await local_llm.chat([{"role": "user", "content": prompt}], temperature=0.4, max_tokens=300)
+                if text:
+                    return re.sub(r"[`*_#>]+", "", text).strip().strip('"')
+            except Exception as e:
+                print(f"[Warning] Local LLM question generation error: {e}")
+        elif self._llm == "gemini" and self._gemini_client:
             try:
                 resp = self._gemini_client.models.generate_content(
                     model=settings.LLM_MODEL or "gemini-2.5-flash",

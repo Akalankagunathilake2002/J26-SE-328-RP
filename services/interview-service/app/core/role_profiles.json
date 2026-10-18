@@ -1,0 +1,269 @@
+{
+  "_comment": "Non-technical roles. Read by the interview service (question style, grading criteria, CV keywords) and by scripts/datasets (O*NET profile, Wikipedia articles, extra sources). Roles not listed here are technical.",
+  "roles": {
+    "HR Manager": {
+      "onet": [
+        "11-3121.00",
+        "13-1071.00"
+      ],
+      "cv_keywords": [
+        "human resources",
+        "hr ",
+        "recruitment",
+        "talent acquisition",
+        "onboarding",
+        "payroll",
+        "employee relations",
+        "performance appraisal",
+        "hris",
+        "labour law",
+        "labor law",
+        "compensation",
+        "benefits",
+        "people operations"
+      ],
+      "wikipedia": [
+        "Human resource management",
+        "Recruitment",
+        "Onboarding",
+        "Performance appraisal",
+        "Employee engagement",
+        "Employee benefits",
+        "Employee retention",
+        "Training and development",
+        "Succession planning",
+        "Organizational culture",
+        "Employee relations",
+        "Diversity, equity, and inclusion",
+        "Workplace harassment",
+        "Conflict management",
+        "Job analysis",
+        "Exit interview",
+        "360-degree feedback",
+        "Human resource management system",
+        "Employee turnover"
+      ],
+      "extra_sources": [
+        "eeoc",
+        "opm"
+      ]
+    },
+    "Digital Marketing Executive": {
+      "onet": [
+        "13-1161.01",
+        "13-1161.00"
+      ],
+      "cv_keywords": [
+        "digital marketing",
+        "seo",
+        "sem",
+        "ppc",
+        "google ads",
+        "social media marketing",
+        "content marketing",
+        "email marketing",
+        "google analytics",
+        "meta ads",
+        "marketing automation",
+        "conversion rate"
+      ],
+      "wikipedia": [
+        "Digital marketing",
+        "Search engine optimization",
+        "Search engine marketing",
+        "Pay-per-click",
+        "Social media marketing",
+        "Content marketing",
+        "Email marketing",
+        "Influencer marketing",
+        "Affiliate marketing",
+        "Conversion rate optimization",
+        "A/B testing",
+        "Web analytics",
+        "Marketing automation",
+        "Customer lifetime value",
+        "Click-through rate",
+        "Landing page",
+        "Behavioral retargeting",
+        "Marketing funnel"
+      ],
+      "extra_sources": [
+        "google-search"
+      ]
+    },
+    "Finance Executive": {
+      "onet": [
+        "13-2051.00",
+        "13-2011.00"
+      ],
+      "cv_keywords": [
+        "finance",
+        "accounting",
+        "financial statements",
+        "budgeting",
+        "forecasting",
+        "accounts payable",
+        "accounts receivable",
+        "reconciliation",
+        "ifrs",
+        "audit",
+        "cash flow",
+        "ca ",
+        "acca",
+        "cima",
+        "variance analysis"
+      ],
+      "wikipedia": [
+        "Financial statement",
+        "Balance sheet",
+        "Income statement",
+        "Cash flow statement",
+        "Working capital",
+        "Budget",
+        "Financial ratio",
+        "Net present value",
+        "Internal rate of return",
+        "Accounts receivable",
+        "Accounts payable",
+        "Accrual",
+        "Depreciation",
+        "Financial forecast",
+        "Cost accounting",
+        "Management accounting",
+        "Internal control",
+        "International Financial Reporting Standards",
+        "Bank reconciliation",
+        "Cash management",
+        "Variance (accounting)"
+      ],
+      "extra_sources": []
+    },
+    "English Copywriter": {
+      "onet": [
+        "27-3043.00"
+      ],
+      "cv_keywords": [
+        "copywriting",
+        "copywriter",
+        "content writing",
+        "copy editing",
+        "proofreading",
+        "creative writing",
+        "advertising copy",
+        "brand voice",
+        "blog",
+        "editorial",
+        "storytelling"
+      ],
+      "wikipedia": [
+        "Copywriting",
+        "Advertising",
+        "Call to action (marketing)",
+        "Plain language",
+        "Headline",
+        "Editing",
+        "Proofreading",
+        "Style guide",
+        "Content strategy",
+        "Persuasion",
+        "AIDA (marketing)",
+        "Unique selling proposition",
+        "Slogan",
+        "Readability",
+        "Brand language",
+        "Tone (literature)"
+      ],
+      "extra_sources": [
+        "plainlanguage",
+        "18f-content-guide"
+      ]
+    },
+    "Graphic Designer": {
+      "onet": [
+        "27-1024.00"
+      ],
+      "cv_keywords": [
+        "graphic design",
+        "adobe photoshop",
+        "illustrator",
+        "indesign",
+        "figma",
+        "typography",
+        "branding",
+        "visual design",
+        "layout",
+        "logo design",
+        "canva",
+        "print design"
+      ],
+      "wikipedia": [
+        "Graphic design",
+        "Typography",
+        "Color theory",
+        "Visual hierarchy",
+        "Grid (graphic design)",
+        "Principles of grouping",
+        "Logo",
+        "Corporate identity",
+        "Page layout",
+        "Kerning",
+        "White space (visual arts)",
+        "User interface design",
+        "Web accessibility",
+        "Raster graphics",
+        "Vector graphics",
+        "CMYK color model",
+        "RGB color model",
+        "Prepress",
+        "Design brief"
+      ],
+      "extra_sources": [
+        "uswds",
+        "18f-brand"
+      ]
+    },
+    "Assistant Brand Manager": {
+      "onet": [
+        "11-2021.00",
+        "11-2011.00"
+      ],
+      "cv_keywords": [
+        "brand management",
+        "brand manager",
+        "fmcg",
+        "marketing mix",
+        "consumer insights",
+        "market research",
+        "trade marketing",
+        "product launch",
+        "brand strategy",
+        "nielsen",
+        "go-to-market"
+      ],
+      "wikipedia": [
+        "Brand management",
+        "Brand equity",
+        "Brand awareness",
+        "Brand loyalty",
+        "Brand architecture",
+        "Positioning (marketing)",
+        "Marketing mix",
+        "Market segmentation",
+        "Product life-cycle management (marketing)",
+        "Market research",
+        "Consumer behaviour",
+        "Go-to-market strategy",
+        "Competitor analysis",
+        "SWOT analysis",
+        "Integrated marketing communications",
+        "Brand extension",
+        "Rebranding",
+        "Net promoter score",
+        "Trade marketing"
+      ],
+      "extra_sources": [
+        "18f-brand"
+      ]
+    }
+  }
+}

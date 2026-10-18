@@ -1,12 +1,59 @@
 import uuid
 import json
+import re
 import time
-from typing import Dict, Any
+from typing import Any, Dict, List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.models.interview import InterviewTurn, InterviewChunk, InterviewExperimentLog
+from app.models.interview import InterviewTurn, InterviewChunk, InterviewExperimentLog, InterviewSession
 from app.schemas.interview import EvaluateAnswerRequest, EvaluationResultResponse
 from app.core.config import settings
+
+
+class EvaluationError(Exception):
+    def __init__(self, message: str, status_code: int = 502):
+        super().__init__(message)
+        self.status_code = status_code
+
+
+SCORE_KEYS = ("technical_accuracy", "relevance", "explanation_quality", "clarity")
+LIST_KEYS = ("missing_concepts", "strengths", "areas_for_improvement")
+
+
+def _validated(data: dict) -> dict:
+    """Checks an LLM evaluation: the four scores must be present (clamped to 1-5); text and list
+    fields are normalised. Raises if the model skipped a score, rather than guessing one."""
+    out = dict(data)
+    for k in SCORE_KEYS:
+        try:
+            out[k] = round(min(5.0, max(1.0, float(data[k]))), 1)
+        except (KeyError, TypeError, ValueError):
+            raise ValueError(f"evaluation is missing a valid '{k}' score")
+    for k in LIST_KEYS:
+        v = data.get(k) or []
+        out[k] = [str(x) for x in (v if isinstance(v, list) else [v])]
+    for k in ("technical_feedback", "communication_feedback", "spoken_feedback"):
+        out[k] = str(data.get(k) or "")
+    if not out["technical_feedback"]:
+        raise ValueError("evaluation is missing technical_feedback")
+    return out
+
+
+def _speakable(text: str) -> str:
+    """Strip markdown the voice would read out or stumble on (`code`, **bold**, # headings)."""
+    return re.sub(r"\s+", " ", re.sub(r"[`*_#>]+", "", text or "")).strip()
+
+
+def _first_sentences(text: str, max_words: int = 40) -> str:
+    """Short spoken version of written feedback, used if the LLM gives no spoken_feedback."""
+    words, out = 0, []
+    for sentence in text.replace("\n", " ").split(". "):
+        n = len(sentence.split())
+        if out and words + n > max_words:
+            break
+        out.append(sentence.strip().rstrip("."))
+        words += n
+    return (". ".join(out) + ".") if out else ""
 
 
 class EvaluationRAGService:
@@ -58,17 +105,27 @@ class EvaluationRAGService:
         turn = res.scalar_one_or_none()
 
         if not turn:
-            raise ValueError(f"Interview turn {request.turn_id} not found.")
+            raise EvaluationError(f"Interview turn {request.turn_id} not found.", status_code=404)
 
         # Update transcript
         turn.transcript = request.transcript
 
-        # 2. LLM Multi-Criteria Evaluation
+        # 2. LLM Multi-Criteria Evaluation (criteria depend on whether the role is technical)
+        interview = await session.get(InterviewSession, turn.session_id)
+        role = interview.target_role if interview else None
         eval_data = await self._run_evaluation_chain(
             question=turn.question,
             topic=turn.topic,
-            transcript=request.transcript
+            transcript=request.transcript,
+            reference_answer=turn.reference_answer,
+            rubric_criteria=turn.rubric_criteria,
+            role=role,
         )
+        # Technical accuracy from the trained scorer / calibration when the mode says so (scripts/training)
+        from app.services.answer_scorer import answer_scorer
+        llm_technical = eval_data["technical_accuracy"]
+        eval_data["technical_accuracy"], scoring_method = answer_scorer.technical_accuracy(
+            llm_technical, turn.question, turn.reference_answer, request.transcript, role=role)
 
         evaluation_latency_ms = round((time.perf_counter() - t_start) * 1000, 2)
 
@@ -90,17 +147,25 @@ class EvaluationRAGService:
         # Blend non-verbal communication telemetry into feedback
         eye_ratio = (eye_contact / 100.0) if (eye_contact is not None and eye_contact > 1.0) else eye_contact
 
-        if duration or eye_contact or wpm:
-            comm_additions = []
-            if wpm:
-                comm_additions.append(f"Delivery pacing: {wpm:.0f} WPM ({pacing_note}).")
-            if eye_ratio is not None:
-                comm_additions.append(f"Camera engagement: {eye_ratio * 100:.0f}%.")
-            if fillers > 3:
-                comm_additions.append(f"Identified {fillers} verbal filler hesitation pauses.")
-            
-            if comm_additions:
-                eval_data["communication_feedback"] += f" Non-verbal telemetry: {' '.join(comm_additions)}"
+        # Observable delivery cues only; no emotion or mood is inferred from the face
+        comm_additions = []
+        if wpm:
+            comm_additions.append(f"Pace {wpm:.0f} words per minute ({pacing_note}).")
+        if fillers > 3:
+            comm_additions.append(f"{fillers} filler words.")
+        if request.pause_ratio is not None and request.pause_ratio > 0.35:
+            comm_additions.append(f"Silent for {request.pause_ratio * 100:.0f}% of the answer; aim for fewer long pauses.")
+        if eye_ratio is not None:
+            comm_additions.append(f"Looked at the camera {eye_ratio * 100:.0f}% of the time"
+                                  + ("." if eye_ratio >= 0.6 else "; try to look at the camera more, as you would at an interviewer."))
+        if request.face_visible_ratio is not None and request.face_visible_ratio < 0.8:
+            comm_additions.append(f"Your face was out of view {100 - request.face_visible_ratio * 100:.0f}% of the time.")
+        if request.smile_ratio is not None:
+            comm_additions.append(f"Smiled during {request.smile_ratio * 100:.0f}% of the answer.")
+        if request.head_steadiness is not None and request.head_steadiness < 0.5:
+            comm_additions.append("Frequent head movement; a steadier posture reads as more composed on video.")
+        if comm_additions:
+            eval_data["communication_feedback"] += " Delivery: " + " ".join(comm_additions)
 
         # Compute weighted overall score (70% technical accuracy, 15% clarity, 15% communication/engagement)
         tech_score = eval_data["technical_accuracy"]
@@ -145,18 +210,39 @@ class EvaluationRAGService:
             words_per_minute=wpm,
             eye_contact_ratio=eye_contact,
             pacing_assessment=pacing_note,
-            overall_score=overall_score
+            overall_score=overall_score,
+            spoken_feedback=_speakable(eval_data.get("spoken_feedback") or "")
+            or _speakable(_first_sentences(eval_data["technical_feedback"])),
+            scoring_method=scoring_method,
+            llm_technical_accuracy=llm_technical,
         )
 
-    async def _run_evaluation_chain(self, question: str, topic: str, transcript: str) -> Dict[str, Any]:
-        """Runs rubric-based evaluation via LLM or deterministic fallback."""
+    async def _run_evaluation_chain(self, question: str, topic: str, transcript: str,
+                                    reference_answer: Optional[str] = None,
+                                    rubric_criteria: Optional[List[str]] = None,
+                                    role: Optional[str] = None) -> Dict[str, Any]:
+        """Runs rubric-based evaluation via LLM or deterministic fallback. With a reference answer
+        and rubric (from the question bank) the model grades against them instead of its own idea
+        of a good answer; evaluation/eval_mohler.py measures the difference against human graders."""
+        from app.core.roles import is_technical
+        if is_technical(role):
+            criteria = ("You are an expert technical interviewer evaluating a student candidate's spoken answer.\n"
+                        "Evaluate the answer across 4 criteria on a 1.0 to 5.0 scale:\n"
+                        "1. technical_accuracy (1.0 - 5.0)\n"
+                        "2. relevance (1.0 - 5.0)\n"
+                        "3. explanation_quality (1.0 - 5.0)\n"
+                        "4. clarity (1.0 - 5.0)\n\n")
+        else:
+            # Same JSON keys, competency-based meaning for HR, marketing, finance, design and writing roles
+            criteria = (f"You are an experienced hiring manager for a {role} position evaluating a candidate's spoken "
+                        "interview answer.\nEvaluate the answer across 4 criteria on a 1.0 to 5.0 scale:\n"
+                        "1. technical_accuracy: accuracy and depth of role knowledge and professional judgement\n"
+                        "2. relevance: how directly the answer addresses the question\n"
+                        "3. explanation_quality: structure and evidence; for behavioural questions situation, task, "
+                        "action and result, with concrete examples and measurable impact\n"
+                        "4. clarity: clear, concise, professional communication\n\n")
         system_prompt = (
-            "You are an expert technical interviewer evaluating a student candidate's spoken answer.\n"
-            "Evaluate the answer across 4 criteria on a 1.0 to 5.0 scale:\n"
-            "1. technical_accuracy (1.0 - 5.0)\n"
-            "2. relevance (1.0 - 5.0)\n"
-            "3. explanation_quality (1.0 - 5.0)\n"
-            "4. clarity (1.0 - 5.0)\n\n"
+            criteria +
             "Return ONLY a JSON object with keys:\n"
             "- 'technical_accuracy': float\n"
             "- 'relevance': float\n"
@@ -166,11 +252,29 @@ class EvaluationRAGService:
             "- 'communication_feedback': string\n"
             "- 'missing_concepts': list of strings\n"
             "- 'strengths': list of strings\n"
-            "- 'areas_for_improvement': list of strings"
+            "- 'areas_for_improvement': list of strings\n"
+            "- 'spoken_feedback': string. What you, the interviewer, say out loud right after the answer: "
+            "1-2 natural sentences (max 40 words) naming one thing they did well and the most important gap. "
+            "No scores, no markdown, no lists. Do not ask a new question."
         )
-        user_prompt = f"Interview Question: {question}\nTopic: {topic}\nStudent Transcript:\n\"{transcript}\""
+        user_prompt = f"Interview Question: {question}\nTopic: {topic}\n"
+        if reference_answer:
+            user_prompt += (
+                f"Reference Answer (what a correct answer covers; the question may be phrased differently, "
+                f"and correct points beyond it still count):\n{reference_answer}\n"
+            )
+        if rubric_criteria:
+            user_prompt += "Rubric Criteria:\n" + "\n".join(f"- {c}" for c in rubric_criteria) + "\n"
+        user_prompt += f"Student Transcript:\n\"{transcript}\""
 
-        if self._llm == "gemini" and self._gemini_client:
+        if settings.LLM_PROVIDER == "local":
+            try:
+                from app.services.local_llm import local_llm
+                data = await local_llm.chat_json(system_prompt, user_prompt, temperature=settings.LLM_TEMPERATURE)
+                return _validated(data)
+            except Exception as e:
+                print(f"[Warning] Local LLM evaluation failed: {e}.")
+        elif self._llm == "gemini" and self._gemini_client:
             try:
                 from google.genai import types
                 combined_prompt = f"{system_prompt}\n\n{user_prompt}"
@@ -190,7 +294,7 @@ class EvaluationRAGService:
                     raw = raw[:-3]
                 return json.loads(raw.strip())
             except Exception as e:
-                print(f"[Warning] Gemini Evaluation failed: {e}. Using deterministic evaluation fallback.")
+                print(f"[Warning] Gemini Evaluation failed: {e}.")
 
         elif self._llm:
             try:
@@ -207,9 +311,16 @@ class EvaluationRAGService:
                     raw = raw[:-3]
                 return json.loads(raw.strip())
             except Exception as e:
-                print(f"[Warning] LLM Evaluation failed: {e}. Using deterministic evaluation fallback.")
+                print(f"[Warning] LLM Evaluation failed: {e}.")
 
-        # Deterministic fallback evaluation for testing
+        # Canned scores are only for the explicit "mock" provider (tests). For a real provider,
+        # inventing a 4.5/5 would mislead the candidate about their readiness.
+        if settings.LLM_PROVIDER != "mock":
+            raise EvaluationError(
+                "The interviewer couldn't evaluate this answer right now (the AI service didn't respond). "
+                "Please try again.", status_code=503,
+            )
+
         has_keywords = any(kw in transcript.lower() for kw in ["connection", "pool", "handshake", "token", "jwt", "overhead", "hikaricp", "cache"])
         score = 4.5 if has_keywords else 3.2
 

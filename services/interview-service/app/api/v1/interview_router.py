@@ -5,11 +5,13 @@ import httpx
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.core.config import settings
 from app.core.database import get_db
-from app.models.interview import InterviewSession, InterviewTurn
+from app.models.interview import InterviewSession, InterviewTurn, InterviewDocument
 from app.schemas.interview import (
+    RoleInfo,
+    CVProfileResponse,
     StartInterviewRequest,
     InterviewSessionResponse,
     QuestionGenerationRequest,
@@ -18,13 +20,15 @@ from app.schemas.interview import (
     AvatarSessionTokenResponse,
     AvatarConfigResponse,
     AvatarRenderRequest,
+    AvatarRenderResponse,
+    AvatarCancelRequest,
     AvatarJobResponse,
     EvaluateAnswerRequest,
     EvaluationResultResponse
 )
 from app.services.interview_rag import interview_rag_service
 from app.services.stt_service import stt_service, SpeechToTextError
-from app.services.evaluation_rag import evaluation_rag_service
+from app.services.evaluation_rag import evaluation_rag_service, EvaluationError
 from app.services.avatar_service import (
     avatar_service,
     local_avatar_service,
@@ -40,6 +44,48 @@ def parse_uuid(value: str, what: str) -> uuid.UUID:
         return uuid.UUID(value)
     except (ValueError, TypeError):
         raise HTTPException(status_code=404, detail=f"Unknown {what}: {value}")
+
+
+@router.get("/roles", response_model=list[RoleInfo])
+async def list_roles(db: AsyncSession = Depends(get_db)):
+    """Job roles the question bank covers, with question counts per experience level."""
+    res = await db.execute(
+        select(InterviewDocument.role, InterviewDocument.difficulty, func.count())
+        .group_by(InterviewDocument.role, InterviewDocument.difficulty)
+    )
+    roles: dict[str, RoleInfo] = {}
+    for role, level, count in res.all():
+        info = roles.setdefault(role, RoleInfo(role=role, questions=0, levels={}))
+        info.questions += count
+        info.levels[level] = count
+    return sorted(roles.values(), key=lambda r: -r.questions)
+
+
+@router.post("/cv/analyze", response_model=CVProfileResponse)
+async def analyze_cv(file: UploadFile = File(...), db: AsyncSession = Depends(get_db)):
+    """Reads a CV (PDF, DOCX or TXT) in memory and returns skills, a suggested role and level.
+    The file and its text are not stored."""
+    from app.services.cv_service import CVError, analyse_cv, extract_text, MAX_CV_BYTES
+    data = await file.read(MAX_CV_BYTES + 1)
+    try:
+        text = extract_text(file.filename or "", data)
+    except CVError as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e))
+    roles = [r for (r,) in (await db.execute(select(InterviewDocument.role).distinct())).all()]
+    profile = await analyse_cv(text, roles)
+    return CVProfileResponse(**profile, characters_read=len(text))
+
+
+@router.post("/{session_id}/end")
+async def end_session(session_id: str, db: AsyncSession = Depends(get_db)):
+    """Marks the interview as completed and returns its report."""
+    s_uuid = parse_uuid(session_id, "interview session")
+    session = await db.get(InterviewSession, s_uuid)
+    if not session:
+        raise HTTPException(status_code=404, detail="Unknown interview session")
+    session.status = "completed"
+    await db.commit()
+    return await get_session_report(session_id, db)
 
 
 @router.post("/start", response_model=InterviewSessionResponse)
@@ -79,7 +125,7 @@ async def get_question(
     question = await interview_rag_service.generate_interview_question(session=db, request=request)
     if local_avatar_service.enabled:
         try:
-            question.avatar_job_id = await local_avatar_service.render(question.question)
+            question.avatar_job_ids = await local_avatar_service.render(question.question)
         except AvatarServiceError as e:
             print(f"[Warning] Local avatar render not started: {e}")   # frontend falls back to voice
     return question
@@ -131,16 +177,26 @@ async def get_avatar_config():
     return AvatarConfigResponse(provider="none", available=False)
 
 
-@router.post("/avatar/render", response_model=AvatarJobResponse)
+@router.post("/avatar/render", response_model=AvatarRenderResponse)
 async def render_avatar_clip(request: AvatarRenderRequest):
-    """Queues a local-avatar clip for arbitrary text (replays, fallback questions)."""
+    """Queues local-avatar sentence clips for arbitrary text (replays, fallback questions)."""
     if not local_avatar_service.enabled:
         raise HTTPException(status_code=409, detail="The local avatar is not the active provider")
     try:
-        job_id = await local_avatar_service.render(request.text)
+        job_ids = await local_avatar_service.render(request.text)
     except AvatarServiceError as e:
         raise HTTPException(status_code=e.status_code, detail=str(e))
-    return AvatarJobResponse(job_id=job_id, status="queued")
+    return AvatarRenderResponse(job_ids=job_ids)
+
+
+@router.post("/avatar/cancel")
+async def cancel_avatar_clips(request: AvatarCancelRequest):
+    """Drops clips that haven't started rendering, so the clip the candidate is waiting for goes next."""
+    if not local_avatar_service.enabled:
+        return {"cancelled": 0}
+    ids = [j for j in request.job_ids if j.isalnum() and len(j) <= 64]
+    await local_avatar_service.cancel(ids)
+    return {"requested": len(ids)}
 
 
 @router.get("/avatar/jobs/{job_id}", response_model=AvatarJobResponse)
@@ -203,8 +259,24 @@ async def evaluate_answer(
     request: EvaluateAnswerRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    """Evaluates transcribed answer against the question's rubric and technical references."""
-    return await evaluation_rag_service.evaluate_spoken_answer(session=db, request=request)
+    """Evaluates the transcribed answer against the question's rubric and technical references.
+
+    The interviewer's short spoken reaction starts rendering on the local avatar straight away,
+    so it is ready (or nearly) by the time the candidate has read the scorecard.
+    """
+    parse_uuid(request.turn_id, "interview turn")
+    if not request.transcript.strip():
+        raise HTTPException(status_code=422, detail="There is no answer to evaluate yet.")
+    try:
+        result = await evaluation_rag_service.evaluate_spoken_answer(session=db, request=request)
+    except EvaluationError as e:
+        raise HTTPException(status_code=e.status_code, detail=str(e))
+    if local_avatar_service.enabled and result.spoken_feedback:
+        try:
+            result.avatar_job_ids = await local_avatar_service.render(result.spoken_feedback)
+        except AvatarServiceError as e:
+            print(f"[Warning] Local avatar feedback render not started: {e}")
+    return result
 
 
 @router.get("/report/{session_id}")
@@ -220,23 +292,29 @@ async def get_session_report(
 
     turn_summaries = []
     avg_scores = {"tech": 0.0, "rel": 0.0, "exp": 0.0, "clar": 0.0}
+    answered = 0
 
     for t in turns:
-        t_tech = float(t.technical_accuracy_score or 0)
-        t_rel = float(t.relevance_score or 0)
-        t_exp = float(t.explanation_quality_score or 0)
-        t_clar = float(t.clarity_score or 0)
+        evaluated = t.technical_accuracy_score is not None
+        t_tech = float(t.technical_accuracy_score) if evaluated else None
+        t_rel = float(t.relevance_score) if evaluated else None
+        t_exp = float(t.explanation_quality_score) if evaluated else None
+        t_clar = float(t.clarity_score) if evaluated else None
 
-        avg_scores["tech"] += t_tech
-        avg_scores["rel"] += t_rel
-        avg_scores["exp"] += t_exp
-        avg_scores["clar"] += t_clar
+        # Questions asked but never answered (e.g. the interview ended) don't count as zeros
+        if evaluated:
+            answered += 1
+            avg_scores["tech"] += t_tech
+            avg_scores["rel"] += t_rel
+            avg_scores["exp"] += t_exp
+            avg_scores["clar"] += t_clar
 
         turn_summaries.append({
             "turn_id": str(t.id),
             "question": t.question,
             "topic": t.topic,
             "transcript": t.transcript,
+            "evaluated": evaluated,
             "technical_accuracy": t_tech,
             "relevance": t_rel,
             "explanation_quality": t_exp,
@@ -246,10 +324,11 @@ async def get_session_report(
             "areas_for_improvement": t.areas_for_improvement or []
         })
 
-    count = max(1, len(turns))
+    count = max(1, answered)
     return {
         "session_id": session_id,
-        "turns_completed": len(turns),
+        "questions_asked": len(turns),
+        "turns_completed": answered,
         "overall_scores": {
             "technical_accuracy": round(avg_scores["tech"] / count, 2),
             "relevance": round(avg_scores["rel"] / count, 2),

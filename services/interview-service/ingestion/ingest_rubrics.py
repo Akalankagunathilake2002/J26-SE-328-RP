@@ -12,17 +12,23 @@ from app.models.interview import InterviewDocument, InterviewChunk, Base
 from app.services.embedding_service import embedding_service
 
 
+DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+
+
+def load_question_bank(json_path: str = None) -> list:
+    """All question files in data/ (the curated bank and public_question_bank.json), or one file."""
+    paths = [json_path] if json_path else sorted(
+        os.path.join(DATA_DIR, f) for f in os.listdir(DATA_DIR) if f.endswith(".json"))
+    data = []
+    for path in paths:
+        with open(path, "r", encoding="utf-8") as f:
+            data += json.load(f)
+    return data
+
+
 async def run_interview_ingestion(json_path: str = None):
-    if json_path is None:
-        json_path = os.path.join(os.path.dirname(__file__), "..", "data", "backend_questions.json")
-
-    print(f"[Interview Ingestion] Loading question bank from: {json_path}")
-    if not os.path.exists(json_path):
-        print(f"[Error] File not found: {json_path}")
-        return
-
-    with open(json_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    print(f"[Interview Ingestion] Loading question bank from: {json_path or DATA_DIR}")
+    data = load_question_bank(json_path)
 
     print(f"[Interview Ingestion] Found {len(data)} question(s). Connecting to database...")
     engine = create_async_engine(settings.async_database_url, echo=False)
@@ -76,7 +82,9 @@ async def run_interview_ingestion(json_path: str = None):
                     "title": title,
                     "role": role,
                     "topic": topic,
-                    "difficulty": difficulty
+                    "difficulty": difficulty,
+                    # Public-bank items: where the question came from and which documents ground the answer
+                    "provenance": item.get("provenance"),
                 },
                 embedding=vec
             )

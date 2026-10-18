@@ -28,6 +28,24 @@ class QuestionGenerationRequest(BaseModel):
     previous_question: Optional[str] = None
     previous_answer: Optional[str] = None
     previous_missing_concepts: List[str] = []
+    # One-sentence background from the candidate's CV, used to tailor the question
+    candidate_background: Optional[str] = Field(None, max_length=600)
+
+
+class RoleInfo(BaseModel):
+    role: str
+    questions: int
+    levels: Dict[str, int]              # e.g. {"Entry Level": 4, "Mid Level": 3}
+
+
+class CVProfileResponse(BaseModel):
+    name: str = ""
+    skills: List[str]
+    suggested_role: str
+    experience_level: str
+    summary: str = ""
+    method: str                         # "llm" or "keyword"
+    characters_read: int
 
 
 class InterviewQuestionResponse(BaseModel):
@@ -38,8 +56,8 @@ class InterviewQuestionResponse(BaseModel):
     difficulty: str
     context_or_reason: str
     rubric_criteria: List[str]
-    # Set when the local avatar engine started rendering this question as video
-    avatar_job_id: Optional[str] = None
+    # Local-avatar clips for this question, one per sentence group, in playback order
+    avatar_job_ids: List[str] = []
 
 
 class TranscribeResponse(BaseModel):
@@ -67,9 +85,17 @@ class AvatarRenderRequest(BaseModel):
     text: str = Field(..., min_length=1, max_length=2000)
 
 
+class AvatarRenderResponse(BaseModel):
+    job_ids: List[str]                  # sentence clips in playback order
+
+
+class AvatarCancelRequest(BaseModel):
+    job_ids: List[str] = Field(default_factory=list, max_length=50)
+
+
 class AvatarJobResponse(BaseModel):
     job_id: str
-    status: str                         # "queued" | "running" | "done" | "error"
+    status: str                         # "queued" | "running" | "done" | "error" | "cancelled"
     message: Optional[str] = None
     queued_ahead: Optional[int] = None
     video_url: Optional[str] = None
@@ -85,6 +111,15 @@ class EvaluateAnswerRequest(BaseModel):
     eye_contact_ratio: Optional[float] = Field(None, example=0.82)
     words_per_minute: Optional[float] = Field(None, example=135.0)
     filler_words_count: Optional[int] = Field(None, example=2)
+    # Observable delivery cues measured in the browser (camera: MediaPipe face landmarks; mic:
+    # loudness). Fractions are 0-1 of the answer's duration. No video or images leave the browser,
+    # and no emotion or mood is inferred.
+    face_visible_ratio: Optional[float] = Field(None, ge=0, le=1)
+    smile_ratio: Optional[float] = Field(None, ge=0, le=1)
+    brow_tension_ratio: Optional[float] = Field(None, ge=0, le=1)
+    blink_rate_per_min: Optional[float] = Field(None, ge=0, le=200)
+    head_steadiness: Optional[float] = Field(None, ge=0, le=1)
+    pause_ratio: Optional[float] = Field(None, ge=0, le=1)
 
 
 class EvaluationResultResponse(BaseModel):
@@ -104,3 +139,9 @@ class EvaluationResultResponse(BaseModel):
     eye_contact_ratio: Optional[float] = None
     pacing_assessment: Optional[str] = None
     overall_score: Optional[float] = None
+    # What the interviewer says out loud after the answer, and its local-avatar clips (if any)
+    spoken_feedback: Optional[str] = None
+    avatar_job_ids: List[str] = []
+    # How technical_accuracy was produced (llm / calibrated / trained / blend) and the LLM's own score
+    scoring_method: str = "llm"
+    llm_technical_accuracy: Optional[float] = None

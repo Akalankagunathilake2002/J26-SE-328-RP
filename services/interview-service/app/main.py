@@ -14,19 +14,26 @@ async def lifespan(app: FastAPI):
     try:
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            # create_all doesn't add columns to existing tables
+            from sqlalchemy import text
+            await conn.execute(text(
+                "ALTER TABLE interview_turns ADD COLUMN IF NOT EXISTS reference_answer TEXT, "
+                "ADD COLUMN IF NOT EXISTS rubric_criteria JSONB"
+            ))
         print(f"[{settings.SERVICE_NAME}] Database tables verified successfully.")
 
         # Auto-seed question rubrics if table has fewer than 20 items
         try:
             from sqlalchemy import func, select
             from app.models.interview import InterviewDocument
-            from ingestion.ingest_rubrics import run_interview_ingestion
-            from app.core.database import async_session_factory
-            async with async_session_factory() as session:
+            from ingestion.ingest_rubrics import run_interview_ingestion, load_question_bank
+            from app.core.database import AsyncSessionLocal
+            async with AsyncSessionLocal() as session:
                 res = await session.execute(select(func.count(InterviewDocument.id)))
                 count = res.scalar() or 0
-                if count < 20:
-                    print(f"[{settings.SERVICE_NAME}] Seeding expanded interview rubric bank ({count} existing items)...")
+                on_disk = len(load_question_bank())
+                if count < on_disk:
+                    print(f"[{settings.SERVICE_NAME}] Seeding interview question bank ({count} in database, {on_disk} on disk)...")
                     await run_interview_ingestion()
         except Exception as e:
             print(f"[{settings.SERVICE_NAME}] Auto-ingestion notice: {e}")

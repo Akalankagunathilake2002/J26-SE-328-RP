@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Any
+from typing import Dict, Any, List
 import httpx
 from app.core.config import settings
 
@@ -77,6 +77,27 @@ def is_safe_video_name(name: str) -> bool:
     return bool(_VIDEO_NAME.match(name)) and ".." not in name
 
 
+def split_for_streaming(text: str, max_words: int = 25) -> List[str]:
+    """First sentence alone (plays soonest), then sentences grouped up to ~max_words per clip."""
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", " ".join(text.split())) if s.strip()]
+    if not sentences:
+        return []
+    chunks, current = [sentences[0]], []
+    for s in sentences[1:]:
+        if current and len(" ".join(current + [s]).split()) > max_words:
+            chunks.append(" ".join(current))
+            current = []
+        current.append(s)
+    if current:
+        chunks.append(" ".join(current))
+    # A very short first chunk ("Okay.") renders fast but then the gap before chunk 2 is long;
+    # merge it into the next one unless it's a real sentence on its own.
+    if len(chunks) > 1 and len(chunks[0].split()) < 4:
+        chunks[1] = f"{chunks[0]} {chunks[1]}"
+        chunks.pop(0)
+    return chunks
+
+
 class LocalAvatarService:
     """
     Client for the local interview avatar engine (LivePortrait head motion + blinks and
@@ -109,18 +130,36 @@ class LocalAvatarService:
         return {"provider": "local", "available": True, "avatar_name": name,
                 "idle_video_url": f"{MEDIA_PREFIX}/idle"}
 
-    async def render(self, text: str) -> str:
-        """Queue a spoken clip; returns the engine's job id."""
-        payload = {"avatar": settings.LOCAL_AVATAR_NAME, "text": text,
-                   "voice": settings.LOCAL_AVATAR_VOICE, "decoder": settings.LOCAL_AVATAR_DECODER}
+    async def render(self, text: str) -> List[str]:
+        """Queue the text as sentence clips and return their job ids, in playback order.
+
+        Rendering takes ~2.5x the speech length, so one long clip kept the candidate waiting
+        30-60 s. The first sentence is its own short clip and starts playing after a few seconds;
+        the rest render while it plays. Each clip continues the previous one's head motion.
+        """
+        job_ids: List[str] = []
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
-                res = await client.post(f"{self.base}/api/speak", json=payload)
+                for chunk in split_for_streaming(text):
+                    payload = {"avatar": settings.LOCAL_AVATAR_NAME, "text": chunk,
+                               "voice": settings.LOCAL_AVATAR_VOICE, "decoder": settings.LOCAL_AVATAR_DECODER,
+                               "continue_job": job_ids[-1] if job_ids else None}
+                    res = await client.post(f"{self.base}/api/speak", json=payload)
+                    if res.status_code != 200:
+                        raise AvatarServiceError(f"Local avatar render failed ({res.status_code}): {res.text[:300]}")
+                    job_ids.append(res.json()["job"])
         except httpx.HTTPError as e:
             raise AvatarServiceError(f"Local avatar engine unreachable: {e}", status_code=503)
-        if res.status_code != 200:
-            raise AvatarServiceError(f"Local avatar render failed ({res.status_code}): {res.text[:300]}")
-        return res.json()["job"]
+        return job_ids
+
+    async def cancel(self, job_ids: List[str]) -> None:
+        """Drop clips nobody will watch (e.g. the candidate moved on) so the current one renders next."""
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            for job_id in job_ids:
+                try:
+                    await client.post(f"{self.base}/api/jobs/{job_id}/cancel")
+                except httpx.HTTPError:
+                    pass                          # best effort; a running clip just finishes
 
     async def job(self, job_id: str) -> Dict[str, Any]:
         try:

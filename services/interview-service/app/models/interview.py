@@ -69,6 +69,9 @@ class InterviewTurn(Base):
     topic = Column(String(100), nullable=False)
     difficulty = Column(String(50), nullable=False)
     transcript = Column(Text, nullable=True)
+    # From the question-bank item the question was generated from; the evaluator grades against them
+    reference_answer = Column(Text, nullable=True)
+    rubric_criteria = Column(JSONB, nullable=True)
     technical_accuracy_score = Column(Numeric(3, 2), nullable=True)
     relevance_score = Column(Numeric(3, 2), nullable=True)
     explanation_quality_score = Column(Numeric(3, 2), nullable=True)

@@ -13,8 +13,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Bake the local embedding and speech models into the image so the key-free providers work
+# offline and the first interview request doesn't stall on a download (~0.6 GB in total).
+ENV HF_HOME=/opt/models FASTEMBED_CACHE_PATH=/opt/models/fastembed
+RUN python -c "from fastembed import TextEmbedding; TextEmbedding('BAAI/bge-small-en-v1.5')" \
+ && python -c "from faster_whisper import WhisperModel; WhisperModel('small.en', device='cpu', compute_type='int8')"
+
+# CV upload parsing; its own layer so the model layers above stay cached
+COPY requirements-cv.txt .
+RUN pip install --no-cache-dir -r requirements-cv.txt
+
 # Copy application source code and data
 COPY app/ ./app/
+COPY models/ ./models/
 COPY ingestion/ ./ingestion/
 COPY data/ ./data/
 

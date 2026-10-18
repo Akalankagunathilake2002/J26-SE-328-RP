@@ -28,20 +28,34 @@ class Settings(BaseSettings):
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     # AI Configuration
-    LLM_PROVIDER: Literal["openai", "gemini", "mock"] = "openai"
+    # "local" = OpenAI-compatible server on the host Mac (mlx_lm.server, Huggingbay/start-llm.sh)
+    LLM_PROVIDER: Literal["openai", "gemini", "local", "mock"] = "openai"
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     LLM_MODEL: str = "gpt-4o-mini"
     LLM_TEMPERATURE: float = 0.2
+    LOCAL_LLM_URL: str = "http://host.docker.internal:8082"
+    LOCAL_LLM_TIMEOUT: float = 170.0          # under the gateway's 180 s proxy timeout
+    LOCAL_LLM_THINKING: bool = False          # thinking mode: much slower, rarely better here
 
-    # Embeddings
+    # Embeddings ("local" = fastembed ONNX model inside this container, no API key)
     EMBEDDING_PROVIDER: Literal["openai", "gemini", "local", "mock"] = "gemini"
     EMBEDDING_MODEL_NAME: str = "gemini-embedding-001"
     EMBEDDING_DIMENSION: int = 1536
+    # bge-small-en-v1.5 fine-tuned on the learning corpus (scripts/training/train_retrieval.py), 384 dimensions.
+    # "BAAI/bge-small-en-v1.5" loads the original through fastembed; changing it needs a re-ingestion.
+    LOCAL_EMBEDDING_MODEL: str = "models/embedder"
 
     # Speech-to-Text
-    STT_PROVIDER: Literal["whisper_api", "mock"] = "whisper_api"
+    # "auto": OpenAI Whisper if OPENAI_API_KEY is set, otherwise Gemini.
+    # "local": faster-whisper inside this container, no API key.
+    STT_PROVIDER: Literal["auto", "whisper_api", "gemini", "local", "mock"] = "auto"
+    # Technical-accuracy score: "auto" uses the mode chosen on validation data (models/answer_scorer/
+    # scoring_config.json); "llm", "calibrated", "trained" or "blend" force one (app/services/answer_scorer.py)
+    SCORING_MODE: Literal["auto", "llm", "calibrated", "trained", "blend"] = "auto"
     WHISPER_MODEL: str = "whisper-1"
+    STT_GEMINI_MODEL: str = "gemini-2.5-flash"
+    LOCAL_WHISPER_MODEL: str = "small.en"
 
     # RAG Parameters
     TOP_K: int = 3
