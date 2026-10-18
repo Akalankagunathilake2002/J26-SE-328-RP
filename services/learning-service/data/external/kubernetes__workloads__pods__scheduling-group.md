@@ -1,0 +1,67 @@
+<!-- role: DevOps Engineer -->
+<!-- topic: Kubernetes Workloads -->
+<!-- source: Kubernetes Documentation -->
+<!-- license: CC BY 4.0 -->
+<!-- url: https://kubernetes.io/docs/concepts/workloads/pods/scheduling-group/ -->
+# Scheduling Group
+
+You can link a `Pod` to a PodGroup to indicate
+that the `Pod` belongs to a group of `Pods` scheduled together. This enables the scheduler
+to apply group-level policies such as gang scheduling rather than treating each `Pod` independently.
+
+## Specifying a scheduling group
+
+When the `GenericWorkload`
+feature gate is enabled,
+you can set the `spec.schedulingGroup` field in your `Pod` manifest. This field establishes a link to a specific `PodGroup` object in the same namespace by name.
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: worker-0
+  namespace: some-ns
+spec:
+  schedulingGroup:
+    podGroupName: training-worker-0
+  containers:
+  - name: ml-worker
+    image: training:v1
+```
+
+The `schedulingGroup` field is immutable. Once set, a `Pod` cannot be moved to a
+different `PodGroup`.
+
+## Behavior
+
+When you set `spec.schedulingGroup`, the scheduler looks up the referenced
+PodGroup and applies the
+scheduling policy defined in it:
+
+* If the `PodGroup` uses the `basic` policy, each `Pod` is scheduled independently using
+  standard Kubernetes behavior. The grouping is used as group-level label.
+* If the `PodGroup` uses the `gang` policy, the `Pod` enters an "all-or-nothing" scheduling
+  lifecycle. The scheduler tries to place at least `minCount` `Pods` in the group
+  simultaneously; none of them bind to nodes unless the minimum is met.
+
+When the `CompositePodGroup`
+feature gate is enabled, a `PodGroup` may also specify a parent `CompositePodGroup`. In a hierarchical
+workload, scheduling is governed by policies defined across the entire group tree (such as multi-level
+gang scheduling or topology constraints).
+
+## Missing group references
+
+If a `Pod` references a `PodGroup` that does not yet exist, the `Pod` remains pending.
+Similarly, if the referenced `PodGroup` specifies a parent `CompositePodGroup` (via
+`spec.parentCompositePodGroupName`) that has not been created yet, scheduling does not start and
+the `Pod` remains pending until the entire group hierarchy exists in the cluster.
+
+The scheduler automatically reconsiders the `Pod` once all required `PodGroup` and
+`CompositePodGroup` resources exist.
+
+## ## What's next
+
+* Learn about the PodGroup API and its lifecycle.
+* Read about the CompositePodGroup API.
+* Read about PodGroup scheduling policies.
+* Understand the gang scheduling algorithm.

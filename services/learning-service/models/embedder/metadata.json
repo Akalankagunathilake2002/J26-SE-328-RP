@@ -1,0 +1,32 @@
+{
+  "base_model": "BAAI/bge-small-en-v1.5",
+  "trained_by": "scripts/training/train_retrieval.py",
+  "fine_tuned_on": "learning-service corpus: 2,388 Gemma-written student questions from 796 chunks",
+  "inputs": [
+    "input_ids",
+    "attention_mask",
+    "token_type_ids"
+  ],
+  "output": "last_hidden_state; embedding = L2-normalised CLS vector",
+  "dimension": 384,
+  "max_length": 512,
+  "quantization": "none (int8 lost 0.012 test MRR@10)",
+  "metrics": {
+    "baseline_test": {
+      "n": 339,
+      "recall@1": 0.3245,
+      "recall@3": 0.5133,
+      "recall@10": 0.6785,
+      "mrr@10": 0.4365
+    },
+    "test": {
+      "n": 339,
+      "recall@1": 0.4366,
+      "recall@3": 0.6254,
+      "recall@10": 0.7581,
+      "mrr@10": 0.5437,
+      "corpus_embed_minutes": 14.1,
+      "size_mb": 126.9
+    }
+  }
+}

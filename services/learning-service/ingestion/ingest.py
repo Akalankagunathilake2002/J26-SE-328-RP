@@ -14,7 +14,9 @@ from ingestion.loader import DocumentLoader
 from ingestion.chunker import MarkdownChunker
 
 
-async def run_ingestion(data_dir: str = None):
+async def run_ingestion(data_dir: str = None, skip_existing: bool = False):
+    """Loads data/ into pgvector. skip_existing keeps documents that already have chunks (used at
+    startup, so an interrupted load resumes instead of re-embedding everything)."""
     if data_dir is None:
         data_dir = os.path.join(os.path.dirname(__file__), "..", "data")
 
@@ -51,6 +53,11 @@ async def run_ingestion(data_dir: str = None):
             res = await session.execute(stmt)
             existing_doc = res.scalar_one_or_none()
 
+            if existing_doc and skip_existing:
+                has_chunks = await session.scalar(
+                    select(LearningChunk.id).where(LearningChunk.document_id == existing_doc.id).limit(1))
+                if has_chunks:
+                    continue
             if existing_doc:
                 print(f"[Ingestion] Updating existing document: '{title}'")
                 doc_record = existing_doc
@@ -81,7 +88,8 @@ async def run_ingestion(data_dir: str = None):
 
             print(f"  -> Generated {len(chunks)} chunk(s). Computing embeddings...")
             chunk_texts = [c.content for c in chunks]
-            embeddings = embedding_service.embed_batch(chunk_texts)
+            # In a thread so the service keeps answering requests while a large corpus loads
+            embeddings = await asyncio.to_thread(embedding_service.embed_batch, chunk_texts)
 
             for c, emb in zip(chunks, embeddings):
                 chunk_record = LearningChunk(
@@ -94,8 +102,10 @@ async def run_ingestion(data_dir: str = None):
                 session.add(chunk_record)
 
             total_chunks_ingested += len(chunks)
-
-        await session.commit()
+            # Commit per document and drop it from the session: holding a 600-document corpus in
+            # one transaction exhausted the Docker VM's memory
+            await session.commit()
+            session.expunge_all()
 
     await engine.dispose()
     print(f"[Ingestion Complete] Successfully ingested {len(documents)} documents ({total_chunks_ingested} chunks) into pgvector!")

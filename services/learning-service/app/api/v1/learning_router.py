@@ -1,7 +1,10 @@
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.database import get_db
-from app.schemas.learning import LearningQueryRequest, LearningQueryResponse
+from app.models.learning import LearningDocument
+from app.schemas.learning import LearningQueryRequest, LearningQueryResponse, LearningTopic
 from app.services.learning_rag import learning_rag_service
 from app.services.progress_service import progress_service
 from app.services.experiment_logger import experiment_logger
@@ -52,3 +55,15 @@ async def submit_learning_query(
         return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Learning RAG execution error: {str(e)}")
+
+
+@router.get("/topics", response_model=List[LearningTopic])
+async def list_learning_topics(target_role: Optional[str] = None, db: AsyncSession = Depends(get_db)):
+    """Curriculum documents available for a role (same role filter as retrieval), so the frontend
+    can suggest questions the assistant has material for."""
+    stmt = select(LearningDocument.title, LearningDocument.topic, LearningDocument.target_role)
+    if target_role and target_role.lower() != "all":
+        stmt = stmt.where(or_(LearningDocument.target_role.ilike(f"%{target_role}%"),
+                              LearningDocument.target_role.ilike("%all%")))
+    rows = (await db.execute(stmt.order_by(LearningDocument.topic))).all()
+    return [LearningTopic(title=r.title, topic=r.topic, target_role=r.target_role) for r in rows]

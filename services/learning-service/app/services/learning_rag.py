@@ -19,7 +19,11 @@ class LearningRAGService:
         self._init_llm()
 
     def _init_llm(self):
-        if settings.LLM_PROVIDER == "openai" and settings.OPENAI_API_KEY and settings.OPENAI_API_KEY != "your_openai_api_key_here":
+        self._gemini_client = None
+        if settings.LLM_PROVIDER == "local":
+            # Model on the host Mac (Huggingbay/start-llm.sh); reachability is checked per request
+            self._llm = "local"
+        elif settings.LLM_PROVIDER == "openai" and settings.OPENAI_API_KEY and settings.OPENAI_API_KEY != "your_openai_api_key_here":
             try:
                 from langchain_openai import ChatOpenAI
                 self._llm = ChatOpenAI(
@@ -173,7 +177,15 @@ class LearningRAGService:
             f"Provide an ungrounded general technical response."
         )
 
-        if self._llm == "gemini" and self._gemini_client:
+        if self._llm == "local":
+            try:
+                from app.services.local_llm import local_llm
+                baseline_text = await local_llm.chat([{"role": "user", "content": prompt}],
+                                                     temperature=settings.LLM_TEMPERATURE)
+            except Exception as e:
+                print(f"[Warning] Local LLM baseline generation error: {e}")
+                baseline_text = f"Baseline general response for {request.question} (LLM offline)."
+        elif self._llm == "gemini" and self._gemini_client:
             try:
                 resp = self._gemini_client.models.generate_content(
                     model=settings.LLM_MODEL or "gemini-2.5-flash",
@@ -209,8 +221,20 @@ class LearningRAGService:
         user_prompt: str,
         retrieved_results: List[Dict[str, Any]]
     ) -> (str, str):
-        """Generates response via Gemini, LangChain LLM, or deterministic grounded fallback."""
-        if self._llm == "gemini" and self._gemini_client:
+        """Generates response via the local LLM, Gemini, LangChain LLM, or deterministic grounded fallback."""
+        if self._llm == "local":
+            try:
+                from app.services.local_llm import local_llm
+                parsed = await local_llm.chat_json(system_prompt, user_prompt,
+                                                   temperature=settings.LLM_TEMPERATURE, max_tokens=900)
+                answer = str(parsed.get("answer") or "").strip()
+                if answer:
+                    # recommended_next_topic is a String(100) column in the query history
+                    return answer, str(parsed.get("recommended_next_topic") or "Advanced Patterns")[:100]
+            except Exception as e:
+                print(f"[Warning] Local LLM generation failed: {e}. Using grounded context generator.")
+
+        elif self._llm == "gemini" and self._gemini_client:
             try:
                 from google.genai import types
                 combined_prompt = f"{system_prompt}\n\n{user_prompt}"

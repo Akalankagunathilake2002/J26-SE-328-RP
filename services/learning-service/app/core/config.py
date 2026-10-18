@@ -33,16 +33,22 @@ class Settings(BaseSettings):
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
     # AI Configuration
-    LLM_PROVIDER: Literal["openai", "gemini", "mock"] = "openai"
+    LLM_PROVIDER: Literal["openai", "gemini", "local", "mock"] = "openai"
     OPENAI_API_KEY: str = ""
     GEMINI_API_KEY: str = ""
     LLM_MODEL: str = "gpt-4o-mini"
     LLM_TEMPERATURE: float = 0.2
+    LOCAL_LLM_URL: str = "http://host.docker.internal:8082"
+    LOCAL_LLM_TIMEOUT: float = 170.0          # under the gateway's 180 s proxy timeout
+    LOCAL_LLM_THINKING: bool = False          # thinking mode: much slower, rarely better here
 
     # Embeddings
     EMBEDDING_PROVIDER: Literal["openai", "gemini", "local", "mock"] = "gemini"
     EMBEDDING_MODEL_NAME: str = "gemini-embedding-001"
     EMBEDDING_DIMENSION: int = 1536
+    # bge-small-en-v1.5 fine-tuned on the learning corpus (scripts/training/train_retrieval.py), 384 dimensions.
+    # "BAAI/bge-small-en-v1.5" loads the original through fastembed; changing it needs a re-ingestion.
+    LOCAL_EMBEDDING_MODEL: str = "models/embedder"
 
     # RAG Parameters
     TOP_K: int = 4

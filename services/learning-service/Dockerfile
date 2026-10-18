@@ -12,8 +12,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Bake the local embedding model into the image so EMBEDDING_PROVIDER=local works offline and
+# startup ingestion doesn't stall on a download (~130 MB)
+ENV HF_HOME=/opt/models FASTEMBED_CACHE_PATH=/opt/models/fastembed
+RUN python -c "from fastembed import TextEmbedding; TextEmbedding('BAAI/bge-small-en-v1.5')"
+
 # Copy application source code and data
 COPY app/ ./app/
+COPY models/ ./models/
 COPY ingestion/ ./ingestion/
 COPY data/ ./data/
 

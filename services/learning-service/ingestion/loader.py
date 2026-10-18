@@ -11,6 +11,15 @@ ROLE_TRACK_MAPPING = {
 }
 
 
+# Notes about the corpus itself, not curriculum
+SKIP_FILES = {"ATTRIBUTION.md", "README.md"}
+
+
+def _header(content: str, key: str):
+    m = re.search(rf'<!--\s*{key}:\s*(.+?)\s*-->', content, re.IGNORECASE)
+    return m.group(1).strip() if m else None
+
+
 class DocumentLoader:
     @staticmethod
     def load_markdown_file(file_path: str) -> Dict[str, Any]:
@@ -29,25 +38,26 @@ class DocumentLoader:
         parent_dir = os.path.basename(os.path.dirname(file_path)).lower()
         target_role = ROLE_TRACK_MAPPING.get(parent_dir, "Software Engineer")
 
-        # Check for explicit metadata in comments, e.g. <!-- role: Backend Developer -->
-        role_match = re.search(r'<!--\s*role:\s*(.+?)\s*-->', content, re.IGNORECASE)
-        if role_match:
-            target_role = role_match.group(1).strip()
+        # Explicit metadata in comment headers, e.g. <!-- role: Backend Developer -->. External
+        # documents (scripts/datasets/build_learning_corpus.py) also carry source, license and url.
+        target_role = _header(content, "role") or target_role
 
         base_name = os.path.splitext(os.path.basename(file_path))[0]
-        topic = base_name.replace("_", " ").title()
+        topic = _header(content, "topic") or base_name.replace("_", " ").title()
 
-        topic_match = re.search(r'<!--\s*topic:\s*(.+?)\s*-->', content, re.IGNORECASE)
-        if topic_match:
-            topic = topic_match.group(1).strip()
+        source = _header(content, "source") or f"Industry Curriculum: {target_role} Specialization"
+        license_name = _header(content, "license")
+        if license_name:
+            source = f"{source} ({license_name})"
 
         return {
-            "title": title,
-            "source": f"Industry Curriculum: {target_role} Specialization",
-            "url": f"https://curriculum.skillbridge.edu/docs/{parent_dir}/{base_name}",
-            "topic": topic,
-            "target_role": target_role,
-            "content": content
+            "title": title[:255],
+            "source": source[:255],
+            "url": _header(content, "url") or f"https://curriculum.skillbridge.edu/docs/{parent_dir}/{base_name}",
+            "topic": topic[:100],
+            "target_role": target_role[:100],
+            # Headers are metadata; keep them out of the chunk text that gets embedded
+            "content": re.sub(r'<!--.*?-->\n?', '', content, flags=re.S).strip()
         }
 
     @staticmethod
@@ -59,7 +69,7 @@ class DocumentLoader:
 
         for root, _, files in os.walk(dir_path):
             for file in sorted(files):
-                if file.endswith((".md", ".txt")):
+                if file.endswith((".md", ".txt")) and file not in SKIP_FILES:
                     full_path = os.path.join(root, file)
                     doc = DocumentLoader.load_markdown_file(full_path)
                     documents.append(doc)

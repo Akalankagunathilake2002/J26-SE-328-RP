@@ -1,0 +1,38 @@
+<!-- role: English Copywriter -->
+<!-- topic: Content Style -->
+<!-- source: 18F Content Guide (GSA) -->
+<!-- license: Public Domain -->
+<!-- url: https://guides.18f.gov/content-guide/our-style/style-guides/ -->
+# Style guides
+
+We often develop project-specific style guides to support our partners and their audiences. We usually call these documents _content guides_, because most of our partners already follow a style guide like AP, GPO, or Chicago.
+
+## Guidelines
+
+Here are a few things to keep in mind when you’re developing style guides:
+
+**Respect the partner’s existing style.** Assume that your partner has an agency-level style guide and ask about it.
+
+- If they don’t have a style guide, start with AP since we’re most familiar with it and many of our partners use it.
+- If any of the existing style guidelines inhibit clarity or usability, talk with the partner about it, backing up your recommendations with insights from user research.
+
+**Keep it brief.** Don’t try to document every possible grammatical or style issue. Keep your guide short and sweet so it’s easy for people to reference. Most of our guides include:
+
+- High-level notes about voice and tone
+- Usage guidelines
+  - Acronyms and abbreviations
+  - Capitalization
+  - Numbers
+  - Punctuation
+  - Web styling, such as headers or glossary terms
+- Specific words and phrases
+
+**Focus on what’s new or particularly unique.** If you’re using sentence case or avoiding acronyms, for example, call that out and include inline examples. If you need to use specific terms or technical jargon with users, include suggested phrasing to help other writers follow along.
+
+**Share and refine it.** Post the guide on a wiki or in a pattern library with other project documentation — don’t bury it in a PDF. Make it easy for people to find and update the guidelines as questions come up.
+
+## Examples
+
+- cloud.gov
+- FBI Crime Data Explorer
+- Natural Resources Revenue Data

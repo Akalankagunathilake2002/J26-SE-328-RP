@@ -1,0 +1,79 @@
+<!-- role: Backend Developer / Full-Stack Developer -->
+<!-- topic: HTTP Status Codes -->
+<!-- source: MDN Web Docs (Mozilla Contributors) -->
+<!-- license: CC BY-SA 2.5 -->
+<!-- url: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/300 -->
+# 300 Multiple Choices
+
+The HTTP **`300 Multiple Choices`** redirection response status code indicates that the request has more than one possible response.
+The user-agent or the user should choose one of them.
+
+> [!NOTE]
+> In agent-driven content negotiation, a client and server collaboratively decide the best variant of a given resource when the server has multiple variants.
+> Most clients lack a method for automatically choosing from responses, and the additional round-trips slow down client-server interaction.
+> Server-driven content negotiation is far more common, where a server chooses the most appropriate resource for the client based on the request headers (Accept-Language, Accept, etc.).
+
+The server should include content in the response that contains a list of resource metadata and URIs from which the user or user agent can choose.
+The format of the content is implementation-specific, but should be easily parsed by the user agent (such as HTML or JSON).
+
+If the server has a preferred choice that the client should request, it can include it in a Location header.
+
+## Status
+
+```http
+300 Multiple Choices
+```
+
+## Examples
+
+### 300 response with list of resources
+
+The following example demonstrates a Transparent Content Negotiation request-response exchange.
+An Apache server offers multiple variants of a resource defined in a type map; `index.html.en` for a resource in English, and `index.html.fr` for a French version:
+
+```http
+URI: index.html.en
+Content-Language: en
+
+URI: index.html.fr
+Content-Language: fr
+```
+
+A `Negotiate: trans` request header indicates that the client wants to use TCN to choose a resource.
+Poor browser support for this mechanism means a user agent such as curl must be used instead:
+
+```bash
+ curl -v -H "Negotiate: trans" http://localhost/index
+```
+
+This produces the following request:
+
+```http
+GET /index HTTP/1.1
+Host: localhost
+User-Agent: curl/8.7.1
+Accept: */*
+Negotiate: trans
+```
+
+We receive a `300` response with details of different representations of the requested resource:
+
+```http
+HTTP/1.1 300 Multiple Choices
+Date: Fri, 30 Aug 2024 09:21:48 GMT
+Server: Apache/2.4.59 (Unix)
+Alternates: {"index.html.en" 1 {type text/html} {language en} {length 48}}, {"index.html.fr" 1 {type text/html} {language fr} {length 45}}
+Vary: negotiate,accept-language
+TCN: list
+Content-Length: 419
+Content-Type: text/html; charset=iso-8859-1
+
+300 Multiple Choices
+
+Multiple Choices
+Available variants:
+
+index.html.en , type text/html, language en
+index.html.fr , type text/html, language fr
+
+```

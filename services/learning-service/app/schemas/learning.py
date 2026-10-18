@@ -144,3 +144,9 @@ class PlatformAnalyticsSummary(BaseModel):
     average_communication_score: float
     estimated_readiness_improvement_percent: float
     last_active: str
+
+
+class LearningTopic(BaseModel):
+    title: str
+    topic: str
+    target_role: str

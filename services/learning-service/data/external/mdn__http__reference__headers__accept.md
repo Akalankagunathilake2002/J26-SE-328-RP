@@ -1,0 +1,89 @@
+<!-- role: Backend Developer / Full-Stack Developer -->
+<!-- topic: HTTP Headers -->
+<!-- source: MDN Web Docs (Mozilla Contributors) -->
+<!-- license: CC BY-SA 2.5 -->
+<!-- url: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Accept -->
+# Accept header
+
+The HTTP **`Accept`** request and response header indicates which content types, expressed as MIME types, the sender is able to understand.
+In requests, the server uses content negotiation to select one of the proposals and informs the client of the choice with the Content-Type response header.
+In responses, it provides information about which content types the server can understand in messages to the requested resource, so that the content type can be used in subsequent requests to the resource.
+
+Browsers set required values for this header based on the context of the request.
+For example, a browser uses different values in a request when fetching a CSS stylesheet, image, video, or a script.
+
+      Header type
+      Request header,
+      Response header
+
+      Forbidden request header
+      No
+
+        CORS-safelisted request header
+
+        Yes*
+
+\* Values can't contain CORS-unsafe request header bytes, including `"():<>?@[\]{},`, Delete `0x7F`, and control characters `0x00` to `0x19`, except for Tab `0x09`.
+
+## Syntax
+
+```http
+Accept: /
+Accept: /*
+Accept: */*
+
+// Multiple types, weighted with the quality value syntax
+Accept: text/html, application/xhtml+xml, application/xml;q=0.9, image/webp, */*;q=0.8
+```
+
+## Directives
+
+- `/`
+  - : A single, precise media type, like `text/html`.
+- `/*`
+  - : A media type without a subtype.
+    For example, `image/*` corresponds to `image/png`, `image/svg`, `image/gif`, and other image types.
+- `*/*`
+  - : Any media type.
+- `;q=` (q-factor weighting)
+  - : A value in order of preference expressed using a relative quality value called the _weight_.
+
+## Examples
+
+### Using default Accept request headers
+
+HTTP requests made using command-line tools such as curl and wget use `*/*` as the default `Accept` value:
+
+```http
+GET / HTTP/1.1
+Host: example.com
+User-Agent: curl/8.7.1
+Accept: */*
+```
+
+Browser navigation typically has the following `Accept` request header value:
+
+```http
+GET /en-US/ HTTP/2
+Host: developer.mozilla.org
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+…
+```
+
+After receiving the document, the default `Accept` values in requests for images on the `developer.mozilla.org` example look like this:
+
+```http
+Accept: image/avif,image/webp,image/png,image/svg+xml,image/*;q=0.8,*/*;q=0.5
+```
+
+### Configuring Accept request headers for JSON responses
+
+Systems that involve API interaction commonly request `application/json` responses.
+Here's an example of a GET request where the client specifically requests a JSON response:
+
+```http
+GET /users/123 HTTP/1.1
+Host: example.com
+Authorization: Bearer abcd123
+Accept: application/json
+```

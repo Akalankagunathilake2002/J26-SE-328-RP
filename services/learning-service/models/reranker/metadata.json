@@ -1,0 +1,28 @@
+{
+  "base_model": "cross-encoder/ms-marco-MiniLM-L6-v2",
+  "trained_by": "scripts/training/train_retrieval.py",
+  "inputs": [
+    "input_ids",
+    "attention_mask",
+    "token_type_ids"
+  ],
+  "max_length": 256,
+  "quantization": "dynamic int8",
+  "output": "logit; relevance = sigmoid(logit)",
+  "metrics": {
+    "test_rule_based": {
+      "n": 339,
+      "recall@1": 0.4041,
+      "recall@3": 0.5811,
+      "recall@10": 0.7434,
+      "mrr@10": 0.5124
+    },
+    "test": {
+      "n": 339,
+      "recall@1": 0.472,
+      "recall@3": 0.6726,
+      "recall@10": 0.7434,
+      "mrr@10": 0.5725
+    }
+  }
+}

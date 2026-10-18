@@ -1,0 +1,59 @@
+<!-- role: DevOps Engineer -->
+<!-- topic: Prometheus Monitoring -->
+<!-- source: Prometheus Documentation -->
+<!-- license: Apache-2.0 -->
+<!-- url: https://prometheus.io/docs/introduction/media/ -->
+# Media
+
+There is a subreddit
+collecting all Prometheus-related resources on the internet.
+
+The following selection of resources are particularly useful to get started
+with Prometheus.
+Awesome Prometheus
+contains a more comprehensive community-maintained list of resources.
+
+## Blogs
+
+* This site has its own blog.
+* SoundCloud's blog post announcing Prometheus
+  – a more elaborate overview than the one given on this site.
+* Prometheus-related posts on the
+  Robust Perception blog.
+
+## Tutorials
+
+* Instructions and example code for a Prometheus workshop.
+* How To Install Prometheus using Docker on Ubuntu 14.04.
+
+## Podcasts and interviews
+
+* Prometheus on FLOSS Weekly 357 - Julius Volz on the FLOSS Weekly TWiT.tv show.
+* Prometheus and Service Monitoring - Julius Volz on the Changelog podcast.
+
+## Recorded talks
+
+* Prometheus: A Next-Generation Monitoring System – Julius Volz and Björn Rabenstein at SREcon15 Europe, Dublin.
+* Prometheus: A Next-Generation Monitoring System - Brian Brazil at FOSDEM 2016 (slides).
+* What is your application doing right now? – Matthias Gruter, Transmode, at DevOps Stockholm Meetup.
+* Prometheus workshop – Jamie Wilkinson at Monitorama PDX 2015 (slides).
+* Monitoring Hadoop with Prometheus – Brian Brazil at the Hadoop User Group Ireland (slides).
+* In German: Monitoring mit Prometheus – Michael Stapelberg at Easterhegg 2016.
+* In German: Prometheus in der Praxis – Jonas Große Sundrup at MRMCD 2016
+
+## Presentation slides
+
+### General
+
+* Prometheus Overview – by Brian Brazil.
+* Systems Monitoring with Prometheus – Brian Brazil at Devops Ireland Meetup, Dublin.
+* OMG! Prometheus – Benjamin Staffin, Fitbit Site Operations, explains the case for Prometheus to his team.
+
+### Docker
+
+* Prometheus and Docker – Brian Brazil at Docker Galway.
+
+### Python
+
+* Better Monitoring for Python – Brian Brazil at Pycon Ireland.
+* Monitoring your Python with Prometheus – Brian Brazil at Python Ireland Meetup, Dublin.
