@@ -2,7 +2,7 @@ import contextlib
 
 from fastapi import APIRouter, FastAPI
 
-from app.api.routers import health_router
+from app.api.routers import analyses_router, health_router
 from app.config.settings import get_settings
 
 
@@ -29,9 +29,11 @@ def create_app() -> FastAPI:
 
     readiness_router = APIRouter(prefix="/readiness")
     readiness_router.include_router(health_router)
+    readiness_router.include_router(analyses_router)
 
     app.include_router(readiness_router)
     app.include_router(health_router)
+    app.include_router(analyses_router)
 
     return app
 
