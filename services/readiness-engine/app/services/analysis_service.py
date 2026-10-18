@@ -154,11 +154,7 @@ class AnalysisService:
                 {
                     "id": r.id,
                     "demand_weight": r.demand_weight,
-                    "required_proficiency": (
-                        r.required_proficiency_score
-                        if r.required_proficiency_score is not None
-                        else 0.5
-                    ),
+                    "required_proficiency": r.required_proficiency_score,
                     "skill_id": r.skill_id,
                     "standard_name": r.standard_name,
                     "mapping_status": r.mapping_status,
@@ -168,14 +164,8 @@ class AnalysisService:
             stu_scoring_data = [
                 {
                     "id": s.id,
-                    "student_proficiency": (
-                        s.proficiency_score if s.proficiency_score is not None else 0.5
-                    ),
-                    "evidence_confidence": (
-                        s.evidence_confidence
-                        if s.evidence_confidence is not None
-                        else 1.0
-                    ),
+                    "student_proficiency": s.proficiency_score,
+                    "evidence_confidence": s.evidence_confidence,
                 }
                 for s in user_profile.skills
             ]
@@ -248,9 +238,7 @@ class AnalysisService:
                         match_res.selected_relationship_id if match_res else None
                     ),
                     coverage_credit=match_res.coverage_credit if match_res else 0.0,
-                    required_proficiency=(
-                        req.required_proficiency_level or "INTERMEDIATE"
-                    ),
+                    required_proficiency=req.required_proficiency_level,
                     user_proficiency=matched_stu_prof,
                     evidence_confidence=(
                         readiness_item.evidence_confidence if readiness_item else None

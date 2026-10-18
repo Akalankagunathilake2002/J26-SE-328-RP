@@ -547,3 +547,190 @@ async def test_10_unassessed_requirements_handling_and_exclusion(client: AsyncCl
         res_ps = await session.execute(stmt_ps)
         priority_skills = res_ps.scalars().all()
         assert not any(p.skill_name == "Legacy Tool X" for p in priority_skills)
+
+
+# Test 11: Verify missing required proficiency raises validation error and leaves zero partial child rows
+@pytest.mark.anyio
+async def test_11_missing_required_proficiency_fails_without_partial_records():
+    service = AnalysisService()
+    session_maker = get_sessionmaker()
+    role_id = _generate_role_id()
+    user_id = uuid.uuid4()
+
+    async with session_maker() as session:
+        profile = IndustryProfile(
+            id=uuid.uuid4(),
+            role_id=role_id,
+            primary_observed_title="QA Automation Engineer",
+            mapping_status="verified",
+            career_level="ENTRY_LEVEL",
+            profile_version="v1",
+            raw_payload={"source": "test_missing_proficiency"},
+        )
+        req = IndustryProfileRequirement(
+            id=uuid.uuid4(),
+            industry_profile_id=profile.id,
+            skill_id="SK-000100",
+            standard_name="Python Automation",
+            primary_observed_term="Python Automation",
+            observed_terms=[],
+            mapping_status="verified",
+            skill_type="TECHNICAL",
+            required_proficiency_level="",  # Intentionally empty!
+            required_proficiency_score=0.8,
+            demand_weight=1.0,
+        )
+        profile.requirements.append(req)
+        session.add(profile)
+
+        user_profile = await _create_custom_user_profile(
+            session=session,
+            user_id=user_id,
+            skills=[
+                {
+                    "skill_id": "SK-000100",
+                    "standard_name": "Python Automation",
+                    "mapping_status": "verified",
+                    "proficiency_score": 0.8,
+                    "evidence_confidence": 1.0,
+                }
+            ],
+        )
+        await session.commit()
+        ind_id = profile.id
+        usr_prof_id = user_profile.id
+
+    async with session_maker() as session:
+        req = AnalysisCreateRequest(
+            industry_profile_id=ind_id,
+            user_skill_profile_id=usr_prof_id,
+            role_id=role_id,
+        )
+        from app.schemas.profile_validation import ProfileValidationError
+
+        with pytest.raises(
+            ProfileValidationError,
+            match="required_proficiency_level is required and cannot be empty",
+        ):
+            await service.run_analysis(session, req)
+
+    # In a fresh session, verify that the failed analysis has exactly 0 child rows
+    async with session_maker() as fresh_session:
+        stmt = (
+            select(Analysis)
+            .where(Analysis.status == "FAILED")
+            .order_by(Analysis.started_at.desc())
+        )
+        res = await fresh_session.execute(stmt)
+        failed_analysis = res.scalars().first()
+
+        assert failed_analysis is not None
+        assert failed_analysis.status == "FAILED"
+        assert "required_proficiency_level is required" in (
+            failed_analysis.error_message or ""
+        )
+
+        # Check child tables directly for partial row pollution
+        stmt_sr = select(AnalysisSkillResult).where(
+            AnalysisSkillResult.analysis_id == failed_analysis.analysis_id
+        )
+        res_sr = await fresh_session.execute(stmt_sr)
+        assert len(res_sr.scalars().all()) == 0
+
+        stmt_ps = select(AnalysisPrioritySkill).where(
+            AnalysisPrioritySkill.analysis_id == failed_analysis.analysis_id
+        )
+        res_ps = await fresh_session.execute(stmt_ps)
+        assert len(res_ps.scalars().all()) == 0
+
+        stmt_rep = select(AnalysisReport).where(
+            AnalysisReport.analysis_id == failed_analysis.analysis_id
+        )
+        res_rep = await fresh_session.execute(stmt_rep)
+        assert len(res_rep.scalars().all()) == 0
+
+
+# Test 12: Verify invalid required proficiency raises validation error and leaves zero partial child rows
+@pytest.mark.anyio
+async def test_12_invalid_required_proficiency_fails_without_partial_records():
+    service = AnalysisService()
+    session_maker = get_sessionmaker()
+    role_id = _generate_role_id()
+    user_id = uuid.uuid4()
+
+    async with session_maker() as session:
+        profile = IndustryProfile(
+            id=uuid.uuid4(),
+            role_id=role_id,
+            primary_observed_title="Security Analyst",
+            mapping_status="verified",
+            career_level="ENTRY_LEVEL",
+            profile_version="v1",
+            raw_payload={"source": "test_invalid_proficiency"},
+        )
+        req = IndustryProfileRequirement(
+            id=uuid.uuid4(),
+            industry_profile_id=profile.id,
+            skill_id="SK-000100",
+            standard_name="Network Security",
+            primary_observed_term="Network Security",
+            observed_terms=[],
+            mapping_status="verified",
+            skill_type="TECHNICAL",
+            required_proficiency_level="SUPER_NINJA",  # Invalid!
+            required_proficiency_score=0.8,
+            demand_weight=1.0,
+        )
+        profile.requirements.append(req)
+        session.add(profile)
+
+        user_profile = await _create_custom_user_profile(
+            session=session,
+            user_id=user_id,
+            skills=[
+                {
+                    "skill_id": "SK-000100",
+                    "standard_name": "Network Security",
+                    "mapping_status": "verified",
+                    "proficiency_score": 0.8,
+                    "evidence_confidence": 1.0,
+                }
+            ],
+        )
+        await session.commit()
+        ind_id = profile.id
+        usr_prof_id = user_profile.id
+
+    async with session_maker() as session:
+        req = AnalysisCreateRequest(
+            industry_profile_id=ind_id,
+            user_skill_profile_id=usr_prof_id,
+            role_id=role_id,
+        )
+        from app.schemas.profile_validation import ProfileValidationError
+
+        with pytest.raises(
+            ProfileValidationError,
+            match="invalid required_proficiency_level 'SUPER_NINJA'",
+        ):
+            await service.run_analysis(session, req)
+
+    # In a fresh session, verify that the failed analysis has exactly 0 child rows
+    async with session_maker() as fresh_session:
+        stmt = (
+            select(Analysis)
+            .where(Analysis.status == "FAILED")
+            .order_by(Analysis.started_at.desc())
+        )
+        res = await fresh_session.execute(stmt)
+        failed_analysis = res.scalars().first()
+
+        assert failed_analysis is not None
+        assert failed_analysis.status == "FAILED"
+        assert "SUPER_NINJA" in (failed_analysis.error_message or "")
+
+        stmt_sr = select(AnalysisSkillResult).where(
+            AnalysisSkillResult.analysis_id == failed_analysis.analysis_id
+        )
+        res_sr = await fresh_session.execute(stmt_sr)
+        assert len(res_sr.scalars().all()) == 0
