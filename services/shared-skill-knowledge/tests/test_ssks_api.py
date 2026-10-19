@@ -164,3 +164,71 @@ async def test_repository_rolls_back_on_conflict(setup_db):
         # Session must stay usable after the rollback
         await repo.create(SkillCreate(**_skill("SK-2")))
         assert len(await repo.get_all()) == 2
+
+
+@pytest.mark.anyio
+async def test_auto_generated_ids_and_search(client):
+    # Auto-generate domain ID from code if not provided
+    res_dom = await client.post("/ssks/domains/", json={
+        "name": "Artificial Intelligence",
+        "code": "AI",
+        "description": "AI and ML Domain"
+    })
+    assert res_dom.status_code == 200
+    dom_data = res_dom.json()
+    assert dom_data["domain_id"] == "DOM-AI"
+
+    # Auto-generate skill ID
+    res_skill1 = await client.post("/ssks/skills/", json={
+        "preferred_name": "Deep Learning",
+        "skill_type": "KNOWLEDGE",
+        "skill_nature": "TECHNICAL"
+    })
+    assert res_skill1.status_code == 200
+    skill1_data = res_skill1.json()
+    assert skill1_data["skill_id"].startswith("SK-")
+
+    res_skill2 = await client.post("/ssks/skills/", json={
+        "preferred_name": "Neural Networks",
+        "skill_type": "KNOWLEDGE",
+        "skill_nature": "TECHNICAL"
+    })
+    assert res_skill2.status_code == 200
+    skill2_data = res_skill2.json()
+    assert skill2_data["skill_id"].startswith("SK-")
+    assert skill1_data["skill_id"] != skill2_data["skill_id"]
+
+    # Search skills
+    search_res = await client.get("/ssks/skills/?search=Neural")
+    assert search_res.status_code == 200
+    assert any(s["skill_id"] == skill2_data["skill_id"] for s in search_res.json())
+
+    # Auto-generate role ID
+    res_role = await client.post("/ssks/roles/", json={
+        "preferred_name": "AI Engineer",
+        "description": "Designs neural models"
+    })
+    assert res_role.status_code == 200
+    role_data = res_role.json()
+    assert role_data["role_id"].startswith("RL-")
+
+    # Search roles
+    role_search = await client.get("/ssks/roles/?search=Engineer")
+    assert role_search.status_code == 200
+    assert any(r["role_id"] == role_data["role_id"] for r in role_search.json())
+
+    # Auto-generate relationship ID
+    res_rel = await client.post("/ssks/relationships", json={
+        "source_skill_id": skill1_data["skill_id"],
+        "target_skill_id": skill2_data["skill_id"],
+        "relationship_type": "RELATED_TO"
+    })
+    assert res_rel.status_code == 201
+    rel_data = res_rel.json()
+    assert rel_data["relationship_id"].startswith("REL-")
+
+    # Search relationships
+    rel_search = await client.get(f"/ssks/relationships?search={rel_data['relationship_id']}")
+    assert rel_search.status_code == 200
+    assert len(rel_search.json()) == 1
+    assert rel_search.json()[0]["relationship_id"] == rel_data["relationship_id"]

@@ -13,11 +13,13 @@ async def list_skills(
     skill_type: SkillType | None = None,
     skill_nature: SkillNature | None = None,
     domain_id: str | None = None,
+    search: str | None = None,
     service: CoreService = Depends(get_core_service),
 ):
     return await service.list_skills(
         limit=limit, offset=offset, status=status,
         skill_type=skill_type, skill_nature=skill_nature, domain_id=domain_id,
+        search=search,
     )
 
 @router.get("/{skill_id}", response_model=SkillOut)
