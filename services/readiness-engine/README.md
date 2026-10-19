@@ -278,24 +278,24 @@ For complete payload contracts, headers, and schemas, consult [`docs/api-referen
 
 ## 7. Semantic Candidate Discovery & SSKS Integration
 
-The **Candidate Discovery** subsystem (`app/services/candidate_discovery_service.py`) identifies potentially meaningful relationships between **unmatched industry requirements and unmatched student skills** using semantic embedding similarity, proposing them to the Shared Skill Knowledge Service (SSKS) for editorial review.
+The **Candidate Discovery** subsystem (`app/services/candidate_discovery_service.py`) identifies potentially meaningful relationships between industry requirements and student profile skills using semantic embedding similarity, proposing them as `RELATED_TO` candidates to the Shared Skill Knowledge Service (SSKS) for editorial review.
 
 ```mermaid
 flowchart LR
-    A[Completed Analysis] --> B[Identify Unmatched Skills]
+    A[Completed Analysis] --> B[Evaluate Profile & Requirement Skills]
     B --> C[Exclude Verified / Identical Pairs]
     C --> D[Retrieve Cached SBERT Embeddings]
     D --> E[Compute Cosine Similarity]
-    E --> F[Filter Threshold >= 0.75 & Rank]
+    E --> F[Filter Threshold >= 0.60 & Rank]
     F --> G[Submit Candidates to SSKS REST API]
     G --> H[Record Run in candidate_discovery_runs]
 ```
 
 ### Core Architecture & Workflow
 
-1. **Unmatched Skill Identification:**
+1. **Broadened Skill Pair Generation:**
    - Evaluated after the primary readiness analysis completes.
-   - Requirements with missing or zero coverage credit are matched against student skills not utilized in winning matches.
+   - Generates candidate pairs across all industry requirements and student profile skills in the analysis, including skills that have already contributed to matches.
    - Pairs already connected by verified taxonomy edges (in either direction) or resolved to identical canonical IDs are strictly excluded.
 2. **Reusing Cached Embeddings:**
    - Embeddings are retrieved directly from `cached_skill_embeddings` for the active snapshot without invoking external embedding APIs during analysis.
@@ -303,7 +303,7 @@ flowchart LR
 3. **Cosine Similarity & Ranking:**
    - Evaluated with zero-vector and dimension guards:
      $$\text{cosine\_similarity}(\vec{u}, \vec{v}) = \frac{\vec{u} \cdot \vec{v}}{\|\vec{u}\|_2 \|\vec{v}\|_2}$$
-   - Filtered against a configurable similarity threshold (default `0.75`).
+   - Filtered against a configurable similarity threshold (default `0.60`).
    - Sorted in descending order of similarity with deterministic tie-breaking by canonical skill identifiers, capped at `candidate_max_submissions_per_run` (default `10`).
 4. **SSKS Candidate Submission Contract:**
    - Submits proposals to `POST /ssks/candidates/relationships`.
@@ -339,7 +339,7 @@ Settings are loaded through Pydantic Settings with automatic `.env` resolution:
 | `VERSION` | string | `0.1.0` | API version string |
 | `DATABASE_URL` | string | `postgresql+asyncpg://...` | Async PostgreSQL connection string |
 | `SSKS_BASE_URL` | string | `http://localhost:8005` | Base URL for Shared Skill Knowledge Service |
-| `CANDIDATE_SIMILARITY_THRESHOLD` | float | `0.75` | Minimum cosine similarity required to propose relationship candidate |
+| `CANDIDATE_SIMILARITY_THRESHOLD` | float | `0.60` | Minimum cosine similarity required to propose relationship candidate |
 | `CANDIDATE_MAX_SUBMISSIONS_PER_RUN` | int | `10` | Maximum candidate relationship submissions per discovery run |
 | `CANDIDATE_DISCOVERY_EMBEDDING_MODEL` | string | `sentence-transformers/all-MiniLM-L6-v2` | Embedding model identifier matching cached embeddings |
 | `CANDIDATE_DISCOVERY_TIMEOUT_SECONDS` | float | `10.0` | HTTP request timeout for SSKS candidate submission |

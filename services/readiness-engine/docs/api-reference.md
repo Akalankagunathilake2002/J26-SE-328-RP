@@ -336,7 +336,7 @@ Retrieve candidate discovery execution runs for an analysis:
     "id": "76df529b-986c-48ae-8b3d-18751fa0ef2b",
     "analysis_id": "a90dfeb6-0428-444a-9ef8-e8cb9b6ea17c",
     "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
-    "similarity_threshold": 0.75,
+    "similarity_threshold": 0.60,
     "status": "COMPLETED",
     "candidates_submitted_count": 2,
     "started_at": "2026-10-19T14:30:00Z",
@@ -347,7 +347,7 @@ Retrieve candidate discovery execution runs for an analysis:
 
 ### 7.3 SSKS Upstream Submission Contract
 
-Eligible candidates meeting or exceeding the configurable threshold (default `0.75`) are submitted to SSKS:
+Eligible candidates meeting or exceeding the configurable threshold (default `0.60`) are submitted to SSKS:
 
 - **Endpoint:** `POST {SSKS_BASE_URL}/ssks/candidates/relationships`
 - **Payload Schema:**

@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from unittest.mock import AsyncMock, MagicMock, patch
 
@@ -61,21 +62,31 @@ def test_03_cosine_similarity_incompatible_and_invalid():
 
 # 2. Configurable threshold behaviour
 def test_04_configurable_threshold_behaviour():
+    from app.config.settings import Settings
+
     pairs = [
-        CandidatePair("SK-01", "SK-11", 0.7499),
-        CandidatePair("SK-02", "SK-12", 0.7500),
-        CandidatePair("SK-03", "SK-13", 0.8500),
+        CandidatePair("SK-01", "SK-11", 0.5999),
+        CandidatePair("SK-02", "SK-12", 0.6000),
+        CandidatePair("SK-03", "SK-13", 0.7500),
     ]
 
-    # Default threshold 0.75
-    res_default = filter_and_rank_candidates(pairs, threshold=0.75, max_candidates=10)
+    # Default threshold 0.60
+    res_default = filter_and_rank_candidates(pairs, threshold=0.60, max_candidates=10)
     assert len(res_default) == 2
     assert {c.source_skill_id for c in res_default} == {"SK-02", "SK-03"}
 
-    # Higher threshold 0.80
-    res_higher = filter_and_rank_candidates(pairs, threshold=0.80, max_candidates=10)
+    # Higher threshold 0.70
+    res_higher = filter_and_rank_candidates(pairs, threshold=0.70, max_candidates=10)
     assert len(res_higher) == 1
     assert res_higher[0].source_skill_id == "SK-03"
+
+    # Verify settings default is 0.60
+    settings = Settings()
+    assert settings.candidate_similarity_threshold == 0.60
+
+    # Verify environment variable override is preserved
+    override_settings = Settings(candidate_similarity_threshold=0.72)
+    assert override_settings.candidate_similarity_threshold == 0.72
 
 
 # 3. Exclusion of identical and verified-resolvable pairs
@@ -102,6 +113,31 @@ def test_05_exclusion_of_identical_and_verified_relationships():
     assert ("SK-02", "SK-05") in pairs
     assert ("SK-03", "SK-04") in pairs
     assert ("SK-03", "SK-05") in pairs
+
+
+# Skills already used in other matches can participate in candidate discovery
+def test_05b_matched_skills_participate_in_discovery():
+    # Student has Python (SK-01) and MySQL (SK-02)
+    # Role requires Python (SK-01) and SQL (SK-03)
+    # In the analysis, SK-01 matched to SK-01, and SK-02 matched to SK-03 via verified relationship (SK-02, SK-03)
+    student_skills = ["SK-01", "SK-02"]
+    requirement_skills = ["SK-01", "SK-03"]
+    verified_pairs = {("SK-02", "SK-03"), ("SK-03", "SK-02")}
+
+    pairs = generate_candidate_skill_pairs(
+        student_skill_ids=student_skills,
+        requirement_skill_ids=requirement_skills,
+        verified_relationship_pairs=verified_pairs,
+    )
+
+    # Identical pair (SK-01, SK-01) is excluded
+    assert ("SK-01", "SK-01") not in pairs
+    # Verified pair (SK-02, SK-03) is excluded
+    assert ("SK-02", "SK-03") not in pairs
+    # But Python (SK-01) can participate in candidate discovery with SQL (SK-03)
+    assert ("SK-01", "SK-03") in pairs
+    # And MySQL (SK-02) can participate in candidate discovery with Python (SK-01)
+    assert ("SK-02", "SK-01") in pairs
 
 
 # 4. Candidate ranking and maximum-candidate limits
@@ -213,6 +249,43 @@ async def test_08_ssks_api_contract_and_successful_submission():
     assert body["source_id"] is None
     assert "C03" in body["review_note"]
     assert str(analysis_id) in body["review_note"]
+
+
+# SBERT cosine similarity candidates must strictly be submitted as RELATED_TO, never inferring hierarchy or equivalence
+@pytest.mark.anyio
+async def test_08b_sbert_only_candidates_strictly_submitted_as_related_to():
+    captured_payloads = []
+
+    def mock_handler(request: httpx.Request):
+        import json
+        captured_payloads.append(json.loads(request.content.decode()))
+        return httpx.Response(status_code=201, json={"candidate_relationship_id": "CR-001"})
+
+    transport = httpx.MockTransport(mock_handler)
+    async with httpx.AsyncClient(transport=transport) as client:
+        # Test with very high similarity (0.999) that might tempt equivalence
+        await submit_candidate_to_ssks(
+            client=client,
+            ssks_base_url="http://ssks:8005",
+            source_skill_id="SK-01",
+            target_skill_id="SK-02",
+            similarity_score=0.999,
+            analysis_id=uuid.uuid4(),
+        )
+
+    assert len(captured_payloads) == 1
+    payload = captured_payloads[0]
+
+    # Strictly RELATED_TO
+    assert payload["proposed_relationship_type"] == "RELATED_TO"
+    # Never inferred as hierarchical, compositional, or equivalent
+    assert payload["proposed_relationship_type"] not in (
+        "EQUIVALENT_TO",
+        "PART_OF",
+        "PREREQUISITE_OF",
+        "NARROWER_THAN",
+        "BROADER_THAN",
+    )
 
 
 # 7. Unsuccessful API responses handled safely
@@ -614,3 +687,104 @@ async def test_15_no_individual_candidate_records_written():
     # Only CandidateDiscoveryRun was added to session, no individual candidate rows
     assert len(added_objects) == 1
     assert isinstance(added_objects[0], CandidateDiscoveryRun)
+
+
+# 14. Broadened candidate discovery receives all skills even when all were matched
+@pytest.mark.anyio
+async def test_16_analysis_triggers_broadened_discovery_with_all_skills():
+    mock_discovery = AsyncMock()
+    analysis_service = AnalysisService(candidate_discovery_service=mock_discovery)
+
+    user_uuid = uuid.uuid4()
+    mock_user_prof = UserSkillProfile(
+        id=uuid.uuid4(),
+        user_id=user_uuid,
+        skills=[
+            UserSkillProfileSkill(
+                id=uuid.uuid4(),
+                skill_id="SK-000100",
+                standard_name="Python",
+                proficiency_score=0.8,
+                evidence_confidence=0.9,
+                proficiency_level="ADVANCED",
+                mapping_status="RESOLVED",
+            ),
+            UserSkillProfileSkill(
+                id=uuid.uuid4(),
+                skill_id="SK-000200",
+                standard_name="MySQL",
+                proficiency_score=0.7,
+                evidence_confidence=0.8,
+                proficiency_level="INTERMEDIATE",
+                mapping_status="RESOLVED",
+            ),
+        ],
+    )
+    mock_ind_prof = IndustryProfile(
+        id=uuid.uuid4(),
+        role_id="RL-000001",
+        role_name="Backend Developer",
+        requirements=[
+            IndustryProfileRequirement(
+                id=uuid.uuid4(),
+                skill_id="SK-000100",
+                standard_name="Python",
+                demand_weight=1.0,
+                required_proficiency_score=0.7,
+                required_proficiency_level="INTERMEDIATE",
+                mapping_status="RESOLVED",
+            ),
+            IndustryProfileRequirement(
+                id=uuid.uuid4(),
+                skill_id="SK-000300",
+                standard_name="SQL",
+                demand_weight=1.0,
+                required_proficiency_score=0.6,
+                required_proficiency_level="INTERMEDIATE",
+                mapping_status="RESOLVED",
+            ),
+        ],
+    )
+    req = AnalysisCreateRequest(
+        user_id=user_uuid,
+        role_id="RL-000001",
+        matching_method="RELATIONSHIP_AWARE",
+    )
+    mock_snapshot = MagicMock(snapshot_id=uuid.uuid4())
+    mock_session = AsyncMock()
+    mock_session.add = MagicMock()
+
+    # Verified relationship between MySQL and SQL
+    mock_rel = MagicMock(
+        source_skill_id="SK-000200",
+        target_skill_id="SK-000300",
+        relationship_type="NARROWER_THAN",
+        status="VERIFIED",
+    )
+
+    with (
+        patch("app.services.analysis_service.resolve_user_profile", return_value=mock_user_prof),
+        patch("app.services.analysis_service.resolve_industry_profile", return_value=mock_ind_prof),
+        patch("app.services.analysis_service.resolve_snapshot", return_value=mock_snapshot),
+        patch("app.services.analysis_service.load_snapshot_knowledge", return_value=([], [mock_rel])),
+        patch("app.services.analysis_service.validate_industry_profile"),
+        patch("app.services.analysis_service.validate_user_skill_profile"),
+    ):
+        analysis, _ = await analysis_service.run_analysis(
+            session=mock_session,
+            request=req,
+            enable_candidate_discovery=True,
+        )
+
+    # Yield control to event loop to allow background discovery task to execute
+    await asyncio.sleep(0.05)
+
+    assert analysis.status == AnalysisStatus.COMPLETED.value
+    # Ensure candidate discovery was called with all requirement and student skills
+    mock_discovery.run_candidate_discovery.assert_called_once()
+    call_kwargs = mock_discovery.run_candidate_discovery.call_args.kwargs
+    assert set(call_kwargs["requirement_skill_ids"]) == {"SK-000100", "SK-000300"}
+    assert set(call_kwargs["student_skill_ids"]) == {"SK-000100", "SK-000200"}
+    assert ("SK-000200", "SK-000300") in call_kwargs["verified_relationship_pairs"]
+    assert ("SK-000300", "SK-000200") in call_kwargs["verified_relationship_pairs"]
+

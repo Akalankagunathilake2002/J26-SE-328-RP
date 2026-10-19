@@ -363,33 +363,18 @@ class AnalysisService:
             analysis.status = AnalysisStatus.COMPLETED.value
             analysis.completed_at = complete_time
 
-            # Trigger asynchronous candidate discovery for unmatched skills
+            # Trigger asynchronous candidate discovery across all profile and requirement skills
             if enable_candidate_discovery:
                 try:
-                    unmatched_req_ids = [
+                    all_req_skill_ids = [
                         r.skill_id.strip()
                         for r in industry_profile.requirements
-                        if r.skill_id
-                        and r.skill_id.strip()
-                        and (
-                            str(r.id) not in matching_by_req_id
-                            or matching_by_req_id[str(r.id)].result_status == "MISSING"
-                            or (matching_by_req_id[str(r.id)].coverage_credit or 0.0)
-                            <= 0.0
-                        )
+                        if r.skill_id and r.skill_id.strip()
                     ]
-                    matched_student_skill_record_ids = {
-                        str(m.selected_student_skill_id)
-                        for m in matching_results
-                        if m.selected_student_skill_id
-                        and (m.coverage_credit or 0.0) > 0.0
-                    }
-                    unmatched_stu_ids = [
+                    all_stu_skill_ids = [
                         s.skill_id.strip()
                         for s in user_profile.skills
-                        if s.skill_id
-                        and s.skill_id.strip()
-                        and str(s.id) not in matched_student_skill_record_ids
+                        if s.skill_id and s.skill_id.strip()
                     ]
                     verified_pairs: set[tuple[str, str]] = set()
                     for rel in relationships:
@@ -404,8 +389,8 @@ class AnalysisService:
                             await self.candidate_discovery_service.run_candidate_discovery(
                                 analysis_id=analysis.analysis_id,
                                 snapshot_id=snapshot.snapshot_id,
-                                unmatched_requirement_skill_ids=unmatched_req_ids,
-                                unmatched_student_skill_ids=unmatched_stu_ids,
+                                requirement_skill_ids=all_req_skill_ids,
+                                student_skill_ids=all_stu_skill_ids,
                                 verified_relationship_pairs=verified_pairs,
                             )
                         except Exception as task_err:  # noqa: BLE001

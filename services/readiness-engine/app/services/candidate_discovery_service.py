@@ -79,18 +79,32 @@ def filter_and_rank_candidates(
 
 # Generate eligible skill pairs by excluding identical skills and verified taxonomy relationships
 def generate_candidate_skill_pairs(
-    unmatched_student_skill_ids: Sequence[str],
-    unmatched_requirement_skill_ids: Sequence[str],
-    verified_relationship_pairs: set[tuple[str, str]],
+    student_skill_ids: Sequence[str] | None = None,
+    requirement_skill_ids: Sequence[str] | None = None,
+    verified_relationship_pairs: set[tuple[str, str]] | None = None,
+    unmatched_student_skill_ids: Sequence[str] | None = None,
+    unmatched_requirement_skill_ids: Sequence[str] | None = None,
 ) -> list[tuple[str, str]]:
+    stu_ids = (
+        student_skill_ids
+        if student_skill_ids is not None
+        else (unmatched_student_skill_ids or [])
+    )
+    req_ids = (
+        requirement_skill_ids
+        if requirement_skill_ids is not None
+        else (unmatched_requirement_skill_ids or [])
+    )
+    verified_pairs = verified_relationship_pairs or set()
+
     unique_pairs: list[tuple[str, str]] = []
     seen: set[tuple[str, str]] = set()
 
-    for stu_id in unmatched_student_skill_ids:
+    for stu_id in stu_ids:
         clean_stu = stu_id.strip() if stu_id else ""
         if not clean_stu:
             continue
-        for req_id in unmatched_requirement_skill_ids:
+        for req_id in req_ids:
             clean_req = req_id.strip() if req_id else ""
             if not clean_req:
                 continue
@@ -102,8 +116,8 @@ def generate_candidate_skill_pairs(
 
             # Exclude pairs already connected by a verified relationship in either direction
             if (
-                pair in verified_relationship_pairs
-                or reverse_pair in verified_relationship_pairs
+                pair in verified_pairs
+                or reverse_pair in verified_pairs
             ):
                 continue
 
@@ -186,14 +200,16 @@ class CandidateDiscoveryService:
         self,
         analysis_id: uuid.UUID,
         snapshot_id: uuid.UUID,
-        unmatched_requirement_skill_ids: list[str],
-        unmatched_student_skill_ids: list[str],
-        verified_relationship_pairs: set[tuple[str, str]],
+        requirement_skill_ids: list[str] | None = None,
+        student_skill_ids: list[str] | None = None,
+        verified_relationship_pairs: set[tuple[str, str]] | None = None,
         threshold: float | None = None,
         max_candidates: int | None = None,
         embedding_model: str | None = None,
         http_client: httpx.AsyncClient | None = None,
         session_factory: async_sessionmaker[AsyncSession] | None = None,
+        unmatched_requirement_skill_ids: list[str] | None = None,
+        unmatched_student_skill_ids: list[str] | None = None,
     ) -> CandidateDiscoveryRun | None:
         settings = get_settings()
         effective_threshold = (
@@ -207,6 +223,18 @@ class CandidateDiscoveryService:
             else settings.candidate_max_submissions_per_run
         )
         model_id = embedding_model or settings.candidate_discovery_embedding_model
+
+        effective_req_ids = (
+            requirement_skill_ids
+            if requirement_skill_ids is not None
+            else (unmatched_requirement_skill_ids or [])
+        )
+        effective_stu_ids = (
+            student_skill_ids
+            if student_skill_ids is not None
+            else (unmatched_student_skill_ids or [])
+        )
+        verified_pairs = verified_relationship_pairs or set()
 
         factory = session_factory or get_sessionmaker()
         run_id = uuid.uuid4()
@@ -228,9 +256,9 @@ class CandidateDiscoveryService:
 
             try:
                 candidate_skill_pairs = generate_candidate_skill_pairs(
-                    unmatched_student_skill_ids=unmatched_student_skill_ids,
-                    unmatched_requirement_skill_ids=unmatched_requirement_skill_ids,
-                    verified_relationship_pairs=verified_relationship_pairs,
+                    student_skill_ids=effective_stu_ids,
+                    requirement_skill_ids=effective_req_ids,
+                    verified_relationship_pairs=verified_pairs,
                 )
 
                 if not candidate_skill_pairs:
