@@ -1,0 +1,234 @@
+{
+    "schema_version": "1.0",
+    "message_id": "MSG-C02-DEMO-TESTER-001",
+    "generated_at": "2026-10-19T07:30:00Z",
+    "source_component": "user-skill-profile-service",
+    "profile_type": "user_skill_profile",
+    "data": {
+        "user_skill_profile": {
+            "profile_version": "2026-10-19T07:30:00Z",
+            "domain": {
+                "domain_id": "DOM-IT",
+                "domain_name": "Information Technology"
+            },
+            "user_id": "677add2f-c700-4346-8980-a09c4924c665",
+            "profile_quality": {
+                "completeness_score": 0.85
+            },
+            "skills": [
+                {
+                    "skill_id": "SK-000263",
+                    "candidate_skill_id": null,
+                    "standard_name": "plan software testing",
+                    "primary_observed_term": "Software Testing",
+                    "observed_terms": [
+                        "software testing",
+                        "test planning"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.75
+                    },
+                    "evidence_confidence": 0.85,
+                    "verification_status": "VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-TEST-001",
+                            "source_type": "PROJECT",
+                            "source_name": "Software Testing Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Prepared test scenarios and planned test activities for application features.",
+                            "strength": 0.82,
+                            "verified": true
+                        }
+                    ],
+                    "proficiency_score": 0.75
+                },
+                {
+                    "skill_id": "SK-000389",
+                    "candidate_skill_id": null,
+                    "standard_name": "levels of software testing",
+                    "primary_observed_term": "Software Testing Levels",
+                    "observed_terms": [
+                        "unit testing",
+                        "integration testing",
+                        "system testing",
+                        "acceptance testing"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.72
+                    },
+                    "evidence_confidence": 0.82,
+                    "verification_status": "VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-TEST-002",
+                            "source_type": "PROJECT",
+                            "source_name": "Software Testing Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Applied knowledge of unit, integration and system testing while evaluating application behaviour.",
+                            "strength": 0.78,
+                            "verified": true
+                        }
+                    ],
+                    "proficiency_score": 0.72
+                },
+                {
+                    "skill_id": "SK-000353",
+                    "candidate_skill_id": null,
+                    "standard_name": "provide software testing documentation",
+                    "primary_observed_term": "Testing Documentation",
+                    "observed_terms": [
+                        "test cases",
+                        "test documentation",
+                        "test reports"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.70
+                    },
+                    "evidence_confidence": 0.80,
+                    "verification_status": "VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-TEST-003",
+                            "source_type": "PROJECT",
+                            "source_name": "Software Testing Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Documented test cases, expected results and observed defects for application features.",
+                            "strength": 0.76,
+                            "verified": true
+                        }
+                    ],
+                    "proficiency_score": 0.70
+                },
+                {
+                    "skill_id": "SK-000878",
+                    "candidate_skill_id": null,
+                    "standard_name": "MySQL",
+                    "primary_observed_term": "MySQL",
+                    "observed_terms": [
+                        "MySQL",
+                        "MySQL database"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.72
+                    },
+                    "evidence_confidence": 0.84,
+                    "verification_status": "VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-TEST-004",
+                            "source_type": "PROJECT",
+                            "source_name": "Database Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Used MySQL to create tables, query records and inspect application data.",
+                            "strength": 0.80,
+                            "verified": true
+                        }
+                    ],
+                    "proficiency_score": 0.72
+                },
+                {
+                    "skill_id": "SK-000591",
+                    "candidate_skill_id": null,
+                    "standard_name": "Python (computer programming)",
+                    "primary_observed_term": "Python",
+                    "observed_terms": [
+                        "Python"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "BEGINNER",
+                        "score": 0.55
+                    },
+                    "evidence_confidence": 0.68,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-TEST-006",
+                            "source_type": "PROJECT",
+                            "source_name": "Programming Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Used basic Python scripts to process data and perform simple validation tasks.",
+                            "strength": 0.62,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.55
+                },
+                {
+                    "skill_id": "SK-001189",
+                    "candidate_skill_id": null,
+                    "standard_name": "Git",
+                    "primary_observed_term": "Git",
+                    "observed_terms": [
+                        "Git",
+                        "version control"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "BEGINNER",
+                        "score": 0.58
+                    },
+                    "evidence_confidence": 0.70,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-TEST-007",
+                            "source_type": "PROJECT",
+                            "source_name": "Software Testing Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Used Git to track code changes while working on coursework.",
+                            "strength": 0.64,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.58
+                },
+                {
+                    "skill_id": "SK-000736",
+                    "candidate_skill_id": null,
+                    "standard_name": "Critical Thinking",
+                    "primary_observed_term": "Critical Thinking",
+                    "observed_terms": [
+                        "critical thinking",
+                        "analytical problem solving"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "BEHAVIORAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.72
+                    },
+                    "evidence_confidence": 0.78,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-TEST-008",
+                            "source_type": "PROJECT",
+                            "source_name": "Software Testing Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Analysed unexpected application behaviour and investigated possible causes.",
+                            "strength": 0.70,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.72
+                }
+            ]
+        }
+    }
+}

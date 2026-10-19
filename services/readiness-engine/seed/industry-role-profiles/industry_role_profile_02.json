@@ -72,14 +72,13 @@
           "required_proficiency_score": 0.6
         },
         {
-          "skill_id": "SK-001606",
+          "skill_id": "SK-001881",
           "candidate_skill_id": null,
-          "standard_name": "React",
-          "primary_observed_term": "React",
+          "standard_name": "MERN Stack",
+          "primary_observed_term": "MERN Stack",
           "observed_terms": [
-            "React",
-            "React.js",
-            "ReactJS"
+            "MERN Stack",
+            "MERN"
           ],
           "mapping_status": "verified",
           "skill_type": "TECHNICAL",
