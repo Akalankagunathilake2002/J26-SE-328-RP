@@ -373,3 +373,58 @@ async def load_snapshot_knowledge(
     ]
 
     return aliases, relationships
+
+
+# Query available industry profiles directly from the authoritative table with optional filters
+async def list_industry_profiles(
+    session: AsyncSession,
+    domain_id: str | None = None,
+    career_level: str | None = None,
+    status: str | None = "active",
+    latest_only: bool = True,
+) -> list[IndustryProfile]:
+    stmt = select(IndustryProfile)
+
+    if domain_id:
+        stmt = stmt.where(IndustryProfile.domain_id == domain_id)
+    if career_level:
+        stmt = stmt.where(IndustryProfile.career_level == career_level)
+    if status:
+        stmt = stmt.where(IndustryProfile.profile_status == status)
+
+    stmt = stmt.order_by(
+        IndustryProfile.role_name.asc(),
+        IndustryProfile.career_level.asc(),
+        IndustryProfile.received_at.desc(),
+    )
+
+    result = await session.execute(stmt)
+    records = list(result.scalars().all())
+
+    if not latest_only:
+        return records
+
+    # Deduplicate by (role identifier/name, career level) keeping the newest received record
+    seen: set[tuple[str, str]] = set()
+    deduped: list[IndustryProfile] = []
+    for r in records:
+        role_key = (
+            r.role_id or r.candidate_role_id or r.role_name or str(r.id)
+        ).strip().lower()
+        level_key = (r.career_level or "").strip().lower()
+        key = (role_key, level_key)
+        if key not in seen:
+            seen.add(key)
+            deduped.append(r)
+
+    return deduped
+
+
+# Query a single industry profile by UUID
+async def get_industry_profile_by_id(
+    session: AsyncSession,
+    profile_id: uuid.UUID,
+) -> IndustryProfile | None:
+    stmt = select(IndustryProfile).where(IndustryProfile.id == profile_id)
+    result = await session.execute(stmt)
+    return result.scalars().first()
