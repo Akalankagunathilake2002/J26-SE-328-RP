@@ -367,6 +367,11 @@ export interface ReadinessSkillResult {
   gap?: number;
   resultStatus: string;
   explanation?: string;
+  evidenceConfidence?: number;
+  satisfaction?: number;
+  industryWeight?: number;
+  readinessContribution?: number;
+  maxPotentialContribution?: number;
 }
 
 // Actionable priority gap item conforming to C04 contract
@@ -394,6 +399,7 @@ export interface DetailedAnalysisResult {
   satisfiedCount: number;
   partialCount: number;
   missingCount: number;
+  matchedCount?: number;
   skills: ReadinessSkillResult[];
   prioritySkills: ReadinessPrioritySkill[];
 }
@@ -530,30 +536,6 @@ export async function fetchDetailedAnalysisResult(analysisId: string): Promise<D
     report?.readinessSummary?.tier ||
     (score >= 80 ? "Excellent Readiness" : score >= 60 ? "Good Readiness" : "Moderate Readiness");
 
-  const explanation =
-    report?.readinessSummary?.summaryText ||
-    report?.readinessSummary?.interpretation ||
-    detail.error_message ||
-    "Analysis evaluated against active industry requirements.";
-
-  const totalRequirements =
-    report?.readinessSummary?.totalRequirements ?? detail.skill_results?.length ?? 0;
-
-  const satisfiedCount =
-    report?.readinessSummary?.satisfiedCount ??
-    detail.skill_results?.filter((s) => s.result_status === "SATISFIED" || s.result_status === "COVERED").length ??
-    0;
-
-  const partialCount =
-    report?.readinessSummary?.partialCount ??
-    detail.skill_results?.filter((s) => s.result_status === "PARTIAL" || s.result_status === "PARTIALLY_COVERED").length ??
-    0;
-
-  const missingCount =
-    (report?.readinessSummary?.missingCount ?? 0) + (report?.readinessSummary?.deficientCount ?? 0) ||
-    detail.skill_results?.filter((s) => s.result_status === "MISSING" || s.result_status === "DEFICIENT").length ||
-    0;
-
   const skills: ReadinessSkillResult[] = (detail.skill_results || []).map((sr) => {
     const exp = report?.skillExplanations?.find(
       (e) => (e.industryRequirementId && e.industryRequirementId === sr.industry_requirement_id) || e.skillName === sr.required_skill_name,
@@ -570,6 +552,11 @@ export async function fetchDetailedAnalysisResult(analysisId: string): Promise<D
       gap: sr.gap ?? undefined,
       resultStatus: sr.result_status || "MISSING",
       explanation: exp?.explanation || exp?.contributionExplanation,
+      evidenceConfidence: sr.evidence_confidence ?? exp?.evidenceConfidence ?? undefined,
+      satisfaction: sr.satisfaction ?? exp?.satisfaction ?? undefined,
+      industryWeight: sr.industry_weight ?? exp?.industryWeight ?? undefined,
+      readinessContribution: exp?.readinessContribution ?? undefined,
+      maxPotentialContribution: exp?.maxPotentialContribution ?? undefined,
     };
   });
 
@@ -587,7 +574,52 @@ export async function fetchDetailedAnalysisResult(analysisId: string): Promise<D
         gap: exp.gap ?? undefined,
         resultStatus: exp.resultStatus || "MISSING",
         explanation: exp.explanation || exp.contributionExplanation,
+        evidenceConfidence: exp.evidenceConfidence ?? undefined,
+        satisfaction: exp.satisfaction ?? undefined,
+        industryWeight: exp.industryWeight ?? undefined,
+        readinessContribution: exp.readinessContribution ?? undefined,
+        maxPotentialContribution: exp.maxPotentialContribution ?? undefined,
       });
+    }
+  }
+
+  const totalRequirements =
+    report?.readinessSummary?.totalRequirements ?? detail.skill_results?.length ?? skills.length;
+
+  // Fully satisfied count: requirements where satisfaction achieves 100% (>= 0.999)
+  // Does NOT treat COVERED skills as fully satisfied if satisfaction is below 1
+  const satisfiedCount =
+    report?.readinessSummary?.satisfiedCount ??
+    detail.skill_results?.filter((s) => (s.satisfaction !== null && s.satisfaction !== undefined ? s.satisfaction >= 0.999 : s.result_status === "SATISFIED")).length ??
+    skills.filter((s) => (s.satisfaction !== undefined ? s.satisfaction >= 0.999 : s.resultStatus === "SATISFIED")).length;
+
+  // Partial count: requirements with satisfaction between 0 and 1, including covered skills with evidence confidence < 1
+  const partialCount =
+    report?.readinessSummary?.partialCount ??
+    detail.skill_results?.filter((s) => (s.satisfaction !== null && s.satisfaction !== undefined ? s.satisfaction > 0 && s.satisfaction < 0.999 : s.result_status === "PARTIAL" || s.result_status === "PARTIALLY_COVERED")).length ??
+    skills.filter((s) => (s.satisfaction !== undefined ? s.satisfaction > 0 && s.satisfaction < 0.999 : s.resultStatus === "PARTIAL" || s.resultStatus === "PARTIALLY_COVERED")).length;
+
+  const missingCount =
+    (report?.readinessSummary?.missingCount ?? 0) + (report?.readinessSummary?.deficientCount ?? 0) ||
+    detail.skill_results?.filter((s) => s.result_status === "MISSING" || s.result_status === "DEFICIENT" || s.match_type === "MISSING").length ||
+    skills.filter((s) => s.resultStatus === "MISSING" || s.resultStatus === "DEFICIENT" || s.matchType === "MISSING").length;
+
+  // Matched count: requirements where candidate has a demonstrated matching skill
+  const matchedCount =
+    detail.skill_results?.filter((s) => s.match_type !== "MISSING" && s.match_type !== "UNASSESSED" && (s.coverage_credit > 0 || s.result_status !== "MISSING")).length ??
+    skills.filter((s) => s.matchType !== "MISSING" && s.matchType !== "UNASSESSED" && (s.coverageCredit > 0 || s.resultStatus !== "MISSING")).length;
+
+  let explanation =
+    report?.readinessSummary?.summaryText ||
+    report?.readinessSummary?.interpretation ||
+    detail.error_message ||
+    "";
+
+  if (!explanation) {
+    if (matchedCount === totalRequirements && totalRequirements > 0 && satisfiedCount === 0) {
+      explanation = `All ${totalRequirements} skills match your profile with zero capability gaps. Your readiness score of ${score}% reflects developing evidence confidence rather than missing skills. Verifying skills with certificates or assessments will increase your score.`;
+    } else {
+      explanation = `Evaluated ${totalRequirements} requirement(s) for role '${detail.role_name || "Target Role"}'. ${satisfiedCount} fully satisfied, ${partialCount} partial, and ${missingCount} missing.`;
     }
   }
 

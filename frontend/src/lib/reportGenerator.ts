@@ -44,10 +44,19 @@ export interface ReportGenerationData {
   }[];
 }
 
-// Maps backend result statuses to clean, restrained academic status labels
-function normalizeReportStatus(status?: string, matchType?: string): "Met" | "Partial" | "Missing" {
+// Maps backend result statuses and satisfaction to restrained academic status labels
+function normalizeReportStatus(
+  status?: string,
+  matchType?: string,
+  satisfaction?: number | null,
+): "Met" | "Partial" | "Missing" {
+  if (satisfaction !== undefined && satisfaction !== null) {
+    if (satisfaction >= 0.999) return "Met";
+    if (satisfaction > 0.0) return "Partial";
+    return "Missing";
+  }
   const norm = (status || "").toUpperCase();
-  if (norm === "COVERED" || norm === "SATISFIED" || norm === "MET" || matchType === "EXACT") {
+  if (norm === "SATISFIED") {
     return "Met";
   }
   if (
@@ -58,6 +67,9 @@ function normalizeReportStatus(status?: string, matchType?: string): "Met" | "Pa
     matchType === "RELATIONSHIP"
   ) {
     return "Partial";
+  }
+  if (norm === "COVERED" || norm === "MET" || matchType === "EXACT") {
+    return "Met";
   }
   return "Missing";
 }
@@ -913,21 +925,28 @@ export async function downloadCareerReadinessReport(
   const satisfiedCount =
     report?.readinessSummary?.satisfiedCount ??
     detail?.skill_results?.filter(
-      (s: SkillResultDetailItem) => s.result_status === "SATISFIED" || s.result_status === "COVERED",
+      (s: SkillResultDetailItem) =>
+        s.satisfaction !== null && s.satisfaction !== undefined
+          ? s.satisfaction >= 0.999
+          : s.result_status === "SATISFIED",
     ).length ??
     0;
 
   const partialCount =
     report?.readinessSummary?.partialCount ??
     detail?.skill_results?.filter(
-      (s: SkillResultDetailItem) => s.result_status === "PARTIAL" || s.result_status === "PARTIALLY_COVERED",
+      (s: SkillResultDetailItem) =>
+        s.satisfaction !== null && s.satisfaction !== undefined
+          ? s.satisfaction > 0 && s.satisfaction < 0.999
+          : s.result_status === "PARTIAL" || s.result_status === "PARTIALLY_COVERED",
     ).length ??
     0;
 
   const missingCount =
     (report?.readinessSummary?.missingCount ?? 0) + (report?.readinessSummary?.deficientCount ?? 0) ||
     detail?.skill_results?.filter(
-      (s: SkillResultDetailItem) => s.result_status === "MISSING" || s.result_status === "DEFICIENT",
+      (s: SkillResultDetailItem) =>
+        s.result_status === "MISSING" || s.result_status === "DEFICIENT" || s.match_type === "MISSING",
     ).length ||
     0;
 
@@ -944,18 +963,22 @@ export async function downloadCareerReadinessReport(
         name: s.skillName,
         matchedName: s.matchedSkillName || undefined,
         requiredProficiency: s.requiredProficiency || "INTERMEDIATE",
-        status: normalizeReportStatus(s.resultStatus, s.matchType),
+        status: normalizeReportStatus(s.resultStatus, s.matchType, s.satisfaction),
         explanation: s.explanation || s.contributionExplanation,
       });
     }
   } else if (detail?.skill_results) {
     for (const sr of detail.skill_results) {
+      const confStr =
+        sr.evidence_confidence !== null && sr.evidence_confidence !== undefined && sr.evidence_confidence < 0.999
+          ? ` (${Math.round(sr.evidence_confidence * 100)}% evidence confidence, ${Math.round((sr.satisfaction ?? 0) * 100)}% satisfaction)`
+          : "";
       skills.push({
         name: sr.required_skill_name,
         matchedName: sr.matched_skill_name || undefined,
         requiredProficiency: sr.required_proficiency || "INTERMEDIATE",
-        status: normalizeReportStatus(sr.result_status, sr.match_type),
-        explanation: `Demonstrated coverage credit ${(sr.coverage_credit * 100).toFixed(0)}%.`,
+        status: normalizeReportStatus(sr.result_status, sr.match_type, sr.satisfaction),
+        explanation: `Demonstrated coverage credit ${(sr.coverage_credit * 100).toFixed(0)}%${confStr}.`,
       });
     }
   }

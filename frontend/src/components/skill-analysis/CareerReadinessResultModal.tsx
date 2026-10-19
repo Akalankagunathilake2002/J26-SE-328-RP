@@ -247,10 +247,10 @@ export function CareerReadinessResultModal({
                   </span>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-ink/70 truncate">
-                      Matched
+                      Matched Skills
                     </span>
                     <span className="text-xs sm:text-sm font-black text-ink leading-tight truncate">
-                      {data.satisfiedCount} Skills
+                      {data.matchedCount ?? matchedList.length} Skills
                     </span>
                   </div>
                 </div>
@@ -262,10 +262,10 @@ export function CareerReadinessResultModal({
                   </span>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-ink/70 truncate">
-                      Missing
+                      Skill Gaps
                     </span>
                     <span className="text-xs sm:text-sm font-black text-ink leading-tight truncate">
-                      {data.missingCount} Skills
+                      {data.missingCount} Missing
                     </span>
                   </div>
                 </div>
@@ -277,7 +277,7 @@ export function CareerReadinessResultModal({
                   </span>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-ink/70 truncate">
-                      Analyzed
+                      Assessed
                     </span>
                     <span className="text-xs sm:text-sm font-black text-ink leading-tight truncate">
                       {data.totalRequirements} Total
@@ -301,27 +301,55 @@ export function CareerReadinessResultModal({
                     </h4>
                   </div>
                   <span className="bg-[#d9f99d] border-2 border-ink rounded px-1.5 py-0.5 text-[10px] font-black text-ink shadow-[1px_1px_0px_#000]">
-                    {data.satisfiedCount}
+                    {data.matchedCount ?? matchedList.length}
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
-                  You have the right skills!
+                  {data.missingCount === 0 && data.satisfiedCount < (data.matchedCount ?? matchedList.length)
+                    ? "Requirements matched (see evidence confidence):"
+                    : "Requirements matched in your profile:"}
                 </p>
 
                 {/* Skill List */}
-                <div className="flex flex-col gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-2 max-h-[160px] overflow-y-auto pr-1">
                   {visibleMatched.length === 0 ? (
                     <span className="text-xs text-muted">No matched skills recorded.</span>
                   ) : (
-                    visibleMatched.map((skill) => (
-                      <div
-                        key={skill.id}
-                        className="flex items-center gap-1.5 text-xs font-bold text-ink"
-                      >
-                        <CheckCircle2 className="size-3.5 text-emerald-600 fill-emerald-100 shrink-0" />
-                        <span className="truncate" title={skill.requiredSkillName}>{skill.requiredSkillName}</span>
-                      </div>
-                    ))
+                    visibleMatched.map((skill) => {
+                      const hasPartialConfidence =
+                        skill.evidenceConfidence !== undefined && skill.evidenceConfidence < 0.999;
+                      return (
+                        <div
+                          key={skill.id}
+                          className="flex flex-col gap-0.5 pb-1.5 border-b border-ink/10 last:border-none"
+                        >
+                          <div className="flex items-center justify-between gap-1.5 text-xs font-bold text-ink">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <CheckCircle2 className="size-3.5 text-emerald-600 fill-emerald-100 shrink-0" />
+                              <span className="truncate" title={skill.requiredSkillName}>{skill.requiredSkillName}</span>
+                            </div>
+                            <span className="text-[9.5px] font-black px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 shrink-0">
+                              {skill.matchType === "EXACT" ? "Exact Match" : skill.matchType === "ALIAS" ? "Alias" : "Related"}
+                            </span>
+                          </div>
+                          {/* Evidence confidence and satisfaction detail */}
+                          <div className="flex items-center justify-between text-[10px] text-muted font-medium pl-5">
+                            <span className={hasPartialConfidence ? "text-amber-700 font-semibold" : ""}>
+                              {skill.evidenceConfidence !== undefined
+                                ? `Evidence: ${Math.round(skill.evidenceConfidence * 100)}%`
+                                : "Verified evidence"}
+                            </span>
+                            <span>
+                              {skill.satisfaction !== undefined
+                                ? `Satisfaction: ${Math.round(skill.satisfaction * 100)}%`
+                                : skill.coverageCredit >= 1
+                                ? "100% Coverage"
+                                : `${Math.round(skill.coverageCredit * 100)}% Coverage`}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })
                   )}
                 </div>
               </div>
@@ -357,7 +385,7 @@ export function CareerReadinessResultModal({
                 </p>
 
                 {/* Missing Skill List */}
-                <div className="flex flex-col gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1">
                   {visibleMissing.length === 0 ? (
                     <span className="text-xs text-emerald-700 font-bold">No missing skill gaps!</span>
                   ) : (
@@ -397,17 +425,25 @@ export function CareerReadinessResultModal({
                     </h4>
                   </div>
                   <span className="bg-[#edddfc] border-2 border-ink rounded px-1.5 py-0.5 text-[10px] font-black text-ink shadow-[1px_1px_0px_#000]">
-                    TOP
+                    {data.prioritySkills.length > 0 ? "TOP" : "COVERED"}
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
-                  Focus on these to boost score:
+                  {data.prioritySkills.length > 0 ? "Focus on these to boost score:" : "Capability coverage status:"}
                 </p>
 
-                {/* Ranked Priority List */}
-                <div className="flex flex-col gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+                {/* Ranked Priority List or Zero Gap Advisory */}
+                <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1">
                   {visiblePriorities.length === 0 ? (
-                    <span className="text-xs text-muted">All priority requirements satisfied.</span>
+                    <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 flex flex-col gap-1">
+                      <div className="font-extrabold text-[11px] text-purple-900 flex items-center gap-1.5">
+                        <CheckCircle2 className="size-3.5 text-purple-700" />
+                        <span>Zero Skill Capability Gaps</span>
+                      </div>
+                      <p className="text-[10.5px] text-purple-800/90 leading-relaxed font-normal">
+                        All role skills are matched in your profile. To reach 100% readiness, strengthen evidence confidence through verified coursework, assessments, or project credentials.
+                      </p>
+                    </div>
                   ) : (
                     visiblePriorities.map((item) => (
                       <div

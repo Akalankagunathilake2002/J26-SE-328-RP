@@ -54,42 +54,105 @@ def build_readiness_summary(
     )
     assessable_reqs = total_reqs - unassessed_count
 
+    # Requirements achieve full satisfaction only when readiness satisfaction reaches 100%
     satisfied_count = sum(
         1
         for sr in skill_results
         if sr.match_type != "UNASSESSED"
         and (
-            sr.result_status in ("COVERED", "SATISFIED")
-            or (sr.gap is not None and sr.gap <= 1e-6)
+            (sr.satisfaction is not None and sr.satisfaction >= 1.0 - 1e-6)
+            or (
+                sr.satisfaction is None
+                and sr.result_status in ("COVERED", "SATISFIED")
+                and (sr.gap is not None and sr.gap <= 1e-6)
+            )
         )
     )
+
+    # Partial satisfaction includes partial capability coverage and covered skills discounted by evidence confidence
     partial_count = sum(
         1
         for sr in skill_results
         if sr.match_type != "UNASSESSED"
-        and sr.result_status in ("PARTIALLY_COVERED", "PARTIAL")
-        and not (sr.gap is not None and sr.gap <= 1e-6)
+        and (
+            (sr.satisfaction is not None and 0.0 < sr.satisfaction < 1.0 - 1e-6)
+            or (
+                sr.satisfaction is None
+                and sr.result_status in ("PARTIALLY_COVERED", "PARTIAL")
+                and not (sr.gap is not None and sr.gap <= 1e-6)
+            )
+        )
     )
+
     deficient_count = sum(
         1
         for sr in skill_results
         if sr.match_type != "UNASSESSED"
         and sr.result_status == "DEFICIENT"
         and not (sr.gap is not None and sr.gap <= 1e-6)
+        and not (sr.satisfaction is not None and sr.satisfaction >= 1.0 - 1e-6)
     )
+
     missing_count = sum(
         1
         for sr in skill_results
         if sr.match_type != "UNASSESSED"
-        and (sr.match_type == "MISSING" or sr.result_status == "MISSING")
+        and (
+            sr.match_type == "MISSING"
+            or sr.result_status == "MISSING"
+            or (
+                sr.satisfaction is not None
+                and sr.satisfaction <= 1e-6
+                and (sr.gap is None or sr.gap > 1e-6)
+            )
+        )
     )
 
-    summary_text = (
-        f"Evaluated {total_reqs} requirement(s) for role '{role_name}'. "
-        f"{satisfied_count} fully satisfied, {partial_count} partial, "
-        f"{deficient_count} deficient, and {missing_count} missing. "
-        f"{unassessed_count} requirement(s) excluded due to unverified mapping status."
+    # Track skills meeting capability coverage but discounted by evidence confidence
+    covered_with_evidence_discount = sum(
+        1
+        for sr in skill_results
+        if sr.match_type != "UNASSESSED"
+        and (sr.result_status == "COVERED" or (sr.gap is not None and sr.gap <= 1e-6))
+        and sr.satisfaction is not None
+        and 0.0 < sr.satisfaction < 1.0 - 1e-6
     )
+
+    has_capability_gaps = any(
+        sr.gap is not None and sr.gap > 1e-6
+        for sr in skill_results
+        if sr.match_type != "UNASSESSED"
+    )
+
+    if covered_with_evidence_discount > 0 and not has_capability_gaps and readiness_score is not None:
+        interpretation = (
+            f"The candidate demonstrates full skill capability coverage for '{role_name}', "
+            f"meeting target proficiency across all evaluated requirements. The readiness score of "
+            f"{readiness_score:.1f}% reflects developing evidence confidence rather than skill deficiencies."
+        )
+
+    if covered_with_evidence_discount > 0 and satisfied_count == 0 and missing_count == 0:
+        summary_text = (
+            f"Evaluated {total_reqs} requirement(s) for role '{role_name}'. "
+            f"All {total_reqs} skill requirement(s) are matched with zero capability gaps. "
+            f"Your readiness score of {readiness_score:.1f}% reflects developing evidence confidence "
+            f"rather than missing skills. Strengthening evidence through verified coursework or assessments will increase your score."
+        )
+    elif covered_with_evidence_discount > 0:
+        summary_text = (
+            f"Evaluated {total_reqs} requirement(s) for role '{role_name}'. "
+            f"{satisfied_count} fully satisfied, {partial_count} partial "
+            f"({covered_with_evidence_discount} covered with evidence confidence below 100%), "
+            f"{deficient_count} deficient, and {missing_count} missing. "
+            f"{unassessed_count} requirement(s) excluded due to unverified mapping status."
+        )
+    else:
+        summary_text = (
+            f"Evaluated {total_reqs} requirement(s) for role '{role_name}'. "
+            f"{satisfied_count} fully satisfied, {partial_count} partial, "
+            f"{deficient_count} deficient, and {missing_count} missing. "
+            f"{unassessed_count} requirement(s) excluded due to unverified mapping status."
+        )
 
     return ReadinessSummaryOut(
         readinessScore=readiness_score if readiness_score is not None else 0.0,
@@ -113,8 +176,12 @@ def build_skill_explanation(
 ) -> SkillExplanationOut:
     # 1. Compute contribution to 0-100 overall readiness score
     is_unassessed = sr.match_type == "UNASSESSED" or sr.result_status == "UNASSESSED"
-    is_satisfied = sr.result_status in ("COVERED", "SATISFIED") or (
-        sr.gap is not None and sr.gap <= 1e-6
+    is_fully_satisfied = (
+        sr.satisfaction is not None and sr.satisfaction >= 1.0 - 1e-6
+    ) or (
+        sr.satisfaction is None
+        and sr.result_status in ("COVERED", "SATISFIED")
+        and (sr.gap is not None and sr.gap <= 1e-6)
     )
     weight = sr.industry_weight or 0.0
     satisfaction = sr.satisfaction if sr.satisfaction is not None else 0.0
@@ -133,15 +200,18 @@ def build_skill_explanation(
             (weight * satisfaction / total_assessable_weight) * 100.0, 2
         )
 
-        if is_satisfied:
+        if is_fully_satisfied:
             contribution_expl = (
                 f"Contributed {contribution:.1f} points ({weight_share:.1f}% role weight share) "
                 f"with 100% proficiency satisfaction."
             )
         elif satisfaction > 0.0:
+            conf_detail = ""
+            if sr.evidence_confidence is not None and sr.evidence_confidence < 1.0 - 1e-6:
+                conf_detail = f" (adjusted by {sr.evidence_confidence * 100:.0f}% evidence confidence)"
             contribution_expl = (
                 f"Contributed {contribution:.1f} out of {max_potential:.1f} potential points "
-                f"({weight_share:.1f}% role weight share) based on {satisfaction * 100:.0f}% satisfaction."
+                f"({weight_share:.1f}% role weight share) based on {satisfaction * 100:.0f}% satisfaction{conf_detail}."
             )
         else:
             contribution_expl = (
@@ -167,11 +237,18 @@ def build_skill_explanation(
         )
     elif sr.match_type in ("EXACT", "ALIAS"):
         match_prefix = "Verified alias match" if sr.match_type == "ALIAS" else "Direct exact match"
-        if is_satisfied:
+        if is_fully_satisfied:
             match_expl = (
                 f"{match_prefix} for '{req_name}'. Demonstrated proficiency "
                 f"({user_prof or 'UNSPECIFIED'}) meets or exceeds required proficiency "
                 f"({req_prof}) with full coverage credit (1.00)."
+            )
+        elif sr.gap is not None and sr.gap <= 1e-6:
+            conf_str = f" with {sr.evidence_confidence * 100:.0f}% evidence confidence" if sr.evidence_confidence is not None else ""
+            match_expl = (
+                f"{match_prefix} for '{req_name}'. Demonstrated proficiency "
+                f"({user_prof or 'UNSPECIFIED'}) meets required proficiency ({req_prof}) "
+                f"with full coverage credit (1.00){conf_str}, resulting in {satisfaction * 100:.0f}% readiness satisfaction."
             )
         else:
             match_expl = (
@@ -182,11 +259,18 @@ def build_skill_explanation(
     elif sr.match_type in ("RELATIONSHIP", "EQUIVALENT", "PARTIAL_RELATIONSHIP") or sr.relationship_id:
         rel_id = sr.relationship_id or "VERIFIED_RELATIONSHIP"
         matched_name = sr.matched_skill_name or "Related Skill"
-        if is_satisfied:
+        if is_fully_satisfied:
             match_expl = (
                 f"Satisfied via verified semantic relationship '{rel_id}' from demonstrated skill "
                 f"'{matched_name}'. Full coverage credit ({sr.coverage_credit:.2f}) achieved "
                 f"against required proficiency ({req_prof})."
+            )
+        elif sr.gap is not None and sr.gap <= 1e-6:
+            conf_str = f" with {sr.evidence_confidence * 100:.0f}% evidence confidence" if sr.evidence_confidence is not None else ""
+            match_expl = (
+                f"Matched via verified semantic relationship '{rel_id}' from demonstrated skill "
+                f"'{matched_name}' with {sr.coverage_credit * 100:.0f}% coverage credit{conf_str}, "
+                f"resulting in {satisfaction * 100:.0f}% readiness satisfaction."
             )
         else:
             match_expl = (
