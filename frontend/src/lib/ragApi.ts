@@ -122,12 +122,16 @@ export interface InterviewSession {
   student_id: string;
   target_role: string;
   experience_level: string;
-  current_skills: string[];
-  status: string;
+  duration_minutes: number;
 }
+
+/** intro: welcome and getting to know the candidate · core: scored role question · closing: their questions */
+export type InterviewPhase = "intro" | "core" | "closing";
 
 export interface InterviewQuestionResponse {
   turn_id: string;
+  phase: InterviewPhase;
+  /** Role-question number (core turns only); set by the studio */
   question_number: number;
   topic: string;
   difficulty: string;
@@ -159,6 +163,16 @@ export interface EvaluationResponse {
   spoken_feedback?: string | null;
   /** Local-avatar sentence clips of spoken_feedback, already rendering, in playback order */
   avatar_job_ids?: string[];
+}
+
+/** The interviewer's reply to an introduction or closing answer (not scored) */
+export interface ConversationReply {
+  turn_id: string;
+  phase: InterviewPhase;
+  reply: string;
+  avatar_job_ids?: string[];
+  /** The closing reply is the goodbye */
+  interview_complete: boolean;
 }
 
 export interface UpstreamProfilePayload {
@@ -247,6 +261,10 @@ export interface DeliveryTelemetry {
 
 export interface InterviewReport {
   session_id: string;
+  planned_minutes: number | null;
+  elapsed_minutes: number | null;
+  /** Introduction and closing exchanges, in order */
+  conversation: { phase: InterviewPhase; question: string; answer: string | null }[];
   questions_asked: number;
   turns_completed: number;
   overall_scores: { technical_accuracy: number; relevance: number; explanation_quality: number; clarity: number };
@@ -266,6 +284,65 @@ export interface InterviewReport {
   }[];
 }
 
+// ---------------------------------------------------------------- Skillaro Edu Assistant
+export type LessonLevel = "beginner" | "intermediate" | "advanced";
+
+export interface EduChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface EduChatResponse {
+  reply: string;
+  /** Curriculum topics Skillaro suggests learning next (each can be taught as a lesson) */
+  suggested_topics: string[];
+  sources: SourceCitation[];
+  latency_ms: number;
+}
+
+export interface EduLesson {
+  topic: string;
+  level: LessonLevel;
+  /** Bloom's taxonomy levels this stage teaches and checks */
+  bloom_levels: string[];
+  title: string;
+  introduction: string;
+  sections: { heading: string; body: string }[];
+  key_points: string[];
+  example?: string | null;
+  sources: SourceCitation[];
+  latency_ms: number;
+}
+
+export interface EduMCQ {
+  question: string;
+  options: string[];
+  answer_index: number;
+  explanation: string;
+  bloom_level: string;
+}
+
+export interface EduOpenQuestion {
+  question: string;
+  bloom_level: string;
+  guidance: string;
+}
+
+export interface EduQuiz {
+  topic: string;
+  level: LessonLevel;
+  mcqs: EduMCQ[];
+  open_questions: EduOpenQuestion[];
+  latency_ms: number;
+}
+
+export interface EduGrade {
+  score: number;
+  verdict: "excellent" | "good" | "partial" | "needs_work";
+  feedback: string;
+  model_answer: string;
+}
+
 /** Prefer the backend's own explanation (FastAPI `detail`) over the bare status text */
 async function apiError(res: Response, label: string): Promise<Error> {
   try {
@@ -277,10 +354,67 @@ async function apiError(res: Response, label: string): Promise<Error> {
   return new Error(`${label}: ${res.statusText || res.status}`);
 }
 
+async function postJson<T>(path: string, body: unknown, label: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw await apiError(res, label);
+  return res.json();
+}
+
 /** Absolute URL for a path the backend returns (avatar media is served through the gateway) */
 export const apiUrl = (path: string) => (path.startsWith("http") ? path : `${API_BASE}${path}`);
 
 export const ragApi = {
+  /** One turn of the Skillaro chat */
+  async eduChat(payload: {
+    student_id: string;
+    target_role: string;
+    current_skills: string[];
+    learning_priority?: string;
+    student_name?: string;
+    message: string;
+    history: EduChatMessage[];
+    current_topic?: string;
+  }): Promise<EduChatResponse> {
+    return postJson("/api/v1/learning/edu/chat", payload, "Skillaro chat error");
+  },
+
+  async eduLesson(payload: {
+    student_id: string;
+    target_role: string;
+    current_skills: string[];
+    topic: string;
+    level: LessonLevel;
+  }): Promise<EduLesson> {
+    return postJson("/api/v1/learning/edu/lesson", payload, "Skillaro lesson error");
+  },
+
+  async eduQuiz(payload: {
+    student_id: string;
+    target_role: string;
+    topic: string;
+    level: LessonLevel;
+    key_points: string[];
+  }): Promise<EduQuiz> {
+    return postJson("/api/v1/learning/edu/quiz", payload, "Skillaro quiz error");
+  },
+
+  async eduGrade(payload: {
+    student_id: string;
+    target_role: string;
+    topic: string;
+    level: LessonLevel;
+    question: string;
+    bloom_level: string;
+    guidance: string;
+    answer: string;
+  }): Promise<EduGrade> {
+    return postJson("/api/v1/learning/edu/grade", payload, "Skillaro marking error");
+  },
+
   async askLearning(payload: LearningQueryPayload): Promise<LearningResponse> {
     const res = await fetch(`${API_BASE}/api/v1/learning/query`, {
       method: "POST",
@@ -381,7 +515,14 @@ export const ragApi = {
     return res.json();
   },
 
-  async startInterview(studentId: string, role: string, level: string, skills: string[]): Promise<InterviewSession> {
+  async startInterview(
+    studentId: string,
+    role: string,
+    level: string,
+    skills: string[],
+    candidateName: string,
+    durationMinutes: number
+  ): Promise<InterviewSession> {
     const res = await fetch(`${API_BASE}/api/v1/interview/start`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -390,6 +531,8 @@ export const ragApi = {
         target_role: role,
         experience_level: level,
         current_skills: skills,
+        candidate_name: candidateName,
+        duration_minutes: durationMinutes,
       }),
     });
     if (!res.ok) {
@@ -419,7 +562,20 @@ export const ragApi = {
       }),
     });
     if (!res.ok) {
-      throw new Error(`Interview question error: ${res.statusText}`);
+      throw await apiError(res, "Interview question error");
+    }
+    return res.json();
+  },
+
+  /** Sends an introduction or closing answer; returns what the interviewer says back */
+  async respondToAnswer(turnId: string, transcript: string, studentId: string): Promise<ConversationReply> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/respond`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ turn_id: turnId, transcript, student_id: studentId }),
+    });
+    if (!res.ok) {
+      throw await apiError(res, "Interview reply error");
     }
     return res.json();
   },

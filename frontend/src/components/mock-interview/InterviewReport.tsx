@@ -66,6 +66,8 @@ export default function InterviewReport({ report, role, level, delivery, onResta
           </h2>
           <p className="text-sm text-muted">
             {role} · {level} · {report.turns_completed} of {report.questions_asked} questions answered
+            {report.elapsed_minutes != null &&
+              ` · ${Math.round(report.elapsed_minutes)} min${report.planned_minutes ? ` of ${report.planned_minutes} planned` : ""}`}
           </p>
         </div>
         <button
@@ -155,6 +157,24 @@ export default function InterviewReport({ report, role, level, delivery, onResta
           </div>
         ))}
       </section>
+
+      {report.conversation.length > 0 && (
+        <section className="border-2 border-ink bg-white p-5 shadow-[4px_4px_0_var(--color-ink)] space-y-3">
+          <h3 className="font-condensed text-lg font-bold uppercase tracking-wider text-ink">Introduction and closing</h3>
+          <p className="text-xs text-muted">Not scored. Practise these too: first and last impressions count in a real interview.</p>
+          {report.conversation.map((c, i) => (
+            <div key={i} className="space-y-1 border-t border-ink/20 pt-3 first:border-0 first:pt-0">
+              <span className="text-[11px] font-bold uppercase text-muted">{c.phase === "intro" ? "Introduction" : "Closing"}</span>
+              <p className="text-sm font-bold text-ink">{c.question}</p>
+              {c.answer ? (
+                <p className="text-xs italic text-muted">&ldquo;{c.answer}&rdquo;</p>
+              ) : (
+                <p className="text-xs text-muted">Not answered</p>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }

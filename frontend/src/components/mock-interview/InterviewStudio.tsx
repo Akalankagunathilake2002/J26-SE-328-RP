@@ -20,6 +20,7 @@ import {
   Smile,
   Gauge,
   MessageSquare,
+  Clock,
 } from "lucide-react";
 import AIInterviewerAvatar from "./AIInterviewerAvatar";
 import CandidateWebcam from "./CandidateWebcam";
@@ -30,6 +31,7 @@ import {
   ragApi,
   type InterviewSession,
   type InterviewQuestionResponse,
+  type InterviewPhase,
   type EvaluationResponse,
   type DeliveryTelemetry,
   type InterviewReport as Report,
@@ -43,6 +45,14 @@ interface InterviewStudioProps {
 }
 
 const SILENCE_RMS = 0.015; // mic level below which a 100 ms slice counts as a pause
+
+const PHASES: { phase: InterviewPhase; label: string }[] = [
+  { phase: "intro", label: "Introduction" },
+  { phase: "core", label: "Role questions" },
+  { phase: "closing", label: "Closing" },
+];
+
+const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
 
 export default function InterviewStudio({ studentId, profile, onExit }: InterviewStudioProps) {
   const { role: targetRole, level, skills, summary } = profile;
@@ -73,8 +83,9 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   const levelRef = useRef<{ ctx: AudioContext; timer?: ReturnType<typeof setInterval>; quiet: number; total: number } | null>(null);
   const discardRecordingRef = useRef(false);
 
-  // Evaluation
+  // Evaluation (role questions) or Elena's reply (introduction and closing, not scored)
   const [evaluation, setEvaluation] = useState<EvaluationResponse | null>(null);
+  const [reply, setReply] = useState<string | null>(null);
   const [evaluating, setEvaluating] = useState(false);
   const [answerError, setAnswerError] = useState("");
   const [evaluationError, setEvaluationError] = useState("");
@@ -85,16 +96,28 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   const [report, setReport] = useState<Report | null>(null);
   const [ending, setEnding] = useState(false);
   const endedRef = useRef(false);
+  const finishingRef = useRef(false);
+
+  // Elapsed time against the planned length (the server uses the same budget to decide when to close)
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!startedAt || report) return;
+    const timer = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [startedAt, report]);
 
   // The interviewer avatar is the single voice source. It speaks either the question or, after an
   // answer, its spoken feedback; bumping speakRequest asks it to speak `speech`.
   const [speakRequest, setSpeakRequest] = useState(0);
-  const [speech, setSpeech] = useState<{ text: string; jobIds: string[]; kind: "question" | "feedback" }>({
+  // "farewell" is the goodbye after the closing answer; the report follows it
+  type SpeechKind = "question" | "feedback" | "farewell";
+  const [speech, setSpeech] = useState<{ text: string; jobIds: string[]; kind: SpeechKind }>({
     text: "",
     jobIds: [],
     kind: "question",
   });
-  const sayAsInterviewer = (text: string, kind: "question" | "feedback", jobIds: string[] = []) => {
+  const sayAsInterviewer = (text: string, kind: SpeechKind, jobIds: string[] = []) => {
     setSpeech({ text, kind, jobIds });
     setSpeakRequest((n) => n + 1);
   };
@@ -117,7 +140,7 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   // next question follows the interviewer's spoken feedback, like a real interview.
   const [handsFree, setHandsFree] = useState(true);
   const handsFreeRef = useRef(handsFree);
-  const handleEvaluateRef = useRef<((answer?: string, spokenSeconds?: number) => Promise<void>) | null>(null);
+  const submitAnswerRef = useRef<((answer?: string, spokenSeconds?: number) => Promise<void>) | null>(null);
   const startRecordingRef = useRef<(() => Promise<void>) | null>(null);
 
   const questionContext = (prev?: { question: string; answer: string; missing: string[] }) => ({
@@ -131,8 +154,12 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
 
   const handleSpeechEnd = () => {
     setInterviewState((s) => (s === "speaking" ? "idle" : s));
+    if (speech.kind === "farewell") {
+      setTimeout(() => finishInterview(), 800);
+      return;
+    }
     if (!handsFree || endedRef.current) return;
-    if (speech.kind === "question" && !isRecording && !transcript.trim() && !evaluation) {
+    if (speech.kind === "question" && !isRecording && !transcript.trim() && !evaluation && !reply) {
       if (micOn) startRecording();
       else setWaitingForMic(true);                 // starts as soon as the candidate unmutes
     } else if (speech.kind === "feedback") {
@@ -144,6 +171,7 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   const resetAnswer = () => {
     setTranscript("");
     setEvaluation(null);
+    setReply(null);
     setAnswerError("");
     setEvaluationError("");
     setRecordedDuration(0);
@@ -154,11 +182,13 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   const handleStartSession = async () => {
     setLoading(true);
     try {
-      const sess = await ragApi.startInterview(studentId, targetRole, level, skills);
+      const sess = await ragApi.startInterview(studentId, targetRole, level, skills, studentName, profile.durationMinutes);
       setSession(sess);
+      setStartedAt(Date.now());
       discardPrefetch();
+      // The first turn is Elena's welcome and "tell me about yourself"
       const q = await ragApi.getInterviewQuestion(sess.session_id, studentId, targetRole, level, skills, questionContext());
-      setQuestionData({ ...q, question_number: 1 });
+      setQuestionData({ ...q, question_number: q.phase === "core" ? 1 : 0 });
       resetAnswer();
       speakQuestion(q);
     } catch (err) {
@@ -195,11 +225,14 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
         prefetched ??
         (await ragApi.getInterviewQuestion(session.session_id, studentId, targetRole, level, skills, questionContext(prev)));
       if (endedRef.current) return;
-      setQuestionData({ ...q, question_number: (questionData?.question_number || 1) + 1 });
+      const asked = questionData?.question_number || 0;
+      setQuestionData({ ...q, question_number: q.phase === "core" ? asked + 1 : asked });
       resetAnswer();
       speakQuestion(q);
     } catch (err) {
-      setAnswerError(`${err instanceof Error ? err.message : "Couldn't get the next question."} Try Next question again.`);
+      const message = err instanceof Error ? err.message : "Couldn't get the next question.";
+      if (message.includes("has ended")) return finishInterview();
+      setAnswerError(`${message} Try Next question again.`);
     } finally {
       setNextLoading(false);
     }
@@ -285,8 +318,8 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
         try {
           const res = await ragApi.transcribeAudio(audioBlob);
           setTranscript(res.transcript);
-          // Hands-free: Submit Answer goes straight to evaluation
-          if (handsFreeRef.current) handleEvaluateRef.current?.(res.transcript, durationSec);
+          // Hands-free: Submit Answer goes straight to evaluation (or to Elena's reply)
+          if (handsFreeRef.current) submitAnswerRef.current?.(res.transcript, durationSec);
         } catch (err) {
           // Never put words in the candidate's mouth: the transcript is what gets scored
           setAnswerError(
@@ -390,9 +423,41 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
     }
   };
 
+  // Introduction and closing answers aren't scored: Elena replies, and the closing reply is her goodbye
+  const handleRespond = async (answer: string = transcript) => {
+    if (!questionData || !answer.trim() || endedRef.current) return;
+    setEvaluating(true);
+    setEvaluationError("");
+    setInterviewState("thinking");
+    try {
+      const res = await ragApi.respondToAnswer(questionData.turn_id, answer.trim(), studentId);
+      if (endedRef.current) return;
+      setReply(res.reply);
+      if (res.interview_complete) {
+        sayAsInterviewer(res.reply, "farewell", res.avatar_job_ids ?? []);
+        return;
+      }
+      sayAsInterviewer(res.reply, "feedback", res.avatar_job_ids ?? []);
+      if (handsFreeRef.current && session) {
+        discardPrefetch();
+        prefetchRef.current = ragApi
+          .getInterviewQuestion(session.session_id, studentId, targetRole, level, skills, questionContext())
+          .catch(() => null);
+      }
+    } catch (err) {
+      setEvaluationError(`${err instanceof Error ? err.message : "Elena couldn't reply."} Your answer is kept. Try sending it again.`);
+    } finally {
+      setEvaluating(false);
+      setInterviewState("idle");
+    }
+  };
+
+  const handleSubmitAnswer = (answer?: string, spokenSeconds?: number) =>
+    questionData?.phase === "core" ? handleEvaluate(answer, spokenSeconds) : handleRespond(answer);
+
   useEffect(() => {
     handsFreeRef.current = handsFree;
-    handleEvaluateRef.current = handleEvaluate;
+    submitAnswerRef.current = handleSubmitAnswer;
     startRecordingRef.current = startRecording;
   });
 
@@ -400,6 +465,13 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   const handleEnd = async () => {
     if (!session || ending) return;
     if (!window.confirm("End the interview and see your report?")) return;
+    await finishInterview();
+  };
+
+  /** Stops any recording and shows the report: after Elena's goodbye, or when the candidate ends early */
+  const finishInterview = async () => {
+    if (!session || finishingRef.current) return;
+    finishingRef.current = true;
     endedRef.current = true;
     setEnding(true);
     discardRecordingRef.current = true;
@@ -413,6 +485,7 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
     } catch (err) {
       setAnswerError(`${err instanceof Error ? err.message : "Couldn't load the report."}`);
       endedRef.current = false;
+      finishingRef.current = false;
     } finally {
       setEnding(false);
     }
@@ -431,6 +504,11 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
 
   const current = questionData ? deliveryByTurn[questionData.turn_id] : undefined;
   const pct = (x?: number) => (x == null ? null : `${Math.round(x * 100)}%`);
+  const phase = questionData?.phase ?? "intro";
+  const scored = phase === "core";
+  const planned = (session?.duration_minutes ?? profile.durationMinutes) * 60;
+  const elapsed = startedAt ? Math.max(0, (now - startedAt) / 1000) : 0;
+  const goodbyeGiven = phase === "closing" && !!reply;
 
   return (
     <div className="space-y-6">
@@ -447,9 +525,36 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
             )}
           </div>
           <h2 className="font-display text-2xl uppercase tracking-wide text-ink mt-1">AI Mock Interview Studio</h2>
-          <p className="text-xs text-muted">Face-to-face technical interview with Elena Vance (AI Lead Interviewer).</p>
+          <p className="text-xs text-muted">Face-to-face interview with Elena Vance (AI Lead Interviewer).</p>
+          {session && (
+            <div className="mt-2 flex flex-wrap items-center gap-1.5" aria-label="Interview progress">
+              {PHASES.map((p, i) => {
+                const reached = PHASES.findIndex((x) => x.phase === phase) >= i;
+                return (
+                  <span
+                    key={p.phase}
+                    aria-current={p.phase === phase ? "step" : undefined}
+                    className={`border border-ink px-2 py-0.5 text-[11px] font-bold text-ink ${
+                      p.phase === phase ? "bg-sun" : reached ? "bg-lime/50" : "bg-white text-muted"
+                    }`}
+                  >
+                    {i + 1}. {p.label}
+                    {p.phase === "core" && questionData?.question_number ? ` (${questionData.question_number})` : ""}
+                  </span>
+                );
+              })}
+              <span
+                className={`ml-1 flex items-center gap-1 border border-ink px-2 py-0.5 font-mono text-[11px] font-bold tabular-nums ${
+                  elapsed > planned ? "bg-pink" : "bg-cream"
+                } text-ink`}
+                title="Time so far / planned length"
+              >
+                <Clock className="size-3" /> {clock(elapsed)} / {clock(planned)}
+              </span>
+            </div>
+          )}
         </div>
-        {!handsFree && session && (
+        {!handsFree && session && !goodbyeGiven && (
           <button
             onClick={handleNextQuestion}
             disabled={nextLoading || evaluating || isRecording}
@@ -463,7 +568,7 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
 
       {loading && !questionData && (
         <div className="flex items-center justify-center gap-2 border-2 border-ink bg-cream p-10 text-sm font-bold text-ink shadow-[5px_5px_0_var(--color-ink)]">
-          <RefreshCw className="size-4 animate-spin" /> Elena is preparing your first question…
+          <RefreshCw className="size-4 animate-spin" /> Elena is getting ready to welcome you…
         </div>
       )}
 
@@ -560,7 +665,11 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
                 : transcribing
                 ? "Transcribing your answer…"
                 : evaluating
-                ? "Elena is evaluating your answer…"
+                ? scored
+                  ? "Elena is evaluating your answer…"
+                  : "Elena is listening…"
+                : goodbyeGiven
+                ? "That's the end of the interview. Your report opens next."
                 : isRecording
                 ? handsFree
                   ? "Speak your answer, then click Submit answer."
@@ -576,11 +685,13 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
             <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink pb-3">
               <div className="flex items-center gap-2">
                 <span className="border border-ink bg-sun px-2.5 py-1 text-xs font-bold text-ink">
-                  Question #{questionData.question_number} • {questionData.topic}
+                  {scored ? `Question #${questionData.question_number} • ${questionData.topic}` : questionData.topic}
                 </span>
-                <span className="border border-ink bg-lavender px-2 py-1 text-xs font-bold text-ink">
-                  Difficulty: {questionData.difficulty}
-                </span>
+                {scored && (
+                  <span className="border border-ink bg-lavender px-2 py-1 text-xs font-bold text-ink">
+                    Difficulty: {questionData.difficulty}
+                  </span>
+                )}
               </div>
               {questionData.context_or_reason && (
                 <span className="text-xs font-medium italic text-muted">{questionData.context_or_reason}</span>
@@ -588,7 +699,7 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
             </div>
             <div className="border-2 border-ink bg-cream p-4 shadow-[2px_2px_0_var(--color-ink)]">
               <span className="font-condensed text-xs font-bold uppercase tracking-wider text-muted block mb-1">
-                Elena&apos;s Technical Question:
+                {scored ? "Elena's question:" : "Elena says:"}
               </span>
               <p className="text-base sm:text-lg font-bold text-ink leading-relaxed">{questionData.question}</p>
             </div>
@@ -642,17 +753,21 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
               </div>
 
               <button
-                onClick={() => handleEvaluate()}
-                disabled={evaluating || !transcript.trim() || !!evaluation}
+                onClick={() => handleSubmitAnswer()}
+                disabled={evaluating || !transcript.trim() || !!evaluation || !!reply}
                 className="hard-shadow w-full flex items-center justify-center gap-2 bg-lime py-3 font-condensed text-sm font-bold uppercase tracking-wider text-ink transition-transform hover:-translate-y-0.5 disabled:opacity-50"
               >
                 {evaluating ? (
                   <>
-                    <RefreshCw className="size-4 animate-spin" /> Evaluating…
+                    <RefreshCw className="size-4 animate-spin" /> {scored ? "Evaluating…" : "Sending…"}
+                  </>
+                ) : scored ? (
+                  <>
+                    <Sparkles className="size-4" /> {evaluation ? "Evaluated" : "Evaluate answer"}
                   </>
                 ) : (
                   <>
-                    <Sparkles className="size-4" /> {evaluation ? "Evaluated" : "Evaluate answer"}
+                    <Send className="size-4" /> {reply ? "Sent" : "Send answer"}
                   </>
                 )}
               </button>
@@ -677,7 +792,35 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
                 )}
               </div>
 
-              {evaluation ? (
+              {!scored ? (
+                <div className="space-y-3">
+                  {reply ? (
+                    <div className="border-2 border-ink bg-cream p-3 shadow-[2px_2px_0_var(--color-ink)]">
+                      <span className="font-condensed text-[11px] font-bold uppercase tracking-wider text-muted block mb-1">Elena says:</span>
+                      <p className="text-sm font-semibold italic text-ink">&ldquo;{reply}&rdquo;</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center p-8 text-center space-y-2 border border-dashed border-ink/40 bg-sand/30">
+                      <MessageSquare className="size-8 text-muted" />
+                      <p className="text-sm font-bold text-ink">This part isn&apos;t scored</p>
+                      <p className="text-xs text-muted max-w-[300px]">
+                        {phase === "intro"
+                          ? "Elena wants to get to know you. Answer naturally; she uses it to tailor the role questions."
+                          : "Ask Elena anything about the role or the interview, or just say you have no questions."}
+                      </p>
+                    </div>
+                  )}
+                  {goodbyeGiven && (
+                    <button
+                      onClick={() => finishInterview()}
+                      disabled={ending}
+                      className="hard-shadow w-full flex items-center justify-center gap-2 bg-butter py-3 font-condensed text-sm font-bold uppercase tracking-wider text-ink transition-transform hover:-translate-y-0.5 disabled:opacity-50"
+                    >
+                      {ending ? <RefreshCw className="size-4 animate-spin" /> : <Award className="size-4" />} See my report
+                    </button>
+                  )}
+                </div>
+              ) : evaluation ? (
                 <div className="space-y-4">
                   {evaluation.spoken_feedback && (
                     <div className="border-2 border-ink bg-cream p-3 shadow-[2px_2px_0_var(--color-ink)]">

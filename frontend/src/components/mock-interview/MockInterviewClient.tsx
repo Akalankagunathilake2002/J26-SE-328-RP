@@ -47,7 +47,7 @@ export default function MockInterviewClient({ user }: MockInterviewClientProps) 
           <Mic className="size-4" /> AI Mock Interview Studio
         </button>
         <button onClick={() => setActiveTab("learning")} className={tabClass(activeTab === "learning", "bg-butter")}>
-          <BookOpen className="size-4" /> Personalized Learning Assistant
+          <BookOpen className="size-4" /> Skillaro Edu Assistant
         </button>
         <button onClick={() => setActiveTab("inspector")} className={tabClass(activeTab === "inspector", "bg-cyan")}>
           <Activity className="size-4" /> 50% Viva RAG Inspector
@@ -73,6 +73,7 @@ export default function MockInterviewClient({ user }: MockInterviewClientProps) 
         {activeTab === "learning" && (
           <PersonalizedLearningView
             studentId={studentId}
+            studentName={studentName}
             targetRole={targetRole}
             skills={studentSkills}
             learningPriority={learningPriority}

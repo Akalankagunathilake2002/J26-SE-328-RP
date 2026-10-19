@@ -5,6 +5,8 @@ import { FileUp, Loader2, Play, X, Plus, CheckCircle2, AlertCircle, Camera, Spar
 import { ragApi, type CVProfile, type RoleInfo } from "@/lib/ragApi";
 
 const LEVELS = ["Entry Level", "Mid Level", "Senior Level"];
+// Planned length; Elena moves to the closing questions when the time is nearly used
+const DURATIONS = [15, 20, 25, 30];
 
 export interface InterviewProfile {
   name: string;
@@ -13,6 +15,7 @@ export interface InterviewProfile {
   skills: string[];
   summary: string;
   analysisConsent: boolean;
+  durationMinutes: number;
 }
 
 interface InterviewSetupProps {
@@ -33,6 +36,7 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
   const [newSkill, setNewSkill] = useState("");
   const [role, setRole] = useState("");
   const [level, setLevel] = useState("Entry Level");
+  const [duration, setDuration] = useState(25);
   const [consent, setConsent] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInput = useRef<HTMLInputElement | null>(null);
@@ -191,7 +195,7 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
             <AlertCircle className="size-4 shrink-0" /> {rolesError}
           </div>
         )}
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <label className="space-y-1.5">
             <span className="block text-xs font-bold uppercase text-muted">Job role</span>
             <select
@@ -220,7 +224,25 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
               ))}
             </select>
           </label>
+          <label className="space-y-1.5">
+            <span className="block text-xs font-bold uppercase text-muted">Interview length</span>
+            <select
+              value={duration}
+              onChange={(e) => setDuration(Number(e.target.value))}
+              className="w-full border-2 border-ink bg-white px-3 py-2.5 text-sm font-bold text-ink shadow-[2px_2px_0_var(--color-ink)] focus:outline-none"
+            >
+              {DURATIONS.map((m) => (
+                <option key={m} value={m}>
+                  About {m} minutes
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
+        <p className="text-xs text-muted">
+          Like a real interview: Elena welcomes you and gets to know you, asks role questions while time allows,
+          then gives you a chance to ask her questions before saying goodbye.
+        </p>
         {roleInfo && !roleInfo.levels[level] && (
           <p className="text-xs font-bold text-muted">
             No {level} questions for this role yet; Elena will use the closest level available.
@@ -254,6 +276,7 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
               skills,
               summary: profile?.summary || "",
               analysisConsent: consent,
+              durationMinutes: duration,
             })
           }
           className="hard-shadow flex w-full items-center justify-center gap-2 bg-lime py-3.5 font-condensed text-base font-bold uppercase tracking-wider text-ink transition-transform hover:-translate-y-0.5 disabled:opacity-50"
