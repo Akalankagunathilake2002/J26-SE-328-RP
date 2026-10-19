@@ -195,12 +195,13 @@
           "required_proficiency_score": 0.4
         },
         {
-          "skill_id": "SK-000919",
+          "skill_id": "SK-000499",
           "candidate_skill_id": null,
-          "standard_name": "Structured query language SQL",
+          "standard_name": "database management systems",
           "primary_observed_term": "SQL",
           "observed_terms": [
             "SQL",
+            "database management systems",
             "Structured Query Language"
           ],
           "mapping_status": "verified",
@@ -219,14 +220,14 @@
           "demand_weight": 0.48,
           "sample_evidence": [
             {
-              "source_id": "SYNTH-SK-000919-01",
+              "source_id": "SYNTH-SK-000499-01",
               "company": "Synthetic test fixture",
               "job_title": "Synthetic role-profile test data",
               "source_date": "2026-10-10",
               "text_excerpt": "Run SQL queries to verify stored test data."
             },
             {
-              "source_id": "SYNTH-SK-000919-02",
+              "source_id": "SYNTH-SK-000499-02",
               "company": "Synthetic test fixture",
               "job_title": "Synthetic role-profile test data",
               "source_date": "2026-10-12",

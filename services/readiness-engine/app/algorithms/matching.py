@@ -83,13 +83,24 @@ class RelationshipInput:
     evidence_note: str | None = None
 
 
+# Default calibrated partial coverage coefficients by relationship type and direction
+DEFAULT_PARTIAL_COEFFICIENTS: dict[tuple[str, str], float] = {
+    (RelationshipType.NARROWER_THAN.value, RelationshipDirection.STUDENT_IS_SOURCE.value): 0.75,
+    (RelationshipType.BROADER_THAN.value, RelationshipDirection.STUDENT_IS_TARGET.value): 0.75,
+    (RelationshipType.PART_OF.value, RelationshipDirection.STUDENT_IS_TARGET.value): 0.75,
+    (RelationshipType.PART_OF.value, RelationshipDirection.STUDENT_IS_SOURCE.value): 0.50,
+}
+
+
 # Immutable policy configuration encapsulating matching method and calibrated partial coefficients
 @dataclass(frozen=True)
 class MatchingPolicy:
     method: MatchingMethod = MatchingMethod.RELATIONSHIP_AWARE
     version: str = "1.0"
     # Stores the approved partial coverage credit for each relationship type and direction.
-    partial_coefficients: dict[tuple[str, str], float] = field(default_factory=dict)
+    partial_coefficients: dict[tuple[str, str], float] = field(
+        default_factory=lambda: dict(DEFAULT_PARTIAL_COEFFICIENTS)
+    )
 
     def __post_init__(self) -> None:
         # Partial relationship coefficients must be explicitly validated policy parameters
@@ -282,6 +293,12 @@ def evaluate_relationship_eligibility(
     ):
         # Student possesses a composite stack (e.g. MERN) containing the required component (e.g. MongoDB)
         is_direction_valid = True
+    elif (
+        rel_type == RelationshipType.PART_OF.value
+        and direction == RelationshipDirection.STUDENT_IS_SOURCE
+    ):
+        # Student possesses a component skill (e.g. React) partially satisfying a composite stack requirement (e.g. MERN Stack)
+        is_direction_valid = True
 
     if not is_direction_valid:
         return (
@@ -317,6 +334,7 @@ def match_single_requirement(
     alias_index: dict[str, str],
     rel_index: dict[str, list[RelationshipInput]],
     policy: MatchingPolicy,
+    exact_req_skill_ids: set[str] | None = None,
 ) -> MatchingResult:
     # Unresolved requirements cannot be verified fairly and are flagged as unassessed
     if not is_requirement_assessable(req):
@@ -429,14 +447,27 @@ def match_single_requirement(
             candidate_diagnostics=[],
         )
 
-    # Sort candidates by,
+    # Sort candidates by:
     # 1. Priority ascending (1 - EXACT, 2 - ALIAS, 3 - EQUIVALENT, 4 - PARTIAL)
     # 2. Coverage credit descending (strongest contribution wins within priority)
-    # 3. Stable skill record ID ascending (deterministic tie-breaker)
+    # 3. Prefer candidates not already fulfilling an exact match on another requirement
+    # 4. Deterministic relationship ID ascending
+    # 5. Stable skill record ID ascending (deterministic tie-breaker)
+    other_exact_skills = (exact_req_skill_ids or set()) - {required_canonical_id}
     candidates.sort(
         key=lambda c: (
             c.priority,
             -c.coverage_credit,
+            (
+                1
+                if (
+                    c.priority > 2
+                    and c.student_skill.skill_id
+                    and str(c.student_skill.skill_id).strip() in other_exact_skills
+                )
+                else 0
+            ),
+            (c.relationship.relationship_id if c.relationship else ""),
             str(c.student_skill.skill_record_id),
         )
     )
@@ -508,6 +539,11 @@ def match_skills(
     active_policy = policy or MatchingPolicy()
     alias_index = build_alias_index(aliases)
     rel_index = build_relationship_index(relationships)
+    exact_req_skill_ids = {
+        str(r.skill_id).strip()
+        for r in requirements
+        if is_requirement_assessable(r)
+    }
 
     # Iterate over every industry requirement to guarantee full demand coverage
     results: list[MatchingResult] = []
@@ -518,6 +554,7 @@ def match_skills(
             alias_index=alias_index,
             rel_index=rel_index,
             policy=active_policy,
+            exact_req_skill_ids=exact_req_skill_ids,
         )
         results.append(result)
 

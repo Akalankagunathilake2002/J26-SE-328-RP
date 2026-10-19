@@ -1,0 +1,268 @@
+{
+    "schema_version": "1.0",
+    "message_id": "MSG-C02-DEMO-ANALYST-001",
+    "generated_at": "2026-10-19T07:40:00Z",
+    "source_component": "user-skill-profile-service",
+    "profile_type": "user_skill_profile",
+    "data": {
+        "user_skill_profile": {
+            "profile_version": "2026-10-19T07:40:00Z",
+            "domain": {
+                "domain_id": "DOM-IT",
+                "domain_name": "Information Technology"
+            },
+            "user_id": "dfad8a0d-0654-4962-84c9-b3eda380a294",
+            "profile_quality": {
+                "completeness_score": 0.85
+            },
+            "skills": [
+                {
+                    "skill_id": "SK-000124",
+                    "candidate_skill_id": null,
+                    "standard_name": "perform data analysis",
+                    "primary_observed_term": "Data Analysis",
+                    "observed_terms": [
+                        "data analysis",
+                        "data cleaning",
+                        "data interpretation"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.75
+                    },
+                    "evidence_confidence": 0.84,
+                    "verification_status": "VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-001",
+                            "source_type": "PROJECT",
+                            "source_name": "Data Analysis Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Cleaned a dataset, examined trends and summarized findings.",
+                            "strength": 0.80,
+                            "verified": true
+                        }
+                    ],
+                    "proficiency_score": 0.75
+                },
+                {
+                    "skill_id": "SK-000151",
+                    "candidate_skill_id": null,
+                    "standard_name": "statistical analysis",
+                    "primary_observed_term": "Statistical Analysis",
+                    "observed_terms": [
+                        "descriptive statistics",
+                        "statistical analysis"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "BEGINNER",
+                        "score": 0.55
+                    },
+                    "evidence_confidence": 0.68,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-002",
+                            "source_type": "PROJECT",
+                            "source_name": "Statistics Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Calculated basic descriptive statistics and interpreted simple numerical summaries.",
+                            "strength": 0.62,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.55
+                },
+                {
+                    "skill_id": "SK-000862",
+                    "candidate_skill_id": null,
+                    "standard_name": "Microsoft Excel",
+                    "primary_observed_term": "Excel",
+                    "observed_terms": [
+                        "Excel",
+                        "spreadsheets",
+                        "spreadsheet formulas"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.78
+                    },
+                    "evidence_confidence": 0.86,
+                    "verification_status": "VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-003",
+                            "source_type": "PROJECT",
+                            "source_name": "Spreadsheet Analysis Project",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Used spreadsheet formulas, sorting and filtering to summarize structured data.",
+                            "strength": 0.82,
+                            "verified": true
+                        }
+                    ],
+                    "proficiency_score": 0.78
+                },
+                {
+                    "skill_id": "SK-001215",
+                    "candidate_skill_id": null,
+                    "standard_name": "Microsoft Power BI",
+                    "primary_observed_term": "Power BI",
+                    "observed_terms": [
+                        "Power BI",
+                        "data visualization",
+                        "interactive dashboards"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "BEGINNER",
+                        "score": 0.48
+                    },
+                    "evidence_confidence": 0.62,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-004",
+                            "source_type": "PROJECT",
+                            "source_name": "Data Visualization Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Created a basic dashboard and explored visual representations of data.",
+                            "strength": 0.58,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.48
+                },
+                {
+                    "skill_id": "SK-000919",
+                    "candidate_skill_id": null,
+                    "standard_name": "Structured query language SQL",
+                    "primary_observed_term": "SQL",
+                    "observed_terms": [
+                        "SQL",
+                        "database queries",
+                        "data retrieval"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.72
+                    },
+                    "evidence_confidence": 0.84,
+                    "verification_status": "VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-005",
+                            "source_type": "PROJECT",
+                            "source_name": "Database Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Used SQL queries to retrieve, filter and summarize records from relational tables.",
+                            "strength": 0.80,
+                            "verified": true
+                        }
+                    ],
+                    "proficiency_score": 0.72
+                },
+                {
+                    "skill_id": "SK-000591",
+                    "candidate_skill_id": null,
+                    "standard_name": "Python (computer programming)",
+                    "primary_observed_term": "Python",
+                    "observed_terms": [
+                        "Python",
+                        "data processing",
+                        "basic data manipulation"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "TECHNICAL",
+                    "proficiency": {
+                        "level": "BEGINNER",
+                        "score": 0.52
+                    },
+                    "evidence_confidence": 0.66,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-006",
+                            "source_type": "PROJECT",
+                            "source_name": "Programming Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Used Python scripts for basic data manipulation and simple calculations.",
+                            "strength": 0.60,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.52
+                },
+                {
+                    "skill_id": "SK-000736",
+                    "candidate_skill_id": null,
+                    "standard_name": "Critical Thinking",
+                    "primary_observed_term": "Critical Thinking",
+                    "observed_terms": [
+                        "critical thinking",
+                        "analytical problem solving"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "BEHAVIORAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.75
+                    },
+                    "evidence_confidence": 0.78,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-007",
+                            "source_type": "PROJECT",
+                            "source_name": "Data Analysis Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Compared data patterns and investigated possible explanations for observed results.",
+                            "strength": 0.70,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.75
+                },
+                {
+                    "skill_id": "SK-000559",
+                    "candidate_skill_id": null,
+                    "standard_name": "technical communication",
+                    "primary_observed_term": "Technical Communication",
+                    "observed_terms": [
+                        "technical communication",
+                        "report writing",
+                        "presenting findings"
+                    ],
+                    "mapping_status": "verified",
+                    "skill_type": "BEHAVIORAL",
+                    "proficiency": {
+                        "level": "INTERMEDIATE",
+                        "score": 0.70
+                    },
+                    "evidence_confidence": 0.76,
+                    "verification_status": "PARTIALLY_VERIFIED",
+                    "evidence": [
+                        {
+                            "evidence_id": "EV-ANALYST-008",
+                            "source_type": "PROJECT",
+                            "source_name": "Data Analysis Coursework",
+                            "evidence_type": "PROJECT_DEMONSTRATED",
+                            "excerpt": "Summarized analysis findings and communicated observations in a short report.",
+                            "strength": 0.68,
+                            "verified": false
+                        }
+                    ],
+                    "proficiency_score": 0.70
+                }
+            ]
+        }
+    }
+}

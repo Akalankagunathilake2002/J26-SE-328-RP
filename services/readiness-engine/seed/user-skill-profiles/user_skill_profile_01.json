@@ -320,12 +320,13 @@
           "proficiency_score": 0.68
         },
         {
-          "skill_id": "SK-000458",
+          "skill_id": "SK-001606",
           "candidate_skill_id": null,
-          "standard_name": "JavaScript Framework",
-          "primary_observed_term": "JavaScript Framework",
+          "standard_name": "React",
+          "primary_observed_term": "React",
           "observed_terms": [
-            "JavaScript Framework"
+            "React",
+            "React.js"
           ],
           "mapping_status": "verified",
           "skill_type": "TECHNICAL",
@@ -337,13 +338,13 @@
           "verification_status": "UNVERIFIED",
           "evidence": [
             {
-              "evidence_id": "EV-WEB-014",
+              "evidence_id": "EV-WEB-003",
               "source_type": "CV",
               "source_name": "Student CV \u2014 internship section",
               "evidence_type": "SELF_REPORTED",
               "excerpt": "Has introductory exposure to JavaScript framework concepts; specific framework proficiency is not established by this evidence.",
               "strength": 0.48,
-              "verified": false
+              "verified": true
             }
           ],
           "proficiency_score": 0.5
