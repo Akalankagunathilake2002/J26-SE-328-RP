@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import {
   fetchSsksDomains,
-  fetchSsksRoles,
-  fetchSsksSkills,
-  fetchSsksRelationships,
+  fetchSsksRolesAll,
+  fetchSsksSkillsAll,
+  fetchSsksRelationshipsAll,
   createSsksDomain,
   createSsksRole,
   createSsksSkill,
@@ -28,11 +28,162 @@ import {
   ArrowRight,
   ShieldCheck,
   X,
+  Info,
 } from "lucide-react";
 
 type ActiveTab = "DOMAINS" | "ROLES" | "SKILLS" | "RELATIONSHIPS";
 
 const ITEMS_PER_PAGE = 10;
+
+// Searchable dropdown for selecting existing canonical skills without manual ID entry.
+function SkillSearchSelect({
+  label,
+  value,
+  onChange,
+  skills,
+  excludeId,
+  placeholder = "Select a canonical skill...",
+}: {
+  label: string;
+  value: string;
+  onChange: (skillId: string) => void;
+  skills: SkillItem[];
+  excludeId?: string;
+  placeholder?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const selectedSkill = useMemo(
+    () => skills.find((s) => s.skill_id === value),
+    [skills, value],
+  );
+
+  const filteredSkills = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    return skills
+      .filter((s) => {
+        if (excludeId && s.skill_id === excludeId) return false;
+        if (!q) return true;
+        return (
+          s.skill_id.toLowerCase().includes(q) ||
+          s.preferred_name.toLowerCase().includes(q)
+        );
+      })
+      .slice(0, 80);
+  }, [skills, query, excludeId]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <label className="block text-xs font-bold text-ink">
+        {label} <span className="text-red-500">*</span>
+      </label>
+
+      <div
+        onClick={() => setIsOpen((prev) => !prev)}
+        className="hard-shadow-sm mt-1 flex cursor-pointer items-center justify-between rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-bold text-ink hover:bg-white"
+      >
+        {selectedSkill ? (
+          <div className="flex items-center gap-1.5 truncate">
+            <span className="font-mono text-ink bg-white px-1.5 py-0.5 rounded border border-ink/30">
+              {selectedSkill.skill_id}
+            </span>
+            <span className="text-ink truncate">· {selectedSkill.preferred_name}</span>
+          </div>
+        ) : (
+          <span className="text-muted font-normal">{placeholder}</span>
+        )}
+
+        <div className="flex items-center gap-1 ml-2">
+          {selectedSkill && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange("");
+              }}
+              className="p-0.5 hover:bg-black/10 rounded"
+              title="Clear selection"
+            >
+              <X className="size-3 text-muted hover:text-ink" />
+            </button>
+          )}
+          <Search className="size-3.5 text-muted" />
+        </div>
+      </div>
+
+      {isOpen && (
+        <div className="hard-shadow absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-hidden rounded-lg border-2 border-ink bg-white shadow-xl">
+          <div className="border-b-2 border-ink/10 p-2 bg-[#fff9f2]">
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted" />
+              <input
+                type="text"
+                autoFocus
+                placeholder="Search by skill ID or preferred name..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full rounded border border-ink/40 bg-white py-1.5 pl-8 pr-2 text-xs font-medium text-ink placeholder:text-muted focus:outline-none focus:border-ink"
+              />
+            </div>
+          </div>
+
+          <div className="max-h-48 overflow-y-auto divide-y divide-ink/5">
+            {filteredSkills.length === 0 ? (
+              <div className="p-3 text-center text-xs text-muted">
+                No matching canonical skills found
+              </div>
+            ) : (
+              filteredSkills.map((s) => (
+                <div
+                  key={s.skill_id}
+                  onClick={() => {
+                    onChange(s.skill_id);
+                    setIsOpen(false);
+                    setQuery("");
+                  }}
+                  className={`flex cursor-pointer items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-[#fff9f2] ${
+                    value === s.skill_id ? "bg-[#d0ffa4] font-bold" : ""
+                  }`}
+                >
+                  <div className="flex items-center gap-1.5 truncate">
+                    <span className="font-mono font-bold text-ink bg-white px-1 py-0.5 rounded border border-ink/30 text-[11px]">
+                      {s.skill_id}
+                    </span>
+                    <span className="font-semibold text-ink truncate">· {s.preferred_name}</span>
+                  </div>
+                  <span className="ml-2 text-[10px] font-bold uppercase tracking-wider text-muted whitespace-nowrap">
+                    {s.skill_type.replace(/_/g, " ").toLowerCase()}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+          {skills.length > 80 && (
+            <div className="border-t border-ink/10 bg-[#f5ecd8] px-2.5 py-1 text-[10px] text-muted">
+              Showing top {filteredSkills.length} matches of {skills.length} skills
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface SharedKnowledgeViewProps {
   initialDomains: DomainItem[];
@@ -67,26 +218,25 @@ export function SharedKnowledgeView({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  // Form states
+  // Form states without manual ID inputs (IDs generated on backend)
   const [domainForm, setDomainForm] = useState({
-    domain_id: "",
     name: "",
     code: "",
     description: "",
   });
 
   const [roleForm, setRoleForm] = useState({
-    role_id: "",
     preferred_name: "",
     description: "",
+    domain_id: "",
   });
 
   const [skillForm, setSkillForm] = useState({
-    skill_id: "",
     preferred_name: "",
     description: "",
     skill_type: "PROGRAMMING_SKILL",
     skill_nature: "TECHNICAL",
+    domain_id: "",
   });
 
   const [relForm, setRelForm] = useState({
@@ -95,6 +245,9 @@ export function SharedKnowledgeView({
     relationship_type: "RELATED_TO" as SkillRelationshipType,
     evidence_note: "",
   });
+
+  // Fast map lookup for skill preferred names
+  const skillsMap = useMemo(() => new Map(skills.map((s) => [s.skill_id, s.preferred_name])), [skills]);
 
   // Reset page and search when switching tabs
   const handleTabChange = (tab: ActiveTab) => {
@@ -105,7 +258,7 @@ export function SharedKnowledgeView({
     setError(null);
   };
 
-  // Reload data for the current active tab
+  // Reload data for active tab using complete batch pagination
   const refreshActiveTabData = useCallback(async () => {
     setIsLoading(true);
     setError(null);
@@ -114,13 +267,13 @@ export function SharedKnowledgeView({
         const data = await fetchSsksDomains();
         setDomains(data);
       } else if (activeTab === "ROLES") {
-        const data = await fetchSsksRoles({ limit: 500 });
+        const data = await fetchSsksRolesAll();
         setRoles(data);
       } else if (activeTab === "SKILLS") {
-        const data = await fetchSsksSkills({ limit: 500 });
+        const data = await fetchSsksSkillsAll();
         setSkills(data);
       } else if (activeTab === "RELATIONSHIPS") {
-        const data = await fetchSsksRelationships({ limit: 500 });
+        const data = await fetchSsksRelationshipsAll();
         setRelationships(data);
       }
     } catch (err: unknown) {
@@ -164,11 +317,13 @@ export function SharedKnowledgeView({
           rel.source_skill_id.toLowerCase().includes(q) ||
           rel.target_skill_id.toLowerCase().includes(q) ||
           rel.relationship_type.toLowerCase().includes(q) ||
-          rel.relationship_id.toLowerCase().includes(q),
+          rel.relationship_id.toLowerCase().includes(q) ||
+          (skillsMap.get(rel.source_skill_id) || "").toLowerCase().includes(q) ||
+          (skillsMap.get(rel.target_skill_id) || "").toLowerCase().includes(q),
       );
     }
     return [];
-  }, [activeTab, domains, roles, skills, relationships, searchTerm]);
+  }, [activeTab, domains, roles, skills, relationships, searchTerm, skillsMap]);
 
   // 10 items per page pagination
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE) || 1;
@@ -185,63 +340,71 @@ export function SharedKnowledgeView({
 
     try {
       if (activeTab === "DOMAINS") {
-        if (!domainForm.domain_id.trim() || !domainForm.name.trim() || !domainForm.code.trim()) {
-          throw new Error("Domain ID, Name, and Code are required.");
+        if (!domainForm.name.trim() || !domainForm.code.trim()) {
+          throw new Error("Domain Name and Code are required.");
         }
-        await createSsksDomain({
-          domain_id: domainForm.domain_id.trim().toUpperCase(),
+        const created = await createSsksDomain({
           name: domainForm.name.trim(),
           code: domainForm.code.trim().toUpperCase(),
           description: domainForm.description.trim() || undefined,
         });
-        setFeedback({ type: "success", message: `Domain "${domainForm.name}" created successfully!` });
-        setDomainForm({ domain_id: "", name: "", code: "", description: "" });
+        setFeedback({
+          type: "success",
+          message: `Domain "${created.name}" created successfully with ID: ${created.domain_id}`,
+        });
+        setDomainForm({ name: "", code: "", description: "" });
       } else if (activeTab === "ROLES") {
-        if (!roleForm.role_id.trim() || !roleForm.preferred_name.trim()) {
-          throw new Error("Role ID and Preferred Name are required.");
+        if (!roleForm.preferred_name.trim()) {
+          throw new Error("Role Title / Preferred Name is required.");
         }
-        await createSsksRole({
-          role_id: roleForm.role_id.trim().toUpperCase(),
+        const created = await createSsksRole({
           preferred_name: roleForm.preferred_name.trim(),
           description: roleForm.description.trim() || undefined,
+          domain_id: roleForm.domain_id || undefined,
         });
-        setFeedback({ type: "success", message: `Role "${roleForm.preferred_name}" created successfully!` });
-        setRoleForm({ role_id: "", preferred_name: "", description: "" });
+        setFeedback({
+          type: "success",
+          message: `Role "${created.preferred_name}" created successfully with ID: ${created.role_id}`,
+        });
+        setRoleForm({ preferred_name: "", description: "", domain_id: "" });
       } else if (activeTab === "SKILLS") {
-        if (!skillForm.skill_id.trim() || !skillForm.preferred_name.trim()) {
-          throw new Error("Skill ID and Preferred Name are required.");
+        if (!skillForm.preferred_name.trim()) {
+          throw new Error("Skill Preferred Name is required.");
         }
-        await createSsksSkill({
-          skill_id: skillForm.skill_id.trim().toUpperCase(),
+        const created = await createSsksSkill({
           preferred_name: skillForm.preferred_name.trim(),
           description: skillForm.description.trim() || undefined,
           skill_type: skillForm.skill_type,
           skill_nature: skillForm.skill_nature,
+          domain_id: skillForm.domain_id || undefined,
         });
-        setFeedback({ type: "success", message: `Skill "${skillForm.preferred_name}" created successfully!` });
+        setFeedback({
+          type: "success",
+          message: `Skill "${created.preferred_name}" created successfully with ID: ${created.skill_id}`,
+        });
         setSkillForm({
-          skill_id: "",
           preferred_name: "",
           description: "",
           skill_type: "PROGRAMMING_SKILL",
           skill_nature: "TECHNICAL",
+          domain_id: "",
         });
       } else if (activeTab === "RELATIONSHIPS") {
         if (!relForm.source_skill_id.trim() || !relForm.target_skill_id.trim()) {
-          throw new Error("Source skill ID and Target skill ID are required.");
+          throw new Error("Both Source Skill and Target Skill must be selected.");
         }
         if (relForm.source_skill_id.trim() === relForm.target_skill_id.trim()) {
           throw new Error("Source skill and Target skill must be different.");
         }
-        await createSsksRelationship({
-          source_skill_id: relForm.source_skill_id.trim().toUpperCase(),
-          target_skill_id: relForm.target_skill_id.trim().toUpperCase(),
+        const created = await createSsksRelationship({
+          source_skill_id: relForm.source_skill_id.trim(),
+          target_skill_id: relForm.target_skill_id.trim(),
           relationship_type: relForm.relationship_type,
           evidence_note: relForm.evidence_note.trim() || undefined,
         });
         setFeedback({
           type: "success",
-          message: `Verified relationship created: ${relForm.source_skill_id} → ${relForm.target_skill_id}`,
+          message: `Verified relationship created with ID: ${created.relationship_id} (${created.source_skill_id} → ${created.target_skill_id})`,
         });
         setRelForm({
           source_skill_id: "",
@@ -590,10 +753,15 @@ export function SharedKnowledgeView({
                             {rel.relationship_id}
                           </span>
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3.5 font-mono font-bold text-ink">
-                          <span className="inline-block rounded bg-white px-2 py-1 border border-ink/40">
+                        <td className="whitespace-nowrap px-4 py-3.5 font-mono text-ink">
+                          <span className="hard-shadow-sm inline-block rounded bg-[#fff9f2] px-2 py-0.5 border border-ink font-bold">
                             {rel.source_skill_id}
                           </span>
+                          {skillsMap.get(rel.source_skill_id) && (
+                            <span className="ml-1.5 font-sans font-semibold text-ink">
+                              · {skillsMap.get(rel.source_skill_id)}
+                            </span>
+                          )}
                         </td>
                         <td className="whitespace-nowrap px-4 py-3.5 text-center">
                           <span
@@ -605,10 +773,15 @@ export function SharedKnowledgeView({
                             <ArrowRight className="size-3" />
                           </span>
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3.5 font-mono font-bold text-ink">
-                          <span className="inline-block rounded bg-white px-2 py-1 border border-ink/40">
+                        <td className="whitespace-nowrap px-4 py-3.5 font-mono text-ink">
+                          <span className="hard-shadow-sm inline-block rounded bg-[#fff9f2] px-2 py-0.5 border border-ink font-bold">
                             {rel.target_skill_id}
                           </span>
+                          {skillsMap.get(rel.target_skill_id) && (
+                            <span className="ml-1.5 font-sans font-semibold text-ink">
+                              · {skillsMap.get(rel.target_skill_id)}
+                            </span>
+                          )}
                         </td>
                         <td className="whitespace-nowrap px-4 py-3.5">
                           <span className="inline-flex items-center gap-1 rounded-full border border-ink bg-[#d0ffa4] px-2 py-0.5 text-[10px] font-black uppercase text-ink">
@@ -687,19 +860,6 @@ export function SharedKnowledgeView({
                 <>
                   <div>
                     <label className="block text-xs font-bold text-ink">
-                      Domain ID <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. DOM-DATA"
-                      value={domainForm.domain_id}
-                      onChange={(e) => setDomainForm({ ...domainForm, domain_id: e.target.value })}
-                      required
-                      className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-mono font-bold text-ink focus:outline-none"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-ink">
                       Domain Name <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -717,7 +877,7 @@ export function SharedKnowledgeView({
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. DATA"
+                      placeholder="e.g. DATA (used for canonical ID DOM-DATA)"
                       value={domainForm.code}
                       onChange={(e) => setDomainForm({ ...domainForm, code: e.target.value })}
                       required
@@ -734,25 +894,16 @@ export function SharedKnowledgeView({
                       className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs text-ink focus:outline-none"
                     />
                   </div>
+                  <div className="flex items-start gap-1.5 rounded-lg border border-ink/20 bg-[#fff9f2] p-2.5 text-[11px] text-muted">
+                    <Info className="size-4 shrink-0 text-ink mt-0.5" />
+                    <span>Domain canonical ID (DOM-&#123;CODE&#125;) will be generated automatically by the backend.</span>
+                  </div>
                 </>
               )}
 
               {/* ROLES FORM */}
               {activeTab === "ROLES" && (
                 <>
-                  <div>
-                    <label className="block text-xs font-bold text-ink">
-                      Role ID <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. RL-000094"
-                      value={roleForm.role_id}
-                      onChange={(e) => setRoleForm({ ...roleForm, role_id: e.target.value })}
-                      required
-                      className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-mono font-bold text-ink focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label className="block text-xs font-bold text-ink">
                       Canonical Title <span className="text-red-500">*</span>
@@ -767,6 +918,23 @@ export function SharedKnowledgeView({
                     />
                   </div>
                   <div>
+                    <label className="block text-xs font-bold text-ink">
+                      Domain Association <span className="text-muted font-normal">(optional)</span>
+                    </label>
+                    <select
+                      value={roleForm.domain_id}
+                      onChange={(e) => setRoleForm({ ...roleForm, domain_id: e.target.value })}
+                      className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-bold text-ink focus:outline-none"
+                    >
+                      <option value="">None / Unassigned</option>
+                      {domains.map((d) => (
+                        <option key={d.domain_id} value={d.domain_id}>
+                          {d.name} ({d.code})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
                     <label className="block text-xs font-bold text-ink">Description</label>
                     <textarea
                       placeholder="Official career role responsibilities..."
@@ -776,25 +944,16 @@ export function SharedKnowledgeView({
                       className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs text-ink focus:outline-none"
                     />
                   </div>
+                  <div className="flex items-start gap-1.5 rounded-lg border border-ink/20 bg-[#fff9f2] p-2.5 text-[11px] text-muted">
+                    <Info className="size-4 shrink-0 text-ink mt-0.5" />
+                    <span>Role canonical ID (RL-XXXXXX) will be generated automatically by the backend. Career levels belong to Readiness Engine industry profiles.</span>
+                  </div>
                 </>
               )}
 
               {/* SKILLS FORM */}
               {activeTab === "SKILLS" && (
                 <>
-                  <div>
-                    <label className="block text-xs font-bold text-ink">
-                      Skill ID <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. SK-001847"
-                      value={skillForm.skill_id}
-                      onChange={(e) => setSkillForm({ ...skillForm, skill_id: e.target.value })}
-                      required
-                      className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-mono font-bold text-ink focus:outline-none"
-                    />
-                  </div>
                   <div>
                     <label className="block text-xs font-bold text-ink">
                       Preferred Name <span className="text-red-500">*</span>
@@ -807,6 +966,23 @@ export function SharedKnowledgeView({
                       required
                       className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-bold text-ink focus:outline-none"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-ink">
+                      Domain / Category <span className="text-muted font-normal">(optional)</span>
+                    </label>
+                    <select
+                      value={skillForm.domain_id}
+                      onChange={(e) => setSkillForm({ ...skillForm, domain_id: e.target.value })}
+                      className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-bold text-ink focus:outline-none"
+                    >
+                      <option value="">None / Unassigned</option>
+                      {domains.map((d) => (
+                        <option key={d.domain_id} value={d.domain_id}>
+                          {d.name} ({d.code})
+                        </option>
+                      ))}
+                    </select>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -846,42 +1022,37 @@ export function SharedKnowledgeView({
                       className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs text-ink focus:outline-none"
                     />
                   </div>
+                  <div className="flex items-start gap-1.5 rounded-lg border border-ink/20 bg-[#fff9f2] p-2.5 text-[11px] text-muted">
+                    <Info className="size-4 shrink-0 text-ink mt-0.5" />
+                    <span>Skill canonical ID (SK-XXXXXX) will be generated automatically by the backend. Aliases are automatically populated via the normalization pipeline.</span>
+                  </div>
                 </>
               )}
 
               {/* RELATIONSHIPS FORM */}
               {activeTab === "RELATIONSHIPS" && (
                 <>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-bold text-ink">
-                        Source Skill ID <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. SK-000005"
-                        value={relForm.source_skill_id}
-                        onChange={(e) => setRelForm({ ...relForm, source_skill_id: e.target.value })}
-                        required
-                        className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-mono font-bold text-ink focus:outline-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-ink">
-                        Target Skill ID <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. SK-000008"
-                        value={relForm.target_skill_id}
-                        onChange={(e) => setRelForm({ ...relForm, target_skill_id: e.target.value })}
-                        required
-                        className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-mono font-bold text-ink focus:outline-none"
-                      />
-                    </div>
-                  </div>
+                  <SkillSearchSelect
+                    label="Source Skill"
+                    value={relForm.source_skill_id}
+                    onChange={(val) => setRelForm({ ...relForm, source_skill_id: val })}
+                    skills={skills}
+                    placeholder="Search and select source skill..."
+                  />
+
+                  <SkillSearchSelect
+                    label="Target Skill"
+                    value={relForm.target_skill_id}
+                    onChange={(val) => setRelForm({ ...relForm, target_skill_id: val })}
+                    skills={skills}
+                    excludeId={relForm.source_skill_id}
+                    placeholder="Search and select target skill..."
+                  />
+
                   <div>
-                    <label className="block text-xs font-bold text-ink">Relationship Type</label>
+                    <label className="block text-xs font-bold text-ink">
+                      Relationship Type <span className="text-red-500">*</span>
+                    </label>
                     <select
                       value={relForm.relationship_type}
                       onChange={(e) =>
@@ -889,12 +1060,12 @@ export function SharedKnowledgeView({
                       }
                       className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs font-bold text-ink focus:outline-none"
                     >
-                      <option value="EQUIVALENT_TO">EQUIVALENT_TO</option>
-                      <option value="BROADER_THAN">BROADER_THAN</option>
-                      <option value="NARROWER_THAN">NARROWER_THAN</option>
-                      <option value="PART_OF">PART_OF</option>
-                      <option value="PREREQUISITE_OF">PREREQUISITE_OF</option>
-                      <option value="RELATED_TO">RELATED_TO</option>
+                      <option value="EQUIVALENT_TO">EQUIVALENT_TO (Equivalent meaning)</option>
+                      <option value="BROADER_THAN">BROADER_THAN (Broader category/parent)</option>
+                      <option value="NARROWER_THAN">NARROWER_THAN (Narrower subcategory/child)</option>
+                      <option value="PART_OF">PART_OF (Sub-component of skill)</option>
+                      <option value="PREREQUISITE_OF">PREREQUISITE_OF (Required prerequisite)</option>
+                      <option value="RELATED_TO">RELATED_TO (General semantic relation)</option>
                     </select>
                   </div>
                   <div>
@@ -906,6 +1077,10 @@ export function SharedKnowledgeView({
                       rows={2}
                       className="hard-shadow-sm mt-1 w-full rounded-lg border-2 border-ink bg-[#fff9f2] p-2 text-xs text-ink focus:outline-none"
                     />
+                  </div>
+                  <div className="flex items-start gap-1.5 rounded-lg border border-ink/20 bg-[#fff9f2] p-2.5 text-[11px] text-muted">
+                    <Info className="size-4 shrink-0 text-ink mt-0.5" />
+                    <span>Relationship canonical ID (REL-XXXXXX) will be generated automatically by the backend. Duplicate relations are automatically prevented.</span>
                   </div>
                 </>
               )}

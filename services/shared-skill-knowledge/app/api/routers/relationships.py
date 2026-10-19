@@ -36,6 +36,7 @@ async def list_relationships(
     target_skill_id: str | None = None,
     relationship_type: SkillRelationshipType | None = None,
     verification_status: str | None = None,
+    search: str | None = None,
     service: RelationshipService = Depends(get_relationship_service),
 ):
     return await service.list_relationships(
@@ -45,6 +46,7 @@ async def list_relationships(
         target_skill_id=target_skill_id,
         relationship_type=relationship_type,
         verification_status=verification_status,
+        search=search,
     )
 
 

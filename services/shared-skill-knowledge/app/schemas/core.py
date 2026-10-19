@@ -23,7 +23,7 @@ class DomainBase(BaseModel):
     status: Status50 = "ACTIVE"
 
 class DomainCreate(DomainBase):
-    domain_id: Id50
+    domain_id: Id50 | None = None
 
 class DomainOut(DomainBase):
     domain_id: str
@@ -37,7 +37,7 @@ class SkillBase(BaseModel):
     status: Status50 = "ACTIVE"
 
 class SkillCreate(SkillBase):
-    skill_id: Id50
+    skill_id: Id50 | None = None
 
 class SkillOut(SkillBase):
     skill_id: str
@@ -51,7 +51,7 @@ class RoleBase(BaseModel):
     status: Status50 = "ACTIVE"
 
 class RoleCreate(RoleBase):
-    role_id: Id50
+    role_id: Id50 | None = None
 
 class RoleOut(RoleBase):
     role_id: str

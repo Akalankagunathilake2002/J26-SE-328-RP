@@ -38,6 +38,7 @@ class RelationshipService:
         target_skill_id: str | None = None,
         relationship_type: str | None = None,
         verification_status: str | None = None,
+        search: str | None = None,
     ) -> Sequence[SkillRelationship]:
         return await self.rel_repo.get_all(
             limit=limit,
@@ -46,6 +47,7 @@ class RelationshipService:
             target_skill_id=target_skill_id,
             relationship_type=relationship_type,
             verification_status=verification_status,
+            search=search,
         )
 
     async def get_relationship(self, relationship_id: str) -> SkillRelationship:
@@ -76,7 +78,6 @@ class RelationshipService:
                 detail="A relationship with this source, target, and type already exists",
             )
 
-        # Use the provided relationship ID or generate the next sequential one.
         if data.relationship_id:
             if await self.rel_repo.get_by_id(data.relationship_id):
                 raise HTTPException(
@@ -85,7 +86,7 @@ class RelationshipService:
                 )
             rel_id = data.relationship_id
         else:
-            rel_id = await self.rel_repo.generate_next_relationship_id()
+            rel_id = None
 
         try:
             return await self.rel_repo.create(data, relationship_id=rel_id)

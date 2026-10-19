@@ -15,7 +15,7 @@ class CoreService:
         
     async def create_domain(self, data: DomainCreate) -> Domain:
         # Ensure domain ID and domain code are unique before saving.
-        if await self.domain_repo.get_by_id(data.domain_id):
+        if data.domain_id and await self.domain_repo.get_by_id(data.domain_id):
             raise HTTPException(status_code=409, detail="Domain ID already exists")
         if await self.domain_repo.get_by_code(data.code):
             raise HTTPException(status_code=409, detail="Domain code already exists")
@@ -34,8 +34,8 @@ class CoreService:
         return skill
 
     async def create_skill(self, data: SkillCreate) -> Skill:
-        # Check that the skill ID does not already exist.
-        if await self.skill_repo.get_by_id(data.skill_id):
+        # Check that the skill ID does not already exist if manually supplied.
+        if data.skill_id and await self.skill_repo.get_by_id(data.skill_id):
             raise HTTPException(status_code=409, detail="Skill ID already exists")
         try:
             return await self.skill_repo.create(data)
@@ -52,8 +52,8 @@ class CoreService:
         return role
 
     async def create_role(self, data: RoleCreate) -> Role:
-        # Check that the role ID does not already exist.
-        if await self.role_repo.get_by_id(data.role_id):
+        # Check that the role ID does not already exist if manually supplied.
+        if data.role_id and await self.role_repo.get_by_id(data.role_id):
             raise HTTPException(status_code=409, detail="Role ID already exists")
         try:
             return await self.role_repo.create(data)

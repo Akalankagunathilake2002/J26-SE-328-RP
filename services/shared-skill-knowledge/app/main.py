@@ -12,6 +12,7 @@ from app.api.routers import (
     role_domains_router,
     snapshots_router,
 )
+from fastapi.middleware.cors import CORSMiddleware
 from app.config.settings import get_settings
 
 @contextlib.asynccontextmanager
@@ -30,6 +31,15 @@ def create_app() -> FastAPI:
         docs_url="/ssks/docs",
         redoc_url=None,
         openapi_url="/ssks/openapi.json"
+    )
+
+    # Enable CORS for local development and gateway routing.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     ssks_router = APIRouter(prefix="/ssks")

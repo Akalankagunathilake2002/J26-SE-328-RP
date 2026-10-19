@@ -1,6 +1,9 @@
 // API client module for the Shared Skill Knowledge Service (SSKS) microservice
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  (typeof window === "undefined" ? process.env.API_GATEWAY_URL : undefined) ||
+  "http://localhost:8080";
 
 export interface DomainItem {
   domain_id: string;
@@ -71,7 +74,7 @@ export interface ReviewCandidatePayload {
 }
 
 export interface CreateDomainPayload {
-  domain_id: string;
+  domain_id?: string;
   name: string;
   code: string;
   description?: string;
@@ -79,19 +82,21 @@ export interface CreateDomainPayload {
 }
 
 export interface CreateRolePayload {
-  role_id: string;
+  role_id?: string;
   preferred_name: string;
   description?: string;
   status?: string;
+  domain_id?: string;
 }
 
 export interface CreateSkillPayload {
-  skill_id: string;
+  skill_id?: string;
   preferred_name: string;
   description?: string;
   skill_type: string;
   skill_nature?: string;
   status?: string;
+  domain_id?: string;
 }
 
 export interface CreateRelationshipPayload {
@@ -104,17 +109,55 @@ export interface CreateRelationshipPayload {
   relationship_id?: string;
 }
 
+// Safe wrapper around fetch providing meaningful diagnostic context if the network request fails.
+async function safeFetch(url: string, init?: RequestInit): Promise<Response> {
+  try {
+    return await fetch(url, init);
+  } catch (err: unknown) {
+    const errorMsg = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Network connection error: Failed to reach backend at ${url} (${errorMsg}). Please check that the API gateway is running on ${API_BASE}.`,
+    );
+  }
+}
+
+// Extracts meaningful HTTP error details from failed backend API responses.
 async function handleApiError(res: Response, defaultMessage: string): Promise<never> {
-  const body = await res.json().catch(() => null);
-  const detail = body?.detail;
-  if (typeof detail === "string") throw new Error(detail);
-  if (Array.isArray(detail) && detail[0]?.msg) throw new Error(detail[0].msg);
-  throw new Error(defaultMessage);
+  let errorDetail = "";
+  try {
+    const text = await res.text();
+    try {
+      const body = JSON.parse(text);
+      if (typeof body?.detail === "string") {
+        errorDetail = body.detail;
+      } else if (Array.isArray(body?.detail)) {
+        errorDetail = body.detail
+          .map((item: { loc?: (string | number)[]; msg?: string }) => {
+            const field = item.loc && item.loc.length > 1 ? item.loc.slice(1).join(".") : "";
+            return field ? `${field}: ${item.msg}` : (item.msg || "Invalid field");
+          })
+          .join("; ");
+      } else if (body?.message) {
+        errorDetail = String(body.message);
+      }
+    } catch {
+      if (text && text.trim().length > 0 && text.length < 300) {
+        errorDetail = text.trim();
+      }
+    }
+  } catch {
+    // Ignore body read errors
+  }
+
+  const statusText = res.statusText ? ` ${res.statusText}` : "";
+  const suffix = `(HTTP ${res.status}${statusText})`;
+  const finalMessage = errorDetail ? `${errorDetail} ${suffix}` : `${defaultMessage} ${suffix}`;
+  throw new Error(finalMessage);
 }
 
 // Fetches all canonical domains from the SSKS service.
 export async function fetchSsksDomains(): Promise<DomainItem[]> {
-  const res = await fetch(`${API_BASE}/ssks/domains/`, { cache: "no-store" });
+  const res = await safeFetch(`${API_BASE}/ssks/domains/`, { cache: "no-store" });
   if (!res.ok) {
     await handleApiError(res, `Failed to fetch domains (${res.status})`);
   }
@@ -123,10 +166,12 @@ export async function fetchSsksDomains(): Promise<DomainItem[]> {
 
 // Creates a new canonical domain in the SSKS knowledge base.
 export async function createSsksDomain(payload: CreateDomainPayload): Promise<DomainItem> {
-  const res = await fetch(`${API_BASE}/ssks/domains/`, {
+  const { domain_id, ...domainData } = payload;
+  const bodyData = domain_id && domain_id.trim() ? { ...domainData, domain_id: domain_id.trim() } : domainData;
+  const res = await safeFetch(`${API_BASE}/ssks/domains/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(bodyData),
   });
   if (!res.ok) {
     await handleApiError(res, "Failed to create domain");
@@ -134,43 +179,111 @@ export async function createSsksDomain(payload: CreateDomainPayload): Promise<Do
   return res.json();
 }
 
-// Fetches canonical roles with optional filtering and pagination.
+// Associates a canonical skill with a domain.
+export async function associateSkillDomain(
+  skillId: string,
+  domainId: string,
+): Promise<{ skill_id: string; domain_id: string }> {
+  const res = await safeFetch(`${API_BASE}/ssks/skills/${skillId}/domains/${domainId}`, {
+    method: "PUT",
+  });
+  if (!res.ok) {
+    await handleApiError(res, `Failed to associate skill with domain (${res.status})`);
+  }
+  return res.json();
+}
+
+// Associates a canonical role with a domain.
+export async function associateRoleDomain(
+  roleId: string,
+  domainId: string,
+): Promise<{ role_id: string; domain_id: string }> {
+  const res = await safeFetch(`${API_BASE}/ssks/roles/${roleId}/domains/${domainId}`, {
+    method: "PUT",
+  });
+  if (!res.ok) {
+    await handleApiError(res, `Failed to associate role with domain (${res.status})`);
+  }
+  return res.json();
+}
+
+// Fetches canonical roles with optional filtering, search, and pagination.
 export async function fetchSsksRoles(params?: {
   limit?: number;
   offset?: number;
   status?: string;
   domain_id?: string;
+  search?: string;
 }): Promise<RoleItem[]> {
   const searchParams = new URLSearchParams();
   if (params?.limit) searchParams.set("limit", String(params.limit));
   if (params?.offset !== undefined) searchParams.set("offset", String(params.offset));
   if (params?.status) searchParams.set("status", params.status);
   if (params?.domain_id) searchParams.set("domain_id", params.domain_id);
+  if (params?.search) searchParams.set("search", params.search);
 
   const query = searchParams.toString();
   const url = `${API_BASE}/ssks/roles/${query ? `?${query}` : ""}`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await safeFetch(url, { cache: "no-store" });
   if (!res.ok) {
     await handleApiError(res, `Failed to fetch roles (${res.status})`);
   }
   return res.json();
 }
 
-// Creates a new canonical role in the SSKS knowledge base.
+// Retrieves all roles by paginating through all available pages.
+export async function fetchSsksRolesAll(params?: {
+  status?: string;
+  domain_id?: string;
+  search?: string;
+}): Promise<RoleItem[]> {
+  const allRoles: RoleItem[] = [];
+  const pageSize = 500;
+  let offset = 0;
+
+  while (true) {
+    const batch = await fetchSsksRoles({
+      ...params,
+      limit: pageSize,
+      offset,
+    });
+    allRoles.push(...batch);
+    if (batch.length < pageSize) {
+      break;
+    }
+    offset += pageSize;
+  }
+
+  return allRoles;
+}
+
+// Creates a new canonical role, with optional automatic domain linking.
 export async function createSsksRole(payload: CreateRolePayload): Promise<RoleItem> {
-  const res = await fetch(`${API_BASE}/ssks/roles/`, {
+  const { domain_id, role_id, ...roleData } = payload;
+  const bodyData = role_id && role_id.trim() ? { ...roleData, role_id: role_id.trim() } : roleData;
+  const res = await safeFetch(`${API_BASE}/ssks/roles/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(bodyData),
   });
   if (!res.ok) {
     await handleApiError(res, "Failed to create role");
   }
-  return res.json();
+  const createdRole: RoleItem = await res.json();
+
+  if (domain_id && createdRole.role_id) {
+    try {
+      await associateRoleDomain(createdRole.role_id, domain_id);
+    } catch (assocErr) {
+      console.warn("Failed to associate domain to role:", assocErr);
+    }
+  }
+
+  return createdRole;
 }
 
-// Fetches canonical skills with optional filtering and pagination.
+// Fetches canonical skills with optional filtering, search, and pagination.
 export async function fetchSsksSkills(params?: {
   limit?: number;
   offset?: number;
@@ -178,6 +291,7 @@ export async function fetchSsksSkills(params?: {
   skill_type?: string;
   skill_nature?: string;
   domain_id?: string;
+  search?: string;
 }): Promise<SkillItem[]> {
   const searchParams = new URLSearchParams();
   if (params?.limit) searchParams.set("limit", String(params.limit));
@@ -186,28 +300,69 @@ export async function fetchSsksSkills(params?: {
   if (params?.skill_type) searchParams.set("skill_type", params.skill_type);
   if (params?.skill_nature) searchParams.set("skill_nature", params.skill_nature);
   if (params?.domain_id) searchParams.set("domain_id", params.domain_id);
+  if (params?.search) searchParams.set("search", params.search);
 
   const query = searchParams.toString();
   const url = `${API_BASE}/ssks/skills/${query ? `?${query}` : ""}`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await safeFetch(url, { cache: "no-store" });
   if (!res.ok) {
     await handleApiError(res, `Failed to fetch skills (${res.status})`);
   }
   return res.json();
 }
 
-// Creates a new canonical skill in the SSKS knowledge base.
+// Retrieves all skills by paginating in chunks of 500 records.
+export async function fetchSsksSkillsAll(params?: {
+  status?: string;
+  skill_type?: string;
+  skill_nature?: string;
+  domain_id?: string;
+  search?: string;
+}): Promise<SkillItem[]> {
+  const allSkills: SkillItem[] = [];
+  const pageSize = 500;
+  let offset = 0;
+
+  while (true) {
+    const batch = await fetchSsksSkills({
+      ...params,
+      limit: pageSize,
+      offset,
+    });
+    allSkills.push(...batch);
+    if (batch.length < pageSize) {
+      break;
+    }
+    offset += pageSize;
+  }
+
+  return allSkills;
+}
+
+// Creates a new canonical skill, with optional automatic domain linking.
 export async function createSsksSkill(payload: CreateSkillPayload): Promise<SkillItem> {
-  const res = await fetch(`${API_BASE}/ssks/skills/`, {
+  const { domain_id, skill_id, ...skillData } = payload;
+  const bodyData = skill_id && skill_id.trim() ? { ...skillData, skill_id: skill_id.trim() } : skillData;
+  const res = await safeFetch(`${API_BASE}/ssks/skills/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(bodyData),
   });
   if (!res.ok) {
     await handleApiError(res, "Failed to create skill");
   }
-  return res.json();
+  const createdSkill: SkillItem = await res.json();
+
+  if (domain_id && createdSkill.skill_id) {
+    try {
+      await associateSkillDomain(createdSkill.skill_id, domain_id);
+    } catch (assocErr) {
+      console.warn("Failed to associate domain to skill:", assocErr);
+    }
+  }
+
+  return createdSkill;
 }
 
 // Fetches verified skill relationships from the knowledge graph.
@@ -218,6 +373,7 @@ export async function fetchSsksRelationships(params?: {
   target_skill_id?: string;
   relationship_type?: string;
   verification_status?: string;
+  search?: string;
 }): Promise<SkillRelationshipItem[]> {
   const searchParams = new URLSearchParams();
   if (params?.limit) searchParams.set("limit", String(params.limit));
@@ -226,25 +382,59 @@ export async function fetchSsksRelationships(params?: {
   if (params?.target_skill_id) searchParams.set("target_skill_id", params.target_skill_id);
   if (params?.relationship_type) searchParams.set("relationship_type", params.relationship_type);
   if (params?.verification_status) searchParams.set("verification_status", params.verification_status);
+  if (params?.search) searchParams.set("search", params.search);
 
   const query = searchParams.toString();
   const url = `${API_BASE}/ssks/relationships${query ? `?${query}` : ""}`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await safeFetch(url, { cache: "no-store" });
   if (!res.ok) {
     await handleApiError(res, `Failed to fetch relationships (${res.status})`);
   }
   return res.json();
 }
 
+// Retrieves all verified relationships by paginating in chunks of 500 records.
+export async function fetchSsksRelationshipsAll(params?: {
+  source_skill_id?: string;
+  target_skill_id?: string;
+  relationship_type?: string;
+  verification_status?: string;
+  search?: string;
+}): Promise<SkillRelationshipItem[]> {
+  const allRels: SkillRelationshipItem[] = [];
+  const pageSize = 500;
+  let offset = 0;
+
+  while (true) {
+    const batch = await fetchSsksRelationships({
+      ...params,
+      limit: pageSize,
+      offset,
+    });
+    allRels.push(...batch);
+    if (batch.length < pageSize) {
+      break;
+    }
+    offset += pageSize;
+  }
+
+  return allRels;
+}
+
 // Creates a new verified skill relationship in the SSKS knowledge graph.
 export async function createSsksRelationship(
   payload: CreateRelationshipPayload,
 ): Promise<SkillRelationshipItem> {
-  const res = await fetch(`${API_BASE}/ssks/relationships`, {
+  const { relationship_id, ...relData } = payload;
+  const bodyData =
+    relationship_id && relationship_id.trim()
+      ? { ...relData, relationship_id: relationship_id.trim() }
+      : relData;
+  const res = await safeFetch(`${API_BASE}/ssks/relationships`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(bodyData),
   });
   if (!res.ok) {
     await handleApiError(res, "Failed to create relationship");
@@ -272,7 +462,7 @@ export async function fetchSsksCandidateRelationships(params?: {
   const query = searchParams.toString();
   const url = `${API_BASE}/ssks/candidates/relationships${query ? `?${query}` : ""}`;
 
-  const res = await fetch(url, { cache: "no-store" });
+  const res = await safeFetch(url, { cache: "no-store" });
   if (!res.ok) {
     await handleApiError(res, `Failed to fetch candidate relationships (${res.status})`);
   }
@@ -287,7 +477,7 @@ export async function reviewCandidateRelationship(
 ): Promise<CandidateRelationshipItem> {
   const url = `${API_BASE}/ssks/candidates/relationships/${candidateRelationshipId}/review`;
 
-  const res = await fetch(url, {
+  const res = await safeFetch(url, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",

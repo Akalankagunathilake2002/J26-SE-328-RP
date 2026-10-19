@@ -45,6 +45,7 @@ class SkillRelationshipRepository:
         target_skill_id: str | None = None,
         relationship_type: str | None = None,
         verification_status: str | None = None,
+        search: str | None = None,
     ) -> Sequence[SkillRelationship]:
         stmt = select(SkillRelationship)
         if source_skill_id:
@@ -55,12 +56,20 @@ class SkillRelationshipRepository:
             stmt = stmt.where(SkillRelationship.relationship_type == relationship_type)
         if verification_status:
             stmt = stmt.where(SkillRelationship.verification_status == verification_status)
+        if search:
+            term = f"%{search.strip()}%"
+            stmt = stmt.where(
+                (SkillRelationship.relationship_id.ilike(term))
+                | (SkillRelationship.source_skill_id.ilike(term))
+                | (SkillRelationship.target_skill_id.ilike(term))
+                | (SkillRelationship.relationship_type.ilike(term))
+            )
         stmt = stmt.order_by(SkillRelationship.created_at.desc(), SkillRelationship.relationship_id).limit(limit).offset(offset)
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
     async def generate_next_relationship_id(self) -> str:
-        # Find the highest existing REL sequence number and increment it.
+        # Find highest existing REL sequence number and increment.
         stmt = select(SkillRelationship.relationship_id).where(SkillRelationship.relationship_id.like("REL-%"))
         result = await self.session.execute(stmt)
         ids = result.scalars().all()
@@ -71,27 +80,55 @@ class SkillRelationshipRepository:
                 max_num = max(max_num, int(num_part))
         return f"REL-{max_num + 1:06d}"
 
-    async def create(self, data: SkillRelationshipCreate, relationship_id: str) -> SkillRelationship:
-        rel = SkillRelationship(
-            relationship_id=relationship_id,
-            source_skill_id=data.source_skill_id,
-            target_skill_id=data.target_skill_id,
-            relationship_type=data.relationship_type,
-            verification_status=data.verification_status,
-            source_id=data.source_id,
-            evidence_note=data.evidence_note,
-        )
-        self.session.add(rel)
-        try:
-            await self.session.commit()
-            await self.session.refresh(rel)
-            return rel
-        except IntegrityError as exc:
-            await self.session.rollback()
-            raise ConflictError from exc
-        except Exception:
-            await self.session.rollback()
-            raise
+    async def create(self, data: SkillRelationshipCreate, relationship_id: str | None = None) -> SkillRelationship:
+        # Create with given ID or generate with retry loop against concurrent inserts.
+        if relationship_id:
+            rel = SkillRelationship(
+                relationship_id=relationship_id,
+                source_skill_id=data.source_skill_id,
+                target_skill_id=data.target_skill_id,
+                relationship_type=data.relationship_type,
+                verification_status=data.verification_status,
+                source_id=data.source_id,
+                evidence_note=data.evidence_note,
+            )
+            self.session.add(rel)
+            try:
+                await self.session.commit()
+                await self.session.refresh(rel)
+                return rel
+            except IntegrityError as exc:
+                await self.session.rollback()
+                raise ConflictError from exc
+            except Exception:
+                await self.session.rollback()
+                raise
+
+        max_attempts = 10
+        for attempt in range(max_attempts):
+            candidate_id = await self.generate_next_relationship_id()
+            rel = SkillRelationship(
+                relationship_id=candidate_id,
+                source_skill_id=data.source_skill_id,
+                target_skill_id=data.target_skill_id,
+                relationship_type=data.relationship_type,
+                verification_status=data.verification_status,
+                source_id=data.source_id,
+                evidence_note=data.evidence_note,
+            )
+            self.session.add(rel)
+            try:
+                await self.session.commit()
+                await self.session.refresh(rel)
+                return rel
+            except IntegrityError as exc:
+                await self.session.rollback()
+                if attempt == max_attempts - 1:
+                    raise ConflictError from exc
+                continue
+            except Exception:
+                await self.session.rollback()
+                raise
 
     async def update(self, rel: SkillRelationship, data: SkillRelationshipUpdate) -> SkillRelationship:
         if data.relationship_type is not None:

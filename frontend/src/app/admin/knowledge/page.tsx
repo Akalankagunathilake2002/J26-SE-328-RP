@@ -1,9 +1,9 @@
 import { requireAdmin } from "@/lib/auth";
 import {
   fetchSsksDomains,
-  fetchSsksRoles,
-  fetchSsksSkills,
-  fetchSsksRelationships,
+  fetchSsksRolesAll,
+  fetchSsksSkillsAll,
+  fetchSsksRelationshipsAll,
   type DomainItem,
   type RoleItem,
   type SkillItem,
@@ -27,9 +27,9 @@ export default async function AdminKnowledgePage() {
   try {
     const [d, r, s, rel] = await Promise.all([
       fetchSsksDomains().catch(() => [] as DomainItem[]),
-      fetchSsksRoles({ limit: 500 }).catch(() => [] as RoleItem[]),
-      fetchSsksSkills({ limit: 500 }).catch(() => [] as SkillItem[]),
-      fetchSsksRelationships({ limit: 500 }).catch(() => [] as SkillRelationshipItem[]),
+      fetchSsksRolesAll().catch(() => [] as RoleItem[]),
+      fetchSsksSkillsAll().catch(() => [] as SkillItem[]),
+      fetchSsksRelationshipsAll().catch(() => [] as SkillRelationshipItem[]),
     ]);
     domains = d;
     roles = r;
