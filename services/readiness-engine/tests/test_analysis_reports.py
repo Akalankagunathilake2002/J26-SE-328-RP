@@ -22,6 +22,7 @@ from app.models.profiles import (
     UserSkillProfileSkill,
 )
 from app.services.explanation_service import (
+    build_readiness_summary,
     build_skill_explanation,
     interpret_readiness_score,
 )
@@ -686,3 +687,59 @@ async def test_10_missing_supporting_values_do_not_fabricate():
     )
     assert out.readinessContribution == 0.0
     assert out.maxPotentialContribution == 0.0
+
+
+# Test 11: Verification of exact matches with evidence confidence < 1.0 (satisfaction below 1)
+@pytest.mark.anyio
+async def test_11_exact_matches_with_discounted_evidence_confidence_classification():
+    skills_data = [
+        ("Python", 1.0, 0.75, 0.75, 0.0, "COVERED"),
+        ("SQL", 1.0, 0.86, 0.86, 0.0, "COVERED"),
+        ("Docker", 1.0, 0.62, 0.62, 0.0, "COVERED"),
+        ("Git", 1.0, 0.80, 0.80, 0.0, "COVERED"),
+        ("REST APIs", 1.0, 0.82, 0.82, 0.0, "COVERED"),
+        ("FastAPI", 1.0, 0.69, 0.69, 0.0, "COVERED"),
+    ]
+    skill_results = []
+    for name, weight, conf, sat, gap, status in skills_data:
+        skill_results.append(
+            AnalysisSkillResult(
+                id=uuid.uuid4(),
+                analysis_id=uuid.uuid4(),
+                required_skill_name=name,
+                matched_skill_name=name,
+                match_type="EXACT",
+                coverage_credit=1.0,
+                required_proficiency="INTERMEDIATE",
+                user_proficiency="INTERMEDIATE",
+                evidence_confidence=conf,
+                industry_weight=weight,
+                satisfaction=sat,
+                gap=gap,
+                result_status=status,
+            )
+        )
+
+    summary = build_readiness_summary(
+        readiness_score=75.705,
+        skill_results=skill_results,
+        role_name="Software Engineer",
+    )
+
+    # Must NOT treat COVERED skills as fully satisfied if satisfaction < 1.0
+    assert summary.satisfiedCount == 0
+    assert summary.partialCount == 6
+    assert summary.missingCount == 0
+    assert summary.totalRequirements == 6
+    assert "All 6 skill requirement(s) are matched with zero capability gaps" in summary.summaryText
+    assert "developing evidence confidence" in summary.summaryText
+    assert "developing evidence confidence rather than skill deficiencies" in summary.interpretation
+
+    # Verify per-skill explanation distinguishes exact match from satisfaction
+    total_weight = sum(s.industry_weight or 1.0 for s in skill_results)
+    for sr in skill_results:
+        out = build_skill_explanation(sr, total_assessable_weight=total_weight)
+        assert "Direct exact match" in out.explanation
+        assert "100% proficiency satisfaction" not in out.contributionExplanation
+        assert "adjusted by" in out.contributionExplanation
+

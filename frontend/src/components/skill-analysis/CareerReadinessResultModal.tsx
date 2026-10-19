@@ -2,39 +2,34 @@
 
 import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import {
-  AlertTriangle,
-  BarChart3,
-  Briefcase,
-  CheckCircle2,
-  Download,
-  Info,
-  MinusCircle,
-  Settings,
-  X,
-} from "lucide-react";
+import { AlertTriangle, BarChart3, Briefcase, CheckCircle2, Download, Info, Loader2, MinusCircle, Settings, X } from "lucide-react";
 
-import type { DetailedAnalysisResult } from "./mockData";
+import type { DetailedAnalysisResult } from "./types";
+import { downloadCareerReadinessReport } from "@/lib/reportGenerator";
 
-const emptySubscribe = () => () => {};
+const emptySubscribe = () => () => { };
 
 interface CareerReadinessResultModalProps {
   isOpen: boolean;
   onClose: () => void;
   data: DetailedAnalysisResult | null;
+  studentName?: string;
 }
 
-// Reusable modal presenting qualitative readiness breakdown, circular score, and learning priorities
+// Modal presenting qualitative readiness breakdown, circular score, and learning priorities
 export function CareerReadinessResultModal({
   isOpen,
   onClose,
   data,
+  studentName,
 }: CareerReadinessResultModalProps) {
   const isClient = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [activeDataKey, setActiveDataKey] = useState<string>("");
   const [showAllMatched, setShowAllMatched] = useState(false);
   const [showAllMissing, setShowAllMissing] = useState(false);
   const [showAllPriorities, setShowAllPriorities] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   // Reset toggles during render when opening a new analysis record without triggering cascading renders
   const currentKey = data ? `${data.analysisId}-${data.roleName}` : "";
@@ -43,6 +38,7 @@ export function CareerReadinessResultModal({
     setShowAllMatched(false);
     setShowAllMissing(false);
     setShowAllPriorities(false);
+    setDownloadError(null);
   }
 
   // Close modal when Escape key is pressed and lock body scroll
@@ -70,26 +66,57 @@ export function CareerReadinessResultModal({
       return { matchedList: [], missingList: [] };
     }
     const matched = data.skills.filter(
-      (s) => s.resultStatus === "SATISFIED" || s.matchType === "EXACT" || s.matchType === "RELATIONSHIP"
+      (s) =>
+        s.resultStatus === "SATISFIED" ||
+        s.resultStatus === "COVERED" ||
+        s.resultStatus === "PARTIALLY_COVERED" ||
+        s.resultStatus === "PARTIAL" ||
+        s.matchType === "EXACT" ||
+        s.matchType === "RELATIONSHIP" ||
+        s.matchType === "PARTIAL_RELATIONSHIP",
     );
     const missing = data.skills.filter(
-      (s) => s.resultStatus === "MISSING" || s.resultStatus === "DEFICIENT" || s.matchType === "MISSING"
+      (s) =>
+        s.resultStatus === "MISSING" ||
+        s.resultStatus === "DEFICIENT" ||
+        s.matchType === "MISSING",
     );
     return { matchedList: matched, missingList: missing };
   }, [data]);
+
+  // Triggers two-page print-ready report download
+  const handleDownload = async () => {
+    if (isDownloading || !data?.analysisId) return;
+    setIsDownloading(true);
+    setDownloadError(null);
+    try {
+      await downloadCareerReadinessReport(data.analysisId, data.roleName, studentName);
+    } catch (err) {
+      setDownloadError(
+        err instanceof Error ? err.message : "Failed to generate report. Please try again.",
+      );
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   if (!isOpen || !data || !isClient) {
     return null;
   }
 
-  // Circular donut score dimensions and calculations (compact, proportionate to modal)
+  // Circular donut score dimensions and calculations
   const radius = 44;
   const circumference = 2 * Math.PI * radius;
+  const roundedScore = Math.round(Number(data.readinessScore) || 0);
   const strokeDashoffset =
-    circumference - (circumference * Math.min(100, Math.max(0, data.readinessScore))) / 100;
+    circumference - (circumference * Math.min(100, Math.max(0, roundedScore))) / 100;
 
   // Determine qualitative tier label and star badge
-  const tierBadge = data.tier === "EXCELLENT" ? "★ EXCELLENT" : data.tier === "GOOD" ? "★ GOOD" : "★ MODERATE";
+  const tierBadge = data.tier
+    ? data.tier.startsWith("★")
+      ? data.tier
+      : `★ ${data.tier.toUpperCase()}`
+    : "★ MODERATE";
 
   // Slice displayed items based on expansion state
   const visibleMatched = showAllMatched ? matchedList : matchedList.slice(0, 4);
@@ -98,8 +125,8 @@ export function CareerReadinessResultModal({
   const visibleMissing = showAllMissing ? missingList : missingList.slice(0, 4);
   const remainingMissingCount = missingList.length - 4;
 
-  const visiblePriorities = showAllPriorities ? data.prioritySkills : data.prioritySkills.slice(0, 3);
-  const hasRemainingPriorities = data.prioritySkills.length > 3;
+  const visiblePriorities = showAllPriorities ? data.prioritySkills : data.prioritySkills.slice(0, 4);
+  const hasRemainingPriorities = data.prioritySkills.length > 4;
 
   return createPortal(
     <div
@@ -111,7 +138,7 @@ export function CareerReadinessResultModal({
     >
       {/* Modal Dialog Window */}
       <div
-        className="relative w-full max-w-4xl max-h-[88vh] bg-page border-2 sm:border-[2.5px] border-ink rounded-3xl shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col"
+        className="relative w-full max-w-4xl max-h-[90vh] bg-page border-2 sm:border-[2.5px] border-ink rounded-3xl shadow-[8px_8px_0px_#000] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Lavender Neobrutalist Header Bar */}
@@ -148,17 +175,15 @@ export function CareerReadinessResultModal({
         </div>
 
         {/* Scrollable Modal Content */}
-        <div className="p-3.5 sm:p-5 flex-1 min-h-0 overflow-y-auto flex flex-col gap-3 sm:gap-3.5">
+        <div className="p-3.5 sm:p-5 flex-1 min-h-0 overflow-y-auto flex flex-col gap-3 sm:gap-4">
           {/* Top Section: Score Donut Card + Why This Score & Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-[190px_1fr] gap-3 sm:gap-3.5 items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-3 sm:gap-4 items-stretch">
             {/* Donut Score Card */}
-            <div className="bg-white border-2 border-ink rounded-2xl p-3 sm:p-3.5 shadow-[3px_3px_0px_#000] flex flex-col items-center justify-center text-center">
+            <div className="bg-white border-2 border-ink rounded-2xl p-4 shadow-[3px_3px_0px_#000] flex flex-col items-center justify-center text-center">
               {/* Circular SVG Donut Gauge */}
               <div className="relative size-28 sm:size-32 flex items-center justify-center">
                 <svg className="size-full -rotate-90" viewBox="0 0 110 110">
-                  {/* Track Circle */}
                   <circle cx="55" cy="55" r={radius} fill="none" stroke="#e2e8f0" strokeWidth="9" />
-                  {/* Progress Arc */}
                   <circle
                     cx="55"
                     cy="55"
@@ -174,8 +199,8 @@ export function CareerReadinessResultModal({
                 </svg>
                 {/* Center Score Label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-black text-xl sm:text-2xl text-ink leading-none">
-                    {data.readinessScore}%
+                  <span className="font-black text-2xl sm:text-3xl text-ink leading-none">
+                    {roundedScore}%
                   </span>
                   <span className="text-[9px] sm:text-[10px] font-extrabold tracking-widest text-muted uppercase mt-0.5">
                     Readiness
@@ -196,10 +221,10 @@ export function CareerReadinessResultModal({
               )}
             </div>
 
-            {/* Why This Score Card & 3 Summary Cards */}
-            <div className="flex flex-col gap-2.5 sm:gap-3 justify-between">
+            {/* Why This Score Card & 3 Summary Badges */}
+            <div className="flex flex-col gap-3">
               {/* Why This Score Card */}
-              <div className="bg-[#dbeafe] border-2 border-ink rounded-2xl p-3 sm:p-3.5 shadow-[3px_3px_0px_#000]">
+              <div className="bg-[#dbeafe] border-2 border-ink rounded-2xl p-3.5 shadow-[3px_3px_0px_#000]">
                 <div className="flex items-center gap-1.5 mb-1.5">
                   <span className="size-4.5 rounded-full bg-[#3b82f6] border border-ink text-white flex items-center justify-center shrink-0">
                     <Info className="size-2.5 stroke-[3]" />
@@ -214,45 +239,45 @@ export function CareerReadinessResultModal({
               </div>
 
               {/* 3 Summary Badges */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-2.5">
+              <div className="grid grid-cols-3 gap-2.5">
                 {/* Matched Summary */}
-                <div className="bg-[#d9f99d] border-2 border-ink rounded-xl p-2 sm:p-2.5 shadow-[2px_2px_0px_#000] flex items-center gap-2 sm:gap-2.5">
+                <div className="bg-[#d9f99d] border-2 border-ink rounded-xl p-2.5 shadow-[2px_2px_0px_#000] flex items-center gap-2 sm:gap-2.5">
                   <span className="size-7 sm:size-7.5 rounded-lg bg-white border-2 border-ink flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]">
                     <CheckCircle2 className="size-3.5 sm:size-4 text-ink" />
                   </span>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-ink/70 truncate">
-                      Matched
+                      Matched Skills
                     </span>
                     <span className="text-xs sm:text-sm font-black text-ink leading-tight truncate">
-                      {data.satisfiedCount} Skills
+                      {data.matchedCount ?? matchedList.length} Skills
                     </span>
                   </div>
                 </div>
 
                 {/* Missing Summary */}
-                <div className="bg-[#fef08a] border-2 border-ink rounded-xl p-2 sm:p-2.5 shadow-[2px_2px_0px_#000] flex items-center gap-2 sm:gap-2.5">
+                <div className="bg-[#fef08a] border-2 border-ink rounded-xl p-2.5 shadow-[2px_2px_0px_#000] flex items-center gap-2 sm:gap-2.5">
                   <span className="size-7 sm:size-7.5 rounded-lg bg-white border-2 border-ink flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]">
                     <AlertTriangle className="size-3.5 sm:size-4 text-ink" />
                   </span>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-ink/70 truncate">
-                      Missing
+                      Skill Gaps
                     </span>
                     <span className="text-xs sm:text-sm font-black text-ink leading-tight truncate">
-                      {data.missingCount} Skills
+                      {data.missingCount} Missing
                     </span>
                   </div>
                 </div>
 
                 {/* Analyzed Total Summary */}
-                <div className="bg-[#f5d0fe] border-2 border-ink rounded-xl p-2 sm:p-2.5 shadow-[2px_2px_0px_#000] flex items-center gap-2.5">
+                <div className="bg-[#f5d0fe] border-2 border-ink rounded-xl p-2.5 shadow-[2px_2px_0px_#000] flex items-center gap-2.5">
                   <span className="size-7 sm:size-7.5 rounded-lg bg-white border-2 border-ink flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]">
                     <Settings className="size-3.5 sm:size-4 text-ink" />
                   </span>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider text-ink/70 truncate">
-                      Analyzed
+                      Assessed
                     </span>
                     <span className="text-xs sm:text-sm font-black text-ink leading-tight truncate">
                       {data.totalRequirements} Total
@@ -264,11 +289,11 @@ export function CareerReadinessResultModal({
           </div>
 
           {/* Bottom Section: 3 Skill Detail Columns */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 sm:gap-3 items-start">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-stretch">
             {/* Column 1: Matched Skills */}
-            <div className="bg-white border-2 border-ink rounded-2xl p-3 sm:p-3.5 shadow-[3px_3px_0px_#000] flex flex-col justify-between">
+            <div className="bg-white border-2 border-ink rounded-2xl p-3.5 shadow-[3px_3px_0px_#000] flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                <div className="flex items-center justify-between gap-1.5 mb-1">
                   <div className="flex items-center gap-1.5">
                     <span className="size-2 rounded-full bg-emerald-500 border border-ink" />
                     <h4 className="font-black text-[11px] sm:text-xs tracking-wide text-ink uppercase">
@@ -276,24 +301,56 @@ export function CareerReadinessResultModal({
                     </h4>
                   </div>
                   <span className="bg-[#d9f99d] border-2 border-ink rounded px-1.5 py-0.5 text-[10px] font-black text-ink shadow-[1px_1px_0px_#000]">
-                    {data.satisfiedCount}
+                    {data.matchedCount ?? matchedList.length}
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2">
-                  You have the right skills!
+                <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
+                  {data.missingCount === 0 && data.satisfiedCount < (data.matchedCount ?? matchedList.length)
+                    ? "Requirements matched (see evidence confidence):"
+                    : "Requirements matched in your profile:"}
                 </p>
 
                 {/* Skill List */}
-                <div className="flex flex-col gap-1.5">
-                  {visibleMatched.map((skill) => (
-                    <div
-                      key={skill.id}
-                      className="flex items-center gap-1.5 text-xs font-bold text-ink"
-                    >
-                      <CheckCircle2 className="size-3.5 text-emerald-600 fill-emerald-100 shrink-0" />
-                      <span className="truncate">{skill.requiredSkillName}</span>
-                    </div>
-                  ))}
+                <div className="flex flex-col gap-2 max-h-[160px] overflow-y-auto pr-1">
+                  {visibleMatched.length === 0 ? (
+                    <span className="text-xs text-muted">No matched skills recorded.</span>
+                  ) : (
+                    visibleMatched.map((skill) => {
+                      const hasPartialConfidence =
+                        skill.evidenceConfidence !== undefined && skill.evidenceConfidence < 0.999;
+                      return (
+                        <div
+                          key={skill.id}
+                          className="flex flex-col gap-0.5 pb-1.5 border-b border-ink/10 last:border-none"
+                        >
+                          <div className="flex items-center justify-between gap-1.5 text-xs font-bold text-ink">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              <CheckCircle2 className="size-3.5 text-emerald-600 fill-emerald-100 shrink-0" />
+                              <span className="truncate" title={skill.requiredSkillName}>{skill.requiredSkillName}</span>
+                            </div>
+                            <span className="text-[9.5px] font-black px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 shrink-0">
+                              {skill.matchType === "EXACT" ? "Exact Match" : skill.matchType === "ALIAS" ? "Alias" : "Related"}
+                            </span>
+                          </div>
+                          {/* Evidence confidence and satisfaction detail */}
+                          <div className="flex items-center justify-between text-[10px] text-muted font-medium pl-5">
+                            <span className={hasPartialConfidence ? "text-amber-700 font-semibold" : ""}>
+                              {skill.evidenceConfidence !== undefined
+                                ? `Evidence: ${Math.round(skill.evidenceConfidence * 100)}%`
+                                : "Verified evidence"}
+                            </span>
+                            <span>
+                              {skill.satisfaction !== undefined
+                                ? `Satisfaction: ${Math.round(skill.satisfaction * 100)}%`
+                                : skill.coverageCredit >= 1
+                                ? "100% Coverage"
+                                : `${Math.round(skill.coverageCredit * 100)}% Coverage`}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
 
@@ -302,7 +359,7 @@ export function CareerReadinessResultModal({
                 <button
                   type="button"
                   onClick={() => setShowAllMatched(!showAllMatched)}
-                  className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2 text-left transition-colors"
+                  className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2.5 text-left transition-colors"
                 >
                   {showAllMatched ? "show less" : `+${remainingMatchedCount} more`}
                 </button>
@@ -310,9 +367,9 @@ export function CareerReadinessResultModal({
             </div>
 
             {/* Column 2: Missing Skills */}
-            <div className="bg-white border-2 border-ink rounded-2xl p-3 sm:p-3.5 shadow-[3px_3px_0px_#000] flex flex-col justify-between">
+            <div className="bg-white border-2 border-ink rounded-2xl p-3.5 shadow-[3px_3px_0px_#000] flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                <div className="flex items-center justify-between gap-1.5 mb-1">
                   <div className="flex items-center gap-1.5">
                     <span className="size-2 rounded-full bg-amber-400 border border-ink" />
                     <h4 className="font-black text-[11px] sm:text-xs tracking-wide text-ink uppercase">
@@ -323,21 +380,25 @@ export function CareerReadinessResultModal({
                     {data.missingCount}
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2">
+                <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
                   Important skills not found:
                 </p>
 
                 {/* Missing Skill List */}
-                <div className="flex flex-col gap-1.5">
-                  {visibleMissing.map((skill) => (
-                    <div
-                      key={skill.id}
-                      className="flex items-center gap-1.5 text-xs font-bold text-ink"
-                    >
-                      <MinusCircle className="size-3.5 text-amber-500 fill-amber-100 shrink-0" />
-                      <span className="truncate">{skill.requiredSkillName}</span>
-                    </div>
-                  ))}
+                <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+                  {visibleMissing.length === 0 ? (
+                    <span className="text-xs text-emerald-700 font-bold">No missing skill gaps!</span>
+                  ) : (
+                    visibleMissing.map((skill) => (
+                      <div
+                        key={skill.id}
+                        className="flex items-center gap-1.5 text-xs font-bold text-ink"
+                      >
+                        <MinusCircle className="size-3.5 text-amber-500 fill-amber-100 shrink-0" />
+                        <span className="truncate" title={skill.requiredSkillName}>{skill.requiredSkillName}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -346,7 +407,7 @@ export function CareerReadinessResultModal({
                 <button
                   type="button"
                   onClick={() => setShowAllMissing(!showAllMissing)}
-                  className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2 text-left transition-colors"
+                  className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2.5 text-left transition-colors"
                 >
                   {showAllMissing ? "show less" : `+${remainingMissingCount} more`}
                 </button>
@@ -354,9 +415,9 @@ export function CareerReadinessResultModal({
             </div>
 
             {/* Column 3: Priority To Improve */}
-            <div className="bg-white border-2 border-ink rounded-2xl p-3 sm:p-3.5 shadow-[3px_3px_0px_#000] flex flex-col justify-between">
+            <div className="bg-white border-2 border-ink rounded-2xl p-3.5 shadow-[3px_3px_0px_#000] flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                <div className="flex items-center justify-between gap-1.5 mb-1">
                   <div className="flex items-center gap-1.5">
                     <span className="size-2 rounded-full bg-purple-400 border border-ink" />
                     <h4 className="font-black text-[11px] sm:text-xs tracking-wide text-ink uppercase">
@@ -364,26 +425,38 @@ export function CareerReadinessResultModal({
                     </h4>
                   </div>
                   <span className="bg-[#edddfc] border-2 border-ink rounded px-1.5 py-0.5 text-[10px] font-black text-ink shadow-[1px_1px_0px_#000]">
-                    TOP
+                    {data.prioritySkills.length > 0 ? "TOP" : "COVERED"}
                   </span>
                 </div>
-                <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2">
-                  Focus on these to boost score:
+                <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
+                  {data.prioritySkills.length > 0 ? "Focus on these to boost score:" : "Capability coverage status:"}
                 </p>
 
-                {/* Ranked Priority List */}
-                <div className="flex flex-col gap-1.5">
-                  {visiblePriorities.map((item) => (
-                    <div
-                      key={item.skillId}
-                      className="flex items-center gap-2 text-xs font-bold text-ink"
-                    >
-                      <span className="size-5 rounded bg-[#f5d0fe] border-2 border-ink text-[10px] font-black text-ink flex items-center justify-center shadow-[1px_1px_0px_#000] shrink-0">
-                        {item.priorityRank}
-                      </span>
-                      <span className="truncate">{item.skillName}</span>
+                {/* Ranked Priority List or Zero Gap Advisory */}
+                <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+                  {visiblePriorities.length === 0 ? (
+                    <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 flex flex-col gap-1">
+                      <div className="font-extrabold text-[11px] text-purple-900 flex items-center gap-1.5">
+                        <CheckCircle2 className="size-3.5 text-purple-700" />
+                        <span>Zero Skill Capability Gaps</span>
+                      </div>
+                      <p className="text-[10.5px] text-purple-800/90 leading-relaxed font-normal">
+                        All role skills are matched in your profile. To reach 100% readiness, strengthen evidence confidence through verified coursework, assessments, or project credentials.
+                      </p>
                     </div>
-                  ))}
+                  ) : (
+                    visiblePriorities.map((item) => (
+                      <div
+                        key={item.skillId}
+                        className="flex items-center gap-2 text-xs font-bold text-ink"
+                      >
+                        <span className="size-5 rounded bg-[#f5d0fe] border-2 border-ink text-[10px] font-black text-ink flex items-center justify-center shadow-[1px_1px_0px_#000] shrink-0">
+                          {item.priorityRank}
+                        </span>
+                        <span className="truncate" title={item.skillName}>{item.skillName}</span>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
@@ -392,26 +465,43 @@ export function CareerReadinessResultModal({
                 <button
                   type="button"
                   onClick={() => setShowAllPriorities(!showAllPriorities)}
-                  className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2 text-left transition-colors"
+                  className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2.5 text-left transition-colors"
                 >
                   {showAllPriorities ? "less ..." : "more ..."}
                 </button>
               )}
             </div>
           </div>
+
+          {/* Download Error Alert if any */}
+          {downloadError && (
+            <div className="p-2.5 bg-red-50 border border-red-200 rounded-xl text-xs font-bold text-red-700">
+              {downloadError}
+            </div>
+          )}
         </div>
 
         {/* Modal Footer Action Buttons (pinned at bottom, non-overlapping) */}
-        <div className="border-t-2 sm:border-t-[2.5px] border-ink bg-white/85 backdrop-blur-xs px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 shrink-0">
-          {/* Neutral / Not Yet Connected Download Action */}
+        <div className="border-t-2 sm:border-t-[2.5px] border-ink bg-white/90 backdrop-blur-xs px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 shrink-0">
+          {/* Active Download Report Action */}
           <button
             type="button"
-            disabled
-            title="PDF report download will be available when connected to the C03 report service"
-            className="bg-white text-ink/50 border-2 border-ink/40 rounded-xl px-3.5 py-2 text-xs font-bold flex items-center gap-1.5 cursor-not-allowed select-none"
+            disabled={isDownloading}
+            onClick={handleDownload}
+            className="bg-lime hover:bg-[#bef264] text-ink border-2 border-ink rounded-xl px-4 py-2 shadow-[2px_2px_0px_#000] font-black text-xs flex items-center gap-1.5 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer disabled:opacity-50 select-none"
+            title="Download printable two-page Career Readiness Report"
           >
-            <Download className="size-3.5" />
-            <span>DOWNLOAD REPORT</span>
+            {isDownloading ? (
+              <>
+                <Loader2 className="size-3.5 animate-spin text-ink" />
+                <span>GENERATING REPORT...</span>
+              </>
+            ) : (
+              <>
+                <Download className="size-3.5 text-ink" />
+                <span>DOWNLOAD REPORT</span>
+              </>
+            )}
           </button>
 
           {/* Close Button */}

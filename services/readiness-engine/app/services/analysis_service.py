@@ -527,9 +527,9 @@ class AnalysisService:
         if analysis.status != AnalysisStatus.COMPLETED.value:
             return analysis, None
 
-        # Check if explanation report was already persisted
+        # Check if explanation report was already persisted with latest version
         for rep in analysis.reports:
-            if rep.report_version == "explanation_v1.0":
+            if rep.report_version == "explanation_v1.1":
                 return analysis, AnalysisReportResponse.model_validate(
                     rep.report_payload
                 )
@@ -541,7 +541,7 @@ class AnalysisService:
         new_report = AnalysisReport(
             id=uuid.uuid4(),
             analysis_id=analysis.analysis_id,
-            report_version="explanation_v1.0",
+            report_version="explanation_v1.1",
             report_payload=report_response.model_dump(mode="json"),
             generation_method="DETERMINISTIC_TEMPLATES",
             status="READY",

@@ -22,9 +22,10 @@ export interface CareerReadinessLoadingModalProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete?: () => void;
-  // Optional parameters for future backend API integration
+  // Optional parameters for backend API integration
   activeStepOverride?: number;
   isApiDriven?: boolean;
+  isCompleted?: boolean;
 }
 
 // Reusable modal presenting the six-step assessment generation progression
@@ -34,6 +35,7 @@ export function CareerReadinessLoadingModal({
   onComplete,
   activeStepOverride,
   isApiDriven = false,
+  isCompleted,
 }: CareerReadinessLoadingModalProps) {
   const isClient = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [prevIsOpen, setPrevIsOpen] = useState(false);
@@ -73,7 +75,7 @@ export function CareerReadinessLoadingModal({
     };
   }, [isOpen, onClose]);
 
-  // Simulate 1-second step advancement in static demo mode
+  // Advance steps smoothly, pausing on the final step if API is still running
   useEffect(() => {
     if (!isOpen || isApiDriven) {
       return;
@@ -83,22 +85,26 @@ export function CareerReadinessLoadingModal({
 
     const intervalTimer = setInterval(() => {
       setInternalStepIndex((prevIndex) => {
+        // If an explicit isCompleted flag was provided and API is not done, hold on step 5
+        if (isCompleted === false && prevIndex >= ASSESSMENT_STEPS.length - 1) {
+          return prevIndex;
+        }
+
         const nextIndex = prevIndex + 1;
 
-        // When all 6 steps complete, clear interval and trigger onComplete
         if (nextIndex >= ASSESSMENT_STEPS.length) {
           clearInterval(intervalTimer);
 
           completionTimer = setTimeout(() => {
             onComplete?.();
-          }, 500);
+          }, 400);
 
           return ASSESSMENT_STEPS.length;
         }
 
         return nextIndex;
       });
-    }, 1000);
+    }, 600);
 
     return () => {
       clearInterval(intervalTimer);
@@ -106,7 +112,21 @@ export function CareerReadinessLoadingModal({
         clearTimeout(completionTimer);
       }
     };
-  }, [isOpen, isApiDriven, onComplete]);
+  }, [isOpen, isApiDriven, isCompleted, onComplete]);
+
+  // When API completes while held on final step, finish immediately
+  useEffect(() => {
+    if (isOpen && isCompleted === true && internalStepIndex >= ASSESSMENT_STEPS.length - 1) {
+      const timer = setTimeout(() => {
+        setInternalStepIndex(ASSESSMENT_STEPS.length);
+        const completeTimer = setTimeout(() => {
+          onComplete?.();
+        }, 350);
+        return () => clearTimeout(completeTimer);
+      }, 200);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, isCompleted, internalStepIndex, onComplete]);
 
   if (!isOpen || !isClient) {
     return null;

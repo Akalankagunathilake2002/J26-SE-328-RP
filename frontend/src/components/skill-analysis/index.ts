@@ -5,5 +5,7 @@ export * from "./HeroSection";
 export * from "./OverviewCards";
 export * from "./ProgressAndMatches";
 export * from "./RecentAnalysisHistory";
+export * from "./SkillAnalysisDashboard";
 export * from "./StartAnalysisPanel";
+export * from "./types";
 export * from "./mockData";
