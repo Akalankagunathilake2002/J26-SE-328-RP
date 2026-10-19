@@ -36,6 +36,14 @@ export async function Navbar({ currentPath = "/" }: { currentPath?: string }) {
                 {user.full_name.charAt(0).toUpperCase()}
               </span>
               <span className="hidden sm:inline">{user.full_name}</span>
+              {user.role === "admin" && (
+                <Link
+                  href="/admin"
+                  className="hard-shadow-sm rounded bg-lime px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider text-ink"
+                >
+                  Admin
+                </Link>
+              )}
               <form action={logout}>
                 <button type="submit" className="ml-2 text-[15px] underline underline-offset-4 hover:text-brand-blue">
                   Log out

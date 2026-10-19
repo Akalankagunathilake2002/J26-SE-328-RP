@@ -23,7 +23,7 @@ class AuthService:
         email = email.lower()
         if await self.repository.get_by_email(email) is not None:
             raise EmailAlreadyRegisteredError(email)
-        user = User(full_name=full_name, email=email, password_hash=hash_password(password))
+        user = User(full_name=full_name, email=email, password_hash=hash_password(password), role="user")
         try:
             return await self.repository.add(user)
         except IntegrityError as exc:  # registered concurrently

@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 
-import { AuthServiceError, endSession, registerAccount, startSession } from "@/lib/auth";
+import { AuthServiceError, endSession, getCurrentUser, registerAccount, startSession } from "@/lib/auth";
 import { safeNextPath } from "@/lib/redirect";
 
 type Field = "fullName" | "email" | "password" | "confirmPassword";
@@ -40,6 +40,13 @@ export async function login(_state: AuthFormState, formData: FormData): Promise<
   } catch (error) {
     return { message: messageFor(error), values: { email } };
   }
+
+  // Redirect admin users to the admin dashboard and standard users to their destination.
+  const user = await getCurrentUser();
+  if (user?.role === "admin") {
+    redirect("/admin");
+  }
+
   redirect(safeNextPath(read(formData, "next")));
 }
 
