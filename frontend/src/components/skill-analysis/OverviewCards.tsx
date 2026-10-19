@@ -1,9 +1,25 @@
 import { BarChart3, FileText, Star, Target, TrendingUp } from "lucide-react";
 
-import { OVERVIEW_STATS } from "./mockData";
+import type { OverviewMetrics } from "./types";
 
-// Overview metrics panel with 4 colorful neobrutalist summary cards
-export function OverviewCards() {
+interface OverviewCardsProps {
+  stats?: OverviewMetrics;
+  loading?: boolean;
+}
+
+const defaultStats: OverviewMetrics = {
+  overallReadiness: 0,
+  readinessTrend: "No analyses yet",
+  analysesCompleted: 0,
+  analysesTrend: "Start your first analysis",
+  topMatchingRole: "No roles\nevaluated",
+  matchPercentage: 0,
+  rolesExplored: 0,
+  rolesTrend: "Information Technology — IT",
+};
+
+// Overview metrics panel with 4 neobrutalist summary cards driven by real history data
+export function OverviewCards({ stats = defaultStats, loading = false }: OverviewCardsProps) {
   return (
     <div className="bg-white border-2 border-ink rounded-2xl p-5 sm:p-6 shadow-[4px_4px_0px_#000]">
       {/* Header with sparks */}
@@ -23,13 +39,17 @@ export function OverviewCards() {
             </span>
           </div>
           <div className="my-2">
-            <span className="text-3xl sm:text-4xl font-black text-ink">
-              {OVERVIEW_STATS.overallReadiness}%
-            </span>
+            {loading ? (
+              <div className="h-9 w-20 bg-ink/10 rounded animate-pulse" />
+            ) : (
+              <span className="text-3xl sm:text-4xl font-black text-ink">
+                {stats.overallReadiness}%
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1 text-xs font-bold text-emerald-800">
             <TrendingUp className="size-3.5 shrink-0" />
-            <span>{OVERVIEW_STATS.readinessTrend}</span>
+            <span>{stats.readinessTrend}</span>
           </div>
         </div>
 
@@ -42,13 +62,17 @@ export function OverviewCards() {
             </span>
           </div>
           <div className="my-2">
-            <span className="text-3xl sm:text-4xl font-black text-ink">
-              {OVERVIEW_STATS.analysesCompleted}
-            </span>
+            {loading ? (
+              <div className="h-9 w-16 bg-ink/10 rounded animate-pulse" />
+            ) : (
+              <span className="text-3xl sm:text-4xl font-black text-ink">
+                {stats.analysesCompleted}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1 text-xs font-bold text-blue-600">
             <TrendingUp className="size-3.5 shrink-0" />
-            <span>{OVERVIEW_STATS.analysesTrend}</span>
+            <span>{stats.analysesTrend}</span>
           </div>
         </div>
 
@@ -61,13 +85,17 @@ export function OverviewCards() {
             </span>
           </div>
           <div className="my-1">
-            <p className="text-base sm:text-lg font-black text-[#4338ca] leading-tight whitespace-pre-line">
-              {OVERVIEW_STATS.topMatchingRole}
-            </p>
+            {loading ? (
+              <div className="h-6 w-28 bg-ink/10 rounded animate-pulse" />
+            ) : (
+              <p className="text-base sm:text-lg font-black text-[#4338ca] leading-tight whitespace-pre-line truncate">
+                {stats.topMatchingRole}
+              </p>
+            )}
           </div>
           <div>
             <span className="bg-[#4f46e5] text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full inline-block shadow-[1px_1px_0px_#000]">
-              {OVERVIEW_STATS.matchPercentage}% match
+              {stats.matchPercentage}% match
             </span>
           </div>
         </div>
@@ -81,12 +109,16 @@ export function OverviewCards() {
             </span>
           </div>
           <div className="my-2">
-            <span className="text-3xl sm:text-4xl font-black text-ink">
-              {OVERVIEW_STATS.rolesExplored}
-            </span>
+            {loading ? (
+              <div className="h-9 w-16 bg-ink/10 rounded animate-pulse" />
+            ) : (
+              <span className="text-3xl sm:text-4xl font-black text-ink">
+                {stats.rolesExplored}
+              </span>
+            )}
           </div>
-          <div className="text-xs font-bold text-ink/75">
-            <span>{OVERVIEW_STATS.rolesTrend}</span>
+          <div className="text-xs font-bold text-ink/75 truncate">
+            <span>{stats.rolesTrend}</span>
           </div>
         </div>
       </div>

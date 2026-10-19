@@ -14,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 
-import type { DetailedAnalysisResult } from "./mockData";
+import type { DetailedAnalysisResult } from "./types";
 
 const emptySubscribe = () => () => {};
 
@@ -70,10 +70,20 @@ export function CareerReadinessResultModal({
       return { matchedList: [], missingList: [] };
     }
     const matched = data.skills.filter(
-      (s) => s.resultStatus === "SATISFIED" || s.matchType === "EXACT" || s.matchType === "RELATIONSHIP"
+      (s) =>
+        s.resultStatus === "SATISFIED" ||
+        s.resultStatus === "COVERED" ||
+        s.resultStatus === "PARTIALLY_COVERED" ||
+        s.resultStatus === "PARTIAL" ||
+        s.matchType === "EXACT" ||
+        s.matchType === "RELATIONSHIP" ||
+        s.matchType === "PARTIAL_RELATIONSHIP",
     );
     const missing = data.skills.filter(
-      (s) => s.resultStatus === "MISSING" || s.resultStatus === "DEFICIENT" || s.matchType === "MISSING"
+      (s) =>
+        s.resultStatus === "MISSING" ||
+        s.resultStatus === "DEFICIENT" ||
+        s.matchType === "MISSING",
     );
     return { matchedList: matched, missingList: missing };
   }, [data]);
@@ -85,11 +95,16 @@ export function CareerReadinessResultModal({
   // Circular donut score dimensions and calculations (compact, proportionate to modal)
   const radius = 44;
   const circumference = 2 * Math.PI * radius;
+  const roundedScore = Math.round(Number(data.readinessScore) || 0);
   const strokeDashoffset =
-    circumference - (circumference * Math.min(100, Math.max(0, data.readinessScore))) / 100;
+    circumference - (circumference * Math.min(100, Math.max(0, roundedScore))) / 100;
 
   // Determine qualitative tier label and star badge
-  const tierBadge = data.tier === "EXCELLENT" ? "★ EXCELLENT" : data.tier === "GOOD" ? "★ GOOD" : "★ MODERATE";
+  const tierBadge = data.tier
+    ? data.tier.startsWith("★")
+      ? data.tier
+      : `★ ${data.tier.toUpperCase()}`
+    : "★ MODERATE";
 
   // Slice displayed items based on expansion state
   const visibleMatched = showAllMatched ? matchedList : matchedList.slice(0, 4);
@@ -175,7 +190,7 @@ export function CareerReadinessResultModal({
                 {/* Center Score Label */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="font-black text-xl sm:text-2xl text-ink leading-none">
-                    {data.readinessScore}%
+                    {roundedScore}%
                   </span>
                   <span className="text-[9px] sm:text-[10px] font-extrabold tracking-widest text-muted uppercase mt-0.5">
                     Readiness
