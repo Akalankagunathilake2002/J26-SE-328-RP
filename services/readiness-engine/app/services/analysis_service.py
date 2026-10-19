@@ -26,7 +26,7 @@ from app.models.analysis import (
     AnalysisSkillResult,
     AnalysisStatus,
 )
-from app.models.profiles import IndustryProfile
+from app.models.profiles import IndustryProfile, UserSkillProfile
 from app.schemas.analysis import AnalysisCreateRequest
 from app.schemas.profile_validation import (
     validate_industry_profile,
@@ -461,7 +461,16 @@ class AnalysisService:
     ) -> tuple[list[Analysis], int]:
         filter_conditions = []
         if user_id is not None:
-            filter_conditions.append(Analysis.user_id == user_id)
+            # Filter analyses associated directly with user_id or linked student profiles
+            user_profile_subquery = select(UserSkillProfile.id).where(
+                UserSkillProfile.user_id == user_id
+            )
+            filter_conditions.append(
+                or_(
+                    Analysis.user_id == user_id,
+                    Analysis.user_skill_profile_id.in_(user_profile_subquery),
+                )
+            )
         if status is not None:
             filter_conditions.append(Analysis.status == status.strip().upper())
 
@@ -480,8 +489,11 @@ class AnalysisService:
         total_res = await session.execute(count_stmt)
         total = total_res.scalar_one()
 
-        # Query paginated analysis records with joined industry profile metadata
-        items_stmt = select(Analysis).options(selectinload(Analysis.industry_profile))
+        # Query paginated analysis records with joined industry profile and reports
+        items_stmt = select(Analysis).options(
+            selectinload(Analysis.industry_profile),
+            selectinload(Analysis.reports),
+        )
         if role_id is not None:
             items_stmt = items_stmt.join(Analysis.industry_profile).where(
                 or_(

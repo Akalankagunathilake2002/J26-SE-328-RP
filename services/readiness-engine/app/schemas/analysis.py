@@ -123,6 +123,9 @@ class AnalysisDetailResponse(BaseModel):
     user_skill_profile_id: uuid.UUID
     industry_profile_id: uuid.UUID
     snapshot_id: uuid.UUID
+    role_id: str | None = None
+    role_name: str | None = None
+    career_level: str | None = None
     matching_method: str
     scoring_config_version: str
     readiness_score: float | None
@@ -138,25 +141,70 @@ class AnalysisDetailResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# Analysis history list item containing lightweight metadata
+# Summary item returned by analysis history endpoints with canonical fields and legacy aliases
 class AnalysisHistoryItem(BaseModel):
-    analysisId: str = Field(..., description="Unique UUID string of the analysis")
-    user_id: str = Field(..., description="User UUID string")
-    roleId: str = Field(
-        ..., description="Role identifier from the target industry profile"
+    # Core identifiers and profile relationships
+    analysis_id: uuid.UUID = Field(
+        ..., description="Unique UUID identifier of the analysis"
     )
-    roleName: str | None = Field(None, description="Role title if available")
+    analysisId: str = Field(..., description="Legacy alias for analysis_id")
+    user_id: uuid.UUID = Field(
+        ..., description="User UUID associated with student skill profile"
+    )
+    user_skill_profile_id: uuid.UUID = Field(
+        ..., description="UUID of the student skill profile evaluated"
+    )
+    industry_profile_id: uuid.UUID = Field(
+        ..., description="UUID of the target industry profile evaluated"
+    )
+    snapshot_id: uuid.UUID | None = Field(
+        None, description="Knowledge snapshot UUID used for taxonomy and matching"
+    )
+
+    # Target role information
+    role_id: str = Field(
+        ..., description="Target role identifier (e.g. RL-000003)"
+    )
+    roleId: str = Field(..., description="Legacy alias for role_id")
+    role_name: str | None = Field(
+        None, description="Target role title if available"
+    )
+    roleName: str | None = Field(None, description="Legacy alias for role_name")
+    career_level: str | None = Field(
+        None, description="Career level of the target role (e.g. ENTRY_LEVEL)"
+    )
+
+    # Configuration, scoring results, and lifecycle status
+    matching_method: str = Field(
+        "RELATIONSHIP_AWARE", description="Matching method used in analysis"
+    )
+    scoring_config_version: str | None = Field(
+        None, description="Scoring configuration version"
+    )
+    readiness_score: float | None = Field(
+        None, description="Overall career readiness score"
+    )
     readinessScore: float | None = Field(
-        None, description="Overall career readiness score on a 0-100 percentage scale"
+        None, description="Legacy alias for readiness_score"
+    )
+    baseline_readiness_score: float | None = Field(
+        None, description="Baseline readiness score using exact matching"
+    )
+    baselineReadinessScore: float | None = Field(
+        None, description="Legacy alias for baseline_readiness_score"
     )
     status: str = Field(
         ..., description="Analysis status: PENDING, RUNNING, COMPLETED, or FAILED"
     )
-    createdAt: datetime = Field(
+    started_at: datetime = Field(
         ..., description="Timestamp when analysis was created or started"
     )
+    createdAt: datetime = Field(..., description="Legacy alias for started_at")
+    completed_at: datetime | None = Field(
+        None, description="Timestamp when analysis completed or failed"
+    )
     completedAt: datetime | None = Field(
-        None, description="Timestamp when analysis completed or failed, if available"
+        None, description="Legacy alias for completed_at"
     )
 
     model_config = ConfigDict(populate_by_name=True)

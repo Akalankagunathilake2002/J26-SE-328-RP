@@ -93,15 +93,58 @@ async def list_analyses(
             if ind_prof
             else None
         )
+        career_level_val = ind_prof.career_level if ind_prof else None
+
+        # Extract baseline readiness score from persisted reports if available
+        baseline_payload = next(
+            (
+                r.report_payload
+                for r in a.reports
+                if r.report_version == "exact_baseline_v1.0"
+            ),
+            None,
+        )
+        baseline_score = (
+            baseline_payload.get("readinessScore")
+            if baseline_payload
+            else None
+        )
+        if baseline_score is None:
+            c04_payload = next(
+                (
+                    r.report_payload
+                    for r in a.reports
+                    if r.report_version == "1.0"
+                ),
+                None,
+            )
+            if c04_payload:
+                baseline_score = c04_payload.get("baselineReadinessScore")
+
+        # Expose both canonical snake_case attributes and legacy camelCase aliases
         items.append(
             AnalysisHistoryItem(
+                analysis_id=a.analysis_id,
                 analysisId=str(a.analysis_id),
-                user_id=str(a.user_id),
+                user_id=a.user_id,
+                user_skill_profile_id=a.user_skill_profile_id,
+                industry_profile_id=a.industry_profile_id,
+                snapshot_id=a.snapshot_id,
+                role_id=role_id_val,
                 roleId=role_id_val,
+                role_name=role_name_val,
                 roleName=role_name_val,
+                career_level=career_level_val,
+                matching_method=a.matching_method,
+                scoring_config_version=a.scoring_config_version,
+                readiness_score=a.readiness_score,
                 readinessScore=a.readiness_score,
+                baseline_readiness_score=baseline_score,
+                baselineReadinessScore=baseline_score,
                 status=a.status,
+                started_at=a.started_at,
                 createdAt=a.started_at,
+                completed_at=a.completed_at,
                 completedAt=a.completed_at,
             )
         )
@@ -215,12 +258,28 @@ async def get_analysis(
         else (c04_payload.get("baselineReadinessScore") if c04_payload else None)
     )
 
+    ind_prof = analysis.industry_profile
+    role_id_val = (
+        (ind_prof.role_id or ind_prof.candidate_role_id or str(ind_prof.id))
+        if ind_prof
+        else None
+    )
+    role_name_val = (
+        (ind_prof.primary_observed_title or ind_prof.role_name)
+        if ind_prof
+        else None
+    )
+    career_level_val = ind_prof.career_level if ind_prof else None
+
     return AnalysisDetailResponse(
         analysis_id=analysis.analysis_id,
         user_id=analysis.user_id,
         user_skill_profile_id=analysis.user_skill_profile_id,
         industry_profile_id=analysis.industry_profile_id,
         snapshot_id=analysis.snapshot_id,
+        role_id=role_id_val,
+        role_name=role_name_val,
+        career_level=career_level_val,
         matching_method=analysis.matching_method,
         scoring_config_version=analysis.scoring_config_version,
         readiness_score=analysis.readiness_score,
