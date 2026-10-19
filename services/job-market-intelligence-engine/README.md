@@ -37,13 +37,14 @@ job-market-intelligence-engine/
 │   ├── collectors/          collecting ads (scraper, sync, storage, deduplication, quality report)
 │   ├── processing/          analysis (OCR, job roles, skill demand, NER extractor, SSKS candidates)
 │   ├── integrations/        client for the Shared Skill Knowledge Service (SSKS)
+│   ├── database/            PostgreSQL tables and the loader
 │   └── main.py              the Market Pulse API
 ├── config/
 │   ├── sector_mapping.yaml  site categories → the four sectors
 │   ├── role_taxonomy.yaml   job titles → roles and seniority (editable)
 │   └── skills_lexicon.yaml  skills with their aliases (editable)
 ├── scripts/sync.sh          sync with a log file
-├── tests/                   148 tests on saved pages and a fake SSKS; no live requests
+├── tests/                   154 tests on saved pages, a fake SSKS and SQLite; no live requests
 ├── Dockerfile
 └── pyproject.toml
 ```
@@ -112,6 +113,29 @@ Measured so far ([evaluation report](../../ml/c01-skill-ner/reports/evaluation.m
   and teamwork skills") where SSKS has short names. That is why `lexicon` stays the default.
 - The comparison that matters, on hand-labelled topjobs ads, is still to be done (see below).
 
+## Database (PostgreSQL)
+
+With `SKILLBRIDGE_DATABASE_URL` set, every run ends by loading the data into the database
+`job_market_db` (needs `pip install -e ".[db]"`):
+
+```bash
+export SKILLBRIDGE_DATABASE_URL="postgresql+psycopg://skillbridge:<POSTGRES_PASSWORD>@localhost:15432/job_market_db"
+python -m app.database.loader        # or just run a sync: it loads at the end
+```
+
+| Table | One row per |
+|---|---|
+| `job_ads` | ad: listing details, cleaned text (no personal data), status, role, seniority, flags |
+| `job_ad_sectors` | ad and sector |
+| `job_ad_skills` | skill mention: raw text, position, extractor, lexicon skill, SSKS ID, match type, what it counts as |
+| `job_ad_status_history` | status change (active, expired, removed) |
+| `sync_runs` | sync |
+| `role_skill_demand` (view) | role, sector and skill: active ads asking for it, and the share |
+
+Loading is safe to repeat and never deletes anything (expired and removed ads keep their history).
+If the database is down, the run still finishes and the next run loads everything. The database
+is created by `infrastructure/postgres/init-dbs.sh`.
+
 ## Market Pulse API
 
 The Market Pulse page gets its data from this service, through the API gateway:
@@ -140,7 +164,7 @@ before the next one starts.
 | 5 | `skill-profile` | Job roles, skills per role, the Market Pulse API and page | ✅ Done |
 | 6 | `scraper-sync` | Active / expired / removed ads, new ads only, sync log | ✅ Done |
 | – | `skill-ner` | NER skill extraction (spaCy, JobBERT) compared with the lexicon; SSKS IDs for skills; candidate proposals | 🔄 In progress: test set labelling |
-| 7 | `postgres-loader` | Load ads, statuses and skills into PostgreSQL | ⏳ Next |
+| 7 | `database-loader` | Load ads, statuses, skill mentions and SSKS IDs into PostgreSQL (`job_market_db`) | 🔄 In progress |
 | 8 | `scheduled-sync` | Run the sync automatically every day | ⏳ To do |
 
 ### Still to do
@@ -148,7 +172,7 @@ before the next one starts.
 - **First full sync:** `scripts/sync.sh` collects about 100 ads across the four sectors
   (~15 minutes). Only 5 HR ads have been collected so far, so the Market Pulse percentages are
   only indicative.
-- **Steps 7 and 8** in the table above.
+- **Step 8** in the table above, and checking step 7 on the Docker PostgreSQL.
 - **Dead skills on Market Pulse:** skills that ads ask for less and less. Needs a few weeks of
   daily syncs first.
 - **Data improvements:** collect roles with no ads yet (e.g. Software Engineer), filter the

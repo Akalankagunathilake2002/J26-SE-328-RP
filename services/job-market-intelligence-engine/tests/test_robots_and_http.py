@@ -182,6 +182,13 @@ def test_other_hosts_are_never_requested():
     assert session.requested == []
 
 
+def test_the_bare_domain_is_the_same_site_and_fetched_through_the_configured_host():
+    """topjobs links some flyers as http://topjobs.lk/... instead of https://www.topjobs.lk/..."""
+    client, session, _ = make_client({f"{BASE}/logo/a.png": [FakeResponse()]})
+    assert client.get("http://www.jobs.example/logo/a.png").status_code == 200
+    assert session.requested[-1] == f"{BASE}/logo/a.png"
+
+
 def test_missing_robots_txt_means_no_restrictions():
     client, _, _ = make_client({f"{BASE}/private/a": [FakeResponse()]}, robots="")
     client.session.routes[f"{BASE}/robots.txt"] = [FakeResponse(status_code=404)]

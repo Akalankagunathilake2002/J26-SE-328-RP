@@ -13,6 +13,7 @@ create_db "ssks_db"
 create_db "readiness_engine_db"
 create_db "learning_db"
 create_db "interview_db"
+create_db "job_market_db"  # job-market-intelligence-engine (C01)
 
 # Install pgvector and uuid-ossp in databases that need them
 for db in learning_db interview_db readiness_engine_db; do

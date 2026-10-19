@@ -43,6 +43,9 @@ if TYPE_CHECKING:
 log = logging.getLogger(__name__)
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp"}
+# The first bytes of PNG, JPEG and GIF files. (A site may answer an image request with an HTML
+# error page and status 200: topjobs did, with its maintenance page, in October 2026.)
+IMAGE_SIGNATURES = (b"\x89PNG", b"\xff\xd8\xff", b"GIF8")
 SRI_LANKA = timezone(timedelta(hours=5, minutes=30))  # closing dates are Sri Lankan dates (no daylight saving)
 # The homepage must list at least this share of the category pages' ads that it should list.
 MIN_HOMEPAGE_COVERAGE = 0.8
@@ -68,6 +71,7 @@ class CollectResult:
     gone: int = 0  # listed, but the ad page returned 404
     skipped: list[str] = field(default_factory=list)  # URLs skipped (robots.txt, off-site, errors)
     seen: dict[str, ListingEntry] = field(default_factory=dict)  # job_id → entry, every ad on the listing pages
+    repaired: int = 0  # stored ads whose missing or broken flyer was downloaded again
 
 
 @dataclass
@@ -78,6 +82,10 @@ class SyncResult:
     removed: list[str] = field(default_factory=list)  # job IDs that became removed
     reactivated: list[str] = field(default_factory=list)  # expired or removed before, live again
     unconfirmed: int = 0  # active ads missing from their category page that the homepage can't confirm
+
+
+def is_image(data: bytes) -> bool:
+    return data.startswith(IMAGE_SIGNATURES) or (data[:4] == b"RIFF" and data[8:12] == b"WEBP")
 
 
 def utc_now() -> str:
@@ -180,6 +188,7 @@ class BaseCollector(ABC):
                 if self.storage.find_raw(self.site, entry.job_id):
                     self.storage.add_listing(entry)  # same ad, possibly listed under another sector
                     result.already_stored += 1
+                    self._repair_flyer(entry.job_id, result)
                 elif (limit is None or downloaded < limit) and self._download(entry, result):
                     downloaded += 1
             result.new_ads[sector] = downloaded
@@ -273,8 +282,31 @@ class BaseCollector(ABC):
         image, extension = None, None
         if ad.image_url:
             image, extension = self._download_image(ad.image_url, result)
-        self.storage.save_raw(entry, page.text, self.now(), image=image, image_extension=extension)
+        self.storage.save_raw(
+            entry, page.text, self.now(), image=image, image_extension=extension, image_url=ad.image_url
+        )
         return True
+
+    def _repair_flyer(self, job_id: str, result: CollectResult) -> None:
+        """Download the flyer again for a stored ad whose flyer is missing or isn't an image (one
+        request, only for those ads; nothing else about the ad is fetched again)."""
+        raw = self.storage.raw_ad(self.site, job_id)
+        if raw is None:
+            return
+        if raw.image_path is not None:
+            if raw.image_path.is_file() and is_image(raw.image_path.read_bytes()[:16]):
+                return
+            url = raw.meta.get("image_url") or self.parse_ad(raw.html, ListingEntry(**raw.meta["listing"])).image_url
+        else:
+            url = raw.meta.get("image_url")  # set when the first download failed; absent for text ads
+        if not url:
+            return
+        image, extension = self._download_image(url, result)
+        if image is not None:
+            self.storage.save_image(raw, image, extension)
+            result.repaired += 1
+        elif raw.image_path is not None:  # a file that isn't an image is useless: drop it, retry next sync
+            self.storage.forget_image(raw, url)
 
     def _download_image(self, url: str, result: CollectResult) -> tuple[bytes | None, str | None]:
         try:
@@ -285,6 +317,9 @@ class BaseCollector(ABC):
             result.skipped.append(f"{url} ({type(exc).__name__})")
             return None, None
         if response.status_code != 200:
+            return None, None
+        if not is_image(response.content):
+            result.skipped.append(f"{url} (not an image: the site sent something else)")
             return None, None
         return response.content, image_extension(url, response.headers.get("Content-Type"))
 

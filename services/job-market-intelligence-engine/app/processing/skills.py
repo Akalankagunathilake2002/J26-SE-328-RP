@@ -547,13 +547,15 @@ def write_profile(
     lexicon: SkillLexicon | None = None,
     extraction: Extraction | None = None,
 ) -> tuple[Path, Path]:
-    """Write processed/skill_profile.md and .json, and processed/ad_skills.jsonl (every mention)."""
-    ads = [ad for site in sites for ad in storage.read_jsonl(site)]
-    if not include_inactive:
-        ads = [ad for ad in ads if ad.status == ACTIVE]
+    """Write processed/skill_profile.md and .json (active ads, unless ``include_inactive``), and, for
+    every stored ad including expired and removed ones (their history), processed/ad_skills.jsonl
+    (every skill mention) and processed/ad_analysis.jsonl (role, seniority, flags)."""
+    all_ads = [ad for site in sites for ad in storage.read_jsonl(site)]
     lexicon = lexicon or SkillLexicon.load()
     extraction = extraction or Extraction()
-    analysed = analyse(ads, taxonomy or RoleTaxonomy.load(), lexicon, load_agriculture_keywords(), extraction)
+    analysed_all = analyse(all_ads, taxonomy or RoleTaxonomy.load(), lexicon, load_agriculture_keywords(), extraction)
+    analysed = analysed_all if include_inactive else [item for item in analysed_all if item.ad.status == ACTIVE]
+    ads = [item.ad for item in analysed]
     sources = [source_summary(storage, site, ads) for site in sites]
     profile = build_profile(
         analysed, sources, utc_now(), include_inactive, load_sectors(),
@@ -561,7 +563,8 @@ def write_profile(
     )
 
     storage.processed_dir.mkdir(parents=True, exist_ok=True)
-    write_ad_skills(storage.processed_dir / "ad_skills.jsonl", analysed, extraction)
+    write_ad_skills(storage.processed_dir / "ad_skills.jsonl", analysed_all, extraction)
+    write_ad_analysis(storage.processed_dir / "ad_analysis.jsonl", analysed_all)
     json_path = storage.processed_dir / "skill_profile.json"
     json_path.write_text(json.dumps(profile, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     md_path = storage.processed_dir / "skill_profile.md"
@@ -571,16 +574,37 @@ def write_profile(
 
 def write_ad_skills(path: Path, analysed: list[AnalysedAd], extraction: Extraction) -> None:
     """One row per skill mention: the raw text, where it is, and its SSKS ID and match type.
-    Lexicon mentions also carry their lexicon skill's SSKS IDs and the match type of its name."""
+    Lexicon mentions also carry their lexicon skill's SSKS IDs and the match type of its name.
+    ``counted_as`` is the skill the mention counts as in demand (None: not counted)."""
     with path.open("w", encoding="utf-8") as out:
         for item in analysed:
+            counted_by_id = {ssk_id: skill.name for skill in item.skills for ssk_id in skill.ssk_ids}
             for found in item.found:
                 row = {"site": item.ad.site, "job_id": item.ad.job_id, **asdict(found)}
+                row["counted_as"] = (
+                    found.lexicon_skill if found.extractor == "lexicon"
+                    else counted_by_id.get(found.ssks.ssk_id) if found.ssks.counted else None
+                )
                 row.update(row.pop("ssks"))  # match_type, ssk_id, preferred_name, suggestion
                 if found.lexicon_skill:
                     row["lexicon_ssk_ids"] = list(extraction.lexicon_ids.get(found.lexicon_skill, ()))
                     row["lexicon_name_match_type"] = extraction.lexicon_name_match.get(found.lexicon_skill, "pending")
                 out.write(json.dumps(row, ensure_ascii=False) + "\n")
+
+
+def write_ad_analysis(path: Path, analysed: list[AnalysedAd]) -> None:
+    """One row per ad: its role, seniority and flags (for the database loader)."""
+    with path.open("w", encoding="utf-8") as out:
+        for item in analysed:
+            out.write(json.dumps({
+                "site": item.ad.site,
+                "job_id": item.ad.job_id,
+                "role": item.role.role,
+                "role_mapped": item.role.mapped,
+                "seniority": item.role.seniority,
+                "has_text": item.has_text,
+                "flags": item.flags,
+            }, ensure_ascii=False) + "\n")
 
 
 def extraction_from_settings(settings: Settings, storage: Storage) -> Extraction:

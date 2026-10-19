@@ -173,3 +173,40 @@ def test_image_extension_from_url_or_content_type():
     assert image_extension("https://x.lk/a/flyer.JPG", None) == ".jpg"
     assert image_extension("https://x.lk/image?id=4", "image/png") == ".png"
     assert image_extension("https://x.lk/image?id=4", None) == ".img"
+
+
+def test_a_page_sent_instead_of_a_flyer_is_not_saved_and_is_retried_later(tmp_path):
+    """topjobs once answered flyer requests with its maintenance page (HTML, status 200)."""
+    pages = {
+        f"{BASE}/list/SW": FakeResponse(text="7|Designer|2026-10-15"),
+        f"{BASE}/ad/7": FakeResponse(text=f"Designer|{BASE}/flyers/7.png"),
+        f"{BASE}/flyers/7.png": FakeResponse(content=b"<!DOCTYPE html><title>Maintenance</title>"),
+    }
+    collector, _ = make_collector(tmp_path, pages)
+    result = collector.collect(["IT"])
+    assert not (tmp_path / "raw" / "example" / "IT" / "7.png").exists()
+    assert any("not an image" in s for s in result.skipped)
+
+    pages[f"{BASE}/flyers/7.png"] = FakeResponse(content=b"\x89PNG real flyer")
+    collector, client = make_collector(tmp_path, pages)
+    result = collector.collect(["IT"])  # the next sync: the ad is stored, only its flyer is fetched again
+
+    assert result.repaired == 1 and f"{BASE}/ad/7" not in client.requested
+    assert (tmp_path / "raw" / "example" / "IT" / "7.png").read_bytes() == b"\x89PNG real flyer"
+    [ad] = collector.reparse()
+    assert ad.image_path.endswith("7.png")
+
+
+def test_a_broken_flyer_from_an_earlier_run_is_replaced(tmp_path):
+    pages = {
+        f"{BASE}/list/SW": FakeResponse(text="7|Designer|2026-10-15"),
+        f"{BASE}/ad/7": FakeResponse(text=f"Designer|{BASE}/flyers/7.png"),
+        f"{BASE}/flyers/7.png": FakeResponse(content=b"\x89PNG flyer"),
+    }
+    collector, _ = make_collector(tmp_path, pages)
+    collector.collect(["IT"])
+    flyer = tmp_path / "raw" / "example" / "IT" / "7.png"
+    flyer.write_bytes(b"<html>maintenance</html>")  # saved by an older version of the scraper
+
+    result = collector.collect(["IT"])
+    assert result.repaired == 1 and flyer.read_bytes() == b"\x89PNG flyer"

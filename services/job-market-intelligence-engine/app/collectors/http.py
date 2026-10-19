@@ -16,7 +16,7 @@ import random
 import time
 from collections.abc import Callable
 from typing import Protocol
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, urlunsplit
 
 import requests
 
@@ -90,13 +90,13 @@ class PoliteClient:
 
     def get(self, url: str) -> requests.Response:
         """Fetch a page or image on this site. 404s are returned; the caller decides what they mean."""
-        self._check_host(url)
+        url = self._on_site(url)
         if self.blocked_reason:
             raise SiteBlocked(self.blocked_reason)
         if not self.robots.allowed(url):
             raise RobotsDisallowed(url)
         response = self._fetch(url)
-        self._check_host(response.url)  # a redirect must not take us to another site
+        self._on_site(response.url)  # a redirect must not take us to another site
         return response
 
     @property
@@ -148,6 +148,17 @@ class PoliteClient:
                 self._sleep(remaining)
         self._last_request_at = self._clock()
 
-    def _check_host(self, url: str) -> None:
-        if urlsplit(url).netloc != self.host:
-            raise OffSiteURL(f"{url} is not on {self.host}")
+    def _on_site(self, url: str) -> str:
+        """The URL on this site's own host. "example.lk" and "www.example.lk" are the same site
+        (topjobs links some flyers without "www."), fetched through the configured host so its
+        robots.txt and request pacing apply. Any other host is refused."""
+        parts = urlsplit(url)
+        if parts.netloc == self.host:
+            return url
+        if _bare_host(parts.netloc) == _bare_host(self.host):
+            return urlunsplit((self.scheme, self.host, parts.path, parts.query, parts.fragment))
+        raise OffSiteURL(f"{url} is not on {self.host}")
+
+
+def _bare_host(host: str) -> str:
+    return host.lower().removeprefix("www.")
