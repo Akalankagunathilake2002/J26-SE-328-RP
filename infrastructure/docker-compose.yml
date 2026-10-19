@@ -130,6 +130,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-skillbridge}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}@postgres:5432/readiness_engine_db
       READINESS_ENGINE_PORT: ${READINESS_ENGINE_PORT:-8010}
+      SSKS_BASE_URL: http://shared-skill-knowledge:8005
     depends_on:
       postgres:
         condition: service_healthy
