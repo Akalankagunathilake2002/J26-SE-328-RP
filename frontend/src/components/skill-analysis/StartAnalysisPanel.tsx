@@ -3,15 +3,63 @@
 import { useState } from "react";
 import { BarChart3, Briefcase, ChevronDown, Lightbulb, Monitor, Zap } from "lucide-react";
 
-import { DEMO_TARGET_ROLES } from "./mockData";
+import { CareerReadinessLoadingModal } from "./CareerReadinessLoadingModal";
+import { CareerReadinessResultModal } from "./CareerReadinessResultModal";
+import {
+  DEMO_TARGET_ROLES,
+  type DetailedAnalysisResult,
+  getAnalysisDetail,
+  MOCK_ANALYSIS_DETAILS,
+} from "./mockData";
+
+interface StartAnalysisPanelProps {
+  onStartAnalysis?: (roleId: string) => void;
+}
 
 // Start New Analysis panel with domain indicator, role selector, and step instructions
-export function StartAnalysisPanel() {
+export function StartAnalysisPanel({ onStartAnalysis }: StartAnalysisPanelProps = {}) {
   const [selectedRoleId, setSelectedRoleId] = useState(DEMO_TARGET_ROLES[0].id);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoadingModalOpen, setIsLoadingModalOpen] = useState(false);
+  const [isResultModalOpen, setIsResultModalOpen] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<DetailedAnalysisResult | null>(null);
 
   const selectedRole =
     DEMO_TARGET_ROLES.find((r) => r.id === selectedRoleId) || DEMO_TARGET_ROLES[0];
+
+  const handleStartAnalysis = () => {
+    // Prevent duplicate analysis submissions while the loading sequence is running
+    if (isLoadingModalOpen) {
+      return;
+    }
+
+    onStartAnalysis?.(selectedRoleId);
+    setIsLoadingModalOpen(true);
+  };
+
+  // Called when all 6 steps finish to transition into the results modal
+  const handleLoadingComplete = () => {
+    setIsLoadingModalOpen(false);
+
+    // Retrieve or dynamically generate the illustrative detailed result for the chosen role
+    const matchedRecord =
+      selectedRoleId === "software-testing"
+        ? MOCK_ANALYSIS_DETAILS["hist-1"]
+        : selectedRoleId === "web-developer"
+          ? MOCK_ANALYSIS_DETAILS["hist-2"]
+          : selectedRoleId === "data-analyst"
+            ? MOCK_ANALYSIS_DETAILS["hist-3"]
+            : getAnalysisDetail({
+                id: `analysis-${Date.now()}`,
+                role: selectedRole.label.split("—")[0].trim(),
+                careerLevel: selectedRole.label.split("—")[1]?.trim() || "Junior",
+                readinessScore: 78,
+                date: "Just now",
+              });
+
+    setAnalysisResult(matchedRecord);
+    setIsResultModalOpen(true);
+  };
 
   return (
     <div className="bg-white border-2 border-ink rounded-2xl p-5 sm:p-6 shadow-[4px_4px_0px_#000]">
@@ -95,10 +143,16 @@ export function StartAnalysisPanel() {
       {/* Full-width Analyze Readiness Button */}
       <button
         type="button"
-        className="mt-4 w-full bg-sun hover:bg-butter border-2 border-ink shadow-[3px_3px_0px_#000] rounded-xl py-3.5 px-6 font-black text-base sm:text-lg text-ink flex items-center justify-center gap-2.5 cursor-pointer transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
+        disabled={isLoadingModalOpen}
+        onClick={handleStartAnalysis}
+        className={`mt-4 w-full bg-sun hover:bg-butter border-2 border-ink shadow-[3px_3px_0px_#000] rounded-xl py-3.5 px-6 font-black text-base sm:text-lg text-ink flex items-center justify-center gap-2.5 transition-all ${
+          isLoadingModalOpen
+            ? "opacity-60 cursor-not-allowed"
+            : "cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none"
+        }`}
       >
-        <Zap className="size-5 fill-ink text-ink" />
-        <span>Analyze Readiness</span>
+        <Zap className={`size-5 fill-ink text-ink ${isLoadingModalOpen ? "animate-pulse" : ""}`} />
+        <span>{isLoadingModalOpen ? "Analyzing Readiness..." : "Analyze Readiness"}</span>
       </button>
 
       {/* Instructions Panel */}
@@ -157,6 +211,20 @@ export function StartAnalysisPanel() {
           </div>
         </div>
       </div>
+
+      {/* Career Readiness Loading Modal with 6-step progression */}
+      <CareerReadinessLoadingModal
+        isOpen={isLoadingModalOpen}
+        onClose={() => setIsLoadingModalOpen(false)}
+        onComplete={handleLoadingComplete}
+      />
+
+      {/* Career Readiness Results Modal shown after completion */}
+      <CareerReadinessResultModal
+        isOpen={isResultModalOpen}
+        onClose={() => setIsResultModalOpen(false)}
+        data={analysisResult}
+      />
     </div>
   );
 }
