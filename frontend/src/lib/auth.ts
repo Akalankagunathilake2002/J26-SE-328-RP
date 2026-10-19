@@ -15,6 +15,7 @@ export type User = {
   id: string;
   full_name: string;
   email: string;
+  role?: string;
   created_at: string;
 };
 
@@ -89,5 +90,13 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
 export async function requireUser(currentPath: string): Promise<User> {
   const user = await getCurrentUser();
   if (!user) redirect(loginPath(currentPath));
+  return user;
+}
+
+// Redirects unauthenticated users to login and non-admin users to the home page.
+export async function requireAdmin(currentPath: string): Promise<User> {
+  const user = await getCurrentUser();
+  if (!user) redirect(loginPath(currentPath));
+  if (user.role !== "admin") redirect("/");
   return user;
 }

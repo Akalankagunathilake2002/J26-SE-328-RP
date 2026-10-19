@@ -35,4 +35,5 @@ class UserResponse(BaseModel):
     id: uuid.UUID
     full_name: str
     email: str
+    role: str = "user"
     created_at: datetime
