@@ -172,3 +172,17 @@ class AnalysisHistoryResponse(BaseModel):
     offset: int = Field(..., ge=0, description="Page offset")
 
     model_config = ConfigDict(populate_by_name=True)
+
+
+# Candidate discovery execution record for audit and tracking
+class CandidateDiscoveryRunOut(BaseModel):
+    id: uuid.UUID
+    analysis_id: uuid.UUID
+    embedding_model: str
+    similarity_threshold: float
+    status: str
+    candidates_submitted_count: int
+    started_at: datetime
+    completed_at: datetime | None
+
+    model_config = ConfigDict(from_attributes=True)

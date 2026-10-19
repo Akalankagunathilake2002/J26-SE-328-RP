@@ -2,16 +2,27 @@ import logging
 import uuid
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
+from fastapi import (
+    APIRouter,
+    BackgroundTasks,
+    Depends,
+    Header,
+    HTTPException,
+    Query,
+    status,
+)
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dependencies import get_db_session
+from app.models.analysis import CandidateDiscoveryRun
 from app.schemas.analysis import (
     AnalysisCreateRequest,
     AnalysisDetailResponse,
     AnalysisHistoryItem,
     AnalysisHistoryResponse,
     C04AnalysisResponse,
+    CandidateDiscoveryRunOut,
     PrioritySkillOut,
     SkillResultDetailOut,
 )
@@ -113,11 +124,13 @@ async def list_analyses(
 async def create_analysis(
     request: AnalysisCreateRequest,
     session: DbSession,
+    background_tasks: BackgroundTasks,
 ) -> Any:
     try:
         _analysis, c04_payload = await analysis_service.run_analysis(
             session=session,
             request=request,
+            background_tasks=background_tasks,
         )
         return c04_payload
     except ValueError as val_err:
@@ -295,3 +308,22 @@ async def get_analysis_report(
         )
 
     return report_response
+
+
+# Retrieve candidate discovery executions for an analysis
+@router.get(
+    "/{analysis_id}/candidate-discovery",
+    response_model=list[CandidateDiscoveryRunOut],
+    summary="Get candidate discovery runs for an analysis",
+)
+async def get_candidate_discovery_runs(
+    analysis_id: uuid.UUID,
+    session: DbSession,
+) -> Any:
+    stmt = (
+        select(CandidateDiscoveryRun)
+        .where(CandidateDiscoveryRun.analysis_id == analysis_id)
+        .order_by(CandidateDiscoveryRun.started_at.desc())
+    )
+    res = await session.execute(stmt)
+    return res.scalars().all()

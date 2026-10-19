@@ -1,3 +1,5 @@
+import asyncio
+import logging
 import uuid
 from datetime import UTC, datetime
 from typing import Any
@@ -31,6 +33,7 @@ from app.schemas.profile_validation import (
     validate_user_skill_profile,
 )
 from app.schemas.report import AnalysisReportResponse
+from app.services.candidate_discovery_service import CandidateDiscoveryService
 from app.services.explanation_service import build_analysis_explanation_report
 from app.services.profile_loader import (
     load_snapshot_knowledge,
@@ -39,13 +42,24 @@ from app.services.profile_loader import (
     resolve_user_profile,
 )
 
+logger = logging.getLogger(__name__)
+
 
 class AnalysisService:
+    def __init__(
+        self, candidate_discovery_service: CandidateDiscoveryService | None = None
+    ) -> None:
+        self.candidate_discovery_service = (
+            candidate_discovery_service or CandidateDiscoveryService()
+        )
+
     # Orchestrate the complete C03 Career Readiness Analysis Pipeline
     async def run_analysis(
         self,
         session: AsyncSession,
         request: AnalysisCreateRequest,
+        background_tasks: Any | None = None,
+        enable_candidate_discovery: bool = True,
     ) -> tuple[Analysis, dict[str, Any]]:
         # 1. Resolve student and industry profiles directly from PostgreSQL database
         user_profile = await resolve_user_profile(
@@ -348,6 +362,52 @@ class AnalysisService:
             analysis.readiness_score = overall_readiness.overall_readiness
             analysis.status = AnalysisStatus.COMPLETED.value
             analysis.completed_at = complete_time
+
+            # Trigger asynchronous candidate discovery across all profile and requirement skills
+            if enable_candidate_discovery:
+                try:
+                    all_req_skill_ids = [
+                        r.skill_id.strip()
+                        for r in industry_profile.requirements
+                        if r.skill_id and r.skill_id.strip()
+                    ]
+                    all_stu_skill_ids = [
+                        s.skill_id.strip()
+                        for s in user_profile.skills
+                        if s.skill_id and s.skill_id.strip()
+                    ]
+                    verified_pairs: set[tuple[str, str]] = set()
+                    for rel in relationships:
+                        src = getattr(rel, "source_skill_id", None)
+                        tgt = getattr(rel, "target_skill_id", None)
+                        if src and tgt:
+                            verified_pairs.add((src, tgt))
+                            verified_pairs.add((tgt, src))
+
+                    async def _safe_discovery_runner() -> None:
+                        try:
+                            await self.candidate_discovery_service.run_candidate_discovery(
+                                analysis_id=analysis.analysis_id,
+                                snapshot_id=snapshot.snapshot_id,
+                                requirement_skill_ids=all_req_skill_ids,
+                                student_skill_ids=all_stu_skill_ids,
+                                verified_relationship_pairs=verified_pairs,
+                            )
+                        except Exception as task_err:  # noqa: BLE001
+                            logger.warning(
+                                "Candidate discovery background task encountered error: %s",
+                                task_err,
+                            )
+
+                    if background_tasks is not None and hasattr(
+                        background_tasks, "add_task"
+                    ):
+                        background_tasks.add_task(_safe_discovery_runner)
+                    else:
+                        asyncio.create_task(_safe_discovery_runner())
+                except Exception as disc_err:  # noqa: BLE001
+                    logger.warning("Candidate discovery trigger skipped: %s", disc_err)
+
             return analysis, c04_payload
 
         except Exception as exc:

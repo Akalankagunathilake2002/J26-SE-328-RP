@@ -308,3 +308,58 @@ Explanations are strictly derived from already-persisted records in PostgreSQL:
 - **No External LLM Calls:** No AI models, OpenAI APIs, Ollama, LangChain, or external network requests are executed.
 - **No Vector Embeddings Query:** No RAG or vector database queries are used for explanation generation.
 - **Future AI Extensibility:** The architecture encapsulates explanation generation in `app/services/explanation_service.py`, permitting future AI providers to ground summaries on persisted results without altering the scoring engine.
+
+---
+
+## 7. Semantic Candidate Discovery & SSKS Integration API
+
+The Readiness Engine includes a lightweight semantic discovery feature designed to detect potential skill relationships between unmatched industry requirements and unmatched student skills, submitting them as candidate relationship proposals to the Shared Skill Knowledge Service (SSKS).
+
+### 7.1 Architecture & Boundaries
+- **Asynchronous Execution:** Runs in the background via FastAPI `BackgroundTasks` after the analysis response is dispatched.
+- **Scoring Isolation:** Candidate discovery never modifies readiness scores, matching outputs, gap calculations, learning priorities, or reports.
+- **SSKS Ownership:** SSKS is the authoritative owner of skill taxonomy relationships. Candidate submissions are proposals with review status `PENDING` awaiting human editorial approval.
+- **Cached Embedding Reuse:** SBERT vectors are loaded from `cached_skill_embeddings` for the active snapshot; no external embedding models are invoked during analysis.
+
+### 7.2 Retrieval Endpoint: `GET /analyses/{id}/candidate-discovery`
+
+Retrieve candidate discovery execution runs for an analysis:
+
+- **Method:** `GET`
+- **Path:** `/analyses/{analysis_id}/candidate-discovery` (or `/readiness/analyses/{analysis_id}/candidate-discovery`)
+- **Status:** `200 OK`
+
+#### Response JSON Schema (`list[CandidateDiscoveryRunOut]`):
+```json
+[
+  {
+    "id": "76df529b-986c-48ae-8b3d-18751fa0ef2b",
+    "analysis_id": "a90dfeb6-0428-444a-9ef8-e8cb9b6ea17c",
+    "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "similarity_threshold": 0.60,
+    "status": "COMPLETED",
+    "candidates_submitted_count": 2,
+    "started_at": "2026-10-19T14:30:00Z",
+    "completed_at": "2026-10-19T14:30:01Z"
+  }
+]
+```
+
+### 7.3 SSKS Upstream Submission Contract
+
+Eligible candidates meeting or exceeding the configurable threshold (default `0.60`) are submitted to SSKS:
+
+- **Endpoint:** `POST {SSKS_BASE_URL}/ssks/candidates/relationships`
+- **Payload Schema:**
+```json
+{
+  "source_skill_id": "SK-001606",
+  "target_skill_id": "SK-001881",
+  "proposed_relationship_type": "RELATED_TO",
+  "confidence_score": 0.8123,
+  "source_id": null,
+  "review_note": "Discovered by C03 Readiness Engine (Analysis: a90dfeb6-0428-444a-9ef8-e8cb9b6ea17c) with cosine similarity 0.8123"
+}
+```
+
+- **Candidate Persistence Constraint:** C03 persists only run-level records in `candidate_discovery_runs`. Individual candidate relationships are never persisted in C03 database tables.
