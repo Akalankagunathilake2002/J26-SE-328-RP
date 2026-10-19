@@ -1,7 +1,11 @@
 import Image from "next/image";
 
+interface HeroSectionProps {
+  firstName?: string;
+}
+
 // Hero section combining title, descriptive text, girl illustration, and speech bubble
-export function HeroSection() {
+export function HeroSection({ firstName }: HeroSectionProps = {}) {
   return (
     <section className="relative pt-4 sm:pt-6 pb-0">
       <div className="grid grid-cols-1 md:grid-cols-[1.1fr_1.2fr] items-end gap-6 md:gap-4">
@@ -28,10 +32,10 @@ export function HeroSection() {
         {/* Right column: Illustration with interactive speech bubble */}
         <div className="relative flex justify-center md:justify-end items-end">
           {/* Editable speech bubble positioned above the character */}
-          <div className="absolute -top-14 right-2 sm:right-6 md:right-4 z-20 max-w-[210px] sm:max-w-[230px]">
+          <div className="absolute -top-14 sm:-top-16 right-2 sm:right-6 md:right-4 z-20 max-w-[220px] sm:max-w-[250px]">
             <div className="relative bg-[#edddfc] border-2 border-ink rounded-2xl px-4 py-2.5 shadow-[3px_3px_0px_#000]">
               <p className="font-bold text-xs sm:text-sm text-ink leading-snug">
-                Let&apos;s see how ready you are for your dream role!
+                {firstName ? `Hey, ${firstName}! ` : ""}Let&apos;s see how ready you are for your dream role!
               </p>
               {/* Speech bubble tail pointing towards character */}
               <div

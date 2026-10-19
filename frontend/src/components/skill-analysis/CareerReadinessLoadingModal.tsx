@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { Check, Loader2 } from "lucide-react";
 
 export const ASSESSMENT_STEPS = [
@@ -14,6 +15,8 @@ export const ASSESSMENT_STEPS = [
 
 // Progression percentage corresponding to each step
 const STEP_PERCENTAGES = [15, 30, 45, 60, 75, 90, 100];
+
+const emptySubscribe = () => () => {};
 
 export interface CareerReadinessLoadingModalProps {
   isOpen: boolean;
@@ -32,8 +35,24 @@ export function CareerReadinessLoadingModal({
   activeStepOverride,
   isApiDriven = false,
 }: CareerReadinessLoadingModalProps) {
+  const isClient = useSyncExternalStore(emptySubscribe, () => true, () => false);
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
   // Current active step index (0 to 5 for active steps, 6 when all are complete)
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [internalStepIndex, setInternalStepIndex] = useState(0);
+
+  // Directly derive active step in API-driven mode without setting state in an effect
+  const currentStepIndex =
+    isApiDriven && typeof activeStepOverride === "number"
+      ? activeStepOverride
+      : internalStepIndex;
+
+  // Reset to step 0 during render when the modal opens without triggering cascading renders
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) {
+      setInternalStepIndex(0);
+    }
+  }
 
   // Manage body scroll lock and escape key handler
   useEffect(() => {
@@ -56,25 +75,14 @@ export function CareerReadinessLoadingModal({
 
   // Simulate 1-second step advancement in static demo mode
   useEffect(() => {
-    if (!isOpen) {
-      setCurrentStepIndex(0);
+    if (!isOpen || isApiDriven) {
       return;
     }
-
-    if (isApiDriven) {
-      if (typeof activeStepOverride === "number") {
-        setCurrentStepIndex(activeStepOverride);
-      }
-      return;
-    }
-
-    // Reset to step 1 when opening
-    setCurrentStepIndex(0);
 
     let completionTimer: ReturnType<typeof setTimeout> | undefined;
 
     const intervalTimer = setInterval(() => {
-      setCurrentStepIndex((prevIndex) => {
+      setInternalStepIndex((prevIndex) => {
         const nextIndex = prevIndex + 1;
 
         // When all 6 steps complete, clear interval and trigger onComplete
@@ -98,68 +106,68 @@ export function CareerReadinessLoadingModal({
         clearTimeout(completionTimer);
       }
     };
-  }, [isOpen, isApiDriven, activeStepOverride, onComplete]);
+  }, [isOpen, isApiDriven, onComplete]);
 
-  if (!isOpen) {
+  if (!isOpen || !isClient) {
     return null;
   }
 
   const percentage = STEP_PERCENTAGES[currentStepIndex] ?? 100;
   const displayStepNumber = Math.min(currentStepIndex + 1, ASSESSMENT_STEPS.length);
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="career-readiness-loading-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
       onClick={onClose}
     >
       {/* Modal Dialog Card */}
       <div
-        className="relative w-full max-w-[420px] sm:max-w-[450px] bg-[#fbf2e5] border-2 sm:border-[2.5px] border-ink rounded-3xl p-6 sm:p-7 shadow-[6px_6px_0px_#000] overflow-hidden flex flex-col"
+        className="relative w-full max-w-[380px] sm:max-w-[410px] bg-[#fbf2e5] border-2 sm:border-[2.5px] border-ink rounded-3xl p-5 sm:p-6 shadow-[6px_6px_0px_#000] overflow-hidden flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header Title and Description */}
         <div>
           <h3
             id="career-readiness-loading-title"
-            className="font-black text-xl sm:text-2xl text-ink tracking-tight leading-tight"
+            className="font-black text-lg sm:text-xl text-ink tracking-tight leading-snug"
           >
             Creating your readiness assessment...
           </h3>
-          <p className="text-xs sm:text-sm text-ink/70 font-semibold mt-1.5 leading-snug">
+          <p className="text-xs text-ink/75 font-semibold mt-1 leading-snug">
             We are analyzing your profile data. This will take a moment.
           </p>
         </div>
 
         {/* Strong Black Divider */}
-        <div className="h-[2px] bg-ink w-full my-4 sm:my-5" />
+        <div className="h-[2px] bg-ink w-full my-3 sm:my-3.5" />
 
         {/* 6 Vertically Stacked Steps */}
-        <div className="flex flex-col gap-3.5 sm:gap-4 my-1">
+        <div className="flex flex-col gap-2.5 sm:gap-3 my-0.5">
           {ASSESSMENT_STEPS.map((stepLabel, index) => {
             const isCompleted = index < currentStepIndex;
             const isActive = index === currentStepIndex && currentStepIndex < ASSESSMENT_STEPS.length;
 
             return (
-              <div key={stepLabel} className="flex items-center gap-3">
+              <div key={stepLabel} className="flex items-center gap-2.5 sm:gap-3">
                 {/* Status Icon Indicator */}
                 {isCompleted ? (
-                  <span className="size-7 sm:size-8 rounded-full bg-lime border-2 border-ink flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]">
-                    <Check className="size-4 text-ink stroke-[3]" />
+                  <span className="size-6 sm:size-6.5 rounded-full bg-lime border-2 border-ink flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]">
+                    <Check className="size-3.5 text-ink stroke-[3]" />
                   </span>
                 ) : isActive ? (
-                  <span className="size-7 sm:size-8 rounded-full bg-[#006ee9] border-2 border-ink flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]">
-                    <Loader2 className="size-4 text-white animate-spin stroke-[2.5]" />
+                  <span className="size-6 sm:size-6.5 rounded-full bg-[#006ee9] border-2 border-ink flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#000]">
+                    <Loader2 className="size-3.5 text-white animate-spin stroke-[2.5]" />
                   </span>
                 ) : (
-                  <span className="size-7 sm:size-8 rounded-full bg-white/70 border-2 border-ink/40 flex items-center justify-center shrink-0" />
+                  <span className="size-6 sm:size-6.5 rounded-full bg-white/70 border-2 border-ink/40 flex items-center justify-center shrink-0" />
                 )}
 
                 {/* Step Text Label */}
                 <span
-                  className={`text-sm sm:text-base leading-tight transition-colors ${
+                  className={`text-xs sm:text-[13px] leading-tight transition-colors ${
                     isActive
                       ? "text-[#006ee9] font-black"
                       : isCompleted
@@ -175,8 +183,8 @@ export function CareerReadinessLoadingModal({
         </div>
 
         {/* Progress Percentage and Step Counter */}
-        <div className="mt-6 flex flex-col gap-2">
-          <div className="flex items-center justify-between text-xs sm:text-sm">
+        <div className="mt-4 sm:mt-5 flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-xs">
             <span className="font-black text-ink">{percentage}% Complete</span>
             <span className="font-bold text-ink/60">
               Step {displayStepNumber} of {ASSESSMENT_STEPS.length}
@@ -185,7 +193,7 @@ export function CareerReadinessLoadingModal({
 
           {/* Horizontal Progress Bar */}
           <div
-            className="h-4 sm:h-5 w-full bg-white border-2 border-ink rounded-full p-0.5 shadow-[1px_1px_0px_#000] overflow-hidden"
+            className="h-3.5 sm:h-4 w-full bg-white border-2 border-ink rounded-full p-0.5 shadow-[1px_1px_0px_#000] overflow-hidden"
             role="progressbar"
             aria-valuenow={percentage}
             aria-valuemin={0}
@@ -198,6 +206,8 @@ export function CareerReadinessLoadingModal({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
+

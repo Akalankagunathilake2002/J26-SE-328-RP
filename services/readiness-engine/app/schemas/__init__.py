@@ -18,6 +18,7 @@ from app.schemas.profile_validation import (
     validate_industry_profile,
     validate_user_skill_profile,
 )
+from app.schemas.profiles import IndustryProfileListItem
 from app.schemas.report import (
     AnalysisReportResponse,
     PriorityExplanationOut,
@@ -34,6 +35,7 @@ __all__ = [
     "AnalysisReportResponse",
     "C04AnalysisResponse",
     "IndustryProfileInput",
+    "IndustryProfileListItem",
     "IndustryRequirementInput",
     "PriorityExplanationOut",
     "PrioritySkillOut",
