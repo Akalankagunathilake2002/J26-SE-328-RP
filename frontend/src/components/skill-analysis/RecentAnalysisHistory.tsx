@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { AlertCircle, Briefcase, Clock, FileText, Loader2, RefreshCw } from "lucide-react";
+import { AlertCircle, Briefcase, Clock, Download, Loader2, RefreshCw } from "lucide-react";
 
 import { CareerReadinessResultModal } from "./CareerReadinessResultModal";
 import {
@@ -11,6 +11,7 @@ import {
   type DetailedAnalysisResult,
 } from "./types";
 import { readinessApi, type AnalysisHistoryItem } from "@/lib/readinessApi";
+import { downloadCareerReadinessReport } from "@/lib/reportGenerator";
 
 interface RecentAnalysisHistoryProps {
   userId?: string;
@@ -18,6 +19,7 @@ interface RecentAnalysisHistoryProps {
   total?: number;
   loading?: boolean;
   error?: string | null;
+  studentName?: string;
   onRefresh?: () => void;
   onViewDetails?: (analysisId: string) => void;
 }
@@ -28,6 +30,7 @@ export function RecentAnalysisHistory({
   items: propItems,
   loading: propLoading,
   error: propError,
+  studentName,
   onRefresh,
   onViewDetails,
 }: RecentAnalysisHistoryProps = {}) {
@@ -40,6 +43,8 @@ export function RecentAnalysisHistory({
   const [selectedResult, setSelectedResult] = useState<DetailedAnalysisResult | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loadingRowId, setLoadingRowId] = useState<string | null>(null);
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   const isControlled = propItems !== undefined;
   const items = isControlled ? propItems : internalItems;
@@ -116,6 +121,22 @@ export function RecentAnalysisHistory({
     }
   };
 
+  // Triggers shared two-page Career Readiness Report download
+  const handleDownloadReport = async (analysisId: string, roleName?: string) => {
+    if (downloadingId) return;
+    setDownloadingId(analysisId);
+    setDownloadError(null);
+    try {
+      await downloadCareerReadinessReport(analysisId, roleName, studentName);
+    } catch (err) {
+      setDownloadError(
+        err instanceof Error ? err.message : "Failed to generate report. Please try again.",
+      );
+    } finally {
+      setDownloadingId(null);
+    }
+  };
+
   return (
     <>
       <div className="bg-white border-2 border-ink rounded-2xl shadow-[4px_4px_0px_#000] overflow-hidden">
@@ -139,9 +160,9 @@ export function RecentAnalysisHistory({
           </button>
         </div>
 
-        {/* Error Banner */}
+        {/* Error Banners */}
         {error && (
-          <div className="p-4 bg-red-50 border-b border-red-200 flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-red-800">
+          <div className="p-3.5 bg-red-50 border-b border-red-200 flex items-center justify-between gap-3 text-xs sm:text-sm font-semibold text-red-800">
             <div className="flex items-center gap-2">
               <AlertCircle className="size-4 text-red-600 shrink-0" />
               <span>{error}</span>
@@ -156,21 +177,37 @@ export function RecentAnalysisHistory({
           </div>
         )}
 
+        {downloadError && (
+          <div className="p-3.5 bg-red-50 border-b border-red-200 flex items-center justify-between gap-3 text-xs font-semibold text-red-800">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="size-4 text-red-600 shrink-0" />
+              <span>{downloadError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDownloadError(null)}
+              className="text-xs font-black underline text-ink shrink-0 cursor-pointer"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {/* Analysis Records Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse min-w-[640px]">
+          <table className="w-full text-left border-collapse min-w-[760px]">
             <thead>
-              <tr className="border-b border-ink/10 bg-gray-50/60 text-[11px] font-bold text-muted uppercase tracking-wider">
-                <th scope="col" className="px-5 py-3.5 text-left">
+              <tr className="border-b-2 border-ink/20 bg-gray-50/80 text-[11px] font-black text-ink uppercase tracking-wider">
+                <th scope="col" className="w-[34%] min-w-[210px] px-5 py-3.5 text-left">
                   Role
                 </th>
-                <th scope="col" className="px-4 py-3.5 text-center">
+                <th scope="col" className="w-[26%] min-w-[170px] px-4 py-3.5 text-center">
                   Readiness Score
                 </th>
-                <th scope="col" className="px-4 py-3.5 text-center">
+                <th scope="col" className="w-[18%] min-w-[120px] px-4 py-3.5 text-center">
                   Date
                 </th>
-                <th scope="col" className="px-5 py-3.5 text-center">
+                <th scope="col" className="w-[22%] min-w-[190px] px-5 py-3.5 text-center">
                   Actions
                 </th>
               </tr>
@@ -196,7 +233,7 @@ export function RecentAnalysisHistory({
                       <div className="h-3 w-24 bg-gray-200 rounded mx-auto" />
                     </td>
                     <td className="px-5 py-4 text-center">
-                      <div className="h-7 w-20 bg-gray-200 rounded mx-auto" />
+                      <div className="h-7 w-28 bg-gray-200 rounded mx-auto" />
                     </td>
                   </tr>
                 ))
@@ -218,6 +255,7 @@ export function RecentAnalysisHistory({
                   const careerLevel = formatCareerLevel(item.career_level);
                   const score = Math.round(Number(item.readinessScore ?? item.readiness_score ?? 0));
                   const isRowLoading = loadingRowId === analysisId;
+                  const isRowDownloading = downloadingId === analysisId;
 
                   return (
                     <tr key={analysisId} className="hover:bg-cream/40 transition-colors">
@@ -240,32 +278,33 @@ export function RecentAnalysisHistory({
 
                       {/* Readiness Score Progress Bar */}
                       <td className="px-4 py-4 text-center">
-                        <div className="flex items-center justify-center gap-3">
-                          <div className="w-28 sm:w-36 h-3 bg-[#e2e8f0] rounded-full overflow-hidden border border-ink/20">
+                        <div className="flex items-center justify-center gap-2.5 max-w-[180px] mx-auto">
+                          <div className="flex-1 h-2.5 bg-[#e2e8f0] rounded-full overflow-hidden border border-ink/20">
                             <div
                               className="bg-[#006ee9] h-full rounded-full transition-all duration-500"
                               style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
                             />
                           </div>
-                          <span className="text-sm font-black text-[#006ee9] min-w-[2.5rem]">
+                          <span className="text-xs sm:text-sm font-black text-[#006ee9] w-10 text-right tabular-nums">
                             {score}%
                           </span>
                         </div>
                       </td>
 
                       {/* Evaluation Timestamp */}
-                      <td className="px-4 py-4 text-center text-xs font-medium text-muted whitespace-nowrap">
+                      <td className="px-4 py-4 text-center text-xs font-semibold text-muted whitespace-nowrap">
                         {formatAnalysisDate(item.started_at || item.createdAt)}
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-4 text-center">
+                      <td className="px-5 py-4 text-center whitespace-nowrap">
                         <div className="inline-flex items-center justify-center gap-2">
                           <button
                             type="button"
-                            disabled={isRowLoading}
+                            disabled={isRowLoading || isRowDownloading}
                             onClick={() => handleView(item)}
-                            className="bg-[#1e40af] hover:bg-[#1d4ed8] text-white text-[11px] font-bold px-3.5 py-1.5 rounded-lg border-2 border-ink shadow-[2px_2px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer whitespace-nowrap disabled:opacity-50 flex items-center gap-1"
+                            className="bg-[#1e40af] hover:bg-[#1d4ed8] text-white text-[11px] font-bold px-3 py-1.5 rounded-lg border-2 border-ink shadow-[2px_2px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer whitespace-nowrap disabled:opacity-50 inline-flex items-center gap-1 shrink-0"
+                            title="View detailed results modal"
                           >
                             {isRowLoading ? (
                               <>
@@ -278,12 +317,22 @@ export function RecentAnalysisHistory({
                           </button>
                           <button
                             type="button"
-                            disabled
-                            title="Report download is coming soon"
-                            className="bg-lime/70 text-ink/70 text-[11px] font-bold px-2.5 py-1.5 rounded-lg border-2 border-ink/40 shadow-[1px_1px_0px_#000] flex items-center gap-1.5 whitespace-nowrap cursor-not-allowed select-none shrink-0"
+                            disabled={isRowDownloading}
+                            onClick={() => handleDownloadReport(analysisId, roleName)}
+                            className="bg-lime hover:bg-[#bef264] text-ink text-[11px] font-bold px-3 py-1.5 rounded-lg border-2 border-ink shadow-[2px_2px_0px_#000] hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer whitespace-nowrap disabled:opacity-50 inline-flex items-center gap-1.5 shrink-0"
+                            title="Download printable two-page Career Readiness Report"
                           >
-                            <FileText className="size-3.5 text-ink/70 shrink-0" />
-                            <span>Download Report</span>
+                            {isRowDownloading ? (
+                              <>
+                                <Loader2 className="size-3 animate-spin text-ink shrink-0" />
+                                <span>Generating...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Download className="size-3 text-ink shrink-0" />
+                                <span>Report</span>
+                              </>
+                            )}
                           </button>
                         </div>
                       </td>
@@ -301,6 +350,7 @@ export function RecentAnalysisHistory({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         data={selectedResult}
+        studentName={studentName}
       />
     </>
   );

@@ -25,11 +25,12 @@ import { readinessApi } from "@/lib/readinessApi";
 
 interface StartAnalysisPanelProps {
   userId?: string;
+  studentName?: string;
   onAnalysisSuccess?: (analysisId: string, result: DetailedAnalysisResult) => void;
 }
 
 // Target role selection and analysis trigger panel connected to the C03 Readiness Engine
-export function StartAnalysisPanel({ userId, onAnalysisSuccess }: StartAnalysisPanelProps) {
+export function StartAnalysisPanel({ userId, studentName, onAnalysisSuccess }: StartAnalysisPanelProps) {
   const [roles, setRoles] = useState<TargetRoleOption[]>([]);
   const [rolesLoading, setRolesLoading] = useState(true);
   const [rolesError, setRolesError] = useState<string | null>(null);
@@ -356,6 +357,7 @@ export function StartAnalysisPanel({ userId, onAnalysisSuccess }: StartAnalysisP
         isOpen={isResultModalOpen}
         onClose={() => setIsResultModalOpen(false)}
         data={analysisResult}
+        studentName={studentName}
       />
     </div>
   );

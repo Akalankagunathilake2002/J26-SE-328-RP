@@ -18,10 +18,15 @@ import { readinessApi, type AnalysisHistoryItem } from "@/lib/readinessApi";
 interface SkillAnalysisDashboardProps {
   userId: string;
   firstName: string;
+  studentName?: string;
 }
 
 // Master coordinator connecting target role selection, history, overview, and result modals
-export function SkillAnalysisDashboard({ userId, firstName }: SkillAnalysisDashboardProps) {
+export function SkillAnalysisDashboard({
+  userId,
+  firstName,
+  studentName,
+}: SkillAnalysisDashboardProps) {
   const [historyItems, setHistoryItems] = useState<AnalysisHistoryItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [historyLoading, setHistoryLoading] = useState(true);
@@ -109,7 +114,11 @@ export function SkillAnalysisDashboard({ userId, firstName }: SkillAnalysisDashb
     <div className="flex flex-col gap-6">
       <div>
         <HeroSection firstName={firstName} />
-        <StartAnalysisPanel userId={userId} onAnalysisSuccess={handleAnalysisSuccess} />
+        <StartAnalysisPanel
+          userId={userId}
+          studentName={studentName}
+          onAnalysisSuccess={handleAnalysisSuccess}
+        />
       </div>
 
       <OverviewCards stats={overviewStats} loading={historyLoading} />
@@ -122,6 +131,7 @@ export function SkillAnalysisDashboard({ userId, firstName }: SkillAnalysisDashb
         total={totalCount}
         loading={historyLoading}
         error={historyError}
+        studentName={studentName}
         onRefresh={fetchHistory}
         onViewDetails={handleViewResult}
       />
@@ -131,6 +141,7 @@ export function SkillAnalysisDashboard({ userId, firstName }: SkillAnalysisDashb
         isOpen={isResultModalOpen}
         onClose={() => setIsResultModalOpen(false)}
         data={activeResult}
+        studentName={studentName}
       />
     </div>
   );
