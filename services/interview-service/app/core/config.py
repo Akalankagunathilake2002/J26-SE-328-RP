@@ -79,6 +79,12 @@ class Settings(BaseSettings):
     LOCAL_AVATAR_VOICE: str = "Samantha"
     LOCAL_AVATAR_DECODER: Literal["fast", "quality"] = "fast"
 
+    # Interview structure: welcome and introductions, role questions while time allows, then a closing
+    INTERVIEWER_NAME: str = "Elena"
+    INTERVIEW_DEFAULT_MINUTES: int = 25
+    INTERVIEW_MIN_QUESTIONS: int = 2          # role questions asked even when the time budget is tight
+    INTERVIEW_MAX_QUESTIONS: int = 10
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

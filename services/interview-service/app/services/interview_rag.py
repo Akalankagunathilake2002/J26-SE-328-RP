@@ -55,6 +55,18 @@ class InterviewRAGService:
         Retrieves interview technical concepts and rubrics from pgvector
         and generates a role-specific interview question.
         """
+        interview = await session.get(InterviewSession, uuid.UUID(request.session_id))
+        # The first role question follows the introductions, not a scored answer
+        first_core = not (await session.execute(
+            select(InterviewTurn.id).where(InterviewTurn.session_id == uuid.UUID(request.session_id),
+                                           InterviewTurn.phase == "core").limit(1)
+        )).first()
+        background = " ".join(filter(None, [
+            request.candidate_background,
+            f"In the interview's introduction they said: {interview.candidate_intro[:800]}"
+            if interview and interview.candidate_intro else None,
+        ])) or None
+
         # Formulate query from role, skills, and topic
         query_text = f"{request.target_role} {request.experience_level} {' '.join(request.current_skills)} {request.preferred_topic or ''}"
         query_vec = embedding_service.embed_text(query_text)
@@ -121,10 +133,11 @@ class InterviewRAGService:
                 topic=topic,
                 skills=request.current_skills,
                 reference_concept=selected.content,
-                previous_question=request.previous_question,
-                previous_answer=request.previous_answer,
-                previous_missing=request.previous_missing_concepts,
-                background=request.candidate_background,
+                previous_question=None if first_core else request.previous_question,
+                previous_answer=None if first_core else request.previous_answer,
+                previous_missing=None if first_core else request.previous_missing_concepts,
+                background=background,
+                first_core=first_core,
             )
             context_or_reason = f"Evaluates your understanding of {topic} for an {request.experience_level} {request.target_role} position."
         else:
@@ -146,6 +159,7 @@ class InterviewRAGService:
         # Record interview turn in database
         turn = InterviewTurn(
             session_id=uuid.UUID(request.session_id),
+            phase="core",
             question=question_text,
             topic=topic,
             difficulty=difficulty,
@@ -158,6 +172,7 @@ class InterviewRAGService:
         return InterviewQuestionResponse(
             turn_id=str(turn.id),
             session_id=request.session_id,
+            phase="core",
             question=question_text,
             topic=topic,
             difficulty=difficulty,
@@ -176,6 +191,7 @@ class InterviewRAGService:
         previous_answer: str | None = None,
         previous_missing: List[str] | None = None,
         background: str | None = None,
+        first_core: bool = False,
     ) -> str:
         from app.core.roles import is_technical
         technical = is_technical(role)
@@ -198,6 +214,9 @@ class InterviewRAGService:
                 "Open with a brief natural transition (e.g. 'Let's build on that.' or 'Moving on.'). "
                 "If a missed concept relates to this topic, probe it.\n"
             )
+        elif first_core:
+            prompt += ("This is the first question after the introductions. Open with one short sentence moving "
+                       "into the role questions (e.g. 'Great, let's get into some questions about the role.').\n")
         task = ("Formulate ONE clear, scenario-oriented technical interview question testing this concept." if technical
                 else "Formulate ONE clear interview question for this role testing this competency or knowledge: either "
                      "behavioural (\"Tell me about a time...\") or situational (\"How would you handle...\"), "
@@ -206,35 +225,34 @@ class InterviewRAGService:
             f"Task: {task} "
             "Do not ask multiple questions. Be direct and realistic. It will be spoken aloud by a video "
             "interviewer, so write plain conversational sentences: no markdown, lists, code or quotes. "
-            "Keep it under 35 words in total, like a real interviewer speaking."
+            f"Keep it under {45 if first_core else 35} words in total, like a real interviewer speaking."
         )
 
-        if settings.LLM_PROVIDER == "local":
-            try:
-                from app.services.local_llm import local_llm
-                text = await local_llm.chat([{"role": "user", "content": prompt}], temperature=0.4, max_tokens=300)
-                if text:
-                    return re.sub(r"[`*_#>]+", "", text).strip().strip('"')
-            except Exception as e:
-                print(f"[Warning] Local LLM question generation error: {e}")
-        elif self._llm == "gemini" and self._gemini_client:
-            try:
-                resp = self._gemini_client.models.generate_content(
-                    model=settings.LLM_MODEL or "gemini-2.5-flash",
-                    contents=prompt
-                )
-                return resp.text.strip().strip('"')
-            except Exception as e:
-                print(f"[Warning] Gemini Question generation error: {e}")
-        elif self._llm:
-            try:
-                from langchain_core.messages import SystemMessage, HumanMessage
-                resp = await self._llm.ainvoke([HumanMessage(content=prompt)])
-                return resp.content.strip().strip('"')
-            except Exception as e:
-                print(f"[Warning] Question LLM generation error: {e}")
-
+        text = await self.complete(prompt, temperature=0.4)
+        if text:
+            return text
         return f"Can you explain how {topic} operates in production, and how you would prevent common pitfalls when building services in {role}?"
+
+    async def complete(self, prompt: str, temperature: float = 0.4, max_tokens: int = 300) -> str | None:
+        """Plain spoken text from the configured LLM, or None if it is unavailable (callers fall back)."""
+        try:
+            if settings.LLM_PROVIDER == "local":
+                from app.services.local_llm import local_llm
+                text = await local_llm.chat([{"role": "user", "content": prompt}],
+                                            temperature=temperature, max_tokens=max_tokens)
+            elif self._llm == "gemini" and self._gemini_client:
+                text = self._gemini_client.models.generate_content(
+                    model=settings.LLM_MODEL or "gemini-2.5-flash", contents=prompt).text
+            elif self._llm:
+                from langchain_core.messages import HumanMessage
+                text = (await self._llm.ainvoke([HumanMessage(content=prompt)])).content
+            else:
+                return None
+        except Exception as e:
+            print(f"[Warning] Interviewer LLM error: {e}")
+            return None
+        # It is spoken aloud: no markdown or wrapping quotes
+        return re.sub(r"[`*_#>]+", "", text or "").strip().strip('"') or None
 
 
 interview_rag_service = InterviewRAGService()

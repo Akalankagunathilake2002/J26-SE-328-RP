@@ -7,6 +7,9 @@ class StartInterviewRequest(BaseModel):
     target_role: str = Field(..., example="Backend Developer")
     experience_level: str = Field(default="Entry Level", example="Entry Level")
     current_skills: List[str] = Field(default_factory=list, example=["Java", "Spring Boot", "MySQL"])
+    candidate_name: Optional[str] = Field(None, max_length=100, example="Nimal Perera")
+    # Planned length; the interviewer moves to the closing when the time is nearly used
+    duration_minutes: int = Field(25, ge=10, le=45)
 
 
 class InterviewSessionResponse(BaseModel):
@@ -14,6 +17,7 @@ class InterviewSessionResponse(BaseModel):
     student_id: str
     target_role: str
     experience_level: str
+    duration_minutes: int
     message: str
 
 
@@ -51,6 +55,8 @@ class CVProfileResponse(BaseModel):
 class InterviewQuestionResponse(BaseModel):
     turn_id: str
     session_id: str
+    # "intro" (welcome, getting to know the candidate), "core" (scored role question) or "closing"
+    phase: str = "core"
     question: str
     topic: str
     difficulty: str
@@ -58,6 +64,21 @@ class InterviewQuestionResponse(BaseModel):
     rubric_criteria: List[str]
     # Local-avatar clips for this question, one per sentence group, in playback order
     avatar_job_ids: List[str] = []
+
+
+class RespondRequest(BaseModel):
+    """The candidate's answer to an introduction or closing turn (not scored)."""
+    turn_id: str
+    transcript: str = Field(..., max_length=6000)
+    student_id: str
+
+
+class ConversationReplyResponse(BaseModel):
+    turn_id: str
+    phase: str
+    reply: str                          # what the interviewer says back
+    avatar_job_ids: List[str] = []
+    interview_complete: bool = False    # the closing reply is the goodbye
 
 
 class TranscribeResponse(BaseModel):

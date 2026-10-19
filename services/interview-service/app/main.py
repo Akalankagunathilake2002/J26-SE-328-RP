@@ -18,7 +18,13 @@ async def lifespan(app: FastAPI):
             from sqlalchemy import text
             await conn.execute(text(
                 "ALTER TABLE interview_turns ADD COLUMN IF NOT EXISTS reference_answer TEXT, "
-                "ADD COLUMN IF NOT EXISTS rubric_criteria JSONB"
+                "ADD COLUMN IF NOT EXISTS rubric_criteria JSONB, "
+                "ADD COLUMN IF NOT EXISTS phase VARCHAR(20) NOT NULL DEFAULT 'core'"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE interview_sessions ADD COLUMN IF NOT EXISTS candidate_name VARCHAR(100), "
+                "ADD COLUMN IF NOT EXISTS duration_minutes INTEGER, "
+                "ADD COLUMN IF NOT EXISTS candidate_intro TEXT"
             ))
         print(f"[{settings.SERVICE_NAME}] Database tables verified successfully.")
 

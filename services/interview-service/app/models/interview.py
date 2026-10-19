@@ -57,6 +57,10 @@ class InterviewSession(Base):
     target_role = Column(String(100), nullable=False)
     experience_level = Column(String(50), nullable=False)
     status = Column(String(50), default="active")
+    candidate_name = Column(String(100), nullable=True)
+    duration_minutes = Column(Integer, nullable=True)        # planned length, chosen at setup
+    # What the candidate said in the introductions, used to personalise the role questions
+    candidate_intro = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow)
 
 
@@ -65,6 +69,8 @@ class InterviewTurn(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     session_id = Column(UUID(as_uuid=True), ForeignKey("interview_sessions.id", ondelete="CASCADE"), nullable=False)
+    # "intro" (welcome and getting to know the candidate), "core" (scored role questions) or "closing"
+    phase = Column(String(20), nullable=False, default="core")
     question = Column(Text, nullable=False)
     topic = Column(String(100), nullable=False)
     difficulty = Column(String(50), nullable=False)

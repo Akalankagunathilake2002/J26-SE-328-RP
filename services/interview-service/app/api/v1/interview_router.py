@@ -1,6 +1,7 @@
 import os
 import uuid
 import tempfile
+from datetime import datetime, timezone
 import httpx
 from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, Request
 from fastapi.responses import StreamingResponse
@@ -24,8 +25,11 @@ from app.schemas.interview import (
     AvatarCancelRequest,
     AvatarJobResponse,
     EvaluateAnswerRequest,
-    EvaluationResultResponse
+    EvaluationResultResponse,
+    RespondRequest,
+    ConversationReplyResponse,
 )
+from app.services import interview_flow
 from app.services.interview_rag import interview_rag_service
 from app.services.stt_service import stt_service, SpeechToTextError
 from app.services.evaluation_rag import evaluation_rag_service, EvaluationError
@@ -97,7 +101,9 @@ async def start_session(
     session = InterviewSession(
         student_id=request.student_id,
         target_role=request.target_role,
-        experience_level=request.experience_level
+        experience_level=request.experience_level,
+        candidate_name=request.candidate_name,
+        duration_minutes=request.duration_minutes,
     )
     db.add(session)
     await db.commit()
@@ -107,6 +113,7 @@ async def start_session(
         student_id=request.student_id,
         target_role=request.target_role,
         experience_level=request.experience_level,
+        duration_minutes=request.duration_minutes,
         message=f"Mock interview session initialized for {request.target_role} ({request.experience_level})."
     )
 
@@ -116,13 +123,22 @@ async def get_question(
     request: QuestionGenerationRequest,
     db: AsyncSession = Depends(get_db)
 ):
-    """Generates a personalized role-specific interview question using RAG.
+    """The interviewer's next turn: the welcome and introductions, a role question generated with RAG,
+    or the closing question, depending on the turns so far and the time left (interview_flow.py).
 
     With the local avatar, rendering the spoken video starts here, so it overlaps with the
     candidate reading the question card instead of starting when the frontend asks.
     """
-    parse_uuid(request.session_id, "interview session")
-    question = await interview_rag_service.generate_interview_question(session=db, request=request)
+    interview = await db.get(InterviewSession, parse_uuid(request.session_id, "interview session"))
+    if not interview:
+        raise HTTPException(status_code=404, detail="Unknown interview session")
+    phase = await interview_flow.plan(db, interview)
+    if phase == "done":
+        raise HTTPException(status_code=409, detail="The interview has ended.")
+    if phase == "core":
+        question = await interview_rag_service.generate_interview_question(session=db, request=request)
+    else:
+        question = await interview_flow.create_turn(db, interview, phase)
     if local_avatar_service.enabled:
         try:
             question.avatar_job_ids = await local_avatar_service.render(question.question)
@@ -279,14 +295,37 @@ async def evaluate_answer(
     return result
 
 
+@router.post("/respond", response_model=ConversationReplyResponse)
+async def respond_to_answer(request: RespondRequest, db: AsyncSession = Depends(get_db)):
+    """The interviewer's reply to an introduction or closing answer. These answers aren't scored; the
+    reply to the closing answer is the goodbye (interview_complete)."""
+    turn = await db.get(InterviewTurn, parse_uuid(request.turn_id, "interview turn"))
+    if not turn:
+        raise HTTPException(status_code=404, detail="Unknown interview turn")
+    if turn.phase == "core":
+        raise HTTPException(status_code=409, detail="Role questions are evaluated with /evaluate.")
+    reply, done = await interview_flow.reply_to(db, turn, request.transcript.strip())
+    result = ConversationReplyResponse(turn_id=request.turn_id, phase=turn.phase, reply=reply,
+                                       interview_complete=done)
+    if local_avatar_service.enabled:
+        try:
+            result.avatar_job_ids = await local_avatar_service.render(reply)
+        except AvatarServiceError as e:
+            print(f"[Warning] Local avatar reply render not started: {e}")
+    return result
+
+
 @router.get("/report/{session_id}")
 async def get_session_report(
     session_id: str,
     db: AsyncSession = Depends(get_db)
 ):
-    """Generates a diagnostic report summarizing all question-turns in the interview session."""
+    """Generates a diagnostic report summarizing the scored role questions of the interview session,
+    with the (unscored) introduction and closing exchanges alongside."""
     s_uuid = parse_uuid(session_id, "interview session")
-    stmt = select(InterviewTurn).where(InterviewTurn.session_id == s_uuid).order_by(InterviewTurn.created_at.asc())
+    interview = await db.get(InterviewSession, s_uuid)
+    stmt = (select(InterviewTurn).where(InterviewTurn.session_id == s_uuid, InterviewTurn.phase == "core")
+            .order_by(InterviewTurn.created_at.asc()))
     res = await db.execute(stmt)
     turns = res.scalars().all()
 
@@ -325,8 +364,14 @@ async def get_session_report(
         })
 
     count = max(1, answered)
+    elapsed = None
+    if interview and interview.created_at:
+        elapsed = round((datetime.now(timezone.utc) - interview.created_at).total_seconds() / 60, 1)
     return {
         "session_id": session_id,
+        "planned_minutes": interview.duration_minutes if interview else None,
+        "elapsed_minutes": elapsed,
+        "conversation": await interview_flow.conversation(db, s_uuid),
         "questions_asked": len(turns),
         "turns_completed": answered,
         "overall_scores": {
