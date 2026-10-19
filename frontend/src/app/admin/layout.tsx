@@ -26,12 +26,12 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#f7f6ee] text-ink md:flex-row">
+    <div className="flex min-h-screen flex-col bg-[#FAF8F5] text-ink md:h-screen md:flex-row md:overflow-hidden">
       <AdminSidebar pendingCount={pendingCount} />
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col min-w-0 md:h-screen">
         <AdminHeader user={user} />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="mx-auto max-w-6xl">{children}</div>
+        <main className="flex-1 overflow-y-auto p-4 sm:p-5 lg:p-6">
+          <div className="mx-auto max-w-5xl">{children}</div>
         </main>
       </div>
     </div>

@@ -8,7 +8,7 @@ import {
   Layers,
   Clock,
   ExternalLink,
-  ShieldCheck,
+  Box,
 } from "lucide-react";
 
 interface AdminSidebarProps {
@@ -41,35 +41,26 @@ export function AdminSidebar({ pendingCount = 0 }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-full shrink-0 border-b-[3px] border-ink bg-[#f5ecd8] md:min-h-screen md:w-64 md:border-b-0 md:border-r-[3px]">
+    <aside className="w-full shrink-0 border-b-2 border-ink bg-[#FAF8F5] md:h-full md:w-64 md:border-b-0 md:border-r-2">
       <div className="flex h-full flex-col justify-between">
         <div>
-          {/* Brand & Admin Badge */}
-          <div className="border-b-[3px] border-ink bg-white p-4">
-            <div className="flex items-center justify-between">
-              <Link href="/admin" className="flex items-center gap-2">
-                <Image
-                  src="/brand/skillaro-logo.png"
-                  alt="Skillaro"
-                  width={110}
-                  height={38}
-                  className="h-auto w-auto"
-                  priority
-                />
-              </Link>
-              <span className="hard-shadow-sm flex items-center gap-1 rounded bg-[#ffde4d] px-2 py-0.5 text-[11px] font-black uppercase tracking-wider text-ink">
-                <ShieldCheck className="size-3.5" />
-                Admin
-              </span>
-            </div>
-            <p className="mt-1.5 text-[11px] font-semibold text-muted">
-              SSKS Knowledge Administration
-            </p>
+          {/* Brand header */}
+          <div className="p-5 pb-1">
+            <Link href="/admin" className="inline-block">
+              <Image
+                src="/brand/skillaro-logo.png"
+                alt="Skillaro"
+                width={120}
+                height={38}
+                className="h-7 w-auto"
+                priority
+              />
+            </Link>
           </div>
 
           {/* Navigation Links */}
-          <nav className="p-3">
-            <p className="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-muted">
+          <nav className="px-3.5 py-1">
+            <p className="px-2 pt-3 pb-1.5 text-[11px] font-extrabold uppercase tracking-widest text-[#71717A]">
               Management
             </p>
             <ul className="space-y-1.5">
@@ -84,18 +75,17 @@ export function AdminSidebar({ pendingCount = 0 }: AdminSidebarProps) {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className={`flex items-center justify-between rounded-lg border-2 px-3 py-2.5 text-sm font-semibold transition-all ${
-                        isActive
-                          ? "hard-shadow-sm border-ink bg-[#d0ffa4] text-ink"
-                          : "border-transparent text-ink hover:border-ink hover:bg-white"
-                      }`}
+                      className={`flex items-center justify-between rounded-xl border-2 px-3 py-2 text-sm transition-all ${isActive
+                          ? "border-ink bg-[#FFE66D] font-black text-ink shadow-[3px_3px_0px_#0d0d0d]"
+                          : "border-transparent font-bold text-ink hover:border-ink hover:bg-white"
+                        }`}
                     >
                       <div className="flex items-center gap-2.5">
-                        <Icon className="size-4 shrink-0" />
+                        <Icon className="size-4.5 shrink-0 text-ink" />
                         <span>{item.label}</span>
                       </div>
                       {item.showBadge && pendingCount > 0 && (
-                        <span className="hard-shadow-sm rounded-full bg-[#eba0ff] px-2 py-0.5 text-[11px] font-extrabold text-ink">
+                        <span className="flex size-5.5 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-[#FFB4D6] text-[11px] font-black text-ink">
                           {pendingCount}
                         </span>
                       )}
@@ -108,24 +98,29 @@ export function AdminSidebar({ pendingCount = 0 }: AdminSidebarProps) {
         </div>
 
         {/* Footer info & public portal link */}
-        <div className="border-t-[3px] border-ink bg-white p-3">
-          <div className="mb-3 rounded border-2 border-ink bg-[#fff9f2] p-2 text-xs">
+        <div className="mt-auto space-y-2.5 p-3.5 sm:p-4">
+          <div className="rounded-xl border-2 border-ink bg-white p-3 shadow-[3px_3px_0px_#0d0d0d]">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-ink">SSKS Service</span>
-              <span className="flex items-center gap-1 text-[11px] font-bold text-green-700">
-                <span className="inline-block size-2 rounded-full bg-green-500 animate-pulse" />
+              <div className="flex items-center gap-2">
+                <Box className="size-4 text-ink" />
+                <span className="text-xs font-black text-ink">SSKS Service</span>
+              </div>
+              <span className="flex items-center gap-1.5 text-xs font-black text-emerald-700">
+                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                 Active
               </span>
             </div>
-            <p className="mt-0.5 text-[11px] text-muted">Shared Skill Knowledge v1.0</p>
+            <p className="mt-0.5 text-[11px] font-medium text-[#5F5F5F]">
+              Shared Skill Knowledge v1.0
+            </p>
           </div>
 
           <Link
             href="/"
-            className="hard-shadow-sm flex w-full items-center justify-center gap-2 rounded border-2 border-ink bg-page px-3 py-2 text-xs font-bold text-ink transition-transform hover:-translate-y-0.5"
+            className="flex w-full items-center gap-2 rounded-xl border-2 border-ink bg-[#E9D5FF] px-3.5 py-2 text-xs font-black text-ink shadow-[3px_3px_0px_#0d0d0d] transition-transform hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_#0d0d0d] active:translate-y-0"
           >
-            <ExternalLink className="size-3.5" />
-            Exit to Skillaro App
+            <ExternalLink className="size-4 shrink-0 text-ink" />
+            <span>Exit to Skillaro App</span>
           </Link>
         </div>
       </div>
