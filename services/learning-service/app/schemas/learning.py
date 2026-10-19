@@ -1,4 +1,4 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Literal
 from pydantic import BaseModel, Field
 
 
@@ -150,3 +150,108 @@ class LearningTopic(BaseModel):
     title: str
     topic: str
     target_role: str
+
+
+# ---------------------------------------------------------------- Skillaro Edu Assistant
+LessonLevel = Literal["beginner", "intermediate", "advanced"]
+
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(..., max_length=6000)
+
+
+class EduChatRequest(BaseModel):
+    student_id: str
+    target_role: str
+    current_skills: List[str] = Field(default_factory=list)
+    learning_priority: Optional[str] = None
+    student_name: Optional[str] = Field(None, max_length=100)
+    message: str = Field(..., min_length=1, max_length=2000)
+    # Earlier turns of this conversation, oldest first (the last few are used)
+    history: List[ChatMessage] = Field(default_factory=list, max_length=20)
+    # The topic of the lesson in progress, if any, so follow-up questions stay on it
+    current_topic: Optional[str] = Field(None, max_length=100)
+
+
+class EduChatResponse(BaseModel):
+    reply: str
+    # Curriculum topics Skillaro suggests learning next (names the lesson endpoint accepts)
+    suggested_topics: List[str] = []
+    sources: List[SourceCitation] = []
+    latency_ms: float
+
+
+class LessonRequest(BaseModel):
+    student_id: str
+    target_role: str
+    current_skills: List[str] = Field(default_factory=list)
+    topic: str = Field(..., min_length=2, max_length=100)
+    level: LessonLevel = "beginner"
+
+
+class LessonSection(BaseModel):
+    heading: str
+    body: str
+
+
+class LessonResponse(BaseModel):
+    topic: str
+    level: LessonLevel
+    bloom_levels: List[str]             # the Bloom's taxonomy levels this stage teaches and checks
+    title: str
+    introduction: str
+    sections: List[LessonSection]
+    key_points: List[str]
+    example: Optional[str] = None
+    sources: List[SourceCitation] = []
+    latency_ms: float
+
+
+class QuizRequest(BaseModel):
+    student_id: str
+    target_role: str
+    topic: str = Field(..., min_length=2, max_length=100)
+    level: LessonLevel = "beginner"
+    # The lesson's key points, so the questions test what was taught
+    key_points: List[str] = Field(default_factory=list, max_length=12)
+
+
+class MultipleChoiceQuestion(BaseModel):
+    question: str
+    options: List[str]                  # four options
+    answer_index: int
+    explanation: str
+    bloom_level: str
+
+
+class OpenQuestion(BaseModel):
+    question: str
+    bloom_level: str
+    guidance: str                       # what a good answer covers (shown after answering)
+
+
+class QuizResponse(BaseModel):
+    topic: str
+    level: LessonLevel
+    mcqs: List[MultipleChoiceQuestion]
+    open_questions: List[OpenQuestion]
+    latency_ms: float
+
+
+class GradeAnswerRequest(BaseModel):
+    student_id: str
+    target_role: str
+    topic: str = Field(..., max_length=100)
+    level: LessonLevel = "beginner"
+    question: str = Field(..., max_length=1000)
+    bloom_level: str = Field(..., max_length=20)
+    guidance: str = Field("", max_length=1500)
+    answer: str = Field(..., min_length=1, max_length=4000)
+
+
+class GradeAnswerResponse(BaseModel):
+    score: int = Field(..., ge=0, le=100)
+    verdict: Literal["excellent", "good", "partial", "needs_work"]
+    feedback: str
+    model_answer: str

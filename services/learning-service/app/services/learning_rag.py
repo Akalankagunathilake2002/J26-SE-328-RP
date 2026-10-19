@@ -13,6 +13,10 @@ from app.schemas.learning import (
 )
 
 
+class LLMUnavailable(Exception):
+    pass
+
+
 class LearningRAGService:
     def __init__(self):
         self._llm = None
@@ -47,18 +51,16 @@ class LearningRAGService:
             self._gemini_client = None
             self._llm = None
 
-    async def execute_rag(self, session: AsyncSession, request: LearningQueryRequest) -> LearningQueryResponse:
-        """
-        Executes the full Personalized Learning RAG pipeline:
-        Query -> pgvector Semantic Search -> Grounded Prompt Construction -> LLM -> Grounded Output
-        """
+    async def retrieve_context(self, session: AsyncSession, query: str, target_role: str) -> Dict[str, Any]:
+        """Hybrid retrieval, re-ranking and context compression for a query: the grounding shared by the
+        learning query, the Edu Assistant chat and its lessons."""
         # Step 1: Stage-1 Candidate Retrieval (Top-10 via Hybrid RRF)
         t_retrieval_start = time.perf_counter()
         candidate_pool_size = max(settings.TOP_K * 2, 8)
         initial_candidates = await vector_store_service.search_learning_chunks(
             session=session,
-            query=request.question,
-            target_role=request.target_role,
+            query=query,
+            target_role=target_role,
             top_k=candidate_pool_size
         )
         retrieval_latency_ms = round((time.perf_counter() - t_retrieval_start) * 1000, 2)
@@ -67,7 +69,7 @@ class LearningRAGService:
         from app.services.reranker import reranker_service
         t_rerank_start = time.perf_counter()
         top_reranked = reranker_service.rerank_candidates(
-            query=request.question,
+            query=query,
             candidates=initial_candidates,
             top_k=settings.TOP_K
         )
@@ -125,7 +127,26 @@ class LearningRAGService:
             ((total_orig_tokens - total_comp_tokens) / max(total_orig_tokens, 1)) * 100, 1
         ) if total_orig_tokens > 0 else 0.0
 
-        formatted_context = "\n\n".join(context_texts) if context_texts else "No specific documents found."
+        return {
+            "items": top_reranked,
+            "sources": sources,
+            "debug_chunks": debug_chunks,
+            "context": "\n\n".join(context_texts) if context_texts else "No specific documents found.",
+            "retrieval_latency_ms": retrieval_latency_ms,
+            "rerank_latency_ms": rerank_latency_ms,
+            "tokens_saved_percent": tokens_saved_pct,
+        }
+
+    async def execute_rag(self, session: AsyncSession, request: LearningQueryRequest) -> LearningQueryResponse:
+        """
+        Executes the full Personalized Learning RAG pipeline:
+        Query -> pgvector Semantic Search -> Grounded Prompt Construction -> LLM -> Grounded Output
+        """
+        ctx = await self.retrieve_context(session, request.question, request.target_role)
+        top_reranked, sources, debug_chunks = ctx["items"], ctx["sources"], ctx["debug_chunks"]
+        retrieval_latency_ms, rerank_latency_ms = ctx["retrieval_latency_ms"], ctx["rerank_latency_ms"]
+        tokens_saved_pct = ctx["tokens_saved_percent"]
+        formatted_context = ctx["context"]
 
         # Step 4: Grounded Generation
         t_gen_start = time.perf_counter()
@@ -214,6 +235,37 @@ class LearningRAGService:
             "answer": baseline_text,
             "latency_ms": latency_ms
         }
+
+    async def generate_json(self, system_prompt: str, user_prompt: str, max_tokens: int = 900,
+                            temperature: float | None = None) -> Dict[str, Any]:
+        """A JSON object from the configured LLM. Raises LLMUnavailable when there is none or it fails,
+        so callers decide how to degrade."""
+        temperature = settings.LLM_TEMPERATURE if temperature is None else temperature
+        try:
+            if self._llm == "local":
+                from app.services.local_llm import local_llm
+                return await local_llm.chat_json(system_prompt, user_prompt, temperature=temperature,
+                                                 max_tokens=max_tokens)
+            if self._llm == "gemini" and self._gemini_client:
+                from google.genai import types
+                raw = self._gemini_client.models.generate_content(
+                    model=settings.LLM_MODEL or "gemini-2.5-flash",
+                    contents=f"{system_prompt}\n\n{user_prompt}",
+                    config=types.GenerateContentConfig(temperature=temperature,
+                                                       response_mime_type="application/json"),
+                ).text
+            elif self._llm:
+                from langchain_core.messages import SystemMessage, HumanMessage
+                raw = (await self._llm.ainvoke([SystemMessage(content=system_prompt),
+                                                HumanMessage(content=user_prompt)])).content
+            else:
+                raise LLMUnavailable("No LLM is configured (LLM_PROVIDER)")
+            start, end = raw.find("{"), raw.rfind("}")
+            return json.loads(raw[start:end + 1])
+        except LLMUnavailable:
+            raise
+        except Exception as e:
+            raise LLMUnavailable(f"The language model didn't respond: {e}") from e
 
     async def _generate_response(
         self,
