@@ -7,6 +7,7 @@ import { CareerReadinessResultModal } from "./CareerReadinessResultModal";
 import { type AnalysisHistoryRecord, getAnalysisDetail, RECENT_ANALYSES } from "./mockData";
 
 interface RecentAnalysisHistoryProps {
+  userId?: string;
   onViewDetails?: (item: AnalysisHistoryRecord) => void;
 }
 

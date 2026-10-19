@@ -13,6 +13,7 @@ import {
 } from "./mockData";
 
 interface StartAnalysisPanelProps {
+  userId?: string;
   onStartAnalysis?: (roleId: string) => void;
 }
 
