@@ -81,7 +81,7 @@ class AnalysisService:
             user_skill_profile_id=user_profile.id,
             industry_profile_id=industry_profile.id,
             snapshot_id=snapshot.snapshot_id,
-            matching_method=request.matching_method,
+            matching_method=request.matching_method or MatchingMethod.RELATIONSHIP_AWARE.value,
             scoring_config_version=request.scoring_config_version,
             status=AnalysisStatus.PENDING.value,
             started_at=start_time,
@@ -104,16 +104,6 @@ class AnalysisService:
             validate_user_skill_profile(user_profile)
 
             # 5. Prepare algorithm inputs
-            method_key = request.matching_method.upper()
-            if method_key not in MatchingMethod.__members__:
-                raise ValueError(
-                    f"Unsupported matching method: '{request.matching_method}'"
-                )
-            policy = MatchingPolicy(
-                method=MatchingMethod[method_key],
-                version=request.scoring_config_version,
-            )
-
             req_inputs = [
                 RequirementInput(
                     requirement_id=r.id,
@@ -139,20 +129,6 @@ class AnalysisService:
                 for s in user_profile.skills
             ]
 
-            # Step 1: Matching
-            matching_results = match_skills(
-                req_inputs,
-                stu_inputs,
-                aliases=aliases,
-                relationships=relationships,
-                policy=policy,
-            )
-            matching_by_req_id = {
-                str(m.industry_requirement_id): m for m in matching_results
-            }
-            student_skill_by_id = {str(s.id): s for s in user_profile.skills}
-
-            # Step 2: Readiness Scoring
             req_scoring_data = [
                 {
                     "id": r.id,
@@ -173,11 +149,50 @@ class AnalysisService:
                 for s in user_profile.skills
             ]
 
+            # Step 1: Automatic Dual Matching
+            # Run baseline exact matching
+            baseline_policy = MatchingPolicy(
+                method=MatchingMethod.EXACT_BASELINE,
+                version=request.scoring_config_version,
+            )
+            baseline_matching_results = match_skills(
+                req_inputs,
+                stu_inputs,
+                aliases=aliases,
+                relationships=relationships,
+                policy=baseline_policy,
+            )
+            baseline_readiness = score_readiness(
+                requirements=req_scoring_data,
+                matching_results=baseline_matching_results,
+                student_skills=stu_scoring_data,
+                matching_method=MatchingMethod.EXACT_BASELINE.value,
+                scoring_version=request.scoring_config_version,
+            )
+
+            # Run relationship-aware matching (exact matches take precedence, augmented by verified taxonomy relationships)
+            rel_policy = MatchingPolicy(
+                method=MatchingMethod.RELATIONSHIP_AWARE,
+                version=request.scoring_config_version,
+            )
+            matching_results = match_skills(
+                req_inputs,
+                stu_inputs,
+                aliases=aliases,
+                relationships=relationships,
+                policy=rel_policy,
+            )
+            matching_by_req_id = {
+                str(m.industry_requirement_id): m for m in matching_results
+            }
+            student_skill_by_id = {str(s.id): s for s in user_profile.skills}
+
+            # Step 2: Primary Readiness Scoring
             overall_readiness = score_readiness(
                 requirements=req_scoring_data,
                 matching_results=matching_results,
                 student_skills=stu_scoring_data,
-                matching_method=request.matching_method,
+                matching_method=MatchingMethod.RELATIONSHIP_AWARE.value,
                 scoring_version=request.scoring_config_version,
             )
 
@@ -200,13 +215,37 @@ class AnalysisService:
                 or industry_profile.role_name
                 or "Target Industry Role"
             )
+            resolved_role_id = (
+                industry_profile.role_id
+                or industry_profile.candidate_role_id
+                or str(industry_profile.id)
+            )
             c04_payload = format_c04_payload(
                 priority_skills=priorities,
                 role_name=role_title,
                 readiness_score=overall_readiness.overall_readiness,
                 analysis_id=analysis.analysis_id,
                 user_id=user_profile.user_id,
-                role_id=industry_profile.role_id,
+                role_id=resolved_role_id,
+            )
+            c04_payload["baselineReadinessScore"] = (
+                round(float(baseline_readiness.overall_readiness), 4)
+                if baseline_readiness.overall_readiness is not None
+                else None
+            )
+
+            # Build baseline C04 payload for comparison persistence
+            baseline_gaps = calculate_skill_gaps(baseline_readiness.requirement_results)
+            baseline_priorities = calculate_learning_priorities(
+                baseline_gaps, include_covered=False
+            )
+            baseline_payload = format_c04_payload(
+                priority_skills=baseline_priorities,
+                role_name=role_title,
+                readiness_score=baseline_readiness.overall_readiness,
+                analysis_id=analysis.analysis_id,
+                user_id=user_profile.user_id,
+                role_id=resolved_role_id,
             )
 
             # Step 6: Atomic Persistence of Detailed Results
@@ -278,10 +317,20 @@ class AnalysisService:
                 analysis_id=analysis.analysis_id,
                 report_version="1.0",
                 report_payload=c04_payload,
-                generation_method=request.matching_method,
+                generation_method=MatchingMethod.RELATIONSHIP_AWARE.value,
                 status="READY",
             )
             session.add(report)
+
+            baseline_report = AnalysisReport(
+                id=uuid.uuid4(),
+                analysis_id=analysis.analysis_id,
+                report_version="exact_baseline_v1.0",
+                report_payload=baseline_payload,
+                generation_method=MatchingMethod.EXACT_BASELINE.value,
+                status="READY",
+            )
+            session.add(baseline_report)
 
             # Complete analysis record atomically with child results and report
             complete_time = datetime.now(UTC)

@@ -1,3 +1,5 @@
+import os
+import sys
 from collections.abc import AsyncIterator
 from functools import lru_cache
 
@@ -15,7 +17,18 @@ from app.db.base import Base
 
 @lru_cache
 def get_engine() -> AsyncEngine:
-    return create_async_engine(get_settings().database_url, pool_pre_ping=True)
+    db_url = get_settings().database_url
+
+    # Prevent test execution from connecting to the development database
+    if "pytest" in sys.modules or os.environ.get("PYTEST_CURRENT_TEST"):
+        db_name = db_url.split("/")[-1].split("?")[0]
+        if db_name == "readiness_engine_db":
+            raise RuntimeError(
+                f"Safety check failed: Attempted to connect to development database '{db_name}' "
+                "during test execution. Tests must be configured with a dedicated test database."
+            )
+
+    return create_async_engine(db_url, pool_pre_ping=True)
 
 
 @lru_cache

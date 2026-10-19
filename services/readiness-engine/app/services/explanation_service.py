@@ -165,20 +165,21 @@ def build_skill_explanation(
             f"No demonstrated skill found matching required skill '{req_name}' "
             f"(Required: {req_prof}). Leaves a full capability gap of {gap_val:.2f}."
         )
-    elif sr.match_type == "EXACT":
+    elif sr.match_type in ("EXACT", "ALIAS"):
+        match_prefix = "Verified alias match" if sr.match_type == "ALIAS" else "Direct exact match"
         if is_satisfied:
             match_expl = (
-                f"Direct exact match for '{req_name}'. Demonstrated proficiency "
+                f"{match_prefix} for '{req_name}'. Demonstrated proficiency "
                 f"({user_prof or 'UNSPECIFIED'}) meets or exceeds required proficiency "
                 f"({req_prof}) with full coverage credit (1.00)."
             )
         else:
             match_expl = (
-                f"Direct exact match for '{req_name}'. Demonstrated proficiency "
+                f"{match_prefix} for '{req_name}'. Demonstrated proficiency "
                 f"({user_prof or 'None'}) leaves a capability gap of {gap_val:.2f} "
                 f"against required proficiency ({req_prof})."
             )
-    elif sr.match_type == "RELATIONSHIP":
+    elif sr.match_type in ("RELATIONSHIP", "EQUIVALENT", "PARTIAL_RELATIONSHIP") or sr.relationship_id:
         rel_id = sr.relationship_id or "VERIFIED_RELATIONSHIP"
         matched_name = sr.matched_skill_name or "Related Skill"
         if is_satisfied:
@@ -262,7 +263,10 @@ def build_relationship_explanations(
     seen_relations: set[str] = set()
 
     for sr in skill_results:
-        if sr.match_type == "RELATIONSHIP" and sr.relationship_id:
+        if (
+            sr.relationship_id
+            or sr.match_type in ("RELATIONSHIP", "EQUIVALENT", "PARTIAL_RELATIONSHIP")
+        ) and sr.relationship_id:
             rel_key = (
                 f"{sr.relationship_id}:{sr.matched_skill_name}:{sr.required_skill_name}"
             )

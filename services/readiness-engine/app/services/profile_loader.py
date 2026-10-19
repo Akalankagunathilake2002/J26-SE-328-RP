@@ -1,6 +1,5 @@
 import json
 import uuid
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -239,88 +238,78 @@ async def import_industry_profile_from_fixture(
     return created_role
 
 
-# Load student skill profile from the database without silent fixture fallback
+# Load student skill profile directly from the database without automatic seeding
 async def resolve_user_profile(
     session: AsyncSession,
     profile_id: uuid.UUID | None = None,
     user_id: uuid.UUID | None = None,
     allow_fixture_fallback: bool = False,
 ) -> UserSkillProfile:
+    if profile_id is None and user_id is None:
+        raise ProfileNotFoundError(
+            "Ambiguous profile selection: either 'profile_id' or 'user_id' must be specified",
+            profile_type="user_skill_profile",
+        )
+
     stmt = select(UserSkillProfile).options(selectinload(UserSkillProfile.skills))
 
     if profile_id is not None:
         stmt = stmt.where(UserSkillProfile.id == profile_id)
-    elif user_id is not None:
+    else:
         stmt = stmt.where(UserSkillProfile.user_id == user_id).order_by(
             UserSkillProfile.received_at.desc()
         )
-    else:
-        stmt = stmt.order_by(UserSkillProfile.received_at.desc())
 
     result = await session.execute(stmt)
     profile = result.scalars().first()
     if profile is not None:
         return profile
 
-    if not allow_fixture_fallback:
-        target = (
-            f"profile_id={profile_id}"
-            if profile_id
-            else (f"user_id={user_id}" if user_id else "latest")
-        )
-        raise ProfileNotFoundError(
-            f"User skill profile could not be resolved from database ({target})",
-            profile_type="user_skill_profile",
-            identifier=str(profile_id or user_id or "latest"),
-        )
-
-    return await import_user_skill_profile_from_fixture(
-        session=session, profile_id=profile_id, user_id=user_id
+    target = f"profile_id={profile_id}" if profile_id else f"user_id={user_id}"
+    raise ProfileNotFoundError(
+        f"User skill profile could not be resolved from database ({target})",
+        profile_type="user_skill_profile",
+        identifier=str(profile_id or user_id),
     )
 
 
-# Load industry role profile from the database without silent fixture fallback
+# Load industry role profile directly from the database without automatic seeding
 async def resolve_industry_profile(
     session: AsyncSession,
     profile_id: uuid.UUID | None = None,
     role_id: str | None = None,
     allow_fixture_fallback: bool = False,
 ) -> IndustryProfile:
+    if profile_id is None and role_id is None:
+        raise ProfileNotFoundError(
+            "Ambiguous profile selection: either 'profile_id' or 'role_id' must be specified",
+            profile_type="industry_profile",
+        )
+
     stmt = select(IndustryProfile).options(selectinload(IndustryProfile.requirements))
 
     if profile_id is not None:
         stmt = stmt.where(IndustryProfile.id == profile_id)
-    elif role_id is not None:
+    else:
         stmt = stmt.where(
             (IndustryProfile.role_id == role_id)
             | (IndustryProfile.candidate_role_id == role_id)
         ).order_by(IndustryProfile.received_at.desc())
-    else:
-        stmt = stmt.order_by(IndustryProfile.received_at.desc())
 
     result = await session.execute(stmt)
     profile = result.scalars().first()
     if profile is not None:
         return profile
 
-    if not allow_fixture_fallback:
-        target = (
-            f"profile_id={profile_id}"
-            if profile_id
-            else (f"role_id={role_id}" if role_id else "latest")
-        )
-        raise ProfileNotFoundError(
-            f"Industry role profile could not be resolved from database ({target})",
-            profile_type="industry_profile",
-            identifier=str(profile_id or role_id or "latest"),
-        )
-
-    return await import_industry_profile_from_fixture(
-        session=session, role_id=role_id, profile_id=profile_id
+    target = f"profile_id={profile_id}" if profile_id else f"role_id={role_id}"
+    raise ProfileNotFoundError(
+        f"Industry role profile could not be resolved from database ({target})",
+        profile_type="industry_profile",
+        identifier=str(profile_id or role_id),
     )
 
 
-# Load knowledge snapshot from database without silent dummy fallback
+# Load knowledge snapshot from database without fallback creation
 async def resolve_snapshot(
     session: AsyncSession,
     snapshot_id: uuid.UUID | None = None,
@@ -339,25 +328,11 @@ async def resolve_snapshot(
     if snapshot is not None:
         return snapshot
 
-    if not allow_fixture_fallback:
-        target = f"snapshot_id={snapshot_id}" if snapshot_id else "active"
-        raise SnapshotNotFoundError(
-            f"Knowledge snapshot could not be found in database ({target})",
-            snapshot_id=str(snapshot_id or "active"),
-        )
-
-    fallback_id = snapshot_id or uuid.UUID("49a854a1-af7f-5ed0-b0e4-f45ade951008")
-    created_snapshot = KnowledgeSnapshot(
-        snapshot_id=fallback_id,
-        version="v20261018-fixture-snapshot",
-        ssks_snapshot_id="SNAP-FIXTURE-001",
-        generated_at=datetime.now(UTC),
-        status="ACTIVE",
-        is_active=True,
+    target = f"snapshot_id={snapshot_id}" if snapshot_id else "active"
+    raise SnapshotNotFoundError(
+        f"Knowledge snapshot could not be found in database ({target})",
+        snapshot_id=str(snapshot_id or "active"),
     )
-    session.add(created_snapshot)
-    await session.flush()
-    return created_snapshot
 
 
 # Query cached aliases and relationships from the active snapshot

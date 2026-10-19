@@ -188,6 +188,20 @@ async def get_analysis(
         analysis.reports[0].report_payload if analysis.reports else None,
     )
 
+    baseline_payload = next(
+        (
+            r.report_payload
+            for r in analysis.reports
+            if r.report_version == "exact_baseline_v1.0"
+        ),
+        None,
+    )
+    baseline_score = (
+        baseline_payload.get("readinessScore")
+        if baseline_payload
+        else (c04_payload.get("baselineReadinessScore") if c04_payload else None)
+    )
+
     return AnalysisDetailResponse(
         analysis_id=analysis.analysis_id,
         user_id=analysis.user_id,
@@ -197,6 +211,7 @@ async def get_analysis(
         matching_method=analysis.matching_method,
         scoring_config_version=analysis.scoring_config_version,
         readiness_score=analysis.readiness_score,
+        baseline_readiness_score=baseline_score,
         status=analysis.status,
         started_at=analysis.started_at,
         completed_at=analysis.completed_at,
