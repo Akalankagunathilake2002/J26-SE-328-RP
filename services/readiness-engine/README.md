@@ -331,7 +331,7 @@ flowchart LR
 
 ## 8. Configuration & Environment Variables
 
-Settings are loaded through Pydantic Settings with automatic `.env` resolution:
+Settings are loaded through Pydantic Settings and configured via environment variables:
 
 | Variable | Type | Default | Description |
 |---|---|---|---|

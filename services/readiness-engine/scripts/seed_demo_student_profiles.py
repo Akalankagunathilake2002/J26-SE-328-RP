@@ -1,25 +1,15 @@
 import asyncio
 import json
 import logging
-import os
 import sys
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-# Add project root to sys.path and load service .env if running from repo root
+# Add project root to sys.path
 BASE_DIR = Path(__file__).resolve().parents[1]
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
-
-env_file = BASE_DIR / ".env"
-if env_file.exists():
-    with open(env_file, encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if line and not line.startswith("#") and "=" in line:
-                k, v = line.split("=", 1)
-                os.environ.setdefault(k.strip(), v.strip())
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
