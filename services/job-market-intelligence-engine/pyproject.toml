@@ -13,6 +13,7 @@ dependencies = [
     "Pillow>=10.4",
     "fastapi>=0.115",  # the Market Pulse API (app/main.py)
     "uvicorn[standard]>=0.30",
+    "SQLAlchemy>=2.0",  # the PostgreSQL loader (app/database/)
 ]
 
 [project.optional-dependencies]
@@ -24,6 +25,8 @@ dev = [
 # PyTorch don't support 3.14 yet. ner-transformers is only for the JobBERT model.
 ner = ["spacy>=3.8,<4"]
 ner-transformers = ["transformers>=4.45", "torch>=2.4"]
+# PostgreSQL driver for SKILLBRIDGE_DATABASE_URL (postgresql+psycopg://...).
+db = ["psycopg[binary]>=3.2"]
 
 [build-system]
 requires = ["setuptools>=69"]

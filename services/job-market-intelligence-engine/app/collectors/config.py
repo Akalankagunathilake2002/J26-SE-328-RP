@@ -8,6 +8,8 @@ Environment variables (or a git-ignored ``.env`` file in the service folder):
 - ``SKILLBRIDGE_NER_MODEL``: folder of the trained NER model, needed for ``ner`` and ``both``.
 - ``SKILLBRIDGE_SSKS_URL``: the Shared Skill Knowledge Service, e.g. http://localhost:8080/ssks.
   Not set: skills are not linked to SSKS IDs.
+- ``SKILLBRIDGE_DATABASE_URL``: PostgreSQL to load the ads into (see app/database/loader.py).
+  Not set: data stays in files only.
 """
 
 from __future__ import annotations
@@ -36,6 +38,7 @@ class Settings:
     skill_extractor: str = "lexicon"
     ner_model: Path | None = None
     ssks_url: str | None = None
+    database_url: str | None = None
 
 
 def load_settings(env: Mapping[str, str] | None = None, env_file: Path = DEFAULT_ENV_FILE) -> Settings:
@@ -51,6 +54,7 @@ def load_settings(env: Mapping[str, str] | None = None, env_file: Path = DEFAULT
         skill_extractor=extractor,
         ner_model=Path(ner_model) if ner_model else None,
         ssks_url=values.get("SKILLBRIDGE_SSKS_URL") or None,
+        database_url=values.get("SKILLBRIDGE_DATABASE_URL") or None,
     )
 
 

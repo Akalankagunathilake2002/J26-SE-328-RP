@@ -63,6 +63,7 @@ class Storage:
         *,
         image: bytes | None = None,
         image_extension: str | None = None,
+        image_url: str | None = None,
     ) -> Path:
         folder = self.raw_dir / entry.site / entry.sector
         folder.mkdir(parents=True, exist_ok=True)
@@ -80,6 +81,7 @@ class Storage:
             "categories": [entry.category],
             "collected_at": collected_at,
             "image_file": image_file,
+            "image_url": image_url,  # kept so a failed flyer download can be retried
             "status": ACTIVE,
             "last_seen_at": collected_at,
             "status_history": [{"status": ACTIVE, "at": collected_at}],
@@ -115,6 +117,34 @@ class Storage:
                     image_path=html_path.parent / image_file if image_file else None,
                     meta=meta,
                 )
+
+    def raw_ad(self, site: str, job_id: str) -> RawAd | None:
+        html_path = self.find_raw(site, job_id)
+        if html_path is None:
+            return None
+        meta = self._read_meta(html_path)
+        image_file = meta.get("image_file")
+        return RawAd(site, job_id, html_path, html_path.parent / image_file if image_file else None, meta)
+
+    def save_image(self, raw: RawAd, image: bytes, image_extension: str | None) -> Path:
+        """Store a (re)downloaded flyer for a stored ad, replacing a broken one."""
+        path = raw.html_path.with_name(f"{raw.job_id}{image_extension or '.img'}")
+        if raw.image_path is not None and raw.image_path != path:
+            raw.image_path.unlink(missing_ok=True)
+        path.write_bytes(image)
+        raw.meta["image_file"] = path.name
+        raw.image_path = path
+        self.save_meta(raw)
+        return path
+
+    def forget_image(self, raw: RawAd, image_url: str) -> None:
+        """Remove a stored flyer that isn't an image; its URL is kept so a later sync can retry."""
+        if raw.image_path is not None:
+            raw.image_path.unlink(missing_ok=True)
+        raw.meta["image_file"] = None
+        raw.meta["image_url"] = image_url
+        raw.image_path = None
+        self.save_meta(raw)
 
     def save_meta(self, raw: RawAd) -> None:
         """Write back a stored ad's meta file after its status or listing details changed."""

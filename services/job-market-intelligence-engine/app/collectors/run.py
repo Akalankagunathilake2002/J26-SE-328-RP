@@ -10,7 +10,8 @@ a row to data/processed/sync_log.csv. scripts/sync.sh runs it with a log file.
 
 Image ads get their text from the saved flyer with OCR (Tesseract; skip with --no-ocr).
 Every run ends by refreshing data/processed/quality_report.md and the skill profile
-(skill_profile.md and skill_profile.json).
+(skill_profile.md and skill_profile.json), and, with SKILLBRIDGE_DATABASE_URL set, by loading
+everything into PostgreSQL (app/database/loader.py).
 
 The User-Agent names the project. Set SKILLBRIDGE_CONTACT (in the environment or the service's
 .env file) to add a contact address to it.
@@ -121,7 +122,27 @@ def main(
         log.info("%s: data quality report in %s", name, write_report(storage, name, sector_names))
     extraction = extraction_from_settings(settings, storage)
     log.info("skill profile per job role in %s", write_profile(storage, names, extraction=extraction)[0])
+    if settings.database_url:
+        load_database(settings.database_url, storage, names)
     return exit_code
+
+
+def load_database(url: str, storage: Storage, sites: list[str]) -> None:
+    """Load into PostgreSQL. A failure is logged, never fatal: the files are complete, and the next
+    run loads everything again."""
+    try:
+        from sqlalchemy.exc import SQLAlchemyError
+
+        from app.database.loader import connect, load
+    except ImportError as exc:
+        log.error("database not updated: %s (pip install -e \".[db]\")", exc)
+        return
+    try:
+        result = load(connect(url), storage, sites)
+    except (SQLAlchemyError, ImportError) as exc:  # the driver is imported when connecting
+        log.error("database not updated (%s); the next run will load everything", type(exc).__name__)
+        return
+    log.info("database: %d ads and %d skill mentions loaded", result.ads, result.skill_mentions)
 
 
 def log_result(site: str, result: CollectResult) -> None:
@@ -134,8 +155,8 @@ def log_result(site: str, result: CollectResult) -> None:
                 "save a listing page and check the site's parse_listing.", site, sector
             )
     log.info(
-        "%s: %d already stored, %d gone (404), %d skipped",
-        site, result.already_stored, result.gone, len(result.skipped),
+        "%s: %d already stored, %d gone (404), %d skipped, %d flyers downloaded again",
+        site, result.already_stored, result.gone, len(result.skipped), result.repaired,
     )
     for skipped in result.skipped:
         log.info("  skipped %s", skipped)
