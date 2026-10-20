@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import type { CandidateRelationshipItem } from "@/lib/ssksApi";
-import { reviewCandidateRelationship, fetchSsksCandidateRelationships } from "@/lib/ssksApi";
+import { useState, useMemo, useEffect } from "react";
+import type { CandidateRelationshipItem, SkillItem } from "@/lib/ssksApi";
+import {
+  reviewCandidateRelationship,
+  fetchSsksCandidateRelationships,
+  fetchSsksSkillsAll,
+} from "@/lib/ssksApi";
 import {
   Clock,
   CheckCircle2,
@@ -21,6 +25,7 @@ import {
 
 interface AdminCandidatesViewProps {
   initialCandidates: CandidateRelationshipItem[];
+  initialSkills?: SkillItem[];
   reviewerId?: string;
 }
 
@@ -28,8 +33,73 @@ type CandidateTab = "RELATIONSHIPS" | "ENTITIES";
 
 const ITEMS_PER_PAGE = 10;
 
+// In-memory module cache to avoid refetching skill catalogue repeatedly
+let cachedSkillsCatalogue: Map<string, string> | null = null;
+
+// Human-readable labels for SSKS relationship types
+export function formatRelationshipType(type: string): string {
+  const map: Record<string, string> = {
+    EQUIVALENT_TO: "Equivalent To",
+    BROADER_THAN: "Broader Than",
+    NARROWER_THAN: "Narrower Than",
+    PART_OF: "Part Of",
+    PREREQUISITE_OF: "Prerequisite Of",
+    RELATED_TO: "Related To",
+  };
+  return map[type] || type.replace(/_/g, " ");
+}
+
+// Background badge colors aligned with Shared Knowledge taxonomy view
+export function getRelationshipBadgeColor(type: string): string {
+  switch (type) {
+    case "EQUIVALENT_TO":
+      return "bg-[#7df9ff]";
+    case "BROADER_THAN":
+    case "NARROWER_THAN":
+      return "bg-[#d0ffa4]";
+    case "PREREQUISITE_OF":
+      return "bg-[#ffde4d]";
+    case "PART_OF":
+      return "bg-[#edddfc]";
+    default:
+      return "bg-[#ffefdc]";
+  }
+}
+
+// Renders skill card displaying preferred_name prominently with canonical ID underneath
+function renderSkillBadge(skillId: string, skillsMap: Map<string, string>, isLoading: boolean) {
+  const hasSkill = skillsMap.has(skillId);
+  const skillName = hasSkill ? skillsMap.get(skillId)! : `Unknown skill (${skillId})`;
+
+  return (
+    <div className="hard-shadow-sm flex flex-col justify-center rounded-lg border-2 border-ink bg-[#fff9f2] px-3.5 py-1.5 min-w-[140px] sm:min-w-[170px] max-w-[280px]">
+      <div className="flex items-center gap-1.5">
+        {isLoading && !hasSkill ? (
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold text-muted animate-pulse">
+            <Loader2 className="size-3 animate-spin text-ink" />
+            <span>Loading skill...</span>
+          </span>
+        ) : (
+          <span
+            className={`text-xs sm:text-sm font-black truncate text-ink ${
+              !hasSkill ? "italic text-ink/75" : ""
+            }`}
+            title={skillName}
+          >
+            {skillName}
+          </span>
+        )}
+      </div>
+      <span className="font-mono text-[10px] sm:text-[11px] font-bold text-muted mt-0.5 tracking-tight">
+        {skillId}
+      </span>
+    </div>
+  );
+}
+
 export function AdminCandidatesView({
   initialCandidates,
+  initialSkills,
   reviewerId = "admin-reviewer",
 }: AdminCandidatesViewProps) {
   const [activeTab, setActiveTab] = useState<CandidateTab>("RELATIONSHIPS");
@@ -49,20 +119,80 @@ export function AdminCandidatesView({
     message: string;
   } | null>(null);
 
+  // Skill lookup map and fetch states
+  const [skillsMap, setSkillsMap] = useState<Map<string, string>>(() => {
+    if (initialSkills && initialSkills.length > 0) {
+      const map = new Map(initialSkills.map((s) => [s.skill_id, s.preferred_name]));
+      cachedSkillsCatalogue = map;
+      return map;
+    }
+    return cachedSkillsCatalogue || new Map();
+  });
+  const [isSkillsLoading, setIsSkillsLoading] = useState<boolean>(() => {
+    if (initialSkills && initialSkills.length > 0) return false;
+    return !cachedSkillsCatalogue || cachedSkillsCatalogue.size === 0;
+  });
+  const [skillsError, setSkillsError] = useState<string | null>(null);
+
+  // Retrieve canonical skills once if not already provided or cached
+  useEffect(() => {
+    if (skillsMap.size > 0) {
+      return;
+    }
+
+    let isMounted = true;
+    fetchSsksSkillsAll()
+      .then((skills) => {
+        if (isMounted) {
+          const map = new Map(skills.map((s) => [s.skill_id, s.preferred_name]));
+          cachedSkillsCatalogue = map;
+          setSkillsMap(map);
+          setIsSkillsLoading(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (isMounted) {
+          const msg = err instanceof Error ? err.message : "Failed to load canonical skills";
+          setSkillsError(msg);
+          setIsSkillsLoading(false);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [skillsMap.size]);
+
   const pendingCount = useMemo(() => {
     return candidates.filter((c) => c.review_status === "PENDING").length;
   }, [candidates]);
 
-  // Refresh candidate relationships from API
+  // Refresh candidate relationships and skills from API
   const handleRefresh = async () => {
     setIsRefreshing(true);
     setNotification(null);
     try {
-      const data = await fetchSsksCandidateRelationships({ limit: 500 });
-      setCandidates(data);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to refresh candidates";
-      setNotification({ type: "error", message: msg });
+      const [candsResult, skillsResult] = await Promise.allSettled([
+        fetchSsksCandidateRelationships({ limit: 500 }),
+        fetchSsksSkillsAll(),
+      ]);
+
+      if (candsResult.status === "fulfilled") {
+        setCandidates(candsResult.value);
+      } else {
+        const msg = candsResult.reason instanceof Error ? candsResult.reason.message : "Failed to refresh candidates";
+        setNotification({ type: "error", message: msg });
+      }
+
+      if (skillsResult.status === "fulfilled") {
+        const map = new Map(skillsResult.value.map((s) => [s.skill_id, s.preferred_name]));
+        cachedSkillsCatalogue = map;
+        setSkillsMap(map);
+        setSkillsError(null);
+      } else {
+        const msg = skillsResult.reason instanceof Error ? skillsResult.reason.message : "Failed to refresh canonical skills";
+        setSkillsError(msg);
+      }
     } finally {
       setIsRefreshing(false);
     }
@@ -74,8 +204,13 @@ export function AdminCandidatesView({
         statusFilter === "ALL" ? true : item.review_status === statusFilter;
 
       const q = searchTerm.toLowerCase().trim();
+      const sourceName = (skillsMap.get(item.source_skill_id) || "").toLowerCase();
+      const targetName = (skillsMap.get(item.target_skill_id) || "").toLowerCase();
+
       const matchesSearch =
         !q ||
+        sourceName.includes(q) ||
+        targetName.includes(q) ||
         item.source_skill_id.toLowerCase().includes(q) ||
         item.target_skill_id.toLowerCase().includes(q) ||
         item.proposed_relationship_type.toLowerCase().includes(q) ||
@@ -84,7 +219,7 @@ export function AdminCandidatesView({
 
       return matchesStatus && matchesSearch;
     });
-  }, [candidates, statusFilter, searchTerm]);
+  }, [candidates, statusFilter, searchTerm, skillsMap]);
 
   // 10 items per page pagination
   const totalPages = Math.ceil(filteredCandidates.length / ITEMS_PER_PAGE) || 1;
@@ -194,7 +329,7 @@ export function AdminCandidatesView({
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="hard-shadow-sm flex items-center gap-1.5 self-start sm:self-auto rounded-lg border-2 border-ink bg-[#fff9f2] px-3 py-2 text-xs font-bold text-ink hover:bg-[#ffefdc] disabled:opacity-50"
+            className="hard-shadow-sm flex items-center gap-1.5 self-start sm:self-auto rounded-lg border-2 border-ink bg-[#fff9f2] px-3 py-2 text-xs font-bold text-ink hover:bg-[#ffefdc] disabled:opacity-50 cursor-pointer"
           >
             <RotateCcw className={`size-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
             Refresh Queue
@@ -205,7 +340,7 @@ export function AdminCandidatesView({
         <div className="mt-6 flex flex-wrap gap-2 border-b-2 border-ink/10 pb-1">
           <button
             onClick={() => setActiveTab("RELATIONSHIPS")}
-            className={`hard-shadow-sm flex items-center gap-2 rounded-lg border-2 px-4 py-2 text-xs font-black uppercase tracking-wider transition-all ${
+            className={`hard-shadow-sm flex items-center gap-2 rounded-lg border-2 px-4 py-2 text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === "RELATIONSHIPS"
                 ? "border-ink bg-[#7df9ff] text-ink translate-y-0.5"
                 : "border-ink/20 bg-[#fff9f2] text-muted hover:border-ink hover:bg-white hover:text-ink"
@@ -224,7 +359,7 @@ export function AdminCandidatesView({
 
           <button
             onClick={() => setActiveTab("ENTITIES")}
-            className={`hard-shadow-sm flex items-center gap-2 rounded-lg border-2 px-4 py-2 text-xs font-black uppercase tracking-wider transition-all ${
+            className={`hard-shadow-sm flex items-center gap-2 rounded-lg border-2 px-4 py-2 text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
               activeTab === "ENTITIES"
                 ? "border-ink bg-[#7df9ff] text-ink translate-y-0.5"
                 : "border-ink/20 bg-[#fff9f2] text-muted hover:border-ink hover:bg-white hover:text-ink"
@@ -244,7 +379,7 @@ export function AdminCandidatesView({
               <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" />
               <input
                 type="text"
-                placeholder="Search candidates by skill ID or type..."
+                placeholder="Search candidates by skill name, ID, or type..."
                 value={searchTerm}
                 onChange={(e) => {
                   setSearchTerm(e.target.value);
@@ -262,7 +397,7 @@ export function AdminCandidatesView({
                   setStatusFilter(e.target.value);
                   setPage(1);
                 }}
-                className="hard-shadow-sm rounded-lg border-2 border-ink bg-white px-3 py-2 text-xs font-bold text-ink focus:outline-none"
+                className="hard-shadow-sm rounded-lg border-2 border-ink bg-white px-3 py-2 text-xs font-bold text-ink focus:outline-none cursor-pointer"
               >
                 <option value="ALL">All Review Statuses ({candidates.length})</option>
                 <option value="PENDING">Pending Only ({pendingCount})</option>
@@ -280,7 +415,19 @@ export function AdminCandidatesView({
             }`}
           >
             <span>{notification.message}</span>
-            <button onClick={() => setNotification(null)} className="ml-2 underline text-xs">
+            <button onClick={() => setNotification(null)} className="ml-2 underline text-xs cursor-pointer">
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {skillsError && (
+          <div className="mt-4 flex items-center justify-between rounded-lg border-2 border-ink bg-[#ffbaba] p-3 text-xs font-bold text-ink">
+            <div className="flex items-center gap-2">
+              <AlertCircle className="size-4 text-ink shrink-0" />
+              <span>Skill catalogue error: {skillsError}. Displaying canonical IDs.</span>
+            </div>
+            <button onClick={() => setSkillsError(null)} className="ml-2 underline text-xs cursor-pointer">
               Dismiss
             </button>
           </div>
@@ -323,18 +470,21 @@ export function AdminCandidatesView({
                         )}
                       </div>
 
-                      {/* Relationship Visual Representation */}
-                      <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <span className="hard-shadow-sm rounded border-2 border-ink bg-[#fff9f2] px-3 py-1 font-mono text-xs font-bold text-ink">
-                          {cand.source_skill_id}
+                      {/* Relationship Visual Representation: Source Skill → Readable Relation → Target Skill */}
+                      <div className="flex flex-wrap items-center gap-2.5 pt-1.5">
+                        {renderSkillBadge(cand.source_skill_id, skillsMap, isSkillsLoading)}
+
+                        <span
+                          className={`hard-shadow-sm flex items-center gap-1.5 rounded-lg border-2 border-ink px-3 py-1.5 text-xs font-black uppercase text-ink ${getRelationshipBadgeColor(
+                            cand.proposed_relationship_type,
+                          )}`}
+                          title={`Proposed type: ${cand.proposed_relationship_type}`}
+                        >
+                          <span>{formatRelationshipType(cand.proposed_relationship_type)}</span>
+                          <ArrowRight className="size-3.5 stroke-[2.5]" />
                         </span>
-                        <span className="hard-shadow-sm flex items-center gap-1 rounded border-2 border-ink bg-[#7df9ff] px-2.5 py-1 text-xs font-black uppercase text-ink">
-                          {cand.proposed_relationship_type.replace(/_/g, " ")}
-                          <ArrowRight className="size-3.5" />
-                        </span>
-                        <span className="hard-shadow-sm rounded border-2 border-ink bg-[#fff9f2] px-3 py-1 font-mono text-xs font-bold text-ink">
-                          {cand.target_skill_id}
-                        </span>
+
+                        {renderSkillBadge(cand.target_skill_id, skillsMap, isSkillsLoading)}
                       </div>
 
                       {cand.review_note && (
@@ -351,7 +501,7 @@ export function AdminCandidatesView({
                           <button
                             onClick={() => handleOpenReviewModal(cand, "APPROVE")}
                             disabled={processingId !== null}
-                            className="hard-shadow-sm flex items-center gap-1.5 rounded-lg border-2 border-ink bg-[#d0ffa4] px-4 py-2 text-xs font-black text-ink transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+                            className="hard-shadow-sm flex items-center gap-1.5 rounded-lg border-2 border-ink bg-[#d0ffa4] px-4 py-2 text-xs font-black text-ink transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 cursor-pointer"
                           >
                             {isBusy ? (
                               <Loader2 className="size-3.5 animate-spin" />
@@ -363,7 +513,7 @@ export function AdminCandidatesView({
                           <button
                             onClick={() => handleOpenReviewModal(cand, "REJECT")}
                             disabled={processingId !== null}
-                            className="hard-shadow-sm flex items-center gap-1.5 rounded-lg border-2 border-ink bg-[#ffbaba] px-4 py-2 text-xs font-black text-ink transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+                            className="hard-shadow-sm flex items-center gap-1.5 rounded-lg border-2 border-ink bg-[#ffbaba] px-4 py-2 text-xs font-black text-ink transition-transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 cursor-pointer"
                           >
                             <XCircle className="size-3.5" />
                             Reject
@@ -394,7 +544,7 @@ export function AdminCandidatesView({
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="hard-shadow-sm flex items-center gap-1 rounded border-2 border-ink bg-white px-2.5 py-1 font-bold text-ink hover:bg-[#fff9f2] disabled:cursor-not-allowed disabled:opacity-40"
+                className="hard-shadow-sm flex items-center gap-1 rounded border-2 border-ink bg-white px-2.5 py-1 font-bold text-ink hover:bg-[#fff9f2] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
               >
                 <ChevronLeft className="size-3.5" />
                 Prev
@@ -405,7 +555,7 @@ export function AdminCandidatesView({
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page >= totalPages}
-                className="hard-shadow-sm flex items-center gap-1 rounded border-2 border-ink bg-white px-2.5 py-1 font-bold text-ink hover:bg-[#fff9f2] disabled:cursor-not-allowed disabled:opacity-40"
+                className="hard-shadow-sm flex items-center gap-1 rounded border-2 border-ink bg-white px-2.5 py-1 font-bold text-ink hover:bg-[#fff9f2] disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
               >
                 Next
                 <ChevronRight className="size-3.5" />
@@ -448,10 +598,40 @@ export function AdminCandidatesView({
               </h3>
             </div>
 
+            {/* Relationship summary preview */}
+            <div className="mt-3 p-3 rounded-lg border-2 border-ink bg-[#fff9f2] hard-shadow-sm flex items-center justify-between gap-2">
+              <div className="min-w-0">
+                <span className="text-xs font-black text-ink block truncate">
+                  {skillsMap.get(activeReviewCandidate.candidate.source_skill_id) ||
+                    `Unknown skill (${activeReviewCandidate.candidate.source_skill_id})`}
+                </span>
+                <span className="font-mono text-[10px] text-muted">
+                  {activeReviewCandidate.candidate.source_skill_id}
+                </span>
+              </div>
+              <span
+                className={`hard-shadow-sm shrink-0 flex items-center gap-1 rounded border border-ink px-2 py-0.5 text-[10px] font-black uppercase text-ink ${getRelationshipBadgeColor(
+                  activeReviewCandidate.candidate.proposed_relationship_type,
+                )}`}
+              >
+                {formatRelationshipType(activeReviewCandidate.candidate.proposed_relationship_type)}
+                <ArrowRight className="size-3" />
+              </span>
+              <div className="min-w-0 text-right">
+                <span className="text-xs font-black text-ink block truncate">
+                  {skillsMap.get(activeReviewCandidate.candidate.target_skill_id) ||
+                    `Unknown skill (${activeReviewCandidate.candidate.target_skill_id})`}
+                </span>
+                <span className="font-mono text-[10px] text-muted">
+                  {activeReviewCandidate.candidate.target_skill_id}
+                </span>
+              </div>
+            </div>
+
             <p className="mt-2 text-xs text-muted">
               {activeReviewCandidate.action === "APPROVE"
-                ? `Approving will verify relationship ${activeReviewCandidate.candidate.source_skill_id} → ${activeReviewCandidate.candidate.target_skill_id} and add it to the SSKS ontology graph.`
-                : `Rejecting will discard relationship ${activeReviewCandidate.candidate.candidate_relationship_id} from ontology inclusion.`}
+                ? `Approving will verify this relationship and add it to the SSKS canonical ontology graph.`
+                : `Rejecting will discard relationship candidate ${activeReviewCandidate.candidate.candidate_relationship_id} from ontology inclusion.`}
             </p>
 
             <div className="mt-4">
@@ -469,7 +649,7 @@ export function AdminCandidatesView({
               <button
                 type="button"
                 onClick={() => setActiveReviewCandidate(null)}
-                className="hard-shadow-sm rounded-lg border-2 border-ink bg-white px-4 py-2 text-xs font-bold text-ink hover:bg-[#fff9f2]"
+                className="hard-shadow-sm rounded-lg border-2 border-ink bg-white px-4 py-2 text-xs font-bold text-ink hover:bg-[#fff9f2] cursor-pointer"
               >
                 Cancel
               </button>
@@ -477,7 +657,7 @@ export function AdminCandidatesView({
                 type="button"
                 onClick={handleSubmitReview}
                 disabled={processingId !== null}
-                className={`hard-shadow-sm flex items-center gap-1.5 rounded-lg border-2 border-ink px-4 py-2 text-xs font-black text-ink ${
+                className={`hard-shadow-sm flex items-center gap-1.5 rounded-lg border-2 border-ink px-4 py-2 text-xs font-black text-ink cursor-pointer ${
                   activeReviewCandidate.action === "APPROVE"
                     ? "bg-[#d0ffa4] hover:bg-[#b8f582]"
                     : "bg-[#ffbaba] hover:bg-[#fa9c9c]"
@@ -493,3 +673,4 @@ export function AdminCandidatesView({
     </div>
   );
 }
+

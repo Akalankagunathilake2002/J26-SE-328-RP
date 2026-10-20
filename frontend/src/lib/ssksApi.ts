@@ -475,13 +475,15 @@ export async function reviewCandidateRelationship(
   payload: ReviewCandidatePayload,
   reviewerId: string = "admin-reviewer",
 ): Promise<CandidateRelationshipItem> {
-  const url = `${API_BASE}/ssks/candidates/relationships/${candidateRelationshipId}/review`;
+  const cleanId = encodeURIComponent(candidateRelationshipId.trim());
+  const effectiveReviewerId = reviewerId && reviewerId.trim() ? reviewerId.trim() : "admin-reviewer";
+  const url = `${API_BASE}/ssks/candidates/relationships/${cleanId}/review`;
 
   const res = await safeFetch(url, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      "X-Reviewer-Id": reviewerId,
+      "X-Reviewer-Id": effectiveReviewerId,
     },
     body: JSON.stringify(payload),
   });
