@@ -1,5 +1,10 @@
 import { requireAdmin } from "@/lib/auth";
-import { fetchSsksCandidateRelationships, type CandidateRelationshipItem } from "@/lib/ssksApi";
+import {
+  fetchSsksCandidateRelationships,
+  fetchSsksSkillsAll,
+  type CandidateRelationshipItem,
+  type SkillItem,
+} from "@/lib/ssksApi";
 import { AdminCandidatesView } from "@/components/admin/AdminCandidatesView";
 
 export const metadata = {
@@ -17,9 +22,17 @@ export default async function AdminCandidatesPage() {
     console.error("Failed to load candidate relationships:", error);
   }
 
+  let skills: SkillItem[] = [];
+  try {
+    skills = await fetchSsksSkillsAll();
+  } catch (error) {
+    console.error("Failed to load canonical skills for candidates:", error);
+  }
+
   return (
     <AdminCandidatesView
       initialCandidates={candidates}
+      initialSkills={skills}
       reviewerId={user.id || user.email || "admin-reviewer"}
     />
   );
