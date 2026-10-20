@@ -13,6 +13,7 @@ from app.repositories.relationships import (
     CandidateRelationshipRepository,
     DomainAssociationRepository,
 )
+from app.repositories.snapshots import SnapshotRepository
 from app.schemas.relationships import (
     SkillRelationshipCreate,
     SkillRelationshipUpdate,
@@ -126,10 +127,12 @@ class CandidateRelationshipService:
         candidate_repo: CandidateRelationshipRepository,
         rel_repo: SkillRelationshipRepository,
         skill_repo: SkillRepository,
+        snapshot_repo: SnapshotRepository | None = None,
     ):
         self.candidate_repo = candidate_repo
         self.rel_repo = rel_repo
         self.skill_repo = skill_repo
+        self.snapshot_repo = snapshot_repo
 
     async def list_candidates(
         self,
@@ -195,9 +198,12 @@ class CandidateRelationshipService:
             raise HTTPException(status_code=409, detail="Candidate relationship conflicts with an existing record")
 
     async def review_candidate(
-        self, candidate_relationship_id: str, review_data: CandidateRelationshipReview
+        self,
+        candidate_relationship_id: str,
+        review_data: CandidateRelationshipReview,
+        reviewer_id: str | None = None,
     ) -> CandidateSkillRelationship:
-        # Review a proposed relationship and promote it to canonical if approved.
+        # Review a proposed relationship (with optional overrides and evidence) and promote it to canonical if approved.
         candidate = await self.get_candidate(candidate_relationship_id)
 
         # Only pending candidate relationships can be reviewed.
@@ -209,14 +215,60 @@ class CandidateRelationshipService:
 
         norm_action = review_data.action.upper()
         if norm_action in ("REJECT", "REJECTED"):
-            return await self.candidate_repo.reject(candidate, review_note=review_data.review_note)
+            return await self.candidate_repo.reject(
+                candidate,
+                review_note=review_data.review_note,
+                reviewed_by=reviewer_id,
+            )
 
-        # On approval, ensure no canonical record was created in the interim before promoting.
         if norm_action in ("APPROVE", "APPROVED"):
+            # Resolve source, target, relationship type overrides or fall back to candidate values
+            effective_source_id = (review_data.source_skill_id or candidate.source_skill_id).strip()
+            effective_target_id = (review_data.target_skill_id or candidate.target_skill_id).strip()
+            effective_rel_type = (review_data.relationship_type or candidate.proposed_relationship_type).strip()
+
+            # Reject identical source and target skills
+            if effective_source_id == effective_target_id:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Source and target skills must be different",
+                )
+
+            # Validate relationship type against defined SSKS ontology types
+            allowed_types = {
+                "EQUIVALENT_TO",
+                "BROADER_THAN",
+                "NARROWER_THAN",
+                "PART_OF",
+                "PREREQUISITE_OF",
+                "RELATED_TO",
+            }
+            if effective_rel_type not in allowed_types:
+                raise HTTPException(
+                    status_code=422,
+                    detail=f"Invalid relationship type '{effective_rel_type}'. Allowed types: {', '.join(sorted(allowed_types))}",
+                )
+
+            # Validate canonical skills exist
+            source_skill = await self.skill_repo.get_by_id(effective_source_id)
+            if not source_skill:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Source skill '{effective_source_id}' not found",
+                )
+
+            target_skill = await self.skill_repo.get_by_id(effective_target_id)
+            if not target_skill:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Target skill '{effective_target_id}' not found",
+                )
+
+            # Check if canonical relationship already exists
             existing_canonical = await self.rel_repo.find_existing(
-                candidate.source_skill_id,
-                candidate.target_skill_id,
-                candidate.proposed_relationship_type,
+                effective_source_id,
+                effective_target_id,
+                effective_rel_type,
             )
             if existing_canonical:
                 raise HTTPException(
@@ -226,11 +278,27 @@ class CandidateRelationshipService:
 
             next_rel_id = await self.rel_repo.generate_next_relationship_id()
             try:
-                cand, _ = await self.candidate_repo.approve_and_create_canonical(
+                cand, canonical_rel = await self.candidate_repo.approve_and_create_canonical(
                     candidate=candidate,
                     canonical_relationship_id=next_rel_id,
+                    source_skill_id=effective_source_id,
+                    target_skill_id=effective_target_id,
+                    relationship_type=effective_rel_type,
                     review_note=review_data.review_note,
+                    evidence_description=review_data.evidence_description,
+                    evidence_url=review_data.evidence_url,
+                    reviewed_by=reviewer_id,
                 )
+                setattr(cand, "canonical_relationship", canonical_rel)
+
+                # Fetch updated published snapshot version if repository is available
+                if self.snapshot_repo:
+                    try:
+                        meta = await self.snapshot_repo.get_metadata_only(consumer="SkillGap")
+                        setattr(cand, "published_snapshot_version", meta.version)
+                    except Exception:
+                        pass
+
                 return cand
             except ConflictError:
                 raise HTTPException(
@@ -240,7 +308,7 @@ class CandidateRelationshipService:
 
         raise HTTPException(
             status_code=422,
-            detail=f"Invalid review action '{review_data.action}'. Allowed actions: 'APPROVED', 'REJECTED'",
+            detail=f"Invalid review action '{review_data.action}'. Allowed actions: 'APPROVE', 'REJECT'",
         )
 
 

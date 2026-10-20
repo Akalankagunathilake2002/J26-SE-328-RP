@@ -26,6 +26,9 @@ class SkillRelationship(Base):
     verification_status: Mapped[str] = mapped_column(String(50), default="VERIFIED")
     source_id: Mapped[str | None] = mapped_column(String(50), ForeignKey("knowledge_sources.source_id", ondelete="SET NULL"), nullable=True)
     evidence_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    reviewed_by: Mapped[str | None] = mapped_column(String(100), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -45,6 +48,10 @@ class CandidateSkillRelationship(Base):
     review_status: Mapped[str] = mapped_column(String(50), default="PENDING")
     source_id: Mapped[str | None] = mapped_column(String(50), ForeignKey("knowledge_sources.source_id", ondelete="SET NULL"), nullable=True)
     review_note: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    evidence_url: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    reviewed_by: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    canonical_relationship_id: Mapped[str | None] = mapped_column(String(50), ForeignKey("skill_relationships.relationship_id", ondelete="SET NULL"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime.utcnow)
     reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 

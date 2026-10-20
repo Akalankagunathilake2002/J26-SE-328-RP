@@ -242,11 +242,16 @@ class CandidateRelationshipRepository:
             raise
 
     async def reject(
-        self, candidate: CandidateSkillRelationship, review_note: str | None
+        self,
+        candidate: CandidateSkillRelationship,
+        review_note: str | None = None,
+        reviewed_by: str | None = None,
     ) -> CandidateSkillRelationship:
         candidate.review_status = "REJECTED"
         if review_note is not None:
             candidate.review_note = review_note
+        if reviewed_by is not None:
+            candidate.reviewed_by = reviewed_by
         candidate.reviewed_at = datetime.now(timezone.utc)
         self.session.add(candidate)
         try:
@@ -261,21 +266,37 @@ class CandidateRelationshipRepository:
         self,
         candidate: CandidateSkillRelationship,
         canonical_relationship_id: str,
-        review_note: str | None,
+        source_skill_id: str,
+        target_skill_id: str,
+        relationship_type: str,
+        review_note: str | None = None,
+        evidence_description: str | None = None,
+        evidence_url: str | None = None,
+        reviewed_by: str | None = None,
     ) -> tuple[CandidateSkillRelationship, SkillRelationship]:
-        # Atomically promote the candidate relationship to canonical and mark it approved.
+        # Atomically promote the refined candidate relationship to canonical and mark it approved.
         canonical_rel = SkillRelationship(
             relationship_id=canonical_relationship_id,
-            source_skill_id=candidate.source_skill_id,
-            target_skill_id=candidate.target_skill_id,
-            relationship_type=candidate.proposed_relationship_type,
+            source_skill_id=source_skill_id,
+            target_skill_id=target_skill_id,
+            relationship_type=relationship_type,
             verification_status="VERIFIED",
             source_id=candidate.source_id,
-            evidence_note=review_note or candidate.review_note,
+            evidence_note=evidence_description or review_note or candidate.review_note,
+            evidence_description=evidence_description,
+            evidence_url=evidence_url,
+            reviewed_by=reviewed_by,
         )
+        candidate.source_skill_id = source_skill_id
+        candidate.target_skill_id = target_skill_id
+        candidate.proposed_relationship_type = relationship_type
         candidate.review_status = "APPROVED"
         if review_note is not None:
             candidate.review_note = review_note
+        candidate.evidence_description = evidence_description
+        candidate.evidence_url = evidence_url
+        candidate.reviewed_by = reviewed_by
+        candidate.canonical_relationship_id = canonical_relationship_id
         candidate.reviewed_at = datetime.now(timezone.utc)
 
         self.session.add(canonical_rel)

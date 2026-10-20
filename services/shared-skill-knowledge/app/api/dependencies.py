@@ -39,11 +39,15 @@ def get_relationship_service(session: AsyncSession = Depends(get_session)) -> Re
         skill_repo=SkillRepository(session),
     )
 
+from app.repositories.snapshots import SnapshotRepository
+from app.services.snapshots import SnapshotService
+
 def get_candidate_relationship_service(session: AsyncSession = Depends(get_session)) -> CandidateRelationshipService:
     return CandidateRelationshipService(
         candidate_repo=CandidateRelationshipRepository(session),
         rel_repo=SkillRelationshipRepository(session),
         skill_repo=SkillRepository(session),
+        snapshot_repo=SnapshotRepository(session),
     )
 
 def get_domain_association_service(session: AsyncSession = Depends(get_session)) -> DomainAssociationService:
@@ -54,8 +58,6 @@ def get_domain_association_service(session: AsyncSession = Depends(get_session))
         domain_repo=DomainRepository(session),
     )
 
-from app.repositories.snapshots import SnapshotRepository
-from app.services.snapshots import SnapshotService
 
 def get_snapshot_service(session: AsyncSession = Depends(get_session)) -> SnapshotService:
     return SnapshotService(repo=SnapshotRepository(session))

@@ -72,4 +72,4 @@ async def review_candidate_relationship(
     service: CandidateRelationshipService = Depends(get_candidate_relationship_service),
     reviewer_id: str = Depends(verify_reviewer),
 ):
-    return await service.review_candidate(candidate_relationship_id, review_data)
+    return await service.review_candidate(candidate_relationship_id, review_data, reviewer_id=reviewer_id)

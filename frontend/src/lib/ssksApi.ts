@@ -49,6 +49,9 @@ export interface SkillRelationshipItem {
   verification_status: string;
   source_id: string | null;
   evidence_note: string | null;
+  evidence_description?: string | null;
+  evidence_url?: string | null;
+  reviewed_by?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -64,13 +67,42 @@ export interface CandidateRelationshipItem {
   review_status: CandidateReviewStatus;
   source_id: string | null;
   review_note: string | null;
+  evidence_description?: string | null;
+  evidence_url?: string | null;
+  reviewed_by?: string | null;
+  canonical_relationship_id?: string | null;
+  canonical_relationship?: SkillRelationshipItem | null;
+  published_snapshot_version?: string | null;
   created_at: string;
   reviewed_at: string | null;
 }
 
 export interface ReviewCandidatePayload {
   action: "APPROVE" | "REJECT";
+  source_skill_id?: string;
+  target_skill_id?: string;
+  relationship_type?: SkillRelationshipType;
   review_note?: string;
+  evidence_description?: string;
+  evidence_url?: string;
+}
+
+export interface SnapshotCounts {
+  skills: number;
+  aliases: number;
+  relationships: number;
+  domains: number;
+  external_ids: number;
+  sources: number;
+}
+
+export interface SnapshotMetadataItem {
+  snapshot_id: string;
+  consumer: string;
+  version: string;
+  generated_at: string;
+  status: string;
+  counts: SnapshotCounts;
 }
 
 export interface CreateDomainPayload {
@@ -494,3 +526,18 @@ export async function reviewCandidateRelationship(
 
   return res.json();
 }
+
+// Fetches current published snapshot metadata and entity counts.
+export async function fetchSsksSnapshotMetadata(
+  consumer: string = "SkillGap",
+): Promise<SnapshotMetadataItem> {
+  const query = new URLSearchParams({ consumer }).toString();
+  const res = await safeFetch(`${API_BASE}/ssks/snapshots/metadata?${query}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) {
+    await handleApiError(res, `Failed to fetch snapshot metadata (${res.status})`);
+  }
+  return res.json();
+}
+
