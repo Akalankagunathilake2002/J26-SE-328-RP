@@ -84,6 +84,17 @@ export function CareerReadinessResultModal({
     return { matchedList: matched, missingList: missing };
   }, [data]);
 
+  // Determine if evidence confidence affects readiness below 100%
+  const hasConfidenceImpact = useMemo(() => {
+    if (!data) return false;
+    const score = Math.round(Number(data.readinessScore) || 0);
+    if (score >= 100) return false;
+    const hasPartialEvidence = data.skills?.some(
+      (s) => s.evidenceConfidence !== undefined && s.evidenceConfidence < 0.999,
+    );
+    return Boolean(hasPartialEvidence || (data.missingCount === 0 && score < 100));
+  }, [data]);
+
   // Triggers two-page print-ready report download
   const handleDownload = async () => {
     if (isDownloading || !data?.analysisId) return;
@@ -118,15 +129,10 @@ export function CareerReadinessResultModal({
       : `★ ${data.tier.toUpperCase()}`
     : "★ MODERATE";
 
-  // Slice displayed items based on expansion state
+  // Display first 4 items by default
   const visibleMatched = showAllMatched ? matchedList : matchedList.slice(0, 4);
-  const remainingMatchedCount = matchedList.length - 4;
-
   const visibleMissing = showAllMissing ? missingList : missingList.slice(0, 4);
-  const remainingMissingCount = missingList.length - 4;
-
   const visiblePriorities = showAllPriorities ? data.prioritySkills : data.prioritySkills.slice(0, 4);
-  const hasRemainingPriorities = data.prioritySkills.length > 4;
 
   return createPortal(
     <div
@@ -305,63 +311,37 @@ export function CareerReadinessResultModal({
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
-                  {data.missingCount === 0 && data.satisfiedCount < (data.matchedCount ?? matchedList.length)
-                    ? "Requirements matched (see evidence confidence):"
-                    : "Requirements matched in your profile:"}
+                  Requirements matched in your profile:
                 </p>
 
                 {/* Skill List */}
-                <div className="flex flex-col gap-2 max-h-[160px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-1.5">
                   {visibleMatched.length === 0 ? (
                     <span className="text-xs text-muted">No matched skills recorded.</span>
                   ) : (
-                    visibleMatched.map((skill) => {
-                      const hasPartialConfidence =
-                        skill.evidenceConfidence !== undefined && skill.evidenceConfidence < 0.999;
-                      return (
-                        <div
-                          key={skill.id}
-                          className="flex flex-col gap-0.5 pb-1.5 border-b border-ink/10 last:border-none"
-                        >
-                          <div className="flex items-center justify-between gap-1.5 text-xs font-bold text-ink">
-                            <div className="flex items-center gap-1.5 min-w-0">
-                              <CheckCircle2 className="size-3.5 text-emerald-600 fill-emerald-100 shrink-0" />
-                              <span className="truncate" title={skill.requiredSkillName}>{skill.requiredSkillName}</span>
-                            </div>
-                            <span className="text-[9.5px] font-black px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-800 border border-emerald-300 shrink-0">
-                              {skill.matchType === "EXACT" ? "Exact Match" : skill.matchType === "ALIAS" ? "Alias" : "Related"}
-                            </span>
-                          </div>
-                          {/* Evidence confidence and satisfaction detail */}
-                          <div className="flex items-center justify-between text-[10px] text-muted font-medium pl-5">
-                            <span className={hasPartialConfidence ? "text-amber-700 font-semibold" : ""}>
-                              {skill.evidenceConfidence !== undefined
-                                ? `Evidence: ${Math.round(skill.evidenceConfidence * 100)}%`
-                                : "Verified evidence"}
-                            </span>
-                            <span>
-                              {skill.satisfaction !== undefined
-                                ? `Satisfaction: ${Math.round(skill.satisfaction * 100)}%`
-                                : skill.coverageCredit >= 1
-                                ? "100% Coverage"
-                                : `${Math.round(skill.coverageCredit * 100)}% Coverage`}
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })
+                    visibleMatched.map((skill) => (
+                      <div
+                        key={skill.id}
+                        className="flex items-center gap-1.5 text-xs font-bold text-ink"
+                      >
+                        <CheckCircle2 className="size-3.5 text-emerald-600 fill-emerald-100 shrink-0" />
+                        <span className="truncate" title={skill.requiredSkillName}>
+                          {skill.requiredSkillName}
+                        </span>
+                      </div>
+                    ))
                   )}
                 </div>
               </div>
 
-              {/* Show more toggle */}
-              {remainingMatchedCount > 0 && (
+              {/* Show more / Show less toggle */}
+              {matchedList.length > 4 && (
                 <button
                   type="button"
-                  onClick={() => setShowAllMatched(!showAllMatched)}
+                  onClick={() => setShowAllMatched((prev) => !prev)}
                   className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2.5 text-left transition-colors"
                 >
-                  {showAllMatched ? "show less" : `+${remainingMatchedCount} more`}
+                  {showAllMatched ? "Show less" : "Show more"}
                 </button>
               )}
             </div>
@@ -385,7 +365,7 @@ export function CareerReadinessResultModal({
                 </p>
 
                 {/* Missing Skill List */}
-                <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+                <div className="flex flex-col gap-1.5">
                   {visibleMissing.length === 0 ? (
                     <span className="text-xs text-emerald-700 font-bold">No missing skill gaps!</span>
                   ) : (
@@ -402,14 +382,14 @@ export function CareerReadinessResultModal({
                 </div>
               </div>
 
-              {/* Show more toggle */}
-              {remainingMissingCount > 0 && (
+              {/* Show more / Show less toggle */}
+              {missingList.length > 4 && (
                 <button
                   type="button"
-                  onClick={() => setShowAllMissing(!showAllMissing)}
+                  onClick={() => setShowAllMissing((prev) => !prev)}
                   className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2.5 text-left transition-colors"
                 >
-                  {showAllMissing ? "show less" : `+${remainingMissingCount} more`}
+                  {showAllMissing ? "Show less" : "Show more"}
                 </button>
               )}
             </div>
@@ -425,23 +405,25 @@ export function CareerReadinessResultModal({
                     </h4>
                   </div>
                   <span className="bg-[#edddfc] border-2 border-ink rounded px-1.5 py-0.5 text-[10px] font-black text-ink shadow-[1px_1px_0px_#000]">
-                    {data.prioritySkills.length > 0 ? "TOP" : "COVERED"}
+                    {data.prioritySkills.length > 0 ? "TOP" : "NONE"}
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
-                  {data.prioritySkills.length > 0 ? "Focus on these to boost score:" : "Capability coverage status:"}
+                  {data.prioritySkills.length > 0 ? "Focus on these to boost score:" : "Priority recommendations:"}
                 </p>
 
-                {/* Ranked Priority List or Zero Gap Advisory */}
-                <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1">
+                {/* Ranked Priority List or Empty State */}
+                <div className="flex flex-col gap-1.5">
                   {visiblePriorities.length === 0 ? (
                     <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 flex flex-col gap-1">
                       <div className="font-extrabold text-[11px] text-purple-900 flex items-center gap-1.5">
-                        <CheckCircle2 className="size-3.5 text-purple-700" />
-                        <span>Zero Skill Capability Gaps</span>
+                        <Info className="size-3.5 text-purple-700 shrink-0" />
+                        <span>No Priority Skills Identified</span>
                       </div>
                       <p className="text-[10.5px] text-purple-800/90 leading-relaxed font-normal">
-                        All role skills are matched in your profile. To reach 100% readiness, strengthen evidence confidence through verified coursework, assessments, or project credentials.
+                        {roundedScore < 100 && hasConfidenceImpact
+                          ? "No explicit priority skills were identified. Readiness is influenced by evidence confidence across your skills—strengthening verification through coursework, projects, or assessments will help increase your score."
+                          : "No explicit priority skills were identified for this role."}
                       </p>
                     </div>
                   ) : (
@@ -460,14 +442,14 @@ export function CareerReadinessResultModal({
                 </div>
               </div>
 
-              {/* Show more priorities toggle */}
-              {hasRemainingPriorities && (
+              {/* Show more / Show less toggle */}
+              {data.prioritySkills.length > 4 && (
                 <button
                   type="button"
-                  onClick={() => setShowAllPriorities(!showAllPriorities)}
+                  onClick={() => setShowAllPriorities((prev) => !prev)}
                   className="text-[11px] text-muted hover:text-ink font-bold cursor-pointer mt-2.5 text-left transition-colors"
                 >
-                  {showAllPriorities ? "less ..." : "more ..."}
+                  {showAllPriorities ? "Show less" : "Show more"}
                 </button>
               )}
             </div>
