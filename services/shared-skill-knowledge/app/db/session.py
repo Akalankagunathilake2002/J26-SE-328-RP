@@ -19,6 +19,7 @@ async def get_session() -> AsyncIterator[AsyncSession]:
         yield session
 
 async def create_tables() -> None:
+    from sqlalchemy import text
     import app.models.core
     import app.models.sources
     import app.models.aliases
@@ -27,6 +28,21 @@ async def create_tables() -> None:
 
     async with get_engine().begin() as connection:
         await connection.run_sync(Base.metadata.create_all)
+        if connection.dialect.name == "postgresql":
+            statements = [
+                "ALTER TABLE candidate_skill_relationships ADD COLUMN IF NOT EXISTS evidence_description TEXT;",
+                "ALTER TABLE candidate_skill_relationships ADD COLUMN IF NOT EXISTS evidence_url VARCHAR(500);",
+                "ALTER TABLE candidate_skill_relationships ADD COLUMN IF NOT EXISTS reviewed_by VARCHAR(100);",
+                "ALTER TABLE candidate_skill_relationships ADD COLUMN IF NOT EXISTS canonical_relationship_id VARCHAR(50);",
+                "ALTER TABLE skill_relationships ADD COLUMN IF NOT EXISTS evidence_description TEXT;",
+                "ALTER TABLE skill_relationships ADD COLUMN IF NOT EXISTS evidence_url VARCHAR(500);",
+                "ALTER TABLE skill_relationships ADD COLUMN IF NOT EXISTS reviewed_by VARCHAR(100);",
+            ]
+            for stmt in statements:
+                try:
+                    await connection.execute(text(stmt))
+                except Exception:
+                    pass
 
 async def dispose_engine() -> None:
     await get_engine().dispose()

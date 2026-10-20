@@ -172,18 +172,50 @@ Supported types are `EQUIVALENT_TO`, `BROADER_THAN`, `NARROWER_THAN`, `PART_OF`,
 
 Relationships are directional. SSKS does not automatically create a reverse relationship. Self-referencing relationships and duplicate relationships of the same type are rejected.
 
-### 4.5 Candidate relationship workflow
+### 4.5 Candidate relationship workflow: Refine & Verify Workbench
 
 | Method | Endpoint | Purpose |
 |---|---|---|
 | POST | `/ssks/candidates/relationships` | Submit a proposed relationship between existing skills. |
-| GET | `/ssks/candidates/relationships` | List relationship candidates. |
-| GET | `/ssks/candidates/relationships/{id}` | Retrieve a relationship candidate. |
-| PATCH | `/ssks/candidates/relationships/{id}/review` | Approve or reject a proposed relationship. |
+| GET | `/ssks/candidates/relationships` | List relationship candidates with filters and pagination. |
+| GET | `/ssks/candidates/relationships/{id}` | Retrieve a relationship candidate by ID. |
+| PATCH | `/ssks/candidates/relationships/{id}/review` | Review candidate (approve with overrides and evidence, or reject). |
 
-Approval creates a canonical verified relationship and marks the candidate as approved. Rejection does not create a canonical relationship.
+#### Candidate Review Request Schema (`PATCH /ssks/candidates/relationships/{id}/review`)
 
-Candidate relationship submissions can include a confidence score, source ID, and review note. These fields do not mean that an LLM-based relationship suggestion system is currently implemented.
+The review endpoint enables an administrator to refine and verify candidate relationships rather than performing a binary approve/reject:
+
+```json
+{
+  "action": "APPROVE",
+  "source_skill_id": "SK-000004",
+  "target_skill_id": "SK-000005",
+  "relationship_type": "PART_OF",
+  "review_note": "Relationship type and direction corrected during admin workbench review.",
+  "evidence_description": "Reviewed against authoritative documentation describing the components of the MERN stack.",
+  "evidence_url": "https://www.mongodb.com/mern-stack"
+}
+```
+
+- **`action`** (*required*): `"APPROVE"` or `"REJECT"`.
+- **`source_skill_id`** (*optional override*): The reviewed source skill ID. Falls back to candidate proposal if omitted.
+- **`target_skill_id`** (*optional override*): The reviewed target skill ID. Falls back to candidate proposal if omitted.
+- **`relationship_type`** (*optional override*): One of the 6 canonical SSKS relationship types (`EQUIVALENT_TO`, `BROADER_THAN`, `NARROWER_THAN`, `PART_OF`, `PREREQUISITE_OF`, `RELATED_TO`). Falls back to candidate proposal if omitted.
+- **`review_note`** (*optional*): Administrative review comment or audit note.
+- **`evidence_description`** (*optional*): Technical justification or reference explanation supporting the relationship.
+- **`evidence_url`** (*optional*): Valid HTTP/HTTPS URL referencing authoritative documentation or external specifications.
+
+#### Validation & Approval Behavior
+
+1. **Review Status Eligibility:** Only candidates with `review_status = "PENDING"` can be reviewed. Submitting a review for an already-reviewed candidate returns `409 Conflict`.
+2. **Self-Referential Check:** Source and target skill IDs must be different (`422 Unprocessable Entity`).
+3. **Relationship Types:** Must match one of the 6 canonical ontology types (`422 Unprocessable Entity`). Directional semantics are strictly preserved (e.g. `React → PART_OF → MERN Stack`).
+4. **Canonical Skill Existence:** Both resolved skills must exist in the canonical skills table (`404 Not Found`).
+5. **Duplicate / Conflict Prevention:** Checks whether a canonical relationship of that type already exists between the skills (`409 Conflict`).
+6. **Transactional Atomicity:** Canonical relationship creation and candidate approval are executed in the same database transaction. Any failure or conflict rolls back both operations, leaving the candidate `PENDING`.
+7. **Provenance Persistence:** `evidence_description`, `evidence_url`, `reviewed_by` (from `X-Reviewer-Id`), and review timestamp are persisted onto both the `skill_relationships` record and the `candidate_skill_relationships` audit record, with `canonical_relationship_id` linking the two.
+8. **Knowledge Publication:** Approving a relationship updates the computed snapshot content hash (`vYYYYMMDD-{hash}`). The new relationship is immediately exported via `/ssks/snapshots/export` and reported in `/ssks/snapshots/metadata`.
+9. **Rejection Safety:** Rejecting a candidate records the `review_note` and reviewer identity without creating any canonical relationship or updating snapshot versions.
 
 ### 4.6 Domain associations
 
@@ -232,12 +264,10 @@ The current implementation includes core entity endpoints, normalization, candid
 
 Important boundaries:
 
-- Reviewer identity is checked through a header; full authentication and RBAC are not yet integrated.
-- The documented test suite primarily uses SQLite. Live PostgreSQL behavior must be verified separately.
-- The snapshot schema currently exports skill knowledge, not role snapshots.
-- Snapshot export is on demand. Scheduled cache synchronization is the responsibility of the consuming component.
-- Alias-specific candidate approval and comprehensive provenance management are not yet implemented.
-- LLM-assisted relationship suggestions are a possible future enhancement, not a current SSKS capability.
+- **Reviewer Authorization:** Reviewer identity is verified server-side through the `X-Reviewer-Id` header on review endpoints. Full OAuth2/JWT token verification and centralized RBAC integration remain future enhancements.
+- **Consumer Cache Synchronization (C03):** SSKS exports immutable, version-fingerprinted snapshots (`vYYYYMMDD-{hash}`) on demand. The Readiness Engine (C03) maintains an independent local cache in PostgreSQL. Automatic cache push/invalidation (e.g. webhooks or event bus) is not currently implemented; C03 must synchronize via periodic snapshot validation (`/ssks/snapshots/validate`) or manual snapshot import scripts.
+- **Test Suite Environment:** The automated test suite executes on SQLite + aiosqlite for fast, isolated verification. Live PostgreSQL schema migrations are managed via idempotent SQL migrations in `migrations/003_refine_and_verify_candidate_relationships.sql` and `app/db/session.py`.
+- **Snapshot Scope:** The snapshot schema exports canonical skills, verified aliases, active domains, and verified canonical relationships. Role snapshots are not currently included in the snapshot export schema.
 
 ## 7. Planned Improvements
 

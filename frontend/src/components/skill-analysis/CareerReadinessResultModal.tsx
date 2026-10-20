@@ -361,13 +361,13 @@ export function CareerReadinessResultModal({
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-muted font-medium mb-2.5">
-                  Important skills not found:
+                  Skills requiring improvement:
                 </p>
 
                 {/* Missing Skill List */}
                 <div className="flex flex-col gap-1.5">
                   {visibleMissing.length === 0 ? (
-                    <span className="text-xs text-emerald-700 font-bold">No missing skill gaps!</span>
+                    <span className="text-xs text-emerald-700 font-bold">All required skills are covered!</span>
                   ) : (
                     visibleMissing.map((skill) => (
                       <div
