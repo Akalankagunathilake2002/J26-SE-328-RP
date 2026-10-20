@@ -22,12 +22,6 @@ export interface ReportGenerationData {
   satisfiedCount: number;
   partialCount: number;
   missingCount: number;
-  highestPrioritySkill?: {
-    skillName: string;
-    gap?: number;
-    priorityScore?: number;
-    explanation?: string;
-  };
   skills: {
     name: string;
     matchedName?: string;
@@ -41,10 +35,12 @@ export interface ReportGenerationData {
     gap?: number;
     priorityScore?: number;
     explanation?: string;
+    requiredProficiency?: string;
+    userProficiency?: string;
   }[];
 }
 
-// Maps backend result statuses and satisfaction to restrained academic status labels
+// Maps backend result statuses and satisfaction to Met, Partial, or Missing.
 function normalizeReportStatus(
   status?: string,
   matchType?: string,
@@ -56,7 +52,7 @@ function normalizeReportStatus(
     return "Missing";
   }
   const norm = (status || "").toUpperCase();
-  if (norm === "SATISFIED") {
+  if (norm === "SATISFIED" || norm === "COVERED" || norm === "MET" || matchType === "EXACT") {
     return "Met";
   }
   if (
@@ -68,29 +64,10 @@ function normalizeReportStatus(
   ) {
     return "Partial";
   }
-  if (norm === "COVERED" || norm === "MET" || matchType === "EXACT") {
-    return "Met";
-  }
   return "Missing";
 }
 
-// Formats capability gap percentages cleanly for report display
-function formatGapValue(gap?: number | null): string {
-  if (gap === undefined || gap === null || isNaN(Number(gap))) return "—";
-  const num = Number(gap);
-  if (num <= 0) return "0%";
-  if (num <= 1) return `${Math.round(num * 100)}%`;
-  return `${Math.round(num)}%`;
-}
-
-// Formats priority scores cleanly to at most one decimal place
-function formatPriorityScore(score?: number | null): string {
-  if (score === undefined || score === null || isNaN(Number(score))) return "—";
-  const num = Number(score);
-  return Number.isInteger(num) ? num.toString() : num.toFixed(1);
-}
-
-// Escapes special HTML characters to prevent layout breakage or script injection
+// Escapes special HTML characters to prevent layout breakage or script injection.
 function escapeHtml(str?: string | null): string {
   if (!str) return "";
   return String(str)
@@ -101,7 +78,52 @@ function escapeHtml(str?: string | null): string {
     .replace(/'/g, "&#039;");
 }
 
-// Generates self-contained HTML for a clean, academic two-page Career Readiness Report
+// Derives a short, student-friendly learning suggestion without numeric scores.
+function getPracticalAdvice(priority: {
+  name: string;
+  explanation?: string;
+  requiredProficiency?: string;
+  userProficiency?: string;
+}): string {
+  const req = priority.requiredProficiency?.trim();
+  const user = priority.userProficiency?.trim();
+
+  if (req && req.toUpperCase() !== "NONE") {
+    const formattedReq = req.charAt(0).toUpperCase() + req.slice(1).toLowerCase();
+    if (user && user.toUpperCase() !== "NONE") {
+      const formattedUser = user.charAt(0).toUpperCase() + user.slice(1).toLowerCase();
+      return `Advance competency from demonstrated ${formattedUser} knowledge to the target ${formattedReq} level through hands-on project work.`;
+    }
+    return `Develop practical competency and coursework evidence to satisfy the target ${formattedReq} requirement for this role.`;
+  }
+
+  if (priority.explanation) {
+    const match = priority.explanation.match(/Required:\s*([A-Za-z]+)(?:,\s*Demonstrated:\s*([A-Za-z]+))?/i);
+    if (match) {
+      const parsedReq = match[1].charAt(0).toUpperCase() + match[1].slice(1).toLowerCase();
+      const parsedUser = match[2] ? match[2].charAt(0).toUpperCase() + match[2].slice(1).toLowerCase() : "";
+      if (parsedUser && parsedUser.toLowerCase() !== "none") {
+        return `Advance competency from demonstrated ${parsedUser} knowledge to the target ${parsedReq} level through hands-on project work.`;
+      }
+      return `Develop practical competency and coursework evidence to satisfy the target ${parsedReq} requirement for this role.`;
+    }
+
+    const clean = priority.explanation
+      .replace(/Ranked\s*#\d+\s*learning\s*priority\s*(with\s*score\s*[\d.]+)?\.?/gi, "")
+      .replace(/Driven\s*by\s*a\s*capability\s*gap\s*of\s*[\d.]+/gi, "")
+      .replace(/and\s*an\s*industry\s*demand\s*weight\s*of\s*[\d.]+/gi, "")
+      .replace(/\s*\([^)]*\)\s*/g, " ")
+      .trim();
+
+    if (clean.length > 10 && clean.length < 150) {
+      return clean.charAt(0).toUpperCase() + clean.slice(1);
+    }
+  }
+
+  return `Focus independent learning, course projects, and practical exercises on ${priority.name} to close this skill gap.`;
+}
+
+// Generates self-contained HTML for a concise, one-page A4 Career Readiness Report.
 export function generateCareerReadinessReportHtml(data: ReportGenerationData): string {
   const roundedScore = Math.round(data.readinessScore);
   const scorePercent = Math.min(100, Math.max(0, roundedScore));
@@ -109,12 +131,9 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
   const dateFormatted = data.generatedDate;
   const shortId = data.analysisId.slice(0, 8).toUpperCase();
 
-  const topPriority = data.highestPrioritySkill || (data.priorities.length > 0 ? {
-    skillName: data.priorities[0].name,
-    gap: data.priorities[0].gap,
-    priorityScore: data.priorities[0].priorityScore,
-    explanation: data.priorities[0].explanation,
-  } : null);
+  const matchedSkills = data.skills.filter((s) => s.status === "Met" || s.status === "Partial");
+  const missingSkills = data.skills.filter((s) => s.status === "Missing");
+  const prioritiesToDisplay = data.priorities || [];
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -125,38 +144,41 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
   <style>
     @page {
       size: A4 portrait;
-      margin: 14mm 16mm;
+      margin: 8mm 10mm;
     }
     *, *::before, *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
-    body {
+    html, body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: #1e293b;
+      color: #0f172a;
       background: #f8fafc;
-      line-height: 1.45;
-      font-size: 12px;
+      line-height: 1.35;
+      font-size: 11px;
       -webkit-font-smoothing: antialiased;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
-    /* Screen-only action toolbar */
+    /* Action bar for browser preview */
     .preview-toolbar {
       position: sticky;
       top: 0;
       z-index: 100;
       background: #0f172a;
       color: #f8fafc;
-      padding: 10px 24px;
+      padding: 9px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .preview-toolbar-title {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
     }
     .preview-toolbar-actions {
       display: flex;
@@ -167,10 +189,10 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 5px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       cursor: pointer;
       text-decoration: none;
       border: 1px solid transparent;
@@ -193,322 +215,327 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
       background: #f1f5f9;
     }
 
-    /* Preview page container */
     .report-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 0 40px;
-      gap: 20px;
+      padding: 14px 0 20px;
     }
 
-    /* Fixed A4 Page Dimensions (fits 2 pages exactly without trailing page spillover) */
+    /* Single-page A4 dimensions without artificial clipping */
     .report-page {
       width: 210mm;
-      min-height: 272mm;
-      max-height: 272mm;
+      min-height: 268mm;
       background: #ffffff;
-      padding: 16mm 18mm;
+      padding: 9mm 11mm;
       border: 1px solid #cbd5e1;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      overflow: hidden;
-      page-break-after: always;
-      break-after: page;
-    }
-    .page-2 {
+      box-sizing: border-box;
       page-break-after: avoid;
       break-after: avoid;
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
-    /* Academic Header */
-    .academic-header {
+    /* Report header and branding */
+    .report-header {
       border-bottom: 1.5px solid #e2e8f0;
-      padding-bottom: 10px;
-      margin-bottom: 16px;
+      padding-bottom: 6px;
+      margin-bottom: 7px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
     }
-    .brand-title {
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: 0.04em;
+    .header-brand .brand-name {
+      font-size: 13.5px;
+      font-weight: 900;
+      letter-spacing: 0.05em;
       color: #4f46e5;
       text-transform: uppercase;
     }
-    .brand-sub {
-      font-size: 10px;
+    .header-brand .brand-tagline {
+      font-size: 9px;
       color: #64748b;
-      margin-top: 2px;
       font-weight: 500;
+      margin-top: 1px;
     }
-    .header-ref {
-      font-size: 10px;
-      color: #64748b;
+    .header-doc {
       text-align: right;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     }
-
-    /* Document Title Block */
-    .report-title-block {
-      margin-bottom: 14px;
-    }
-    .report-title {
-      font-size: 18px;
+    .header-doc .doc-title {
+      font-size: 13.5px;
       font-weight: 800;
       color: #0f172a;
       letter-spacing: -0.01em;
     }
-    .report-subtitle {
-      font-size: 11px;
+    .header-doc .doc-ref {
+      font-size: 9px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 600;
       color: #64748b;
-      margin-top: 2px;
+      margin-top: 1px;
     }
 
-    /* Metadata Summary Box */
-    .meta-grid {
+    /* Metadata strip */
+    .meta-strip {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
+      gap: 8px;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 6px;
-      padding: 10px 14px;
-      margin-bottom: 14px;
+      padding: 5px 10px;
+      margin-bottom: 7px;
     }
-    .meta-item {
+    .meta-col {
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
-    .meta-label {
-      font-size: 9px;
+    .meta-caption {
+      font-size: 8px;
       font-weight: 700;
       color: #64748b;
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-    .meta-value {
-      font-size: 11px;
+    .meta-data {
+      font-size: 10.5px;
       font-weight: 700;
       color: #0f172a;
-      margin-top: 2px;
+      margin-top: 1px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* Overall Readiness Score Card */
-    .score-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      background: #ffffff;
-      padding: 14px 18px;
-      margin-bottom: 14px;
+    /* Readiness score & 3 summary boxes */
+    .overview-grid {
       display: grid;
-      grid-template-columns: 140px 1fr;
-      gap: 20px;
-      align-items: center;
+      grid-template-columns: 190px 1fr;
+      gap: 8px;
+      margin-bottom: 7px;
+      align-items: stretch;
     }
-    .score-number-box {
-      border-right: 1px solid #e2e8f0;
-      padding-right: 16px;
-      text-align: center;
-    }
-    .score-num {
-      font-size: 38px;
-      font-weight: 800;
-      color: #4f46e5;
-      line-height: 1;
-      letter-spacing: -0.02em;
-    }
-    .score-caption {
-      font-size: 9.5px;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      margin-top: 4px;
-      letter-spacing: 0.04em;
-    }
-    .score-details-box {
+
+    /* Prominent score card */
+    .score-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 7px;
+      background: #ffffff;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+    }
+    .score-headline {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
       gap: 6px;
+    }
+    .score-number {
+      font-size: 28px;
+      font-weight: 900;
+      color: #4f46e5;
+      line-height: 1;
+      letter-spacing: -0.03em;
     }
     .tier-badge {
       display: inline-block;
-      align-self: flex-start;
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: 4px;
-      font-size: 10px;
-      font-weight: 700;
+      font-size: 9px;
+      font-weight: 800;
       background: #eef2ff;
       color: #4338ca;
       border: 1px solid #c7d2fe;
+      white-space: nowrap;
     }
-    .progress-bar-track {
+    .score-track {
       width: 100%;
-      height: 7px;
+      height: 5px;
       background: #e2e8f0;
-      border-radius: 4px;
+      border-radius: 3px;
       overflow: hidden;
-      margin-top: 2px;
     }
-    .progress-bar-fill {
+    .score-fill {
       height: 100%;
       background: #4f46e5;
-      border-radius: 4px;
-      width: ${scorePercent}%;
+      border-radius: 3px;
     }
-    .score-interpretation {
-      font-size: 11px;
-      color: #334155;
-      line-height: 1.4;
-      margin-top: 2px;
-    }
-
-    /* Section Headings */
-    .section-heading {
-      font-size: 11px;
+    .score-label {
+      font-size: 8.5px;
       font-weight: 700;
-      color: #475569;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid #e2e8f0;
-      padding-bottom: 4px;
-      margin: 12px 0 8px;
-    }
-
-    /* Coverage Metric Boxes */
-    .metrics-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .metric-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      padding: 10px 12px;
-      background: #ffffff;
-      text-align: center;
-    }
-    .metric-number {
-      font-size: 20px;
-      font-weight: 800;
-      color: #0f172a;
-      line-height: 1;
-    }
-    .metric-title {
-      font-size: 9px;
-      font-weight: 700;
+      letter-spacing: 0.04em;
       color: #64748b;
-      text-transform: uppercase;
-      margin-top: 4px;
-      letter-spacing: 0.03em;
     }
 
-    /* Summary Narrative Card */
-    .narrative-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      background: #ffffff;
-      padding: 12px 14px;
-      margin-bottom: 12px;
+    /* 3 colored summary boxes */
+    .summary-boxes-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
     }
-    .narrative-text {
-      font-size: 11.5px;
-      color: #334155;
-      line-height: 1.5;
-    }
-
-    /* Priority Callout */
-    .priority-callout {
-      border: 1px solid #e2e8f0;
-      border-left: 3.5px solid #4f46e5;
-      border-radius: 5px;
-      padding: 10px 14px;
-      background: #f8fafc;
-      margin-bottom: 12px;
+    .summary-box {
+      border-radius: 7px;
+      padding: 7px 9px;
       display: flex;
+      flex-direction: column;
       justify-content: space-between;
+      gap: 2px;
+    }
+    .box-matched {
+      background: #f0fdf4;
+      border: 1.5px solid #86efac;
+    }
+    .box-gaps {
+      background: #fefce8;
+      border: 1.5px solid #fde047;
+    }
+    .box-assessed {
+      background: #faf5ff;
+      border: 1.5px solid #e9d5ff;
+    }
+    .box-top-row {
+      display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 5px;
     }
-    .priority-callout-title {
-      font-size: 11.5px;
-      font-weight: 700;
-      color: #0f172a;
+    .box-icon {
+      width: 15px;
+      height: 15px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
-    .priority-callout-sub {
-      font-size: 10px;
+    .box-matched .box-icon { background: #dcfce7; color: #166534; }
+    .box-gaps .box-icon { background: #fef9c3; color: #854d0e; }
+    .box-assessed .box-icon { background: #f3e8ff; color: #6b21a8; }
+    .box-title {
+      font-size: 8px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+    .box-matched .box-title { color: #15803d; }
+    .box-gaps .box-title { color: #a16207; }
+    .box-assessed .box-title { color: #7e22ce; }
+    .box-val {
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-top: 1px;
+    }
+    .box-matched .box-val { color: #166534; }
+    .box-gaps .box-val { color: #854d0e; }
+    .box-assessed .box-val { color: #6b21a8; }
+    .box-desc {
+      font-size: 8px;
+      font-weight: 600;
       color: #64748b;
       margin-top: 1px;
     }
 
-    /* Research Disclaimer */
-    .academic-disclaimer {
+    /* Skills lists grid: matched vs missing */
+    .skills-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+    .skills-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 7px;
+      background: #ffffff;
+      padding: 7px 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .skills-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 5px;
+      margin-bottom: 5px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .skills-card-title {
       font-size: 9.5px;
-      color: #64748b;
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 5px;
-      padding: 8px 12px;
-      line-height: 1.4;
-      margin-top: 6px;
-    }
-
-    /* Table Styles */
-    .table-wrapper {
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 12px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-      text-align: left;
-    }
-    th {
-      background: #f8fafc;
-      color: #475569;
-      font-size: 9.5px;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      padding: 8px 10px;
-      border-bottom: 1px solid #e2e8f0;
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
-    td {
-      padding: 7px 10px;
-      border-bottom: 1px solid #f1f5f9;
-      vertical-align: top;
-      color: #334155;
-      line-height: 1.35;
+    .dot-indicator {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
-    tr:last-child td {
+    .dot-green { background: #16a34a; }
+    .dot-yellow { background: #ca8a04; }
+    .skills-count-badge {
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 9999px;
+    }
+    .badge-count-green { background: #dcfce7; color: #15803d; }
+    .badge-count-yellow { background: #fef9c3; color: #854d0e; }
+
+    .skills-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .skills-list.multi-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px 8px;
+    }
+    .skill-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 5px;
+      font-size: 9.5px;
+      padding: 1px 0;
+      border-bottom: 1px dashed #f1f5f9;
+    }
+    .skill-row:last-child {
       border-bottom: none;
     }
-    tr:nth-child(even) td {
-      background: #fafafa;
+    .skill-name-text {
+      font-weight: 600;
+      color: #1e293b;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-
-    /* Status Badges */
-    .badge {
-      display: inline-block;
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-size: 9.5px;
-      font-weight: 700;
-      letter-spacing: 0.02em;
+    .status-badge {
+      font-size: 7.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      padding: 1px 4px;
+      border-radius: 3px;
+      flex-shrink: 0;
     }
     .badge-met {
       background: #f0fdf4;
-      color: #166534;
+      color: #15803d;
       border: 1px solid #bbf7d0;
     }
     .badge-partial {
@@ -521,98 +548,147 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
       color: #991b1b;
       border: 1px solid #fecaca;
     }
-
-    /* Priorities table and list styles (Page 2) */
-    .priorities-table th {
-      background: #f8fafc;
-      color: #475569;
+    .empty-note {
       font-size: 9px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      padding: 7px 10px;
-      border-bottom: 1px solid #e2e8f0;
+      color: #64748b;
+      font-style: italic;
+      padding: 4px 0;
     }
-    .priorities-table td {
-      padding: 6px 10px;
-      border-bottom: 1px solid #f1f5f9;
-      vertical-align: middle;
-      font-size: 11px;
-      color: #334155;
-      line-height: 1.35;
+
+    /* Recommended improvement areas */
+    .recommendations-section {
+      margin-bottom: 7px;
     }
-    .priority-rank-badge {
-      display: inline-block;
+    .section-title-bar {
       font-size: 9.5px;
       font-weight: 800;
-      color: #4338ca;
-      background: #eef2ff;
-      border: 1px solid #c7d2fe;
-      border-radius: 4px;
-      padding: 1px 6px;
-      min-width: 24px;
-      text-align: center;
-    }
-    .empty-priorities-box {
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      background: #f8fafc;
-      padding: 12px 14px;
-      font-size: 11px;
-      color: #64748b;
-      line-height: 1.45;
-      margin-bottom: 12px;
-    }
-
-    /* Status Legend */
-    .legend-row {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 3px;
+      margin-bottom: 5px;
       display: flex;
-      align-items: center;
-      gap: 14px;
-      font-size: 9.5px;
-      color: #64748b;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 8px;
-      margin-top: 4px;
+      justify-content: space-between;
+      align-items: baseline;
     }
-    .legend-item {
+    .section-title-sub {
+      font-size: 8px;
+      color: #94a3b8;
+      font-weight: 500;
+      text-transform: none;
+    }
+    .priorities-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px 8px;
+    }
+    .priorities-row.single-col {
+      grid-template-columns: 1fr;
+    }
+    .priority-item-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 6px;
+      background: #ffffff;
+      padding: 5px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .priority-header-line {
       display: flex;
       align-items: center;
       gap: 5px;
     }
+    .priority-num-badge {
+      font-size: 9px;
+      font-weight: 800;
+      width: 17px;
+      height: 17px;
+      background: #ede9fe;
+      color: #5b21b6;
+      border: 1px solid #ddd6fe;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .priority-skill-heading {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #0f172a;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .priority-advice-body {
+      font-size: 9px;
+      color: #475569;
+      line-height: 1.3;
+      margin: 0;
+    }
+    .empty-priorities-card {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 9px;
+      color: #64748b;
+      line-height: 1.35;
+    }
 
-    /* Footer */
-    .academic-footer {
+    /* Disclaimer & footer */
+    .bottom-wrapper {
+      margin-top: auto;
+    }
+    .disclaimer-box {
+      font-size: 8px;
+      color: #64748b;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 5px;
+      padding: 5px 8px;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+    .page-footer {
       border-top: 1px solid #e2e8f0;
-      padding-top: 8px;
-      margin-top: 8px;
+      padding-top: 4px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 9.5px;
+      font-size: 8px;
       color: #94a3b8;
     }
 
-    /* Print Stylesheet */
+    /* Print stylesheet ensuring single page without page break */
     @media print {
       body {
         background: #ffffff !important;
+        padding: 0 !important;
+        margin: 0 !important;
       }
       .no-print {
         display: none !important;
       }
       .report-container {
         padding: 0 !important;
-        gap: 0 !important;
+        margin: 0 !important;
       }
       .report-page {
         border: none !important;
         box-shadow: none !important;
         width: 100% !important;
-        min-height: 270mm !important;
-        max-height: 270mm !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        max-height: none !important;
         padding: 0 !important;
         margin: 0 !important;
+        page-break-after: avoid;
+        break-after: avoid;
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
     }
   </style>
@@ -622,7 +698,7 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
   <!-- Screen-only action toolbar -->
   <div class="preview-toolbar no-print">
     <div class="preview-toolbar-title">
-      Skillaro Career Readiness Assessment &nbsp;•&nbsp; Official Assessment Report
+      Skillaro Career Readiness Assessment &nbsp;•&nbsp; One-Page Assessment Report
     </div>
     <div class="preview-toolbar-actions">
       <button onclick="window.print()" class="btn btn-primary">
@@ -635,250 +711,180 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
   </div>
 
   <div class="report-container">
-
-    <!-- ==================== PAGE 1: CAREER READINESS SUMMARY ==================== -->
-    <div class="report-page page-1">
+    <div class="report-page">
       <div>
-        <!-- Academic Header -->
-        <div class="academic-header">
-          <div>
-            <div class="brand-title">SKILLARO</div>
-            <div class="brand-sub">Academic-to-Industry Skill Bridge &nbsp;|&nbsp; Career Assessment</div>
+        <!-- Branding & Document Title -->
+        <div class="report-header">
+          <div class="header-brand">
+            <div class="brand-name">SKILLARO</div>
+            <div class="brand-tagline">Academic-to-Industry Skill Bridge</div>
           </div>
-          <div class="header-ref">
-            <div>REF: ${shortId}</div>
-            <div>PAGE 1 OF 2</div>
-          </div>
-        </div>
-
-        <!-- Document Title -->
-        <div class="report-title-block">
-          <h1 class="report-title">Career Readiness Assessment Report</h1>
-          <p class="report-subtitle">Evaluation of candidate capability alignment against active industry requirements.</p>
-        </div>
-
-        <!-- Metadata Grid -->
-        <div class="meta-grid">
-          <div class="meta-item">
-            <span class="meta-label">Target Role</span>
-            <span class="meta-value">${data.roleName}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Career Level</span>
-            <span class="meta-value">${data.careerLevel || "Entry Level"}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Candidate</span>
-            <span class="meta-value">${data.studentName || "Candidate Evaluation"}</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Assessment Date</span>
-            <span class="meta-value">${dateFormatted}</span>
+          <div class="header-doc">
+            <h1 class="doc-title">Career Readiness Report</h1>
+            <div class="doc-ref">REF: ${shortId}</div>
           </div>
         </div>
 
-        <!-- Overall Score Card -->
-        <div class="score-card">
-          <div class="score-number-box">
-            <div class="score-num">${roundedScore}%</div>
-            <div class="score-caption">Readiness Score</div>
+        <!-- Metadata Strip -->
+        <div class="meta-strip">
+          <div class="meta-col">
+            <span class="meta-caption">Target Role</span>
+            <span class="meta-data" title="${escapeHtml(data.roleName)}">${escapeHtml(data.roleName)}</span>
           </div>
-          <div class="score-details-box">
-            <span class="tier-badge">${data.tier}</span>
-            <div class="progress-bar-track">
-              <div class="progress-bar-fill"></div>
+          <div class="meta-col">
+            <span class="meta-caption">Career Level</span>
+            <span class="meta-data">${escapeHtml(data.careerLevel || "Entry Level")}</span>
+          </div>
+          <div class="meta-col">
+            <span class="meta-caption">Candidate</span>
+            <span class="meta-data">${escapeHtml(data.studentName || "Candidate Evaluation")}</span>
+          </div>
+          <div class="meta-col">
+            <span class="meta-caption">Assessment Date</span>
+            <span class="meta-data">${escapeHtml(dateFormatted)}</span>
+          </div>
+        </div>
+
+        <!-- Readiness Score Card & 3 Summary Badges -->
+        <div class="overview-grid">
+          <!-- Readiness Score -->
+          <div class="score-card">
+            <div class="score-headline">
+              <span class="score-number">${roundedScore}%</span>
+              <span class="tier-badge">${escapeHtml(data.tier)}</span>
             </div>
-            <p class="score-interpretation">
-              ${data.interpretation || "The overall readiness score reflects evidence-adjusted coverage of the target role's weighted requirements."}
-            </p>
+            <div class="score-track">
+              <div class="score-fill" style="width: ${scorePercent}%;"></div>
+            </div>
+            <span class="score-label">Readiness Score</span>
           </div>
-        </div>
 
-        <!-- Requirement Coverage Summary -->
-        <div class="section-heading">Requirement Coverage Summary</div>
-        <div class="metrics-row">
-          <div class="metric-card">
-            <div class="metric-number">${data.totalRequirements}</div>
-            <div class="metric-title">Total Assessed</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-number" style="color: #15803d;">${data.satisfiedCount}</div>
-            <div class="metric-title">Requirements Met</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-number" style="color: #b45309;">${data.partialCount}</div>
-            <div class="metric-title">Partially Covered</div>
-          </div>
-          <div class="metric-card">
-            <div class="metric-number" style="color: #b91c1c;">${data.missingCount}</div>
-            <div class="metric-title">Skill Gaps</div>
-          </div>
-        </div>
+          <!-- 3 Colored Summary Boxes -->
+          <div class="summary-boxes-row">
+            <!-- Matched Skills -->
+            <div class="summary-box box-matched">
+              <div class="box-top-row">
+                <span class="box-icon">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                <span class="box-title">Matched Skills</span>
+              </div>
+              <div class="box-val">${matchedSkills.length} Skills</div>
+              <div class="box-desc">${data.satisfiedCount} Met${data.partialCount > 0 ? `, ${data.partialCount} Partial` : ""}</div>
+            </div>
 
-        <!-- Executive Summary -->
-        <div class="section-heading">Executive Summary</div>
-        <div class="narrative-card">
-          <p class="narrative-text">
-            ${data.summaryText || "Evaluation performed against verified industry role expectations and demonstrated candidate proficiencies."}
-          </p>
-        </div>
+            <!-- Skill Gaps -->
+            <div class="summary-box box-gaps">
+              <div class="box-top-row">
+                <span class="box-icon">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </span>
+                <span class="box-title">Skill Gaps</span>
+              </div>
+              <div class="box-val">${data.missingCount} Missing</div>
+              <div class="box-desc">To develop</div>
+            </div>
 
-        <!-- Primary Growth Focus Callout -->
-        ${topPriority ? `
-        <div class="priority-callout">
-          <div>
-            <div class="priority-callout-title">Primary Learning Focus: ${escapeHtml(topPriority.skillName)}</div>
-            <div class="priority-callout-sub">
-              ${topPriority.gap !== undefined && topPriority.gap !== null ? `Remaining Capability Gap: ${formatGapValue(topPriority.gap)}` : ""}
-              ${topPriority.priorityScore !== undefined && topPriority.priorityScore !== null ? ` &nbsp;•&nbsp; Learning Priority Index: ${formatPriorityScore(topPriority.priorityScore)}` : ""}
+            <!-- Total Assessed -->
+            <div class="summary-box box-assessed">
+              <div class="box-top-row">
+                <span class="box-icon">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </span>
+                <span class="box-title">Total Assessed</span>
+              </div>
+              <div class="box-val">${data.totalRequirements} Total</div>
+              <div class="box-desc">Role standards</div>
             </div>
           </div>
-          <span class="tier-badge" style="background: #ffffff; border-color: #cbd5e1;">Top Priority</span>
-        </div>
-        ` : ""}
-
-        <!-- Advisory Disclaimer -->
-        <div class="academic-disclaimer">
-          <strong>Advisory Note:</strong> This assessment evaluates deterministic alignment between candidate skill evidence and industry requirements. It serves as an academic and professional development guide to inform targeted learning, rather than a prediction or guarantee of hiring.
-        </div>
-      </div>
-
-      <!-- Page 1 Footer -->
-      <div class="academic-footer">
-        <div>Skillaro Academic-to-Industry Skill Bridge &nbsp;•&nbsp; Assessment ID: ${shortId}</div>
-        <div>Page 1 of 2</div>
-      </div>
-    </div>
-
-
-    <!-- ==================== PAGE 2: SKILLS & IMPROVEMENT PRIORITIES ==================== -->
-    <div class="report-page page-2">
-      <div>
-        <!-- Academic Header -->
-        <div class="academic-header">
-          <div>
-            <div class="brand-title">SKILLARO</div>
-            <div class="brand-sub">Academic-to-Industry Skill Bridge &nbsp;|&nbsp; Career Assessment</div>
-          </div>
-          <div class="header-ref">
-            <div>REF: ${shortId}</div>
-            <div>PAGE 2 OF 2</div>
-          </div>
         </div>
 
-        <!-- Section 1: Evaluated Skills Table -->
-        <div class="report-title-block">
-          <h2 class="report-title" style="font-size: 16px;">Evaluated Skills & Requirement Coverage</h2>
-          <p class="report-subtitle">Itemized analysis of specific competencies evaluated against the target profile.</p>
-        </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th style="width: 32%;">Skill Requirement</th>
-                <th style="width: 16%;">Required Level</th>
-                <th style="width: 14%;">Status</th>
-                <th style="width: 38%;">Assessment Findings / Rationale</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${data.skills.slice(0, 8).map((skill) => {
-    const badgeClass =
-      skill.status === "Met" ? "badge-met" : skill.status === "Partial" ? "badge-partial" : "badge-missing";
-    return `
-                <tr>
-                  <td>
-                    <strong>${skill.name}</strong>
-                    ${skill.matchedName && skill.matchedName !== skill.name ? `<div style="font-size: 9px; color: #64748b;">via ${skill.matchedName}</div>` : ""}
-                  </td>
-                  <td style="font-weight: 600; color: #475569;">${skill.requiredProficiency}</td>
-                  <td>
-                    <span class="badge ${badgeClass}">${skill.status}</span>
-                  </td>
-                  <td style="font-size: 10px; color: #334155;">
-                    ${skill.explanation || (skill.status === "Met" ? "Demonstrated proficiency satisfies the required level." : skill.status === "Partial" ? "Partial capability demonstrated against required depth." : "Requirement not yet evidenced in profile.")}
-                  </td>
-                </tr>
-                `;
-  }).join("")}
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Section 2: Prioritized Improvement Areas -->
-        <div class="section-heading">Prioritized Improvement Areas</div>
-        ${data.priorities && data.priorities.length > 0 ? `
-        <div class="table-wrapper" style="margin-bottom: 12px;">
-          <table class="priorities-table">
-            <thead>
-              <tr>
-                <th style="width: 12%; text-align: center;">Rank</th>
-                <th style="width: 46%;">Priority Skill Area</th>
-                <th style="width: 21%; text-align: center;">Capability Gap</th>
-                <th style="width: 21%; text-align: right;">Priority Index</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${data.priorities.map((p) => `
-                <tr>
-                  <td style="text-align: center; vertical-align: middle;">
-                    <span class="priority-rank-badge">#${p.rank}</span>
-                  </td>
-                  <td>
-                    <strong>${escapeHtml(p.name)}</strong>
-                    ${p.explanation ? `<div style="font-size: 9.5px; color: #64748b; margin-top: 1px; line-height: 1.3;">${escapeHtml(p.explanation)}</div>` : ""}
-                  </td>
-                  <td style="text-align: center; vertical-align: middle; font-weight: 600; color: #b45309;">
-                    ${formatGapValue(p.gap)}
-                  </td>
-                  <td style="text-align: right; vertical-align: middle; font-weight: 700; color: #4338ca;">
-                    ${formatPriorityScore(p.priorityScore)}
-                  </td>
-                </tr>
+        <!-- Matched Skills & Missing Skills -->
+        <div class="skills-section">
+          <!-- Column 1: Matched Skills -->
+          <div class="skills-card">
+            <div class="skills-card-header">
+              <span class="skills-card-title">
+                <span class="dot-indicator dot-green"></span>
+                <span>Matched Skills</span>
+              </span>
+              <span class="skills-count-badge badge-count-green">${matchedSkills.length}</span>
+            </div>
+            <div class="skills-list ${matchedSkills.length > 4 ? 'multi-col' : ''}">
+              ${matchedSkills.length === 0 ? `
+                <div class="empty-note">No matched skills recorded.</div>
+              ` : matchedSkills.map((s) => `
+                <div class="skill-row">
+                  <span class="skill-name-text" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</span>
+                  ${s.status === "Partial" ? `<span class="status-badge badge-partial">Partial</span>` : `<span class="status-badge badge-met">Met</span>`}
+                </div>
               `).join("")}
-            </tbody>
-          </table>
-        </div>
-        ` : `
-        <div class="empty-priorities-box">
-          No prioritized improvement areas were identified for this assessment. All assessed requirements meet the target threshold or no specific skill gaps were returned.
-        </div>
-        `}
+            </div>
+          </div>
 
-        <!-- Section 3: Next Steps Guidance -->
-        <div class="section-heading">Developmental Next Steps</div>
-        <div class="narrative-card" style="margin-bottom: 10px;">
-          <p class="narrative-text" style="font-size: 11px;">
-            Requirements designated as <strong>Met</strong> satisfy industry expectations. Learners should focus independent study, project coursework, or laboratory practice on top-ranked priority skills to address remaining gaps and maximize readiness.
-          </p>
+          <!-- Column 2: Missing Skills -->
+          <div class="skills-card">
+            <div class="skills-card-header">
+              <span class="skills-card-title">
+                <span class="dot-indicator dot-yellow"></span>
+                <span>Skill Gaps</span>
+              </span>
+              <span class="skills-count-badge badge-count-yellow">${missingSkills.length}</span>
+            </div>
+            <div class="skills-list ${missingSkills.length > 4 ? 'multi-col' : ''}">
+              ${missingSkills.length === 0 ? `
+                <div class="empty-note" style="color: #15803d; font-style: normal; font-weight: 600;">No skill gaps identified.</div>
+              ` : missingSkills.map((s) => `
+                <div class="skill-row">
+                  <span class="skill-name-text" title="${escapeHtml(s.name)}">${escapeHtml(s.name)}</span>
+                  <span class="status-badge badge-missing">Missing</span>
+                </div>
+              `).join("")}
+            </div>
+          </div>
         </div>
 
-        <!-- Status Legend -->
-        <div class="legend-row">
-          <span style="font-weight: 700; color: #475569;">Legend:</span>
-          <div class="legend-item">
-            <span class="badge badge-met">Met</span>
-            <span>Requirement satisfied</span>
+        <!-- Recommended Improvement Areas -->
+        <div class="recommendations-section">
+          <div class="section-title-bar">
+            <span>Recommended Improvement Areas</span>
+            <span class="section-title-sub">Targeted priorities for career readiness</span>
           </div>
-          <div class="legend-item">
-            <span class="badge badge-partial">Partial</span>
-            <span>Partial capability</span>
-          </div>
-          <div class="legend-item">
-            <span class="badge badge-missing">Missing</span>
-            <span>Not yet evidenced</span>
-          </div>
+
+          ${prioritiesToDisplay.length === 0 ? `
+            <div class="empty-priorities-card">
+              No explicit improvement priorities were identified for this assessment. All assessed requirements meet the target threshold or no specific skill gaps were returned.
+            </div>
+          ` : `
+            <div class="priorities-row ${prioritiesToDisplay.length === 1 ? 'single-col' : ''}">
+              ${prioritiesToDisplay.map((p, idx) => {
+                const advice = getPracticalAdvice(p);
+                return `
+                  <div class="priority-item-card">
+                    <div class="priority-header-line">
+                      <span class="priority-num-badge">${idx + 1}</span>
+                      <span class="priority-skill-heading" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</span>
+                    </div>
+                    <p class="priority-advice-body">${escapeHtml(advice)}</p>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          `}
         </div>
       </div>
 
-      <!-- Page 2 Footer -->
-      <div class="academic-footer">
-        <div>Skillaro Academic-to-Industry Skill Bridge &nbsp;•&nbsp; Assessment ID: ${shortId}</div>
-        <div>Page 2 of 2</div>
+      <!-- Assessment Disclaimer and Footer -->
+      <div class="bottom-wrapper">
+        <div class="disclaimer-box">
+          <strong>Advisory Note:</strong> This assessment evaluates deterministic alignment between candidate skill evidence and verified industry role expectations to guide targeted learning, rather than a prediction or guarantee of hiring.
+        </div>
+        <div class="page-footer">
+          <span>Skillaro Academic-to-Industry Skill Bridge &nbsp;•&nbsp; Assessment ID: ${shortId}</span>
+          <span>Generated: ${escapeHtml(dateFormatted)}</span>
+        </div>
       </div>
     </div>
-
   </div>
 
   <script>
@@ -894,7 +900,7 @@ export function generateCareerReadinessReportHtml(data: ReportGenerationData): s
 </html>`;
 }
 
-// Fetches live analysis report details and triggers the print-friendly 2-page report download
+// Fetches live analysis report details and triggers the print-friendly 1-page report download.
 export async function downloadCareerReadinessReport(
   analysisId: string,
   roleNameHint?: string,
@@ -969,16 +975,12 @@ export async function downloadCareerReadinessReport(
     }
   } else if (detail?.skill_results) {
     for (const sr of detail.skill_results) {
-      const confStr =
-        sr.evidence_confidence !== null && sr.evidence_confidence !== undefined && sr.evidence_confidence < 0.999
-          ? ` (${Math.round(sr.evidence_confidence * 100)}% evidence confidence, ${Math.round((sr.satisfaction ?? 0) * 100)}% satisfaction)`
-          : "";
       skills.push({
         name: sr.required_skill_name,
         matchedName: sr.matched_skill_name || undefined,
         requiredProficiency: sr.required_proficiency || "INTERMEDIATE",
         status: normalizeReportStatus(sr.result_status, sr.match_type, sr.satisfaction),
-        explanation: `Demonstrated coverage credit ${(sr.coverage_credit * 100).toFixed(0)}%${confStr}.`,
+        explanation: `Demonstrated coverage credit ${(sr.coverage_credit * 100).toFixed(0)}%.`,
       });
     }
   }
@@ -995,6 +997,8 @@ export async function downloadCareerReadinessReport(
     priorityScore?: number;
     gap?: number;
     explanation?: string;
+    requiredProficiency?: string;
+    userProficiency?: string;
   }> =
     (report?.priorityExplanations && report.priorityExplanations.length > 0)
       ? report.priorityExplanations
@@ -1022,13 +1026,13 @@ export async function downloadCareerReadinessReport(
           ? Number(item.priorityScore)
           : undefined;
 
-    // Use explanation directly if present or locate matching skill explanation
-    const explanation =
-      item.explanation ||
-      report?.priorityExplanations?.find(
-        (pe) => (item.skillId && pe.skillId === item.skillId) || pe.skillName.toLowerCase() === name.toLowerCase(),
-      )?.explanation ||
-      undefined;
+    const peMatch = report?.priorityExplanations?.find(
+      (pe) => (item.skillId && pe.skillId === item.skillId) || pe.skillName.toLowerCase() === name.toLowerCase(),
+    );
+
+    const explanation = item.explanation || peMatch?.explanation || undefined;
+    const requiredProficiency = item.requiredProficiency || peMatch?.requiredProficiency || undefined;
+    const userProficiency = item.userProficiency || peMatch?.userProficiency || undefined;
 
     priorities.push({
       rank,
@@ -1036,10 +1040,12 @@ export async function downloadCareerReadinessReport(
       gap: gapVal,
       priorityScore: scoreVal,
       explanation,
+      requiredProficiency,
+      userProficiency,
     });
   }
 
-  // Sort into descending priority order (Rank 1 / highest priority first, then Rank 2, etc.)
+  // Sort priorities in ascending rank order (rank 1 first, rank 2 second, etc.)
   priorities.sort((a, b) => {
     if (a.rank !== undefined && b.rank !== undefined && a.rank !== b.rank) {
       return a.rank - b.rank;
@@ -1048,13 +1054,6 @@ export async function downloadCareerReadinessReport(
       return b.priorityScore - a.priorityScore;
     }
     return 0;
-  });
-
-  // Normalize rank sequence to guarantee clean 1-based ranks
-  priorities.forEach((p, idx) => {
-    if (!p.rank || p.rank <= 0) {
-      p.rank = idx + 1;
-    }
   });
 
   const generatedDate = formatAnalysisDate(report?.generatedAt || detail?.completed_at || detail?.started_at);
@@ -1078,23 +1077,16 @@ export async function downloadCareerReadinessReport(
     missingCount,
     skills,
     priorities,
-    highestPrioritySkill: priorities.length > 0 ? {
-      skillName: priorities[0].name,
-      gap: priorities[0].gap,
-      priorityScore: priorities[0].priorityScore,
-      explanation: priorities[0].explanation,
-    } : undefined,
   };
 
   const html = generateCareerReadinessReportHtml(reportData);
 
-  // Open printable document in a new tab/window
+  // Open printable document in a new tab/window for PDF save or print
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });
   const blobUrl = URL.createObjectURL(blob);
 
   const printWindow = window.open(blobUrl, "_blank");
   if (!printWindow) {
-    // If pop-up was blocked by browser, trigger direct file download
     const sanitizedRole = roleName.replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "_");
     const link = document.createElement("a");
     link.href = blobUrl;
