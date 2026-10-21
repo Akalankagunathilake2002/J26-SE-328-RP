@@ -1,0 +1,18 @@
+SAMPLE STUDENT (made-up demo CV)
+Undergraduate, BSc (Hons) in Information Technology
+
+Summary
+Final-year IT undergraduate interested in learning Kubernetes and cloud computing.
+
+Skills
+Python, JavaScript, React, SQL, Git, Docker, Communication, Teamwork
+
+Projects
+Built a web scraper in Python to collect news articles.
+Developed a student attendance dashboard in React with a FastAPI backend.
+
+Education
+BSc (Hons) in Information Technology, modules in Data Structures and Algorithms, Database Systems and Machine Learning.
+
+Certifications
+AWS Certified Cloud Practitioner
