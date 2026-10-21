@@ -1,7 +1,9 @@
 import contextlib
 from fastapi import APIRouter, FastAPI
 
-from app.api.routers import extraction_router, health_router, normalisation_router
+from app.api.routers import (
+    extraction_router, health_router, normalisation_router, profile_router,
+)
 from app.config.settings import get_settings
 
 
@@ -28,6 +30,7 @@ def create_app() -> FastAPI:
     api_router.include_router(health_router)
     api_router.include_router(extraction_router)
     api_router.include_router(normalisation_router)
+    api_router.include_router(profile_router)
 
     app.include_router(api_router)
     app.include_router(health_router)
@@ -40,7 +43,7 @@ def _openapi_with_file_pickers(app: FastAPI) -> dict:
     """OpenAPI schema where upload fields also carry `format: binary`.
 
     FastAPI marks uploads with OpenAPI 3.1's `contentMediaType`, but Swagger UI only shows a
-    "Choose file" button for `format: binary`, so file fields appeared as text boxes.
+    "Choose file" button for `format: binary`, so lists of files appeared as text boxes.
     """
     if app.openapi_schema:
         return app.openapi_schema

@@ -19,7 +19,6 @@ class Settings(BaseSettings):
         SERVICE_DIR.parent / "shared-skill-knowledge" / "seed" / "import_ready" / "external_ids.csv"
     )
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
-    index_dir: Path = SERVICE_DIR / "data" / "index"
     # Cross-encoder that re-ranks the top semantic candidates. On the 53-term dev set it added one
     # correct paraphrase (83.0% -> 84.9%, scripts/evaluate_normalisation.py): small, not yet proven.
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L6-v2"
@@ -39,6 +38,11 @@ class Settings(BaseSettings):
     # trained model, setfit falls back to the rules with a warning.
     evidence_classifier: str = "setfit"
     evidence_model_dir: Path = SERVICE_DIR / "models" / "evidence-setfit"
+    # GitHub portfolio links (TAF task 2). A token raises the API limit from 60 to 5,000 an hour.
+    github_token: str = ""
+    github_max_repos: int = 8
+    github_min_language_share: float = 0.05
+    index_dir: Path = SERVICE_DIR / "data" / "index"
 
 
 @lru_cache

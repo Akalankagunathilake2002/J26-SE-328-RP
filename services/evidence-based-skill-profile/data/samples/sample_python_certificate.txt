@@ -1,0 +1,3 @@
+Certificate of Completion (made-up demo document)
+This certifies that Sample Student has successfully completed
+Python for Data Science, including Python programming, data analysis and Machine Learning.

@@ -1,0 +1,8 @@
+Final Year Project Report (made-up demo document)
+Smart Attendance System
+
+Implementation
+The backend was implemented in Python using FastAPI, with a PostgreSQL database.
+The face recognition module was built with OpenCV and trained a deep learning model with TensorFlow.
+The web interface was developed in React and deployed with Docker containers.
+We used Git for version control and tracked tasks with Agile sprints.
