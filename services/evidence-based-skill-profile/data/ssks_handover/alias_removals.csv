@@ -1,0 +1,44 @@
+alias,skill_id,skill_name,correct_skill_id,correct_skill_name,reason
+.NET,SK-000062,Visual Basic,SK-001208,Microsoft .NET Framework,Alias points to the wrong skill
+active listening,SK-000476,listen actively,SK-000731,Active Listening,Alias is the name of another skill: possible duplicate skill
+Agile,SK-000549,ICT project management methodologies,SK-000029,Agile project management,Alias points to the wrong skill
+Apache Hadoop,SK-000647,Hadoop,SK-000792,Apache Hadoop,Alias is the name of another skill: possible duplicate skill
+big data,SK-000370,statistics,,,not statistics
+business analysis,SK-000451,financial analysis,SK-000280,business analysis,Alias is the name of another skill: possible duplicate skill
+business analysis,SK-000469,business processes,SK-000280,business analysis,Alias is the name of another skill: possible duplicate skill
+business analytics,SK-000064,business intelligence,SK-000447,business analytics,Alias is the name of another skill: possible duplicate skill
+cascading style sheets,SK-000557,style sheet languages,SK-000657,CSS,Alias points to the wrong skill
+cloud security and compliance,SK-000555,implement cloud security and compliance,SK-000082,cloud security and compliance,Alias is the name of another skill: possible duplicate skill
+CSS,SK-000557,style sheet languages,SK-000657,CSS,Alias is the name of another skill: possible duplicate skill
+data analysis,SK-000370,statistics,SK-000124,perform data analysis,Alias points to the wrong skill
+Eclipse IDE,SK-000317,Eclipse,SK-001185,Eclipse IDE,Alias is the name of another skill: possible duplicate skill
+employment law,SK-000025,labour legislation,SK-000443,employment law,Alias is the name of another skill: possible duplicate skill
+git,SK-000463,tools for software configuration management,SK-001189,Git,Alias is the name of another skill: possible duplicate skill
+Google Docs,SK-000378,use word processing software,SK-000830,Google Docs,Alias is the name of another skill: possible duplicate skill
+Google Sheets,SK-000075,use spreadsheets software,SK-001542,Google Sheets,Alias is the name of another skill: possible duplicate skill
+Google Slides,SK-000100,use presentation software,SK-000834,Google Slides,Alias is the name of another skill: possible duplicate skill
+Jenkins CI,SK-000691,Jenkins (tools for software configuration management),SK-001443,Jenkins CI,Alias is the name of another skill: possible duplicate skill
+market analysis,SK-000394,market research,SK-000509,market analysis,Alias is the name of another skill: possible duplicate skill
+market research,SK-000509,market analysis,SK-000394,market research,Alias is the name of another skill: possible duplicate skill
+metadata,SK-000370,statistics,,,not statistics
+Mocha,SK-000165,JavaScript,,,Mocha is a separate JavaScript test framework
+MS Excel,SK-000075,use spreadsheets software,SK-000862,Microsoft Excel,Alias points to the wrong skill
+NOC,SK-000463,tools for software configuration management,,,usually means network operations centre
+Pascal,SK-000662,Pascal (computer programming),SK-001599,Pascal,Alias is the name of another skill: possible duplicate skill
+plan events,SK-000088,coordinate events,SK-000480,plan events,Alias is the name of another skill: possible duplicate skill
+PRINCE2,SK-000549,ICT project management methodologies,SK-000330,Prince2 project management,Alias points to the wrong skill
+process data,SK-000249,manage quantitative data,SK-000689,process data,Alias is the name of another skill: possible duplicate skill
+Prolog,SK-000125,Prolog (computer programming),SK-001466,Prolog,Alias is the name of another skill: possible duplicate skill
+Puppet,SK-000284,Puppet (tools for software configuration management),SK-001229,Puppet,Alias is the name of another skill: possible duplicate skill
+Python,SK-000591,Python (computer programming),SK-000899,Python,Alias is the name of another skill: possible duplicate skill
+Ruby,SK-000036,Ruby (computer programming),SK-000903,Ruby,Alias is the name of another skill: possible duplicate skill
+sales strategies,SK-000033,sales argumentation,SK-000660,sales strategies,Alias is the name of another skill: possible duplicate skill
+SAP ERP,SK-000540,SAP R3,SK-001618,SAP ERP,Alias is the name of another skill: possible duplicate skill
+Selenium,SK-000345,tools for ICT test automation,SK-001236,Selenium,Alias is the name of another skill: possible duplicate skill
+Smalltalk,SK-000181,Smalltalk (computer programming),SK-001627,Smalltalk,Alias is the name of another skill: possible duplicate skill
+SPARQL,SK-000448,resource description framework query language,SK-000265,SPARQL,Alias is the name of another skill: possible duplicate skill
+SQL,SK-000499,database management systems,SK-000919,Structured query language SQL,Alias points to the wrong skill
+supervise staff,SK-000144,manage staff,SK-000438,supervise staff,Alias is the name of another skill: possible duplicate skill
+Swift,SK-000548,Swift (computer programming),SK-000920,Swift,Alias is the name of another skill: possible duplicate skill
+Visual Studio,SK-000062,Visual Basic,SK-001219,Microsoft Visual Studio,Alias points to the wrong skill
+Visual Studio .NET,SK-000062,Visual Basic,SK-001451,Microsoft Visual Studio.NET,Alias points to the wrong skill

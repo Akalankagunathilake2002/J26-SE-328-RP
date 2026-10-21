@@ -23,3 +23,9 @@ __pycache__/
 # Personal notes, kept local only
 DEVELOPMENT_GUIDE.md
 VIVA_NOTES.md
+
+# Built semantic indexes (rebuild with scripts/build_skill_index.py)
+data/index/
+
+# SetFit training checkpoints (scripts/train_evidence_model.py)
+checkpoints/
