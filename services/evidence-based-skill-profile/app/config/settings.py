@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     version: str = "0.1.0"
     database_url: str = "postgresql+asyncpg://skillbridge:skillbridge@localhost:5432/profile_db"
     dictionary_path: Path = SERVICE_DIR / "data" / "dictionary" / "clean_skills.csv"
+    matcher_rules_path: Path = SERVICE_DIR / "data" / "dictionary" / "matcher_rules.csv"
 
 
 @lru_cache

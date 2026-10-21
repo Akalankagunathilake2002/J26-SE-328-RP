@@ -1,0 +1,4 @@
+term,rule,note
+Ada,exact_case,"Programming language; ""ADA"" in HR CVs is the Americans with Disabilities Act"
+LESS,exact_case,"CSS preprocessor; ""less"" is an ordinary word (""less experienced staff"")"
+Science,skip,"Matches degree names (""Bachelor of Science""); ""computer science"" still matches its own skill"
