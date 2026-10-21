@@ -1,0 +1,54 @@
+term,expected_skill_id,category
+PYTHON,SK-000899,exact
+javascript,SK-000165,exact
+MS Excel,SK-000862,exact
+Node.js,SK-001222,exact
+Kubernetes,SK-001444,exact
+TypeScript,SK-000390,exact
+Tableau,SK-000921,exact
+Time Management,SK-000755,exact
+Customer Service,C02-000011,exact
+recruit employees,SK-000204,exact
+Python3,SK-000899,cleaned
+Python 3.10,SK-000899,cleaned
+ReactJS,SK-001606,cleaned
+React-based,SK-001606,cleaned
+NodeJS,SK-001222,cleaned
+Node JS,SK-001222,cleaned
+HTML5,SK-000836,cleaned
+CSS3,SK-000657,cleaned
+Django framework,SK-001330,cleaned
+Java programming,SK-000076,cleaned
+Javascrpit,SK-000165,typo
+Pyhton,SK-000899,typo
+Kubernets,SK-001444,typo
+Postgressql,SK-001228,typo
+Tensorflwo,SK-001478,typo
+Djnago,SK-001330,typo
+Typscript,SK-000390,typo
+MongoBD,SK-001220,typo
+Tablaeu,SK-000921,typo
+Linx,SK-001205,typo
+made neural networks,C02-000001,paraphrase
+trained machine learning models,SK-000481,paraphrase
+handled staff hiring and onboarding,SK-000204,paraphrase
+processed employee salaries,SK-000466,paraphrase
+built REST endpoints,SK-001614,paraphrase
+containerised applications,SK-001331,paraphrase
+version control,SK-001189|SK-001647,paraphrase
+wrote database queries,SK-000919|SK-000346,paraphrase
+helped customers with their complaints,C02-000011,paraphrase
+planned project timelines and deliverables,SK-000331,paraphrase
+worked well in a team,SK-000488,paraphrase
+led a team of five people,SK-000616,paraphrase
+prioritised tasks to meet deadlines,SK-000755|SK-000043,paraphrase
+analysed data to find trends,SK-000124,paraphrase
+built interactive dashboards in Power BI,SK-001215,paraphrase
+references available on request,,negative
+Colombo Sri Lanka,,negative
+2019 - 2021,,negative
+John Smith,,negative
+full driving licence,,negative
+enjoy reading novels,,negative
+Bachelor of Science,,negative
+manager,,negative
