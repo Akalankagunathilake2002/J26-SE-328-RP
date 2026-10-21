@@ -24,6 +24,21 @@ class Settings(BaseSettings):
     # correct paraphrase (83.0% -> 84.9%, scripts/evaluate_normalisation.py): small, not yet proven.
     reranker_model: str = "cross-encoder/ms-marco-MiniLM-L6-v2"
     use_reranker: bool = True
+    # Second extraction layer (TAF task 4): GLiNER zero-shot skill extraction.
+    use_neural_extraction: bool = True
+    gliner_model: str = "urchade/gliner_small-v2.1"
+    # Asked for; only keep_labels are used, the others draw job titles, degrees and employers away.
+    gliner_labels: list[str] = ["skill", "tool", "technology", "job title", "degree",
+                                "organization"]
+    gliner_keep_labels: list[str] = ["skill", "tool", "technology"]
+    gliner_threshold: float = 0.5
+    # A GLiNER phrase linked only by meaning needs this cosine; weaker links go to `unlinked`.
+    neural_semantic_min: float = 0.65
+    # Evidence type for CV sentences (TAF task 6): "setfit" (v2, trained by
+    # scripts/train_evidence_model.py into evidence_model_dir) or "rules" (v1 baseline). Without a
+    # trained model, setfit falls back to the rules with a warning.
+    evidence_classifier: str = "setfit"
+    evidence_model_dir: Path = SERVICE_DIR / "models" / "evidence-setfit"
 
 
 @lru_cache

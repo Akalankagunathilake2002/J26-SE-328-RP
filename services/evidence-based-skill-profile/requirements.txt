@@ -14,3 +14,7 @@ torch==2.14.1
 sentence-transformers==6.1.0
 faiss-cpu==1.15.1
 rapidfuzz==3.14.6
+# AI skill extraction (GLiNER zero-shot NER); protobuf reads its DeBERTa tokenizer
+gliner==0.2.29
+protobuf==7.36.2
+setfit==1.2.0
