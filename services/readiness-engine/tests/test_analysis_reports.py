@@ -608,7 +608,7 @@ async def test_08_repeated_requests_prevent_duplicate_persisted_reports(
     async with session_maker() as fresh_session:
         stmt = select(AnalysisReport).where(
             AnalysisReport.analysis_id == analysis_id,
-            AnalysisReport.report_version == "explanation_v1.0",
+            AnalysisReport.report_version == "explanation_v1.1",
         )
         res = await fresh_session.execute(stmt)
         explanation_reports = res.scalars().all()
@@ -657,6 +657,7 @@ async def test_09_c04_retrieval_remains_unaffected(client: AsyncClient):
         "roleName",
         "readinessScore",
         "prioritySkills",
+        "baselineReadinessScore",
     }
     assert set(c04_data.keys()) == expected_keys
     assert c04_data["analysisId"] == analysis_id

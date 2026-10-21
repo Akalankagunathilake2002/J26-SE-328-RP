@@ -68,6 +68,7 @@ async def test_03_c04_response_exact_field_names_and_casing(client: AsyncClient)
         "roleName",
         "readinessScore",
         "prioritySkills",
+        "baselineReadinessScore",
     }
     assert set(c04.keys()) == expected_top_keys
 
