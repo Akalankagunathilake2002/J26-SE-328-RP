@@ -1,0 +1,12 @@
+skill_id,name,aliases,domains,skill_type,concept_kind,skill_nature,description
+C02-000001,Deep Learning,deep neural networks,IT,knowledge,KNOWLEDGE,TECHNICAL,"Machine learning with multi-layer neural networks, such as convolutional and recurrent networks and transformers, trained on large data sets for tasks like image recognition, language understanding and prediction."
+C02-000002,Natural Language Processing,NLP,IT,knowledge,KNOWLEDGE,TECHNICAL,"Methods that let computers analyse, understand and generate human language, such as text classification, named entity recognition, sentiment analysis, translation and chatbots."
+C02-000003,Computer Vision,,IT,knowledge,KNOWLEDGE,TECHNICAL,"Methods that let computers interpret images and video, such as object detection, image classification, segmentation and face recognition."
+C02-000004,Artificial Intelligence,AI,IT,knowledge,KNOWLEDGE,TECHNICAL,"Building computer systems that perform tasks needing human intelligence, such as reasoning, learning, planning, perception and language understanding."
+C02-000005,OpenCV,,IT,Software,SOFTWARE_OR_TOOL,TECHNICAL,"The open-source computer vision library OpenCV, used to process images and video, detect objects and faces, and build vision applications in Python or C++."
+C02-000006,SQLite,,IT,Software,SOFTWARE_OR_TOOL,TECHNICAL,"The lightweight embedded relational database SQLite, used to store and query data with SQL inside desktop, mobile and small web applications."
+C02-000007,Cypress,,IT,Software,SOFTWARE_OR_TOOL,TECHNICAL,"The JavaScript end-to-end testing framework Cypress, used to write automated browser tests for web applications."
+C02-000008,User Experience Design,UX design|UX|UI/UX|UI/UX design,IT,skill/competence,OTHER_SKILL,TECHNICAL,"Designing how people use a product, including user research, wireframes, prototypes, user interface design and usability testing."
+C02-000009,Adaptability,adaptable|flexibility,,skill/competence,OTHER_SKILL,BEHAVIOURAL,"Adjusting quickly to new situations, tasks, tools and priorities, and staying effective when things change."
+C02-000010,Attention to Detail,detail-oriented|detail oriented,,skill/competence,OTHER_SKILL,BEHAVIOURAL,"Working carefully and accurately, checking work thoroughly and noticing small errors or inconsistencies."
+C02-000011,Customer Service,customer support,BUSINESS,skill/competence,OTHER_SKILL,BEHAVIOURAL,"Helping customers before and after a purchase by answering questions, solving problems and handling complaints politely and effectively."

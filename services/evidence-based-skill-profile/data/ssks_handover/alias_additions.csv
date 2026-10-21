@@ -1,0 +1,77 @@
+alias,skill_id,skill_name,reason
+JS,SK-000165,JavaScript,How students write this skill in CVs
+ES6,SK-000165,JavaScript,How students write this skill in CVs
+React.js,SK-001606,React,How students write this skill in CVs
+ReactJS,SK-001606,React,How students write this skill in CVs
+React JS,SK-001606,React,How students write this skill in CVs
+NodeJS,SK-001222,Node.js,How students write this skill in CVs
+Node JS,SK-001222,Node.js,How students write this skill in CVs
+ExpressJS,SK-001873,Express.js,How students write this skill in CVs
+Angular,SK-001191,Google Angular,How students write this skill in CVs
+AngularJS,SK-001191,Google Angular,How students write this skill in CVs
+Vue,SK-001649,Vue.js,How students write this skill in CVs
+VueJS,SK-001649,Vue.js,How students write this skill in CVs
+NextJS,SK-001878,Next.js,How students write this skill in CVs
+HTML,SK-000836,Hypertext markup language HTML,How students write this skill in CVs
+HTML5,SK-000836,Hypertext markup language HTML,How students write this skill in CVs
+CSS3,SK-000657,CSS,How students write this skill in CVs
+Redux,SK-001608,React Redux,How students write this skill in CVs
+.NET,SK-001208,Microsoft .NET Framework,How students write this skill in CVs
+Visual Studio,SK-001219,Microsoft Visual Studio,How students write this skill in CVs
+Visual Studio .NET,SK-001451,Microsoft Visual Studio.NET,How students write this skill in CVs
+SQL,SK-000919,Structured query language SQL,How students write this skill in CVs
+REST API,SK-001614,RESTful API,How students write this skill in CVs
+REST APIs,SK-001614,RESTful API,How students write this skill in CVs
+AWS,SK-000790,Amazon Web Services AWS software,How students write this skill in CVs
+Amazon Web Services,SK-000790,Amazon Web Services AWS software,How students write this skill in CVs
+Azure,SK-000860,Microsoft Azure software,How students write this skill in CVs
+Microsoft Azure,SK-000860,Microsoft Azure software,How students write this skill in CVs
+GCP,SK-001541,Google Cloud software,How students write this skill in CVs
+Google Cloud,SK-001541,Google Cloud software,How students write this skill in CVs
+Google Cloud Platform,SK-001541,Google Cloud software,How students write this skill in CVs
+CI/CD,SK-001746,Continuous integration software,How students write this skill in CVs
+continuous integration,SK-001746,Continuous integration software,How students write this skill in CVs
+Jira,SK-000802,Atlassian JIRA,How students write this skill in CVs
+Power BI,SK-001215,Microsoft Power BI,How students write this skill in CVs
+PowerBI,SK-001215,Microsoft Power BI,How students write this skill in CVs
+PowerPoint,SK-000865,Microsoft PowerPoint,How students write this skill in CVs
+MS PowerPoint,SK-000865,Microsoft PowerPoint,How students write this skill in CVs
+Excel,SK-000862,Microsoft Excel,How students write this skill in CVs
+MS Excel,SK-000862,Microsoft Excel,How students write this skill in CVs
+MS Word,SK-000875,Microsoft Word,How students write this skill in CVs
+OOP,SK-000257,use object-oriented programming,How students write this skill in CVs
+object-oriented programming,SK-000257,use object-oriented programming,How students write this skill in CVs
+object oriented programming,SK-000257,use object-oriented programming,How students write this skill in CVs
+data structures,SK-001872,Data structures and algorithms,How students write this skill in CVs
+algorithms,SK-001872,Data structures and algorithms,How students write this skill in CVs
+DSA,SK-001872,Data structures and algorithms,How students write this skill in CVs
+unit testing,SK-000354,perform software unit testing,How students write this skill in CVs
+software testing,SK-000425,execute software tests,How students write this skill in CVs
+microservices,SK-001573,Microservices Architecture,How students write this skill in CVs
+UML,SK-001244,Unified modeling language UML,How students write this skill in CVs
+Android,SK-001540,Google Android,How students write this skill in CVs
+Android development,SK-001540,Google Android,How students write this skill in CVs
+iOS,SK-001497,Apple iOS,How students write this skill in CVs
+data analysis,SK-000124,perform data analysis,How students write this skill in CVs
+data visualization,SK-000294,data visualisation software,How students write this skill in CVs
+data visualisation,SK-000294,data visualisation software,How students write this skill in CVs
+Agile,SK-000029,Agile project management,How students write this skill in CVs
+UI design,SK-000718,design user interface,How students write this skill in CVs
+SEO,SK-000676,search engine optimisation,How students write this skill in CVs
+QuickBooks,SK-000844,Intuit QuickBooks,How students write this skill in CVs
+SAP,SK-000909,SAP software,How students write this skill in CVs
+communication,SK-000722,communication principles,How students write this skill in CVs
+communication skills,SK-000722,communication principles,How students write this skill in CVs
+verbal communication,SK-000722,communication principles,How students write this skill in CVs
+written communication,SK-000722,communication principles,How students write this skill in CVs
+teamwork,SK-000488,teamwork principles,How students write this skill in CVs
+team work,SK-000488,teamwork principles,How students write this skill in CVs
+team player,SK-000488,teamwork principles,How students write this skill in CVs
+collaboration,SK-000488,teamwork principles,How students write this skill in CVs
+leadership,SK-000616,leadership principles,How students write this skill in CVs
+leadership skills,SK-000616,leadership principles,How students write this skill in CVs
+problem solving,SK-000746,Complex Problem Solving,How students write this skill in CVs
+problem-solving,SK-000746,Complex Problem Solving,How students write this skill in CVs
+presentation skills,SK-000568,give live presentation,How students write this skill in CVs
+public speaking,SK-000568,give live presentation,How students write this skill in CVs
+creativity,SK-000410,develop creative ideas,How students write this skill in CVs

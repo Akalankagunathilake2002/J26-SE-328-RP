@@ -1,0 +1,12 @@
+entity_type,submitted_name,aliases,proposed_skill_type,proposed_skill_nature,domains,source_component,source_reference
+SKILL,Deep Learning,deep neural networks,KNOWLEDGE,TECHNICAL,IT,C02,C02-000001
+SKILL,Natural Language Processing,NLP,KNOWLEDGE,TECHNICAL,IT,C02,C02-000002
+SKILL,Computer Vision,,KNOWLEDGE,TECHNICAL,IT,C02,C02-000003
+SKILL,Artificial Intelligence,AI,KNOWLEDGE,TECHNICAL,IT,C02,C02-000004
+SKILL,OpenCV,,SOFTWARE_OR_TOOL,TECHNICAL,IT,C02,C02-000005
+SKILL,SQLite,,SOFTWARE_OR_TOOL,TECHNICAL,IT,C02,C02-000006
+SKILL,Cypress,,SOFTWARE_OR_TOOL,TECHNICAL,IT,C02,C02-000007
+SKILL,User Experience Design,UX design|UX|UI/UX|UI/UX design,OTHER_SKILL,TECHNICAL,IT,C02,C02-000008
+SKILL,Adaptability,adaptable|flexibility,OTHER_SKILL,BEHAVIOURAL,,C02,C02-000009
+SKILL,Attention to Detail,detail-oriented|detail oriented,OTHER_SKILL,BEHAVIOURAL,,C02,C02-000010
+SKILL,Customer Service,customer support,OTHER_SKILL,BEHAVIOURAL,BUSINESS,C02,C02-000011

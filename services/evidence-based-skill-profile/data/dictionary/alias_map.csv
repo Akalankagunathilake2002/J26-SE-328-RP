@@ -1,0 +1,79 @@
+alias,skill_id,note
+JS,SK-000165,JavaScript
+ES6,SK-000165,JavaScript
+React.js,SK-001606,React
+ReactJS,SK-001606,React
+React JS,SK-001606,React
+NodeJS,SK-001222,Node.js
+Node JS,SK-001222,Node.js
+ExpressJS,SK-001873,Express.js
+Angular,SK-001191,Google Angular
+AngularJS,SK-001191,Google Angular
+Vue,SK-001649,Vue.js
+VueJS,SK-001649,Vue.js
+NextJS,SK-001878,Next.js
+HTML,SK-000836,Hypertext markup language HTML
+HTML5,SK-000836,Hypertext markup language HTML
+CSS3,SK-000657,CSS
+Redux,SK-001608,React Redux
+.NET,SK-001208,Microsoft .NET Framework (was wrongly an alias of Visual Basic)
+Visual Studio,SK-001219,Microsoft Visual Studio (was wrongly an alias of Visual Basic)
+Visual Studio .NET,SK-001451,Microsoft Visual Studio.NET
+SQL,SK-000919,Structured query language SQL (was an alias of database management systems)
+REST API,SK-001614,RESTful API
+REST APIs,SK-001614,RESTful API
+AWS,SK-000790,Amazon Web Services AWS software
+Amazon Web Services,SK-000790,Amazon Web Services AWS software
+Azure,SK-000860,Microsoft Azure software
+Microsoft Azure,SK-000860,Microsoft Azure software
+GCP,SK-001541,Google Cloud software
+Google Cloud,SK-001541,Google Cloud software
+Google Cloud Platform,SK-001541,Google Cloud software
+CI/CD,SK-001746,Continuous integration software
+continuous integration,SK-001746,Continuous integration software
+Jira,SK-000802,Atlassian JIRA
+Power BI,SK-001215,Microsoft Power BI
+PowerBI,SK-001215,Microsoft Power BI
+PowerPoint,SK-000865,Microsoft PowerPoint
+MS PowerPoint,SK-000865,Microsoft PowerPoint
+Excel,SK-000862,Microsoft Excel
+MS Excel,SK-000862,Microsoft Excel (was an alias of use spreadsheets software)
+MS Word,SK-000875,Microsoft Word
+OOP,SK-000257,use object-oriented programming
+object-oriented programming,SK-000257,use object-oriented programming
+object oriented programming,SK-000257,use object-oriented programming
+data structures,SK-001872,Data structures and algorithms
+algorithms,SK-001872,Data structures and algorithms
+DSA,SK-001872,Data structures and algorithms
+unit testing,SK-000354,perform software unit testing
+software testing,SK-000425,execute software tests
+microservices,SK-001573,Microservices Architecture
+UML,SK-001244,Unified modeling language UML
+Android,SK-001540,Google Android
+Android development,SK-001540,Google Android
+iOS,SK-001497,Apple iOS
+data analysis,SK-000124,perform data analysis (was an alias of statistics)
+data visualization,SK-000294,data visualisation software
+data visualisation,SK-000294,data visualisation software
+Agile,SK-000029,Agile project management (was an alias of ICT project management methodologies)
+UI design,SK-000718,design user interface
+SEO,SK-000676,search engine optimisation
+QuickBooks,SK-000844,Intuit QuickBooks
+SAP,SK-000909,SAP software
+communication,SK-000722,communication principles
+communication skills,SK-000722,communication principles
+verbal communication,SK-000722,communication principles
+written communication,SK-000722,communication principles
+teamwork,SK-000488,teamwork principles
+team work,SK-000488,teamwork principles
+team player,SK-000488,teamwork principles
+collaboration,SK-000488,teamwork principles
+leadership,SK-000616,leadership principles
+leadership skills,SK-000616,leadership principles
+problem solving,SK-000746,Complex Problem Solving
+problem-solving,SK-000746,Complex Problem Solving
+presentation skills,SK-000568,give live presentation
+public speaking,SK-000568,give live presentation
+creativity,SK-000410,develop creative ideas
+cascading style sheets,SK-000657,CSS
+PRINCE2,SK-000330,Prince2 project management
