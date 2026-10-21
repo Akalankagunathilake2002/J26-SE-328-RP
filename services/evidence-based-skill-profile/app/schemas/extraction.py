@@ -1,8 +1,9 @@
 from enum import StrEnum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.schemas.evidence import EvidenceType, SourceType
+from app.schemas.normalisation import MatchMethod
 
 
 class SectionType(StrEnum):
@@ -36,8 +37,20 @@ class SkillMention(BaseModel):
     end: int
     section: SectionType
     sentence: str
-    method: str
+    method: str = Field(description="Extraction layer that found it: dictionary or gliner")
+    match_method: MatchMethod = Field(MatchMethod.EXACT,
+                                      description="How the text was mapped to the skill ID")
+    match_score: float = Field(1.0, description="Detection x mapping certainty, 0-1")
     evidence_type: EvidenceType
+
+
+class UnlinkedSpan(BaseModel):
+    """A skill-like phrase the AI extractor found but no skill ID matched: a new-skill candidate."""
+
+    text: str
+    section: SectionType
+    sentence: str
+    detection_score: float
 
 
 class ConfidenceLevel(StrEnum):
@@ -73,3 +86,4 @@ class DocumentExtraction(BaseModel):
     sections: list[SectionType]
     mentions: list[SkillMention]
     skills: list[DocumentSkill]
+    unlinked: list[UnlinkedSpan] = Field(default_factory=list)
