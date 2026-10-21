@@ -259,6 +259,7 @@ async def test_04_persistence_of_c04_report_payload_and_casing(client: AsyncClie
             "roleName",
             "readinessScore",
             "prioritySkills",
+            "baselineReadinessScore",
         }
         assert set(data.keys()) == expected_top_keys
         assert data["analysisId"] == str(analysis_id)
