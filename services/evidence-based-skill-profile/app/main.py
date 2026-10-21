@@ -1,7 +1,7 @@
 import contextlib
 from fastapi import APIRouter, FastAPI
 
-from app.api.routers import extraction_router, health_router
+from app.api.routers import extraction_router, health_router, normalisation_router
 from app.config.settings import get_settings
 
 
@@ -27,6 +27,7 @@ def create_app() -> FastAPI:
     api_router = APIRouter(prefix="/api/v1/profile")
     api_router.include_router(health_router)
     api_router.include_router(extraction_router)
+    api_router.include_router(normalisation_router)
 
     app.include_router(api_router)
     app.include_router(health_router)
