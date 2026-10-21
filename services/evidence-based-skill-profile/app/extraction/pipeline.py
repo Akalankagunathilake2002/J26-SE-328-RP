@@ -3,6 +3,7 @@ import re
 from functools import lru_cache
 
 from app.config.settings import get_settings
+from app.evidence.fusion import Evidence, confidence_level, fuse
 from app.evidence.rules import classify_evidence
 from app.extraction.cleaner import clean_text
 from app.extraction.matcher import METHOD, SkillMatcher
@@ -11,6 +12,8 @@ from app.extraction.sections import split_sections
 from app.schemas.evidence import SourceType
 from app.schemas.extraction import DocumentExtraction, DocumentSkill, SkillMention
 
+# Each document is scored on its own here; a profile fuses evidence across documents.
+DOCUMENT = "document"
 SENTENCE_BREAK = re.compile(r"(?<=[.!?])\s+(?=[A-Z])|\n")
 
 
@@ -30,20 +33,27 @@ def _sentence_around(text: str, start: int, end: int) -> str:
     return text[left:right].strip()
 
 
-def _group_by_skill(mentions: list[SkillMention]) -> list[DocumentSkill]:
+def _skill(skill_id: str, found: list[SkillMention], source: SourceType) -> DocumentSkill:
+    confidence, evidence = fuse(Evidence(DOCUMENT, source, m.evidence_type) for m in found)
+    return DocumentSkill(
+        skill_id=skill_id,
+        name=found[0].name,
+        mention_count=len(found),
+        evidence_types=list(dict.fromkeys(m.evidence_type for m in found)),
+        sections=list(dict.fromkeys(m.section for m in found)),
+        confidence=confidence,
+        confidence_level=confidence_level(confidence),
+        evidence=evidence,
+    )
+
+
+def _group_by_skill(mentions: list[SkillMention], source: SourceType) -> list[DocumentSkill]:
+    """One entry per skill, most confident first."""
     grouped: dict[str, list[SkillMention]] = {}
     for mention in mentions:
         grouped.setdefault(mention.skill_id, []).append(mention)
-    return [
-        DocumentSkill(
-            skill_id=skill_id,
-            name=found[0].name,
-            mention_count=len(found),
-            evidence_types=list(dict.fromkeys(m.evidence_type for m in found)),
-            sections=list(dict.fromkeys(m.section for m in found)),
-        )
-        for skill_id, found in grouped.items()
-    ]
+    skills = [_skill(skill_id, found, source) for skill_id, found in grouped.items()]
+    return sorted(skills, key=lambda s: (-s.confidence, s.name))
 
 
 def extract_from_text(
@@ -71,7 +81,7 @@ def extract_from_text(
         source_type=source,
         sections=[section.type for section in sections],
         mentions=mentions,
-        skills=_group_by_skill(mentions),
+        skills=_group_by_skill(mentions, source),
     )
 
 

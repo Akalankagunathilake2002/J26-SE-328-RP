@@ -5,7 +5,7 @@ URL = "/api/v1/profile/extract"
 
 
 @pytest.mark.anyio
-async def test_extract_returns_skills_with_evidence_types(client: AsyncClient):
+async def test_extract_returns_skills_with_confidence(client: AsyncClient):
     cv = b"Skills\nPython, JavaScript\nProjects\nBuilt a web scraper in Python.\n"
     response = await client.post(URL, files={"file": ("cv.txt", cv, "text/plain")})
     assert response.status_code == 200
@@ -13,6 +13,8 @@ async def test_extract_returns_skills_with_evidence_types(client: AsyncClient):
     assert body["source_type"] == "cv"
     python = next(s for s in body["skills"] if s["name"] == "Python")
     assert python["evidence_types"] == ["cv_self_reported", "project_demonstrated"]
+    assert python["confidence_level"] == "weak"  # CV only
+    assert 0 < python["confidence"] < 1
 
 
 @pytest.mark.anyio

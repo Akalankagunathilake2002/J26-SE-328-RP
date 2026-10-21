@@ -40,14 +40,32 @@ class SkillMention(BaseModel):
     evidence_type: EvidenceType
 
 
+class ConfidenceLevel(StrEnum):
+    STRONG = "strong"
+    MODERATE = "moderate"
+    WEAK = "weak"
+
+
+class EvidenceContribution(BaseModel):
+    """What one kind of evidence from one source type adds to a skill's confidence (TAF task 7)."""
+
+    source: SourceType
+    evidence_type: EvidenceType
+    mentions: int
+    strength: float
+
+
 class DocumentSkill(BaseModel):
-    """All mentions of one skill in one document."""
+    """All mentions of one skill in one document, with the fused confidence."""
 
     skill_id: str
     name: str
     mention_count: int
     evidence_types: list[EvidenceType]
     sections: list[SectionType]
+    confidence: float
+    confidence_level: ConfidenceLevel
+    evidence: list[EvidenceContribution]
 
 
 class DocumentExtraction(BaseModel):

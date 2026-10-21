@@ -184,3 +184,17 @@ def test_extract_from_document_uses_the_real_dictionary():
     result = extract_from_document(b"Skills\nPython, JavaScript, SQL\n", "cv.txt")
     assert {"Python", "JavaScript"} <= {s.name for s in result.skills}
 
+
+def test_skills_get_a_confidence_and_are_sorted_by_it(matcher):
+    result = extract_from_text(CV, matcher=matcher)
+    by_skill = {s.skill_id: s for s in result.skills}
+
+    react = by_skill["SK-3"]  # listed and used in a project
+    assert react.confidence_level == "weak"  # a CV alone is the student's own claim
+    assert by_skill["SK-1"].confidence_level == "weak"  # only listed
+    assert by_skill["SK-12"].confidence < by_skill["SK-1"].confidence < react.confidence
+    assert [c.evidence_type for c in react.evidence] == [
+        EvidenceType.PROJECT_DEMONSTRATED, EvidenceType.CV_SELF_REPORTED,
+    ]
+    confidences = [s.confidence for s in result.skills]
+    assert confidences == sorted(confidences, reverse=True)

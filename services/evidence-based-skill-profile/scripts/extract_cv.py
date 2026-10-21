@@ -23,14 +23,16 @@ def _documents(path: Path) -> list[Path]:
 def _print_document(path: Path, source: SourceType) -> None:
     result = extract_from_document(path.read_bytes(), path.name, source)
     print(f"{path.name}: sections {', '.join(result.sections)}; {len(result.skills)} skills")
-    for skill in sorted(result.skills, key=lambda s: -s.mention_count):
+    for skill in result.skills:
         types = ", ".join(skill.evidence_types)
-        print(f"  {skill.skill_id:<11} {skill.name[:40]:<40} x{skill.mention_count:<3} {types}")
+        print(f"  {skill.confidence:.2f} {skill.confidence_level:<8} {skill.skill_id:<11} "
+              f"{skill.name[:36]:<36} x{skill.mention_count:<3} {types}")
 
 
 def _print_summary(paths: list[Path], source: SourceType, top: int) -> None:
     skill_documents: Counter[str] = Counter()
     evidence: Counter[str] = Counter()
+    levels: Counter[str] = Counter()
     names: dict[str, str] = {}
     skill_counts, no_sections, failed = [], 0, 0
     for path in paths:
@@ -43,6 +45,7 @@ def _print_summary(paths: list[Path], source: SourceType, top: int) -> None:
         skill_counts.append(len(result.skills))
         no_sections += set(result.sections) <= {"header"}
         evidence.update(m.evidence_type for m in result.mentions)
+        levels.update(skill.confidence_level for skill in result.skills)
         for skill in result.skills:
             skill_documents[skill.skill_id] += 1
             names[skill.skill_id] = skill.name
@@ -54,6 +57,9 @@ def _print_summary(paths: list[Path], source: SourceType, top: int) -> None:
     print("Mentions by evidence type:")
     for evidence_type, count in evidence.most_common():
         print(f"  {evidence_type:<22} {count}")
+    print("Skills by confidence level:")
+    for level, count in levels.most_common():
+        print(f"  {level:<22} {count}")
     print(f"Top {top} skills (documents containing them):")
     for skill_id, count in skill_documents.most_common(top):
         print(f"  {count:>4}  {skill_id:<11} {names[skill_id]}")
