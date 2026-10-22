@@ -1,5 +1,6 @@
 import contextlib
 from fastapi import APIRouter, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routers import (
     extraction_router, health_router, normalisation_router, profile_router,
@@ -24,6 +25,14 @@ def create_app() -> FastAPI:
         docs_url="/api/v1/profile/docs",
         redoc_url=None,
         openapi_url="/api/v1/profile/openapi.json",
+    )
+    # The website calls the service from the browser. Through Docker the gateway sets CORS headers
+    # (and drops these); this lets the website call the service directly during local development.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
     )
 
     api_router = APIRouter(prefix="/api/v1/profile")

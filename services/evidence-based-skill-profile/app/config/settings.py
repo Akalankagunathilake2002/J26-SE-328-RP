@@ -11,6 +11,8 @@ class Settings(BaseSettings):
 
     service_name: str = "evidence-based-skill-profile"
     version: str = "0.1.0"
+    # Websites allowed to call the service directly (local development without the gateway).
+    cors_origins: list[str] = ["http://localhost:3000"]
     database_url: str = "postgresql+asyncpg://skillbridge:skillbridge@localhost:5432/profile_db"
     dictionary_path: Path = SERVICE_DIR / "data" / "dictionary" / "clean_skills.csv"
     matcher_rules_path: Path = SERVICE_DIR / "data" / "dictionary" / "matcher_rules.csv"
