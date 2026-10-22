@@ -135,6 +135,14 @@ services:
       postgres:
         condition: service_healthy
 
+  evidence-based-skill-profile:
+    build: ../services/evidence-based-skill-profile
+    environment:
+      EVIDENCE_SKILL_PROFILE_PORT: ${EVIDENCE_SKILL_PROFILE_PORT:-8004}
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-skillbridge}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}@postgres:5432/profile_db
+      # Light mode for PCs with little memory: false turns off the GLiNER layer (about 1 GB less).
+      USE_NEURAL_EXTRACTION: ${EVIDENCE_SKILL_PROFILE_USE_GLINER:-true}
+
   api-gateway:
     image: nginx:1.28-alpine
     ports:
@@ -145,7 +153,8 @@ services:
       - SHARED_SKILL_KNOWLEDGE_PORT=${SHARED_SKILL_KNOWLEDGE_PORT:-8005}
       - JOB_MARKET_INTELLIGENCE_PORT=${JOB_MARKET_INTELLIGENCE_PORT:-8003}
       - READINESS_ENGINE_PORT=${READINESS_ENGINE_PORT:-8010}
-      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT|JOB_MARKET_INTELLIGENCE_PORT|READINESS_ENGINE_PORT
+      - EVIDENCE_SKILL_PROFILE_PORT=${EVIDENCE_SKILL_PROFILE_PORT:-8004}
+      - NGINX_ENVSUBST_FILTER=LEARNING_SERVICE_PORT|INTERVIEW_SERVICE_PORT|SHARED_SKILL_KNOWLEDGE_PORT|JOB_MARKET_INTELLIGENCE_PORT|READINESS_ENGINE_PORT|EVIDENCE_SKILL_PROFILE_PORT
     volumes:
       - ./gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
     depends_on:
@@ -155,6 +164,7 @@ services:
       - learning-service
       - interview-service
       - readiness-engine
+      - evidence-based-skill-profile
 
 volumes:
   postgres-data:

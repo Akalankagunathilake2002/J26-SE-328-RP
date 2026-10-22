@@ -1,0 +1,11 @@
+.venv/
+**/__pycache__/
+.pytest_cache/
+checkpoints/
+data/cvs/
+data/resumes/
+data/esco/
+tests/
+.env
+DEVELOPMENT_GUIDE.md
+VIVA_NOTES.md
