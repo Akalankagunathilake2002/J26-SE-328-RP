@@ -180,6 +180,8 @@ class BaseCollector(ABC):
         """Download ads not stored yet, up to ``limit`` new ads per sector."""
         result = CollectResult()
         for sector in sectors:
+            if not self.config.categories.get(sector):
+                continue  # the site has no category for this sector (e.g. itpro.lk has no HR)
             downloaded = 0
             listed = self.select(self.listings(sector), limit=None)
             result.listed[sector] = len(listed)

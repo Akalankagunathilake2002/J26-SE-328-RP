@@ -31,7 +31,7 @@ def test_settings_from_env_and_env_file(tmp_path):
 
 def test_choose_sites():
     sites = load_sites()
-    assert choose_sites("all", sites) == ["topjobs"]
+    assert choose_sites("all", sites) == ["topjobs", "itpro"]
     assert choose_sites("topjobs", sites) == ["topjobs"]
     with pytest.raises(ValueError, match="written permission"):
         choose_sites("ikman", sites)
@@ -65,3 +65,16 @@ def test_reparse_rebuilds_processed_data_offline_without_personal_data(tmp_path)
     assert "careers@lankafoods.lk" not in text and "077 123 4567" not in text and "Dilani" not in text
     assert (tmp_path / "processed" / "combined.csv").exists()
     assert (tmp_path / "processed" / "dedup_log.csv").exists()
+
+
+def test_one_site_run_keeps_the_other_sites_in_the_processed_data(tmp_path):
+    storage = Storage(tmp_path)
+    for site, job_id in (("topjobs", "1"), ("itpro", "2")):
+        storage.save_raw(ListingEntry(site, job_id, f"https://example.lk/{job_id}", "IT", "X"), "<html></html>",
+                         "2026-10-22T08:00:00+00:00")
+    # itpro's stored ad is a feed item; an empty one is enough here
+    (tmp_path / "raw" / "itpro" / "IT" / "2.html").write_text("<item><title>Developer</title></item>")
+
+    assert main(["--site", "topjobs", "--reparse", "--no-ocr"], settings=Settings(tmp_path, None)) == 0
+    assert {r.split(",")[0] for r in (tmp_path / "processed" / "combined.csv").read_text().splitlines()[1:]} == {
+        "topjobs", "itpro"}

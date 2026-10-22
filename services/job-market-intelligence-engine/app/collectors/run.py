@@ -28,6 +28,7 @@ from app.collectors.base import BaseCollector, CollectResult, SyncResult, utc_no
 from app.collectors.config import Settings, load_sectors, load_settings, load_sites
 from app.collectors.dedup import deduplicate
 from app.collectors.http import PoliteClient, SiteBlocked
+from app.collectors.itpro import ItproCollector
 from app.collectors.models import JobAd, SiteConfig
 from app.collectors.report import write_report
 from app.collectors.storage import Storage
@@ -36,7 +37,7 @@ from app.collectors.topjobs import TopjobsCollector
 from app.processing.ocr import add_ocr_text, tesseract_available
 from app.processing.skills import extraction_from_settings, write_profile
 
-COLLECTORS: dict[str, type[BaseCollector]] = {"topjobs": TopjobsCollector}
+COLLECTORS: dict[str, type[BaseCollector]] = {"topjobs": TopjobsCollector, "itpro": ItproCollector}
 
 log = logging.getLogger("collectors")
 
@@ -114,12 +115,14 @@ def main(
                 log_sync(name, statuses)
                 storage.append_sync_log(sync_log_row(name, checked_at, result, statuses))
 
+    # The processed data, report and profile always cover every collected site, not only the ones
+    # collected in this run (otherwise "--site itpro" would drop the topjobs ads from them).
+    names = list(dict.fromkeys([*choose_sites("all", sites), *names]))
     ads = [ad for name in names for ad in COLLECTORS[name](sites[name], OfflineClient(), storage).reparse()]
     if not args.no_ocr:
         run_ocr(ads)
     write_processed(storage, names, ads)
-    for name in names:
-        log.info("%s: data quality report in %s", name, write_report(storage, name, sector_names))
+    log.info("data quality report in %s", write_report(storage, names, sector_names))
     extraction = extraction_from_settings(settings, storage)
     log.info("skill profile per job role in %s", write_profile(storage, names, extraction=extraction)[0])
     if settings.database_url:

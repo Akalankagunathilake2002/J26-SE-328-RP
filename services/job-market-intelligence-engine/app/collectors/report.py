@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
-from app.collectors.config import load_sectors, load_settings
+from app.collectors.config import load_sectors, load_settings, load_sites
 from app.collectors.models import ACTIVE, STATUSES, JobAd
 from app.collectors.storage import Storage
 
@@ -133,14 +133,28 @@ def render(site: str, rows: list[SectorQuality], listed_at: str | None, generate
     return "\n".join(lines)
 
 
-def write_report(storage: Storage, site: str, sectors: Sequence[str]) -> Path:
-    rows = sector_quality(storage, site, sectors)
-    checked = [entry["checked_at"] for entry in storage.listing_counts().get(site, {}).values()]
+def write_report(storage: Storage, sites: str | Sequence[str], sectors: Sequence[str]) -> Path:
+    """Write processed/quality_report.md: one section per site."""
+    sites = [sites] if isinstance(sites, str) else list(sites)
     generated_at = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
+    reports = []
+    for site in sites:
+        checked = [entry["checked_at"] for entry in storage.listing_counts().get(site, {}).values()]
+        reports.append(render(site, sector_quality(storage, site, sectors), max(checked) if checked else None, generated_at))
+    text = reports[0] if len(reports) == 1 else _combine(sites, reports, generated_at)
     path = storage.processed_dir / "quality_report.md"
     storage.processed_dir.mkdir(parents=True, exist_ok=True)
-    path.write_text(render(site, rows, max(checked) if checked else None, generated_at), encoding="utf-8")
+    path.write_text(text, encoding="utf-8")
     return path
+
+
+def _combine(sites: list[str], reports: list[str], generated_at: str) -> str:
+    """Several single-site reports as one: a section per site, headings one level down."""
+    parts = [f"# Data quality report\n\nSites: {', '.join(f'**{s}**' for s in sites)} · generated {generated_at}\n"]
+    for site, report in zip(sites, reports):
+        body = report.split("\n", 4)[4]  # drop the title, the "Site: …" line and the blank lines
+        parts.append(f"## {site}\n\n" + body.replace("\n## ", "\n### "))
+    return "\n".join(parts)
 
 
 def _ocr_read(rows: list[SectorQuality]) -> str:
@@ -169,9 +183,10 @@ def _percent(share: float | None) -> str:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Write the data quality report (offline).")
-    parser.add_argument("--site", default="topjobs")
+    parser.add_argument("--site", default="all", help="a collected site, or 'all' (default)")
     args = parser.parse_args(argv)
-    path = write_report(Storage(load_settings().data_dir), args.site, load_sectors())
+    sites = [name for name, site in load_sites().items() if site.enabled] if args.site == "all" else [args.site]
+    path = write_report(Storage(load_settings().data_dir), sites, load_sectors())
     print(f"Wrote {path}")
     return 0
 

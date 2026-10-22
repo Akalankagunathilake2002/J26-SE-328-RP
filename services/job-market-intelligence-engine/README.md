@@ -13,9 +13,17 @@ comparison, the PostgreSQL loader and the scheduled daily sync. See [Progress](#
 
 | Site | Collected? | Why |
 |---|---|---|
-| topjobs.lk | Yes | No robots.txt restrictions and no scraping clause in its terms |
+| topjobs.lk | Yes | No robots.txt restrictions and no scraping clause in its terms. Ads are mostly flyer images (OCR). |
+| itpro.lk | Yes | IT job board. Read through the RSS feeds it publishes; robots.txt allows them (10 s between requests) and its terms have no clause against it. Full-text ads, no OCR. No HR or Agriculture categories. |
 | xpress.jobs | No | Its terms prohibit scraping |
 | ikman.lk | No | Its terms forbid storing content without written permission |
+| jobeka.lk | No | Its terms allow only "personal, non-commercial transitory viewing" and forbid copying |
+| rooster.jobs | No | Its terms forbid scraping without written authorisation |
+| SmartRecruiters (company career pages) | No | Its API's robots.txt allows only LinkedIn's bot |
+| lankacareer.lk, jobs.paths.lk | No | robots.txt blocks AI crawlers / the job data API |
+| Government Gazette | Not now | The vacancies section is published only in Sinhala |
+
+Checked in October 2026.
 
 The site categories for each sector are in [`config/sector_mapping.yaml`](config/sector_mapping.yaml).
 

@@ -93,3 +93,13 @@ def test_every_run_refreshes_the_report_and_the_skill_profile(tmp_path):
     assert run_main(["--site", "topjobs", "--reparse"], settings=Settings(tmp_path, None)) == 0
     for name in ("quality_report.md", "skill_profile.md", "skill_profile.json"):
         assert (tmp_path / "processed" / name).exists(), name
+
+
+def test_several_sites_share_one_report(storage):
+    storage.write_jsonl("itpro", [JobAd(site="itpro", job_id="9", url="https://itpro.lk/job/9/x/", sectors=["IT"],
+                                        description_text="Python developer")])
+    text = write_report(storage, ["topjobs", "itpro"], SECTORS).read_text()
+
+    assert text.count("# Data quality report") == 1
+    assert "## topjobs" in text and "## itpro" in text and "### Missing values" in text
+    assert "| IT | – | 0 | 1 | 0 | 0 (0%) | 1 (100%) | Yes |" in text  # itpro: text ads, not checked on a listing
