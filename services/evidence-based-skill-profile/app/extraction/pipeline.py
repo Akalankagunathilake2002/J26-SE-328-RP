@@ -136,7 +136,7 @@ def _neural_mentions(
             method=NEURAL_METHOD,
             match_method=result.method,
             match_score=round(span.score * result.score, 3),
-            evidence_type=classify_evidence(source, section.type, sentence),
+            evidence_type=classify_evidence(source, section.type, sentence, span.text),
         ))
     return mentions, unlinked
 
@@ -181,7 +181,8 @@ def extract_from_text(
                 section=section.type,
                 sentence=sentence,
                 method=METHOD,
-                evidence_type=classify_evidence(source, section.type, sentence),
+                evidence_type=classify_evidence(source, section.type, sentence,
+                                                match.matched_text),
             ))
     unlinked = []
     if neural is not None and normaliser is not None:

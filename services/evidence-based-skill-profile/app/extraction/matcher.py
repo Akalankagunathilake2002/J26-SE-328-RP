@@ -115,7 +115,7 @@ class SkillMatcher:
         matches = []
         for start, end, skill_id, by_name in candidates:
             tokens = set(range(start, end))
-            if tokens & taken:
+            if tokens & taken or _stray_letter(doc, start, end):
                 continue
             taken |= tokens
             span = doc[start:end]
@@ -128,3 +128,14 @@ class SkillMatcher:
                 by_name=by_name,
             ))
         return sorted(matches, key=lambda m: m.start)
+
+
+def _stray_letter(doc, start: int, end: int) -> bool:
+    """A one-letter skill (R, C) next to another lone letter or "&" is not the skill.
+
+    It is part of letter-spaced text ("I N T E R") or an abbreviation such as "R & D".
+    """
+    if end - start != 1 or len(doc[start].text) != 1:
+        return False
+    neighbours = [doc[i].text for i in (start - 1, end) if 0 <= i < len(doc)]
+    return any(text == "&" or (len(text) == 1 and text.isalpha()) for text in neighbours)

@@ -18,6 +18,8 @@ MOJIBAKE = {
 }
 INVISIBLE = re.compile(r"[​-‏⁠﻿­]")
 BULLET = re.compile(r"^[\s•●○◦▪▫■□‣⁃∙·\-–—*>➢➤✓✔]+")
+# Letter-spaced titles on certificates and posters: "C o m p e t i t i o n", "I N T E R".
+SPACED_LETTERS = re.compile(r"(?<!\S)(?:[^\W\d_] ){2,}[^\W\d_](?!\S)")
 SPACES = re.compile(r"[ \t ]+")
 SENTENCE_END = (".", ":", ";", "!", "?")
 # A line ending like this is not finished, so the next line continues it even if capitalised.
@@ -34,6 +36,8 @@ def _fix_line(line: str) -> str:
     line = INVISIBLE.sub("", line)
     line = unicodedata.normalize("NFKC", line)
     line = BULLET.sub("", line)
+    # Joined before spaces are collapsed, so a wider gap between spaced words stays a word break.
+    line = SPACED_LETTERS.sub(lambda m: m.group().replace(" ", ""), line)
     return SPACES.sub(" ", line).strip()
 
 
