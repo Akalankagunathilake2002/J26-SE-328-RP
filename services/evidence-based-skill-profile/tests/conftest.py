@@ -22,10 +22,20 @@ def name_based_detector(data: bytes, name: str):
 
 
 @pytest.fixture
-async def client():
+def store():
+    from tests.fakes import MemoryProfileStore
+
+    return MemoryProfileStore()
+
+
+@pytest.fixture
+async def client(store):
     from app.profile.builder import default_type_detector
+    from app.profile.store import default_profile_store
 
     app.dependency_overrides[default_type_detector] = lambda: name_based_detector
+    app.dependency_overrides[default_profile_store] = lambda: store
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
         yield c
     app.dependency_overrides.pop(default_type_detector, None)
+    app.dependency_overrides.pop(default_profile_store, None)

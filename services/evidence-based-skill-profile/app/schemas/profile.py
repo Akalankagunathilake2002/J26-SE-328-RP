@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 from app.schemas.evidence import SourceType
@@ -12,7 +14,7 @@ class ProfileDocument(BaseModel):
     name: str
     source_type: SourceType
     type_detected_by: str | None = Field(
-        None, description="How the type was detected: structure, meaning, or github")
+        None, description="How the type was detected: structure, wording, layout, meaning, or github")
     type_confidence: float | None = None
     sections: list[SectionType]
     skill_count: int
@@ -31,10 +33,12 @@ class ProfileSkill(BaseModel):
     mentions: list[SkillMention]
 
 
-class StudentProfile(BaseModel):
-    """A student's skill profile built from all their documents (before student verification)."""
+class SkillProfile(BaseModel):
+    """A user's skill profile built from all their documents (before the user verifies it)."""
 
     documents: list[ProfileDocument]
     skills: list[ProfileSkill]
     unlinked: list[UnlinkedSpan] = Field(default_factory=list,
                                          description="Skill-like phrases without a skill ID")
+    saved_at: datetime | None = Field(
+        None, description="When the profile was saved for the user; empty when not saved")

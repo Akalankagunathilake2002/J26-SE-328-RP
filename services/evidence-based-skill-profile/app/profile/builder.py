@@ -15,7 +15,7 @@ from app.evidence.fusion import Evidence, confidence_level, fuse
 from app.extraction.pipeline import extract_from_document
 from app.schemas.evidence import SourceType
 from app.schemas.extraction import DocumentExtraction, SkillMention
-from app.schemas.profile import ProfileDocument, ProfileSkill, StudentProfile
+from app.schemas.profile import ProfileDocument, ProfileSkill, SkillProfile
 
 
 @dataclass(frozen=True)
@@ -120,10 +120,10 @@ def build_profile(documents: list[SubmittedDocument],
                   extract: Extractor = extract_from_document,
                   links: Sequence[str] = (),
                   read_link: LinkReader = _read_github,
-                  detect: TypeDetector = _detect_type) -> StudentProfile:
+                  detect: TypeDetector = _detect_type) -> SkillProfile:
     """Read every document and portfolio link, then fuse each skill's evidence across them."""
     summaries, found, unlinked = _read_all(documents, extract, links, read_link, detect)
-    return StudentProfile(documents=summaries, skills=fuse_skills(found), unlinked=unlinked)
+    return SkillProfile(documents=summaries, skills=fuse_skills(found), unlinked=unlinked)
 
 
 def profile_evidence(documents: list[SubmittedDocument],
