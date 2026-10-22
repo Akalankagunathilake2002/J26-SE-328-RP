@@ -77,6 +77,11 @@ def test_clean_text_fixes_bullets_encoding_duplicates_and_broken_lines():
     )
 
 
+def test_clean_text_joins_letter_spaced_titles():
+    raw = "C o m p e t i t i o n\nI N T E R  U N I V E R S I T Y\nR, C and Go"
+    assert clean_text(raw) == "Competition\nINTER UNIVERSITY\nR, C and Go"
+
+
 def test_clean_text_never_joins_a_line_onto_a_heading():
     assert clean_text("Skills\npython, java") == "Skills\npython, java"
 
@@ -107,6 +112,11 @@ def test_matcher_finds_names_and_aliases_ignoring_case(matcher):
 def test_short_terms_match_exact_case_whole_words_only(matcher):
     found = [m.matched_text for m in matcher.find("Go and C, go to grade c, Cisco, Golang")]
     assert found == ["Go", "C"]
+
+
+def test_one_letter_skills_are_not_taken_from_spaced_letters_or_r_and_d(matcher):
+    found = [m.matched_text for m in matcher.find("C o m p, C & D, X C Y, C")]
+    assert found == ["C"]
 
 
 def test_longest_match_wins(matcher):
@@ -198,3 +208,18 @@ def test_skills_get_a_confidence_and_are_sorted_by_it(matcher):
     ]
     confidences = [s.confidence for s in result.skills]
     assert confidences == sorted(confidences, reverse=True)
+
+
+def test_a_weak_phrase_only_weakens_the_skills_after_it():
+    sentence = ("Python for Data Science covering Python programming, data analysis and an "
+                "introduction to Machine Learning")
+    cert, header = SourceType.CERTIFICATE, SectionType.HEADER
+    assert classify_evidence(cert, header, sentence, "Python") == EvidenceType.CERTIFICATE_SUPPORTED
+    assert (classify_evidence(cert, header, sentence, "Machine Learning")
+            == EvidenceType.UNVERIFIED_MENTION)
+    listed = "Familiar with Python, Java"
+    assert classify_evidence(SourceType.CV, SectionType.SKILLS, listed, "Java") == (
+        EvidenceType.UNVERIFIED_MENTION)
+    two = "Built an API in Python; interested in Kubernetes"
+    assert classify_evidence(SourceType.CV, SectionType.PROJECTS, two, "Python") == (
+        EvidenceType.PROJECT_DEMONSTRATED)

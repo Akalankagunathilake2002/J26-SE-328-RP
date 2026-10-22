@@ -29,3 +29,6 @@ data/index/
 
 # SetFit training checkpoints (scripts/train_evidence_model.py)
 checkpoints/
+
+# Local copy of the Hugging Face model cache for faster Docker builds
+docker-cache/

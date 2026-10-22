@@ -1,4 +1,4 @@
-"""Fast stand-ins for the AI models, so tests run without downloading them."""
+"""Fast stand-ins for the AI models and the database, so tests run without them."""
 import zlib
 
 import numpy as np
@@ -28,3 +28,30 @@ class KeywordReranker:
 
     def score(self, query: str, texts: list[str]) -> list[float]:
         return [float(self.keyword in text.lower()) for text in texts]
+
+
+class MemoryProfileStore:
+    """Stand-in for the profile database: keeps saved profiles in a dict."""
+
+    def __init__(self, broken: bool = False):
+        self.profiles = {}
+        self.broken = broken
+
+    async def save(self, user_id, profile):
+        from datetime import UTC, datetime
+
+        if self.broken:
+            raise OSError("database is down")
+        saved_at = datetime.now(UTC)
+        self.profiles[user_id] = profile.model_copy(update={"saved_at": saved_at})
+        return saved_at
+
+    async def load(self, user_id):
+        if self.broken:
+            raise OSError("database is down")
+        return self.profiles.get(user_id)
+
+    async def delete(self, user_id):
+        if self.broken:
+            raise OSError("database is down")
+        return self.profiles.pop(user_id, None) is not None

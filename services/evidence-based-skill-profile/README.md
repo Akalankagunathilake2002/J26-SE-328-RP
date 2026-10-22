@@ -24,7 +24,7 @@ C02's profiles can be compared directly with C01's industry profiles.
 | 5. Standardise and map skill terms | ✅ First version: exact → cleaned → fuzzy → semantic (BERT) → re-rank; 84.9% on the dev set |
 | 6. Classify evidence context | SetFit model (v2) decides CV evidence types; v1 rules kept as baseline (labels being checked) |
 | 7. Evidence-fusion confidence scoring | ✅ Noisy-OR with Rank Order Centroid weights and an SMAA-style sensitivity analysis; student verification with task 8 |
-| 8. Generate and verify the student skill profile | Not started |
+| 8. Generate and verify the student skill profile | 🟡 Each user's latest profile is saved in `profile_db` and shown again; verification next |
 | 9. Profile completeness and export to C03 | Not started |
 | 10. Test and evaluate | Not started |
 
@@ -354,6 +354,25 @@ middle of the scale is not, so "moderate" should be read as uncertain. The Kaggl
 CVs, so few skills reach moderate or strong; profiles with several documents are needed for a
 fuller test. Student verification (the fifth TAF factor) is added with the profile (task 8).
 
+### Saved profiles (TAF task 8, first part)
+
+A profile used to live only in the web page, so a refresh lost it. Now `/build` takes the
+logged-in user's `user_id` (from the auth-service, sent by the website, the same way C03 does)
+and saves the profile in the `user_profiles` table of `profile_db`: one row per user, the
+whole profile as JSONB, and `updated_at`. Building again replaces the row, so the profile always
+reflects all the evidence the user uploaded last time. `GET /users/{user_id}` returns it
+(404 when there is none); the Skills Profile page calls it when it opens and shows "Saved to your
+account on …". The uploaded files themselves are not kept, only the result. "Clear profile"
+on the page (`DELETE /users/{user_id}`) deletes the row, so the user can start again.
+
+If the database is down, the user still gets the built profile, with `saved_at` empty (the page
+then says it was not saved), and loading answers 503. The table is created on first use
+(`app/profile/store.py`, `app/models/profile.py`); tests use an in-memory store
+(`tests/fakes.py`, `tests/test_saved_profile.py`).
+
+Limit: the service trusts the `user_id` it is sent, like the team's other services; checking the
+login token in each service is future work.
+
 ## Endpoints
 
 | Endpoint | Method | Description |
@@ -361,7 +380,9 @@ fuller test. Student verification (the fifth TAF factor) is added with the profi
 | `/health` | `GET` | Health check |
 | `/api/v1/profile/health` | `GET` | Health check under the service prefix |
 | `/api/v1/profile/extract` | `POST` | Upload one document (PDF, DOCX, TXT; type detected automatically) and get its skills (dictionary + GLiNER) with evidence and confidence, plus unlinked phrases |
-| `/api/v1/profile/build` | `POST` | `files` (at most 10; each type detected automatically) and/or `portfolio_links` (GitHub, at most 3) → one fused student profile |
+| `/api/v1/profile/build` | `POST` | `files` (at most 10; each type detected automatically) and/or `portfolio_links` (GitHub, at most 3) → one fused student profile; with `user_id` it is also saved |
+| `/api/v1/profile/users/{user_id}` | `GET` | The user's last saved profile (404 if none) |
+| `/api/v1/profile/users/{user_id}` | `DELETE` | Clear the user's saved profile (204, also when there was none) |
 | `/api/v1/profile/normalise` | `POST` | `{"terms": [...]}` (1–200) → each term's skill ID, method and match score |
 | `/api/v1/profile/docs` | `GET` | Interactive API documentation |
 
@@ -405,10 +426,27 @@ pip install -r requirements-dev.txt
 ### 2. Run the service
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
 ```
 
-Documentation is at `http://localhost:8002/api/v1/profile/docs`.
+Documentation is at `http://localhost:8004/api/v1/profile/docs`. Saving profiles needs Postgres;
+for the team's Docker Postgres set `DATABASE_URL=postgresql+asyncpg://<user>:<password>@localhost:15432/profile_db`
+in `.env` (without it the profile is still built, just not saved).
+
+### Run with Docker (with the whole team)
+
+```bash
+cd infrastructure
+docker compose up -d --build postgres auth-service evidence-based-skill-profile api-gateway
+```
+
+The image installs the libraries, copies the AI models in (from `docker-cache/hf` if present, a
+local copy of the Hugging Face cache, otherwise downloaded once) and builds the skill index and the
+SetFit model (`scripts/prepare_models.py`), then runs offline. Inside Docker the service listens on
+8004 (`EVIDENCE_SKILL_PROFILE_PORT`); only the gateway is opened, so the docs are at
+`http://localhost:8080/api/v1/profile/docs`. On a PC with little memory, set
+`EVIDENCE_SKILL_PROFILE_USE_GLINER=false` in `infrastructure/.env` (about 1 GB less). The gateway
+waits up to 5 minutes for a profile, because the models run on the CPU.
 
 ### 3. Rebuild the dictionary and the SSKS handover
 

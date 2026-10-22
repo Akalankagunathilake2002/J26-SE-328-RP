@@ -41,8 +41,22 @@ SECTION_DEFAULT = {
 WORK_SECTIONS = {SectionType.EXPERIENCE, SectionType.PROJECTS, SectionType.ACCOMPLISHMENTS}
 
 
-def classify_evidence(source: SourceType, section: SectionType, sentence: str) -> EvidenceType:
-    if WEAK_PHRASE.search(sentence):
+def _weakened(sentence: str, skill_text: str | None) -> bool:
+    """A weak phrase only weakens the skills after it: in "covering Python programming and an
+    introduction to Machine Learning" only Machine Learning is weak, not Python (found in testing).
+    A ";" starts a new statement."""
+    if not skill_text:
+        return bool(WEAK_PHRASE.search(sentence))
+    position = sentence.lower().find(skill_text.lower())
+    if position < 0:
+        return bool(WEAK_PHRASE.search(sentence))
+    statement_start = max(sentence.rfind(";", 0, position), sentence.rfind("|", 0, position)) + 1
+    return bool(WEAK_PHRASE.search(sentence[statement_start:position]))
+
+
+def classify_evidence(source: SourceType, section: SectionType, sentence: str,
+                      skill_text: str | None = None) -> EvidenceType:
+    if _weakened(sentence, skill_text):
         return EvidenceType.UNVERIFIED_MENTION
     if source in SOURCE_DEFAULT:
         return SOURCE_DEFAULT[source]
