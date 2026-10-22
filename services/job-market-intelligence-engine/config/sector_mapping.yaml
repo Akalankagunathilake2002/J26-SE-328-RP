@@ -24,6 +24,32 @@ sites:
       - "Manufacturing/Operations"
       - "Sales/Marketing/Merchandising"
 
+  itpro:
+    # IT job board. Read through its RSS feeds (https://itpro.lk/rss/<code>/), which it publishes
+    # for automated reading: each item holds the full ad text, so no job page is downloaded.
+    # robots.txt allows these URLs (Crawl-delay: 10); the terms of use have no clause against it.
+    # It has no HR or Agriculture categories.
+    enabled: true
+    base_url: https://itpro.lk
+    categories:
+      IT:
+        - {code: software-engineering, name: "Software Engineering"}
+        - {code: quality-assurance, name: "Quality Assurance"}
+        - {code: web-development, name: "Web Development"}
+        - {code: mobile-development, name: "Mobile Development"}
+        - {code: information-technology, name: "Information Technology"}
+        - {code: devops-cloud, name: "DevOps & Cloud"}
+        - {code: ai-and-data, name: "AI & Data"}
+        - {code: hardware-networking, name: "Hardware & Networking"}
+        - {code: design-creative, name: "Design & Creative"}
+      HR: []
+      Management:
+        - {code: management-business, name: "Management & Business"}
+        - {code: digital-marketing, name: "Digital Marketing"}
+      Agriculture: []
+    unmapped_for_review:
+      - "Academic"
+
   xpress:
     enabled: false
     disabled_reason: >-
