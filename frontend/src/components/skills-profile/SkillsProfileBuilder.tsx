@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AlertCircle, CheckCircle2, FileText, GitBranch, Loader2, Sparkles, Trash2, Upload, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, FileText, Loader2, Sparkles, Trash2, Upload, X } from "lucide-react";
 
 import { ProfileResults } from "./ProfileResults";
 import { profileApi, type SkillProfile } from "@/lib/profileApi";
@@ -34,7 +34,6 @@ function savedOn(savedAt: string): string {
 // C02: upload evidence, build the evidence-backed skill profile, and show the result
 export function SkillsProfileBuilder({ userId, firstName }: SkillsProfileBuilderProps) {
   const [files, setFiles] = useState<File[]>([]);
-  const [githubLink, setGithubLink] = useState("");
   const [dragging, setDragging] = useState(false);
   const [building, setBuilding] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,15 +83,15 @@ export function SkillsProfileBuilder({ userId, firstName }: SkillsProfileBuilder
   }
 
   async function build() {
-    if (files.length === 0 && !githubLink.trim()) {
-      setError("Add at least one document or a GitHub link.");
+    if (files.length === 0) {
+      setError("Add at least one document.");
       return;
     }
     setStep(0);
     setBuilding(true);
     setError(null);
     try {
-      const built = await profileApi.buildProfile(files, [githubLink], userId);
+      const built = await profileApi.buildProfile(files, [], userId);
       setStep(BUILD_STEPS.length);
       await new Promise((resolve) => window.setTimeout(resolve, DONE_PAUSE_MS));
       setProfile(built);
@@ -113,7 +112,6 @@ export function SkillsProfileBuilder({ userId, firstName }: SkillsProfileBuilder
       await profileApi.clearProfile(userId);
       setProfile(null);
       setFiles([]);
-      setGithubLink("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Clearing the profile failed.");
     } finally {
@@ -129,7 +127,7 @@ export function SkillsProfileBuilder({ userId, firstName }: SkillsProfileBuilder
         </p>
         <h1 className="mt-3 text-3xl font-black sm:text-4xl">Skills Profile</h1>
         <p className="mt-2 max-w-[620px] text-[15px] text-muted">
-          Upload your CV, project or internship reports, certificates and transcripts, and add your GitHub.
+          Upload your CV, project or internship reports, certificates and transcripts.
           Each skill gets a confidence score based on how much independent proof supports it.
         </p>
       </section>
@@ -204,26 +202,12 @@ export function SkillsProfileBuilder({ userId, firstName }: SkillsProfileBuilder
           </div>
 
           <div className="flex flex-col gap-4">
-            <label htmlFor="profile-github" className="block">
-              <span className="flex items-center gap-2 text-sm font-bold">
-                <GitBranch className="size-4" /> GitHub link (optional)
-              </span>
-              <input
-                id="profile-github"
-                type="url"
-                value={githubLink}
-                onChange={(event) => setGithubLink(event.target.value)}
-                placeholder="https://github.com/your-username"
-                className="mt-2 w-full rounded-lg border-2 border-ink bg-white px-3 py-2 text-sm outline-none focus:shadow-[3px_3px_0px_#000]"
-              />
-            </label>
-
+            {/* GitHub links are supported by the service; the input returns to the page after PP1. */}
             <div className="rounded-xl border-2 border-ink bg-lavender p-3 text-[13px] leading-relaxed">
               <p className="font-bold">You don&apos;t choose a document type.</p>
               <p className="mt-1">
                 The system reads each file and decides whether it is a CV, certificate, project report or academic
-                document, so evidence can&apos;t be mislabelled. Code in your own GitHub repositories counts as
-                strong proof.
+                document, so evidence can&apos;t be mislabelled.
               </p>
             </div>
 
