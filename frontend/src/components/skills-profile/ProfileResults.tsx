@@ -36,7 +36,7 @@ const MATCH_LABELS: Record<string, { label: string; style: string; hint: string 
 
 // The kinds of proof from strongest to weakest, as the score counts them
 const PROOF_ORDER = [
-  { label: "Certificate or GitHub code", note: "someone else can check it" },
+  { label: "Certificate", note: "someone else can check it" },
   { label: "Project or internship report", note: "a separate document about your work" },
   { label: "Studied it (transcript, modules)", note: "learned in a course" },
   { label: "Used it in a CV project or job", note: "you describe doing something" },
@@ -85,7 +85,7 @@ export function ProfileResults({ profile }: { profile: SkillProfile }) {
         </div>
         <p className="mt-4 text-[13px] text-muted">
           Strong ≥ 70% · Moderate 40–69% · Weak &lt; 40%. Weak means there is not enough proof yet, not that you
-          lack the skill. Add a project report, certificate or GitHub link to raise it.
+          lack the skill. Add a project report or certificate to raise it.
         </p>
 
         <h3 className="mt-6 flex items-center gap-2 font-extrabold">
