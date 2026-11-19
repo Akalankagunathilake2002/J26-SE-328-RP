@@ -6,7 +6,11 @@
     python -m app.collectors.run --site all --reparse     # offline: rebuild processed/ from raw/
 
 --sync also marks every stored ad active, expired or removed (see app/collectors/base.py) and adds
-a row to data/processed/sync_log.csv. scripts/sync.sh runs it with a log file.
+a row to data/processed/sync_log.csv. scripts/sync.sh runs it with a log file, and
+app/collectors/schedule.py runs it once a day.
+
+Only one run at a time can use a data folder (a lock file, data/.run.lock), so a sync started by
+hand never overlaps the daily one.
 
 Image ads get their text from the saved flyer with OCR (Tesseract; skip with --no-ocr).
 Every run ends by refreshing data/processed/quality_report.md and the skill profile
@@ -21,8 +25,13 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
+import socket
 import sys
-from collections.abc import Sequence
+import time
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
+from pathlib import Path
 
 from app.collectors.base import BaseCollector, CollectResult, SyncResult, utc_now
 from app.collectors.config import Settings, load_sectors, load_settings, load_sites
@@ -38,8 +47,40 @@ from app.processing.ocr import add_ocr_text, tesseract_available
 from app.processing.skills import extraction_from_settings, write_profile
 
 COLLECTORS: dict[str, type[BaseCollector]] = {"topjobs": TopjobsCollector, "itpro": ItproCollector}
+LOCK_FILE = ".run.lock"
+STALE_LOCK_SECONDS = 2 * 3600  # a sync takes about 15 minutes, so an older lock is from a killed run
 
 log = logging.getLogger("collectors")
+
+
+class RunInProgress(Exception):
+    """Another run, on this computer or in the job-market-sync container, is using the data folder."""
+
+
+@contextmanager
+def run_lock(data_dir: Path) -> Iterator[None]:
+    """One run at a time per data folder, since every run rewrites processed/. The daily sync in
+    Docker and runs on the host share the folder, so this is a lock file, not a process lock."""
+    path = Path(data_dir) / LOCK_FILE
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    except FileExistsError:
+        try:
+            holder, age = path.read_text(encoding="utf-8").strip(), time.time() - path.stat().st_mtime
+        except FileNotFoundError:  # that run has just finished
+            holder, age = "", STALE_LOCK_SECONDS
+        if age < STALE_LOCK_SECONDS:
+            raise RunInProgress(holder) from None
+        log.warning("removing the lock of a run that did not finish (%s)", holder)
+        path.unlink(missing_ok=True)
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+    with os.fdopen(fd, "w", encoding="utf-8") as out:
+        out.write(f"{socket.gethostname()}, pid {os.getpid()}, started {utc_now()}\n")
+    try:
+        yield
+    finally:
+        path.unlink(missing_ok=True)
 
 
 class OfflineClient:
@@ -85,7 +126,6 @@ def main(
     args = parse_args(argv, sector_names)
     settings = settings or load_settings()
     sites = sites if sites is not None else load_sites()
-    sectors = sector_names if args.sector == "all" else [args.sector]
 
     try:
         names = choose_sites(args.site, sites)
@@ -93,6 +133,19 @@ def main(
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
+    try:
+        with run_lock(settings.data_dir):
+            return run(args, settings, sites, names, sector_names)
+    except RunInProgress as exc:
+        print(f"error: another run is using {settings.data_dir} ({exc}). Try again when it has finished.", file=sys.stderr)
+        return 1
+
+
+def run(
+    args: argparse.Namespace, settings: Settings, sites: dict[str, SiteConfig], names: list[str], sector_names: list[str]
+) -> int:
+    """Collect (unless --reparse), then rebuild the processed data, report, profile and database."""
+    sectors = sector_names if args.sector == "all" else [args.sector]
     storage = Storage(settings.data_dir)
     exit_code = 0
     if not args.reparse:

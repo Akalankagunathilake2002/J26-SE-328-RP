@@ -220,7 +220,8 @@ def test_sync_and_reparse_cannot_be_combined(tmp_path):
 def test_every_sync_is_logged(tmp_path, monkeypatch):
     storage = Storage(tmp_path)
     monkeypatch.setitem(run.COLLECTORS, "example", ExampleSite)
-    pages = {f"{BASE}/list/SW": FakeResponse("1|2026-10-30"), f"{BASE}/ad/1": FakeResponse("Job"),
+    # this run uses today's date, so the ad closes far in the future to stay active
+    pages = {f"{BASE}/list/SW": FakeResponse("1|2099-12-31"), f"{BASE}/ad/1": FakeResponse("Job"),
              f"{BASE}/home": FakeResponse("1")}
     monkeypatch.setattr(run, "PoliteClient", lambda *args, **kwargs: FakeClient(pages))
 

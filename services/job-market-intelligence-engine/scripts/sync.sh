@@ -5,7 +5,8 @@
 #   scripts/sync.sh              # up to 25 new ads per sector
 #   SYNC_LIMIT=50 scripts/sync.sh
 #
-# The output is also written to data/logs/sync-<date>.log. Step 8 runs this on a schedule.
+# The output is also written to data/logs/sync-<date>.log. The job-market-sync Docker container
+# runs the same sync once a day (step 8: see README.md, "Daily sync").
 set -euo pipefail
 
 cd "$(dirname "$0")/.."
