@@ -3,11 +3,12 @@
 Collects job advertisements from Sri Lankan job sites, responsibly, and works out which skills
 each job role demands in four sectors: **IT / Software, HR, Management and Agriculture**.
 
-**Status:** steps 1–6 of 8 done. Ads are collected from topjobs.lk, read with OCR, kept up to date
-by a sync, and turned into a skill demand profile per job role that the Market Pulse page shows.
-Also built: NER skill extraction (spaCy and JobBERT, trained on SkillSpan) and linking of skills to
-the Shared Skill Knowledge Service; both are off by default. Next: the topjobs test set for the NER
-comparison, the PostgreSQL loader and the scheduled daily sync. See [Progress](#progress).
+**Status:** all 8 steps done. Ads are collected from two sites, topjobs.lk (flyer images, read
+with OCR) and itpro.lk (full-text RSS feeds), synced once a day, loaded into PostgreSQL and turned
+into a skill demand profile per job role that the Market Pulse page shows. Also built: NER skill
+extraction (spaCy and JobBERT, trained on SkillSpan) and linking of skills to the Shared Skill
+Knowledge Service; both are off by default. Next: the topjobs test set for the NER comparison and
+more job roles in the role taxonomy. See [Progress](#progress).
 
 ## Sources
 
@@ -52,7 +53,7 @@ job-market-intelligence-engine/
 │   ├── role_taxonomy.yaml   job titles → roles and seniority (editable)
 │   └── skills_lexicon.yaml  skills with their aliases (editable)
 ├── scripts/sync.sh          sync with a log file
-├── tests/                   154 tests on saved pages, a fake SSKS and SQLite; no live requests
+├── tests/                   176 tests on saved pages and feeds, a fake SSKS and SQLite; no live requests
 ├── Dockerfile
 └── pyproject.toml
 ```
@@ -72,23 +73,59 @@ pytest
 ## Usage
 
 ```bash
-python -m app.collectors.run --site topjobs --sector HR --limit 25   # collect new ads
-scripts/sync.sh                                                      # sync: statuses + new ads, logged
-python -m app.collectors.run --site topjobs --reparse                # offline: rebuild from data/raw/
+python -m app.collectors.run --site topjobs --sector HR --limit 25   # collect new ads from one site
+scripts/sync.sh                                                      # sync all sites: statuses + new ads, logged
+python -m app.collectors.run --reparse                               # offline: rebuild from data/raw/
 python -m app.processing.skills                                      # skill profile only
+python -m app.collectors.schedule --status                           # the last and the next daily sync
 ```
+
+`--site` is `all` (the default) or one site; a run for one site still rebuilds the processed data
+from every site's stored ads.
 
 A sync (`scripts/sync.sh`, or `run --sync`) marks every stored ad **active**, **expired**
 (closing date passed) or **removed** (taken down early), and downloads new ads only. An ad counts
-as removed only if it is missing from both its category page and the topjobs homepage, which lists
-every live ad posted directly by an employer. Ads posted through recruitment agencies are not on
-the homepage, so they are never marked removed; they expire at their closing date. Ads are never
-deleted, so their history stays available.
+as removed only if it is missing from both its listing and the site's own list of live ads:
+- **topjobs.lk:** the homepage, which lists every live ad posted directly by an employer. Ads posted
+  through recruitment agencies are not on it, so they are never marked removed; they expire at
+  their closing date.
+- **itpro.lk:** its sitemap (`/sitemap.xml`), which lists every live job. Its ads have no closing date.
 
-Outputs in `data/processed/`: the cleaned ads (`topjobs.jsonl`, `combined.csv`),
+Ads are never deleted, so their history stays available. A flyer that is missing or isn't an image
+(e.g. the site's maintenance page) is downloaded again on the next sync.
+
+Outputs in `data/processed/`: the cleaned ads per site (`topjobs.jsonl`, `itpro.jsonl`) and all
+together (`combined.csv`),
 `quality_report.md`, `sync_log.csv` (one row per sync), and the skill demand per job role
 (`skill_profile.md`, and `skill_profile.json` for the Market Pulse page). Sync logs are in
 `data/logs/`.
+
+## Daily sync (step 8)
+
+The `job-market-sync` Docker container syncs both sites once a day, at 06:00 Sri Lanka time, and
+loads the result into `job_market_db`. It is opt-in, so only the C01 owner's computer collects
+ads, and the data stays in this folder's `data/` on that computer.
+
+```bash
+cd infrastructure
+docker compose --profile job-market-sync up -d --build job-market-sync   # switch on
+docker compose --profile job-market-sync logs job-market-sync           # when syncs ran
+docker compose --profile job-market-sync stop job-market-sync           # switch off
+```
+
+- It checks every hour. A sync missed while the computer or Docker was off runs as soon as they
+  are back, so switching it on after a break syncs straight away. A failed sync (e.g. no
+  internet) is tried again an hour later, at most 3 times a day.
+- It stays on after restarts until it is switched off, but only runs while Docker Desktop does:
+  turn on "Start Docker Desktop when you sign in" in Docker Desktop's settings.
+- Each sync's output goes to `data/logs/sync-<date>.log`, as with `scripts/sync.sh`. Only one run
+  at a time can use `data/`: a run started while another is going stops with "another run is
+  using …".
+- Another time: `JOB_MARKET_SYNC_TIME=HH:MM` in `infrastructure/.env`. After code changes, run the
+  `up` command again (`--build` rebuilds the image).
+- Why Docker and not a macOS launchd job: macOS doesn't let background jobs read `~/Documents`,
+  where the project is (tested: "Operation not permitted"), and giving bash or Python Full Disk
+  Access would weaken the Mac's security. Docker Desktop already has access to the project folder.
 
 ## Skill extraction and SSKS
 
@@ -142,7 +179,11 @@ python -m app.database.loader        # or just run a sync: it loads at the end
 
 Loading is safe to repeat and never deletes anything (expired and removed ads keep their history).
 If the database is down, the run still finishes and the next run loads everything. The database
-is created by `infrastructure/postgres/init-dbs.sh`.
+is created by `infrastructure/postgres/init-dbs.sh`, and the daily sync loads it after every sync.
+
+Checked on the Docker PostgreSQL 16 on 19 November 2026: 229 ads, 4,017 skill mentions, 237 status
+changes and 3 syncs loaded, and loading again changed nothing. The PostgreSQL test runs with
+`SKILLBRIDGE_TEST_DATABASE_URL` set to an empty database.
 
 ## Market Pulse API
 
@@ -154,9 +195,9 @@ The Market Pulse page gets its data from this service, through the API gateway:
 | `GET /jobs/market-pulse` | skill demand per job role and sector, totals, and the job sites with their status |
 
 In Docker the service runs on port 8003 (`JOB_MARKET_INTELLIGENCE_PORT`) and is reached at
-http://localhost:8080/jobs/ (API docs at `/jobs/docs`). Docker Compose mounts only
-`data/processed/`, read-only: ads are collected on the host with the commands above, and a
-refresh of the page shows the new data.
+http://localhost:8080/jobs/ (API docs at `/jobs/docs`). The API container mounts only
+`data/processed/`, read-only. Ads are collected by the daily sync or with the commands above, and
+a refresh of the page shows the new data.
 
 ## Progress
 
@@ -172,33 +213,43 @@ before the next one starts.
 | 5 | `skill-profile` | Job roles, skills per role, the Market Pulse API and page | ✅ Done |
 | 6 | `scraper-sync` | Active / expired / removed ads, new ads only, sync log | ✅ Done |
 | – | `skill-ner` | NER skill extraction (spaCy, JobBERT) compared with the lexicon; SSKS IDs for skills; candidate proposals | 🔄 In progress: test set labelling |
-| 7 | `database-loader` | Load ads, statuses, skill mentions and SSKS IDs into PostgreSQL (`job_market_db`) | 🔄 In progress |
-| 8 | `scheduled-sync` | Run the sync automatically every day | ⏳ To do |
+| 7 | `database-loader` | Load ads, statuses, skill mentions and SSKS IDs into PostgreSQL (`job_market_db`) | ✅ Done |
+| – | `itpro-collector` | itpro.lk as a second source (RSS feeds, removals via its sitemap); one quality report for all sites | ✅ Done |
+| 8 | `scheduled-sync` | The sync runs every day by itself (Docker), catches up missed days and loads `job_market_db` | ✅ Done |
+
+The Market Pulse page was also redesigned in the style of the Skill Analysis page
+(`Akalanka-Frontend/market-pulse-redesign`).
+
+**Data so far** (sync of 22 October 2026): 221 active ads, 171 from topjobs.lk and 50 from itpro.lk.
+By sector: IT 73, HR 50, Management 69, Agriculture 35 (an ad can be in more than one). They have
+92 job roles, 66 of them not yet in `config/role_taxonomy.yaml`, and 137 different skills.
 
 ### Still to do
 
-- **First full sync:** `scripts/sync.sh` collects about 100 ads across the four sectors
-  (~15 minutes). Only 5 HR ads have been collected so far, so the Market Pulse percentages are
-  only indicative.
-- **Step 8** in the table above, and checking step 7 on the Docker PostgreSQL.
+- **NER evaluation on topjobs:** draw 100 test ads (`ml/c01-skill-ner/src/export_label_studio.py`;
+  165 topjobs ads qualify), label them by hand (`LABELLING.md`) and run the evaluation: lexicon vs
+  spaCy vs JobBERT on Sri Lankan ads. Then decide the extractor.
+- **Role taxonomy:** add the 66 job roles that are not mapped yet, so their ads are grouped
+  correctly on Market Pulse.
 - **Dead skills on Market Pulse:** skills that ads ask for less and less. Needs a few weeks of
   daily syncs first.
-- **Data improvements:** collect roles with no ads yet (e.g. Software Engineer), filter the
-  non-agriculture ads out of topjobs' Agriculture category (already flagged), and tune the skill
-  list on the larger sample.
-- **NER evaluation on topjobs:** once 100+ ads are collected, draw 100 test ads
-  (`ml/c01-skill-ner/src/export_label_studio.py`), label them by hand (`LABELLING.md`) and run
-  the evaluation: lexicon vs spaCy vs JobBERT on Sri Lankan ads. Then decide the extractor.
+- **Data improvements:** filter the non-agriculture ads out of topjobs' Agriculture category
+  (already flagged) and tune the skill list on the larger sample.
 - **SSKS:** the SSKS seed has to be loaded in Docker before skills can be linked there, and new
   skills are proposed as candidates only after the SSKS owner agrees.
+- **Flyer storage:** flyers take about 1.2 MB each (224 MB for the first 184), and the daily sync
+  keeps adding them. Decide whether to keep the flyers of expired ads.
 
 ### Known limitations
 
-- Only topjobs.lk is collected (see [Sources](#sources)).
+- Only two sites can be collected (see [Sources](#sources)), and itpro.lk has IT and Management
+  ads only, so HR and Agriculture come from topjobs.lk alone.
 - Almost every topjobs ad is a flyer image, so skills depend on OCR. Badly designed or garbled
   flyers give fewer or wrong skills, and only English text is read.
 - Skills are found by matching the skill list, so a skill missing from
   `config/skills_lexicon.yaml` is not counted (unless the NER extractor is switched on).
 - Agency ads can't be confirmed as removed, so they stay active until their closing date.
+- The daily sync runs only while the computer and Docker Desktop are on; a missed day is synced
+  when they are back, but ads that opened and closed in between are not collected.
 - Fewer than half of the lexicon skills, and few NER phrases, have an SSKS ID with the current
   SSKS seed (no agriculture skills, few soft skills).

@@ -47,14 +47,38 @@ services:
         condition: service_healthy
 
   job-market-intelligence-engine:
-    build: ../services/job-market-intelligence-engine
+    build:
+      context: ../services/job-market-intelligence-engine
+      target: api
     environment:
       JOB_MARKET_INTELLIGENCE_PORT: ${JOB_MARKET_INTELLIGENCE_PORT:-8003}
       SKILLBRIDGE_DATA_DIR: /service/data
     volumes:
-      # Only the processed data (no personal details), read-only. Ads are collected on the host:
-      # see services/job-market-intelligence-engine/README.md.
+      # Only the processed data (no personal details), read-only. Ads are collected by
+      # job-market-sync below or on the host: see services/job-market-intelligence-engine/README.md.
       - ../services/job-market-intelligence-engine/data/processed:/service/data/processed:ro
+
+  # C01 step 8: syncs the job sites once a day (06:00 Sri Lanka time by default) and loads the ads
+  # into job_market_db. Opt-in, so only the C01 owner collects ads:
+  #   docker compose --profile job-market-sync up -d --build job-market-sync
+  # The collected data stays on the host, in the service's git-ignored data/ folder.
+  job-market-sync:
+    build:
+      context: ../services/job-market-intelligence-engine
+      target: sync
+    profiles: ["job-market-sync"]
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 15s
+    environment:
+      SKILLBRIDGE_DATA_DIR: /service/data
+      SKILLBRIDGE_SYNC_TIME: ${JOB_MARKET_SYNC_TIME:-06:00}
+      SKILLBRIDGE_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-skillbridge}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in infrastructure/.env}@postgres:5432/job_market_db
+    volumes:
+      - ../services/job-market-intelligence-engine/data:/service/data
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   learning-service:
     build: ../services/learning-service
