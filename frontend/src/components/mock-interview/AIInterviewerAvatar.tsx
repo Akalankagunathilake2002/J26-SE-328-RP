@@ -15,6 +15,8 @@ type AvatarMode = "connecting" | "live" | "local" | "fallback";
 
 const CONNECT_TIMEOUT_MS = 20000;
 const JOB_POLL_MS = 800;
+// Each status request waits on the server until the clip is ready (long-poll), up to this long
+const JOB_WAIT_S = 3;
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 const EMPTY_IDS: string[] = [];
@@ -140,11 +142,20 @@ export default function AIInterviewerAvatar({
     swapTo(idleUrlRef.current, { loop: true, muted: true }).catch(() => {});
   }, [swapTo]);
 
-  // Polls one sentence clip until it is rendered; throws if it failed or was cancelled
+  // Waits for one sentence clip to render (server-side long-poll, a few seconds per request so the
+  // "ahead in queue" status stays current); throws if it failed or was cancelled
   const waitForClip = useCallback(async (jobId: string, stillWanted: () => boolean, showStatus: () => boolean) => {
+    let longPoll = true;
     for (;;) {
       if (!stillWanted()) throw new Error("superseded");
-      const job = await ragApi.getAvatarJob(jobId);
+      let job;
+      try {
+        job = await ragApi.getAvatarJob(jobId, longPoll ? JOB_WAIT_S : 0);
+      } catch (e) {
+        if (!longPoll) throw e;
+        longPoll = false;              // an older backend or a proxy timeout: plain polling
+        continue;
+      }
       if (job.status === "done" && job.video_url) return apiUrl(job.video_url);
       if (job.status === "error" || job.status === "cancelled") throw new Error(job.error || `clip ${job.status}`);
       if (showStatus()) {
@@ -154,7 +165,7 @@ export default function AIInterviewerAvatar({
             : "Interviewer is preparing…"
         );
       }
-      await sleep(JOB_POLL_MS);
+      if (!longPoll) await sleep(JOB_POLL_MS);
     }
   }, []);
 

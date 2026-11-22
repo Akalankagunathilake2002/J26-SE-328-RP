@@ -8,13 +8,16 @@ import SearchSelect from "./SearchSelect";
 interface EduAssistantClientProps {
   studentId: string;
   studentName: string;
+  /** From /edu-assistant?learn=…&role=… (the interview report's "Learn this" links) */
+  initialLearn?: string;
+  initialRole?: string;
 }
 
 /** The Edu Assistant on its own page: the student picks the role to learn for (the mock interview sets it
  *  from the interview setup instead). */
-export default function EduAssistantClient({ studentId, studentName }: EduAssistantClientProps) {
+export default function EduAssistantClient({ studentId, studentName, initialLearn, initialRole }: EduAssistantClientProps) {
   const [roles, setRoles] = useState<string[]>([]);
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState(initialRole ?? "");
 
   useEffect(() => {
     ragApi
@@ -49,6 +52,7 @@ export default function EduAssistantClient({ studentId, studentName }: EduAssist
         targetRole={role}
         skills={[]}
         learningPriority=""
+        initialLearn={role === (initialRole ?? "") ? initialLearn : undefined}
       />
     </div>
   );

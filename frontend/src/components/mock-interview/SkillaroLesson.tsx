@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BookOpen, CheckCircle2, XCircle, RefreshCw, ArrowRight, PenLine, Lightbulb, GraduationCap, AlertTriangle } from "lucide-react";
 import SimpleMarkdown from "./SimpleMarkdown";
-import { ragApi, type EduLesson, type EduQuiz, type EduGrade, type LessonLevel } from "@/lib/ragApi";
+import { ragApi, type EduLesson, type EduQuiz, type EduGrade, type EduMCQ, type LessonLevel } from "@/lib/ragApi";
 
 export const LEVELS: { level: LessonLevel; label: string; bloom: string[] }[] = [
   { level: "beginner", label: "Beginner", bloom: ["Remember", "Understand"] },
@@ -36,7 +36,7 @@ export function BloomChip({ level }: { level: string }) {
   );
 }
 
-export function LessonCard({ lesson }: { lesson: EduLesson }) {
+export function LessonCard({ lesson, onRewrite }: { lesson: EduLesson; onRewrite?: () => void }) {
   return (
     <div className="space-y-4 border-2 border-ink bg-white p-5 shadow-[4px_4px_0_var(--color-ink)]">
       <div className="space-y-2 border-b-2 border-ink pb-3">
@@ -84,6 +84,14 @@ export function LessonCard({ lesson }: { lesson: EduLesson }) {
           From: {lesson.sources.map((s) => s.title).join(" · ")}
         </p>
       )}
+      {lesson.cached && onRewrite && (
+        <p className="text-[11px] text-muted">
+          Saved lesson, so it opened instantly.{" "}
+          <button onClick={onRewrite} className="font-bold text-brand-blue underline">
+            Write a fresh version
+          </button>
+        </p>
+      )}
     </div>
   );
 }
@@ -94,8 +102,9 @@ interface QuizCardProps {
   topic: string;
   level: LessonLevel;
   keyPoints: string[];
-  /** Called once every question has been answered, with the MCQ score */
-  onFinished: (correct: number, total: number) => void;
+  /** Called once every question has been answered: MCQ score, the MCQs answered wrongly (for spaced
+   *  review) and the average mark of the written answers (0-100, null if all were skipped) */
+  onFinished: (correct: number, total: number, missed: EduMCQ[], openScore: number | null) => void;
   onContinue: (level: LessonLevel) => void;
   onReview: () => void;
 }
@@ -137,7 +146,10 @@ export function QuizCard({ studentId, targetRole, topic, level, keyPoints, onFin
   const reportIfDone = (isChecked: boolean, done: Record<number, EduGrade | "skipped">) => {
     if (!quiz || reportedRef.current || !isChecked || !quiz.open_questions.every((_, i) => done[i])) return;
     reportedRef.current = true;
-    onFinished(correct, quiz.mcqs.length);
+    const missed = quiz.mcqs.filter((q, i) => choices[i] !== q.answer_index);
+    const marks = Object.values(done).filter((g): g is EduGrade => g !== "skipped").map((g) => g.score);
+    const openScore = marks.length ? marks.reduce((a, b) => a + b, 0) / marks.length : null;
+    onFinished(correct, quiz.mcqs.length, missed, openScore);
   };
   const setGrade = (i: number, g: EduGrade | "skipped") => {
     const done = { ...grades, [i]: g };
@@ -327,5 +339,47 @@ export function QuizCard({ studentId, targetRole, topic, level, keyPoints, onFin
         </div>
       )}
     </div>
+  );
+}
+
+/** One spaced-repetition question: a quiz question answered wrongly earlier, asked again */
+export function ReviewQuestion({
+  topic,
+  question,
+  onAnswered,
+}: {
+  topic: string;
+  question: EduMCQ;
+  onAnswered: (correct: boolean) => void;
+}) {
+  const [choice, setChoice] = useState<number | null>(null);
+  const answered = choice != null;
+  return (
+    <fieldset className="space-y-2 border-2 border-ink bg-white p-3">
+      <legend className="px-1 text-[11px] font-bold uppercase tracking-wider text-muted">{topic}</legend>
+      <p className="text-sm font-bold text-ink">{question.question}</p>
+      <div className="grid gap-1.5">
+        {question.options.map((opt, j) => {
+          const right = answered && j === question.answer_index;
+          const wrong = answered && j === choice && j !== question.answer_index;
+          return (
+            <button
+              key={j}
+              disabled={answered}
+              onClick={() => {
+                setChoice(j);
+                onAnswered(j === question.answer_index);
+              }}
+              className={`border-2 p-2 text-left text-xs text-ink ${
+                right ? "border-ink bg-lime/60" : wrong ? "border-ink bg-pink/40" : "border-ink/30 bg-cream hover:border-ink"
+              }`}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+      {answered && question.explanation && <p className="text-xs text-muted"><b>Why:</b> {question.explanation}</p>}
+    </fieldset>
   );
 }

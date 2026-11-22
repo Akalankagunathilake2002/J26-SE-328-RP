@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Layers,
   Activity,
@@ -23,9 +23,14 @@ import {
   ragApi,
   RetrievalAblationData,
   ComparativeBenchmarkMatrixData,
+  BenchmarkRunStatus,
   GoldenDatasetItem,
+  GoldenItemEvaluation,
   PlatformAnalyticsData
 } from "@/lib/ragApi";
+
+/** A 0-1 measurement as a percentage; "n/a" when it wasn't measured */
+const pct = (v: number | null | undefined, digits = 1) => (v == null ? "n/a" : `${(v * 100).toFixed(digits)}%`);
 
 interface VivaInspectorViewProps {
   studentId: string;
@@ -35,15 +40,17 @@ interface VivaInspectorViewProps {
 export default function VivaInspectorView({ studentId, targetRole }: VivaInspectorViewProps) {
   const [activeTab, setActiveTab] = useState<"benchmark" | "golden" | "rerank" | "contracts">("benchmark");
 
-  // Tab 1: Benchmark Matrix state
+  // Tab 1: Benchmark Matrix state (measured runs only; nothing is shown until a run has finished)
   const [benchmarkMatrix, setBenchmarkMatrix] = useState<ComparativeBenchmarkMatrixData | null>(null);
-  const [loadingMatrix, setLoadingMatrix] = useState(false);
+  const [runStatus, setRunStatus] = useState<BenchmarkRunStatus | null>(null);
+  const [matrixError, setMatrixError] = useState<string | null>(null);
 
   // Tab 2: Golden Dataset state
   const [goldenDataset, setGoldenDataset] = useState<GoldenDatasetItem[]>([]);
   const [selectedTrack, setSelectedTrack] = useState<string>("all");
   const [evaluatingItemId, setEvaluatingItemId] = useState<string | null>(null);
-  const [singleEvalResult, setSingleEvalResult] = useState<any | null>(null);
+  const [singleEvalResult, setSingleEvalResult] = useState<GoldenItemEvaluation | null>(null);
+  const [goldenError, setGoldenError] = useState<string | null>(null);
 
   // Tab 3: Re-ranking & Ablation state
   const [question, setQuestion] = useState(
@@ -51,81 +58,71 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
   );
   const [loadingAblation, setLoadingAblation] = useState(false);
   const [ablationData, setAblationData] = useState<RetrievalAblationData | null>(null);
+  const [ablationError, setAblationError] = useState<string | null>(null);
 
   // Tab 4: Platform Contracts state
   const [upstreamRole, setUpstreamRole] = useState(targetRole || "Backend Developer");
   const [upstreamScore, setUpstreamScore] = useState(62.5);
   const [upstreamSkills, setUpstreamSkills] = useState("Database Indexing, Message Queues");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [upstreamResponse, setUpstreamResponse] = useState<any | null>(null);
   const [submittingUpstream, setSubmittingUpstream] = useState(false);
+  const [contractError, setContractError] = useState<string | null>(null);
 
   const [analyticsData, setAnalyticsData] = useState<PlatformAnalyticsData | null>(null);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
 
-  // Load Initial Benchmark Matrix
-  useEffect(() => {
-    loadBenchmarkMatrix();
-    loadGoldenDataset();
+  const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e));
+
+  const loadBenchmarkMatrix = useCallback(async () => {
+    setMatrixError(null);
+    try {
+      const [matrix, status] = await Promise.all([ragApi.fetchBenchmarkMatrix(), ragApi.getBenchmarkStatus()]);
+      setBenchmarkMatrix(matrix);
+      setRunStatus(status);
+    } catch (e) {
+      setMatrixError(errorText(e));
+    }
   }, []);
 
-  const loadBenchmarkMatrix = async () => {
-    setLoadingMatrix(true);
-    try {
-      const data = await ragApi.fetchBenchmarkMatrix();
-      setBenchmarkMatrix(data);
-    } catch {
-      // High-fidelity fallback benchmark matrix
-      setBenchmarkMatrix({
-        dataset_name: "40-Item Multi-Track Golden Evaluation Corpus",
-        sample_size: 40,
-        baseline_direct_llm: {
-          strategy_name: "Baseline (Direct LLM / No Retrieval)",
-          faithfulness: 0.482,
-          answer_relevance: 0.724,
-          context_precision: 0.0,
-          context_recall: 0.0,
-          average_latency_ms: 1420.5,
-          prompt_tokens: 312,
-        },
-        naive_rag_dense: {
-          strategy_name: "Naive RAG (Dense Vector Search Only)",
-          faithfulness: 0.764,
-          answer_relevance: 0.812,
-          context_precision: 0.685,
-          context_recall: 0.718,
-          average_latency_ms: 895.3,
-          prompt_tokens: 845,
-        },
-        advanced_rag_hybrid_rerank: {
-          strategy_name: "Advanced RAG (Hybrid RRF + Re-Ranker + Compression)",
-          faithfulness: 0.968,
-          answer_relevance: 0.946,
-          context_precision: 0.924,
-          context_recall: 0.952,
-          average_latency_ms: 642.1,
-          prompt_tokens: 520,
-        },
-        p_value_statistical_significance: 0.0018,
-        research_conclusion:
-          "Empirical evaluation demonstrates that Two-Stage Hybrid RRF with Cross-Relevance Re-Ranking improves Faithfulness by +26.7% over Naive RAG and +100.8% over Baseline Direct LLM. Context Compression reduces prompt token footprint by 38.5%, effectively resolving the 'Lost in the Middle' context degradation phenomenon with statistical significance (p < 0.01).",
-      });
-    } finally {
-      setLoadingMatrix(false);
-    }
-  };
+  useEffect(() => {
+    // Initial load; the state updates happen after the requests resolve
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadBenchmarkMatrix();
+    ragApi
+      .fetchGoldenDataset()
+      .then(setGoldenDataset)
+      .catch((e) => setGoldenError(errorText(e)));
+  }, [loadBenchmarkMatrix]);
 
-  const loadGoldenDataset = async () => {
+  // While a run is in progress, check its progress every 10 s and load the results when it finishes
+  useEffect(() => {
+    if (runStatus?.status !== "running") return;
+    const timer = setInterval(async () => {
+      try {
+        const status = await ragApi.getBenchmarkStatus();
+        setRunStatus(status);
+        if (status.status !== "running") setBenchmarkMatrix(await ragApi.fetchBenchmarkMatrix());
+      } catch {
+        /* try again on the next tick */
+      }
+    }, 10_000);
+    return () => clearInterval(timer);
+  }, [runStatus?.status]);
+
+  const startBenchmarkRun = async () => {
+    setMatrixError(null);
     try {
-      const items = await ragApi.fetchGoldenDataset();
-      setGoldenDataset(items);
+      setRunStatus(await ragApi.startBenchmarkRun());
     } catch (e) {
-      console.warn("Could not load golden dataset from API:", e);
+      setMatrixError(errorText(e));
     }
   };
 
   const runLiveAblation = async () => {
     if (!question.trim()) return;
     setLoadingAblation(true);
+    setAblationError(null);
     try {
       const data = await ragApi.runRetrievalAblation({
         question: question.trim(),
@@ -133,83 +130,9 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
         top_k: 3,
       });
       setAblationData(data);
-    } catch {
-      setAblationData({
-        question,
-        target_role: targetRole,
-        dense_results: {
-          strategy: "Dense Semantic Vector (pgvector + Gemini Embedding)",
-          latency_ms: 142,
-          retrieved_count: 3,
-          top_chunks: [
-            {
-              chunk_id: "chunk_014",
-              content_preview:
-                "HikariCP connection pool manages active TCP sockets through lock-free thread-local caching, mitigating overhead...",
-              similarity_score: 0.914,
-              source: "backend/hikaricp_performance_guide.md",
-              topic: "Database Management",
-            },
-            {
-              chunk_id: "chunk_022",
-              content_preview:
-                "Connection timeout tuning prevents queuing requests from blocking the servlet thread pool...",
-              similarity_score: 0.887,
-              source: "backend/java_persistence_tuning.md",
-              topic: "Performance Tuning",
-            },
-          ],
-          top_topics: ["Database Management", "Performance Tuning"],
-        },
-        sparse_results: {
-          strategy: "Sparse Lexical BM25 (Exact Token Match)",
-          latency_ms: 28,
-          retrieved_count: 3,
-          top_chunks: [
-            {
-              chunk_id: "chunk_014",
-              content_preview:
-                "HikariCP connection pool manages active TCP sockets through lock-free thread-local caching...",
-              similarity_score: 14.82,
-              source: "backend/hikaricp_performance_guide.md",
-              topic: "Database Management",
-            },
-            {
-              chunk_id: "chunk_035",
-              content_preview:
-                "Spring Boot `spring.datasource.hikari.maximum-pool-size` configuration parameters...",
-              similarity_score: 12.45,
-              source: "backend/spring_boot_config.md",
-              topic: "Spring Configuration",
-            },
-          ],
-          top_topics: ["Database Management", "Spring Configuration"],
-        },
-        hybrid_results: {
-          strategy: "Proposed: Hybrid RRF + Re-Ranker",
-          latency_ms: 168,
-          retrieved_count: 3,
-          top_chunks: [
-            {
-              chunk_id: "chunk_014",
-              content_preview:
-                "HikariCP connection pool manages active TCP sockets through lock-free thread-local caching...",
-              similarity_score: 0.982,
-              source: "backend/hikaricp_performance_guide.md",
-              topic: "Database Management",
-              rrf_score: 0.0328,
-              pre_rerank_rank: 2,
-              rerank_score: 0.965,
-              rank_delta: 1,
-            },
-          ],
-          top_topics: ["Database Management"],
-        },
-        jaccard_overlap_dense_sparse: 0.33,
-        hybrid_dense_agreement: 1.0,
-        hybrid_sparse_agreement: 0.67,
-        recommended_strategy: "hybrid_rrf_plus_rerank",
-      });
+    } catch (e) {
+      setAblationData(null);
+      setAblationError(errorText(e));
     } finally {
       setLoadingAblation(false);
     }
@@ -218,38 +141,11 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
   const handleRunSingleGoldenEval = async (itemId: string) => {
     setEvaluatingItemId(itemId);
     setSingleEvalResult(null);
+    setGoldenError(null);
     try {
-      const res = await ragApi.evaluateGoldenQuery(itemId);
-      setSingleEvalResult(res);
-    } catch {
-      setSingleEvalResult({
-        id: itemId,
-        query: "How does a circuit breaker prevent cascading failure during downstream outages?",
-        baseline: {
-          faithfulness: 0.42,
-          answer_relevance: 0.71,
-          context_precision: 0.0,
-          context_recall: 0.0,
-          latency_ms: 1320.0,
-          tokens: 285,
-        },
-        naive_rag: {
-          faithfulness: 0.78,
-          answer_relevance: 0.83,
-          context_precision: 0.67,
-          context_recall: 0.75,
-          latency_ms: 840.0,
-          tokens: 790,
-        },
-        advanced_rag: {
-          faithfulness: 0.97,
-          answer_relevance: 0.95,
-          context_precision: 1.0,
-          context_recall: 0.98,
-          latency_ms: 590.0,
-          tokens: 495,
-        },
-      });
+      setSingleEvalResult(await ragApi.evaluateGoldenQuery(itemId));
+    } catch (e) {
+      setGoldenError(errorText(e));
     } finally {
       setEvaluatingItemId(null);
     }
@@ -258,6 +154,7 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
   const handleSyncUpstreamProfile = async () => {
     setSubmittingUpstream(true);
     setUpstreamResponse(null);
+    setContractError(null);
     try {
       const payload = {
         student_id: studentId,
@@ -268,20 +165,9 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
           `Foundations of ${upstreamSkills.split(",")[0]?.trim() || "Architecture"}`,
         ],
       };
-      const res = await ragApi.submitUpstreamProfile(payload);
-      setUpstreamResponse(res);
-    } catch (e: any) {
-      setUpstreamResponse({
-        status: "success (simulated)",
-        student_id: studentId,
-        target_role: upstreamRole,
-        recommended_learning_modules: [
-          "Relational Database Indexing: B-Tree, GIN, and BRIN Optimization",
-          "Distributed Message Queues: Apache Kafka Partitions & Consumer Groups",
-          "Advanced System Design & Scalability Patterns",
-        ],
-        message: `Student profile synchronized from Skill-Gap Analysis. Readiness score: ${upstreamScore}%. Generated 3 personalized modules.`,
-      });
+      setUpstreamResponse(await ragApi.submitUpstreamProfile(payload));
+    } catch (e) {
+      setContractError(errorText(e));
     } finally {
       setSubmittingUpstream(false);
     }
@@ -289,31 +175,16 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
 
   const handleFetchAnalytics = async () => {
     setLoadingAnalytics(true);
+    setContractError(null);
     try {
-      const res = await ragApi.fetchPlatformAnalytics(studentId);
-      setAnalyticsData(res);
-    } catch {
-      setAnalyticsData({
-        student_id: studentId,
-        target_role: upstreamRole,
-        total_learning_queries: 14,
-        topics_explored: [
-          "Relational Database Indexing",
-          "JWT Authentication",
-          "Connection Pooling",
-          "Kafka Partitions",
-        ],
-        total_study_minutes: 63.0,
-        mock_interviews_completed: 4,
-        average_technical_accuracy: 4.65,
-        average_communication_score: 4.4,
-        estimated_readiness_improvement_percent: 28.5,
-        last_active: new Date().toISOString(),
-      });
+      setAnalyticsData(await ragApi.fetchPlatformAnalytics(studentId));
+    } catch (e) {
+      setContractError(errorText(e));
     } finally {
       setLoadingAnalytics(false);
     }
   };
+
 
   const filteredGolden =
     selectedTrack === "all"
@@ -390,179 +261,163 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
         </div>
       </div>
 
-      {/* TAB 1: RAG TRIAD COMPARATIVE BENCHMARK MATRIX */}
+      {/* TAB 1: RAG TRIAD COMPARATIVE BENCHMARK MATRIX (measured runs only) */}
       {activeTab === "benchmark" && (
         <div className="space-y-6">
+          <div className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)] flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="text-xs text-muted space-y-0.5">
+              {runStatus?.status === "running" ? (
+                <p className="font-bold text-ink">
+                  Benchmark running: {runStatus.items_done} of {runStatus.items_total} golden questions measured
+                </p>
+              ) : benchmarkMatrix?.run_finished_at ? (
+                <p className="font-bold text-ink">
+                  Last measured run finished {new Date(benchmarkMatrix.run_finished_at).toLocaleString()}
+                </p>
+              ) : (
+                <p className="font-bold text-ink">The benchmark hasn&apos;t been run yet.</p>
+              )}
+              <p>
+                Each run answers all {goldenDataset.length || 40} golden questions three ways with the local LLM
+                (about a minute per question) and measures every number below.
+              </p>
+              {runStatus?.status === "failed" && runStatus.error && (
+                <p className="text-rose-700">Last run failed: {runStatus.error}</p>
+              )}
+            </div>
+            <button
+              onClick={startBenchmarkRun}
+              disabled={runStatus?.status === "running"}
+              className="border-2 border-ink bg-butter px-4 py-2 font-condensed text-xs font-bold uppercase tracking-wider text-ink shadow-[2px_2px_0_var(--color-ink)] hover:-translate-y-0.5 transition-transform disabled:opacity-50 shrink-0"
+            >
+              {runStatus?.status === "running" ? (
+                <RefreshCw className="inline size-3.5 mr-1 animate-spin" />
+              ) : (
+                <Activity className="inline size-3.5 mr-1" />
+              )}
+              {runStatus?.status === "running" ? "Running" : "Run benchmark"}
+            </button>
+          </div>
+          {runStatus?.status === "running" && runStatus.items_total > 0 && (
+            <div className="w-full bg-cream h-2 border border-ink">
+              <div
+                className="bg-lime h-full transition-all"
+                style={{ width: `${(runStatus.items_done / runStatus.items_total) * 100}%` }}
+              />
+            </div>
+          )}
+          {matrixError && (
+            <div className="border-2 border-ink bg-rose-50 p-3 text-xs text-rose-800">{matrixError}</div>
+          )}
+
           {benchmarkMatrix && (
             <>
-              {/* Statistical Significance Banner */}
               <div className="border-2 border-ink bg-lime/25 p-4 shadow-[4px_4px_0_var(--color-ink)] flex items-start gap-3">
                 <Shield className="size-5 text-ink shrink-0 mt-0.5" />
                 <div className="text-xs space-y-1">
                   <p className="font-bold text-ink uppercase tracking-wider font-condensed">
-                    Publication Empirical Benchmark (Sample Size: {benchmarkMatrix.sample_size} Curated Items | p-value: {benchmarkMatrix.p_value_statistical_significance})
+                    Measured on {benchmarkMatrix.sample_size} golden questions
+                    {benchmarkMatrix.p_value_statistical_significance != null &&
+                      ` | p = ${benchmarkMatrix.p_value_statistical_significance}`}
                   </p>
-                  <p className="text-muted leading-relaxed">
-                    {benchmarkMatrix.research_conclusion}
-                  </p>
+                  <p className="text-muted leading-relaxed">{benchmarkMatrix.research_conclusion}</p>
+                  {benchmarkMatrix.method_notes && (
+                    <p className="text-muted leading-relaxed text-[11px]">Method: {benchmarkMatrix.method_notes}</p>
+                  )}
                 </div>
               </div>
 
-              {/* Comparative Matrix Table */}
               <div className="border-2 border-ink bg-white shadow-[4px_4px_0_var(--color-ink)] overflow-x-auto">
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="border-b-2 border-ink bg-cream font-condensed text-ink uppercase tracking-wider text-[11px]">
                       <th className="p-3 border-r-2 border-ink">Retrieval Strategy</th>
-                      <th className="p-3 border-r-2 border-ink">Faithfulness (Zero-Hallucination)</th>
+                      <th className="p-3 border-r-2 border-ink">Faithfulness (LLM judge)</th>
                       <th className="p-3 border-r-2 border-ink">Answer Relevance</th>
                       <th className="p-3 border-r-2 border-ink">Context Precision (MRR)</th>
-                      <th className="p-3 border-r-2 border-ink">Context Recall</th>
+                      <th className="p-3 border-r-2 border-ink">Context Recall (keywords)</th>
                       <th className="p-3 border-r-2 border-ink">Avg Latency</th>
                       <th className="p-3">Prompt Tokens</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {/* Baseline */}
-                    <tr className="border-b border-ink/20 hover:bg-cream/40">
-                      <td className="p-3 font-bold text-ink border-r-2 border-ink flex items-center gap-1.5">
-                        <span className="size-2 rounded-full bg-rose-500" />
-                        {benchmarkMatrix.baseline_direct_llm.strategy_name}
-                      </td>
-                      <td className="p-3 font-mono font-bold text-rose-600 border-r-2 border-ink">
-                        {(benchmarkMatrix.baseline_direct_llm.faithfulness * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-ink border-r-2 border-ink">
-                        {(benchmarkMatrix.baseline_direct_llm.answer_relevance * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-muted border-r-2 border-ink">
-                        N/A (0.0%)
-                      </td>
-                      <td className="p-3 font-mono text-muted border-r-2 border-ink">
-                        N/A (0.0%)
-                      </td>
-                      <td className="p-3 font-mono text-ink border-r-2 border-ink">
-                        {benchmarkMatrix.baseline_direct_llm.average_latency_ms.toFixed(0)} ms
-                      </td>
-                      <td className="p-3 font-mono text-muted">
-                        {benchmarkMatrix.baseline_direct_llm.prompt_tokens} tokens
-                      </td>
-                    </tr>
-
-                    {/* Naive RAG */}
-                    <tr className="border-b border-ink/20 hover:bg-cream/40">
-                      <td className="p-3 font-bold text-ink border-r-2 border-ink flex items-center gap-1.5">
-                        <span className="size-2 rounded-full bg-amber-500" />
-                        {benchmarkMatrix.naive_rag_dense.strategy_name}
-                      </td>
-                      <td className="p-3 font-mono font-bold text-amber-700 border-r-2 border-ink">
-                        {(benchmarkMatrix.naive_rag_dense.faithfulness * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-ink border-r-2 border-ink">
-                        {(benchmarkMatrix.naive_rag_dense.answer_relevance * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-ink border-r-2 border-ink">
-                        {(benchmarkMatrix.naive_rag_dense.context_precision * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-ink border-r-2 border-ink">
-                        {(benchmarkMatrix.naive_rag_dense.context_recall * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-ink border-r-2 border-ink">
-                        {benchmarkMatrix.naive_rag_dense.average_latency_ms.toFixed(0)} ms
-                      </td>
-                      <td className="p-3 font-mono text-amber-700">
-                        {benchmarkMatrix.naive_rag_dense.prompt_tokens} tokens
-                      </td>
-                    </tr>
-
-                    {/* Advanced RAG */}
-                    <tr className="bg-lime/10 font-bold hover:bg-lime/20">
-                      <td className="p-3 text-ink border-r-2 border-ink flex items-center gap-1.5">
-                        <span className="size-2 rounded-full bg-emerald-500" />
-                        {benchmarkMatrix.advanced_rag_hybrid_rerank.strategy_name}
-                      </td>
-                      <td className="p-3 font-mono text-emerald-700 border-r-2 border-ink">
-                        {(benchmarkMatrix.advanced_rag_hybrid_rerank.faithfulness * 100).toFixed(1)}%
-                        <span className="text-[10px] text-emerald-600 block">+26.7% vs Naive</span>
-                      </td>
-                      <td className="p-3 font-mono text-emerald-700 border-r-2 border-ink">
-                        {(benchmarkMatrix.advanced_rag_hybrid_rerank.answer_relevance * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-emerald-700 border-r-2 border-ink">
-                        {(benchmarkMatrix.advanced_rag_hybrid_rerank.context_precision * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-emerald-700 border-r-2 border-ink">
-                        {(benchmarkMatrix.advanced_rag_hybrid_rerank.context_recall * 100).toFixed(1)}%
-                      </td>
-                      <td className="p-3 font-mono text-emerald-700 border-r-2 border-ink">
-                        {benchmarkMatrix.advanced_rag_hybrid_rerank.average_latency_ms.toFixed(0)} ms
-                        <span className="text-[10px] text-emerald-600 block">-28.3% speedup</span>
-                      </td>
-                      <td className="p-3 font-mono text-emerald-700">
-                        {benchmarkMatrix.advanced_rag_hybrid_rerank.prompt_tokens} tokens
-                        <span className="text-[10px] text-emerald-600 block">-38.5% compression</span>
-                      </td>
-                    </tr>
+                    {(
+                      [
+                        [benchmarkMatrix.baseline_direct_llm, "bg-rose-500", false],
+                        [benchmarkMatrix.naive_rag_dense, "bg-amber-500", false],
+                        [benchmarkMatrix.advanced_rag_hybrid_rerank, "bg-emerald-500", true],
+                      ] as const
+                    ).map(([m, dot, highlight]) => {
+                      const retrieval = m !== benchmarkMatrix.baseline_direct_llm;
+                      return (
+                        <tr
+                          key={m.strategy_name}
+                          className={`border-b border-ink/20 ${highlight ? "bg-lime/10 font-bold" : "hover:bg-cream/40"}`}
+                        >
+                          <td className="p-3 font-bold text-ink border-r-2 border-ink">
+                            <span className={`inline-block size-2 rounded-full mr-1.5 ${dot}`} />
+                            {m.strategy_name}
+                          </td>
+                          <td className="p-3 font-mono border-r-2 border-ink">{pct(m.faithfulness)}</td>
+                          <td className="p-3 font-mono border-r-2 border-ink">{pct(m.answer_relevance)}</td>
+                          <td className="p-3 font-mono border-r-2 border-ink">
+                            {retrieval ? pct(m.context_precision) : "n/a"}
+                          </td>
+                          <td className="p-3 font-mono border-r-2 border-ink">
+                            {retrieval ? pct(m.context_recall) : "n/a"}
+                          </td>
+                          <td className="p-3 font-mono border-r-2 border-ink">{m.average_latency_ms.toFixed(0)} ms</td>
+                          <td className="p-3 font-mono">{m.prompt_tokens} tokens</td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
 
-              {/* Research Metric Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                {(
+                  [
+                    ["Faithfulness", benchmarkMatrix.advanced_rag_hybrid_rerank.faithfulness, benchmarkMatrix.naive_rag_dense.faithfulness, "bg-emerald-500"],
+                    ["Context Precision (MRR)", benchmarkMatrix.advanced_rag_hybrid_rerank.context_precision, benchmarkMatrix.naive_rag_dense.context_precision, "bg-cyan"],
+                    ["Context Recall", benchmarkMatrix.advanced_rag_hybrid_rerank.context_recall, benchmarkMatrix.naive_rag_dense.context_recall, "bg-butter"],
+                  ] as const
+                ).map(([label, adv, naive, bar]) => (
+                  <div key={label} className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
+                    <span className="text-[11px] font-bold uppercase text-muted block font-condensed">{label}</span>
+                    <div className="flex items-baseline gap-2 mt-1">
+                      <span className="font-display text-3xl font-bold text-ink">{pct(adv)}</span>
+                      {adv != null && naive != null && (
+                        <span className={`text-xs font-bold ${adv >= naive ? "text-emerald-600" : "text-rose-600"}`}>
+                          {adv >= naive ? "+" : ""}
+                          {((adv - naive) * 100).toFixed(1)} pts vs naive
+                        </span>
+                      )}
+                    </div>
+                    <div className="w-full bg-cream h-2 border border-ink mt-2">
+                      <div className={`${bar} h-full`} style={{ width: `${(adv ?? 0) * 100}%` }} />
+                    </div>
+                    <span className="text-[10px] text-muted block mt-1">Advanced RAG, measured</span>
+                  </div>
+                ))}
                 <div className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
                   <span className="text-[11px] font-bold uppercase text-muted block font-condensed">
-                    Faithfulness (Groundedness)
+                    Context compression
                   </span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="font-display text-3xl font-bold text-ink">96.8%</span>
-                    <span className="text-xs font-bold text-emerald-600">+100.8%</span>
+                    <span className="font-display text-3xl font-bold text-ink">
+                      {benchmarkMatrix.compression_saved_percent != null
+                        ? `${benchmarkMatrix.compression_saved_percent.toFixed(1)}%`
+                        : "n/a"}
+                    </span>
                   </div>
                   <div className="w-full bg-cream h-2 border border-ink mt-2">
-                    <div className="bg-emerald-500 h-full w-[96.8%]" />
+                    <div
+                      className="bg-lime h-full"
+                      style={{ width: `${benchmarkMatrix.compression_saved_percent ?? 0}%` }}
+                    />
                   </div>
-                  <span className="text-[10px] text-muted block mt-1">Zero-hallucination verification</span>
-                </div>
-
-                <div className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
-                  <span className="text-[11px] font-bold uppercase text-muted block font-condensed">
-                    Context Precision (MRR)
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="font-display text-3xl font-bold text-ink">92.4%</span>
-                    <span className="text-xs font-bold text-emerald-600">Rank #1 Affinity</span>
-                  </div>
-                  <div className="w-full bg-cream h-2 border border-ink mt-2">
-                    <div className="bg-cyan h-full w-[92.4%]" />
-                  </div>
-                  <span className="text-[10px] text-muted block mt-1">Ground truth at top rank</span>
-                </div>
-
-                <div className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
-                  <span className="text-[11px] font-bold uppercase text-muted block font-condensed">
-                    Context Recall
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="font-display text-3xl font-bold text-ink">95.2%</span>
-                    <span className="text-xs font-bold text-emerald-600">Fact Completeness</span>
-                  </div>
-                  <div className="w-full bg-cream h-2 border border-ink mt-2">
-                    <div className="bg-butter h-full w-[95.2%]" />
-                  </div>
-                  <span className="text-[10px] text-muted block mt-1">All required facts retrieved</span>
-                </div>
-
-                <div className="border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
-                  <span className="text-[11px] font-bold uppercase text-muted block font-condensed">
-                    Prompt Token Reduction
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="font-display text-3xl font-bold text-ink">38.5%</span>
-                    <span className="text-xs font-bold text-emerald-600">Compressed</span>
-                  </div>
-                  <div className="w-full bg-cream h-2 border border-ink mt-2">
-                    <div className="bg-lime h-full w-[61.5%]" />
-                  </div>
-                  <span className="text-[10px] text-muted block mt-1">Mitigates 'Lost in Middle'</span>
+                  <span className="text-[10px] text-muted block mt-1">Average tokens removed from the context</span>
                 </div>
               </div>
             </>
@@ -592,7 +447,7 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
               ))}
             </div>
             <span className="text-xs font-bold text-ink font-condensed">
-              Showing {filteredGolden.length} of 40 Curated Items
+              Showing {filteredGolden.length} of {goldenDataset.length} Curated Items
             </span>
           </div>
 
@@ -612,7 +467,7 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
                   </div>
                   <h4 className="font-bold text-sm text-ink mt-2 leading-snug">{item.query}</h4>
                   <p className="text-xs text-muted mt-1 italic">
-                    Ground Truth: "{item.ground_truth_doc_title}"
+                    Ground Truth: &ldquo;{item.ground_truth_doc_title}&rdquo;
                   </p>
                 </div>
 
@@ -642,6 +497,10 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
             ))}
           </div>
 
+          {goldenError && (
+            <div className="border-2 border-ink bg-rose-50 p-3 text-xs text-rose-800">{goldenError}</div>
+          )}
+
           {/* Live Single Item Evaluation Modal / Card */}
           {singleEvalResult && (
             <div className="border-2 border-ink bg-lime/10 p-5 shadow-[4px_4px_0_var(--color-ink)] space-y-3 animate-in fade-in">
@@ -659,36 +518,28 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
               <h4 className="font-bold text-sm text-ink">{singleEvalResult.query}</h4>
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                <div className="border border-ink bg-white p-3">
-                  <span className="text-[10px] font-bold text-rose-600 block uppercase font-condensed">
-                    Baseline (Direct LLM)
-                  </span>
-                  <p className="text-xs mt-1">Faithfulness: {(singleEvalResult.baseline.faithfulness * 100).toFixed(0)}%</p>
-                  <p className="text-xs">Relevance: {(singleEvalResult.baseline.answer_relevance * 100).toFixed(0)}%</p>
-                  <p className="text-xs text-muted">Latency: {singleEvalResult.baseline.latency_ms}ms</p>
-                </div>
-
-                <div className="border border-ink bg-white p-3">
-                  <span className="text-[10px] font-bold text-amber-600 block uppercase font-condensed">
-                    Naive RAG (Dense Only)
-                  </span>
-                  <p className="text-xs mt-1">Faithfulness: {(singleEvalResult.naive_rag.faithfulness * 100).toFixed(0)}%</p>
-                  <p className="text-xs">Precision: {(singleEvalResult.naive_rag.context_precision * 100).toFixed(0)}%</p>
-                  <p className="text-xs text-muted">Latency: {singleEvalResult.naive_rag.latency_ms}ms</p>
-                </div>
-
-                <div className="border-2 border-ink bg-white p-3">
-                  <span className="text-[10px] font-bold text-emerald-600 block uppercase font-condensed">
-                    Advanced RAG (Hybrid + Re-Ranker)
-                  </span>
-                  <p className="text-xs font-bold text-emerald-700 mt-1">
-                    Faithfulness: {(singleEvalResult.advanced_rag.faithfulness * 100).toFixed(0)}%
-                  </p>
-                  <p className="text-xs font-bold text-emerald-700">
-                    Precision: {(singleEvalResult.advanced_rag.context_precision * 100).toFixed(0)}%
-                  </p>
-                  <p className="text-xs text-muted">Latency: {singleEvalResult.advanced_rag.latency_ms}ms</p>
-                </div>
+                {(
+                  [
+                    ["Baseline (Direct LLM)", singleEvalResult.baseline, "text-rose-600"],
+                    ["Naive RAG (Dense Only)", singleEvalResult.naive_rag, "text-amber-600"],
+                    ["Advanced RAG (Hybrid + Re-Ranker)", singleEvalResult.advanced_rag, "text-emerald-600"],
+                  ] as const
+                ).map(([label, r, color]) => (
+                  <div key={label} className="border border-ink bg-white p-3 space-y-0.5">
+                    <span className={`text-[10px] font-bold block uppercase font-condensed ${color}`}>{label}</span>
+                    <p className="text-xs">Faithfulness: {pct(r.faithfulness, 0)}</p>
+                    <p className="text-xs">Relevance: {pct(r.answer_relevance, 0)}</p>
+                    <p className="text-xs">Precision: {pct(r.context_precision, 0)}</p>
+                    <p className="text-xs">Recall: {pct(r.context_recall, 0)}</p>
+                    <p className="text-xs text-muted">Latency: {r.latency_ms.toFixed(0)} ms</p>
+                    {r.answer && (
+                      <details className="pt-1">
+                        <summary className="text-[11px] font-bold cursor-pointer text-ink">Answer</summary>
+                        <p className="text-[11px] text-muted whitespace-pre-wrap mt-1">{r.answer}</p>
+                      </details>
+                    )}
+                  </div>
+                ))}
               </div>
             </div>
           )}
@@ -723,6 +574,10 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
             </div>
           </div>
 
+          {ablationError && (
+            <div className="border-2 border-ink bg-rose-50 p-3 text-xs text-rose-800">{ablationError}</div>
+          )}
+
           {/* Ablation Results */}
           {ablationData && (
             <div className="space-y-6">
@@ -756,10 +611,14 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
                     Two-Stage Re-Ranking Promotion
                   </span>
                   <span className="font-display text-3xl font-bold text-emerald-600 mt-1 block">
-                    +1 Rank Shift
+                    {(() => {
+                      const moves = ablationData.hybrid_results.top_chunks.map((c) => c.rank_delta ?? 0);
+                      const best = moves.length ? Math.max(...moves) : 0;
+                      return best > 0 ? `+${best} places` : "No change";
+                    })()}
                   </span>
                   <span className="text-[11px] font-semibold text-muted block mt-1">
-                    Overcomes "Lost in the Middle"
+                    Largest move up by the cross-encoder in this query
                   </span>
                 </div>
               </div>
@@ -822,7 +681,7 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
                         <div className="flex items-center justify-between">
                           <span className="font-bold text-[11px] text-ink">{c.title || c.source}</span>
                           <span className="bg-lime text-ink text-[10px] font-bold px-1 border border-ink">
-                            RRF: {c.rrf_score || "0.03"}
+                            RRF: {c.rrf_score != null ? c.rrf_score.toFixed(4) : "n/a"}
                           </span>
                         </div>
                         <p className="text-muted line-clamp-2 mt-1">{c.content_preview}</p>
@@ -837,6 +696,9 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
       )}
 
       {/* TAB 4: GROUP INTEGRATION CONTRACTS & PACKAGING */}
+      {activeTab === "contracts" && contractError && (
+        <div className="border-2 border-ink bg-rose-50 p-3 text-xs text-rose-800">{contractError}</div>
+      )}
       {activeTab === "contracts" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Upstream Contract Form */}
@@ -953,7 +815,7 @@ export default function VivaInspectorView({ studentId, targetRole }: VivaInspect
               </div>
             ) : (
               <div className="p-8 text-center border border-dashed border-ink text-muted text-xs">
-                Click "Refresh Telemetry" to pull real-time student analytics.
+                Click &ldquo;Refresh Telemetry&rdquo; to pull real-time student analytics.
               </div>
             )}
           </div>

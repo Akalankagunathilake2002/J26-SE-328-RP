@@ -126,7 +126,24 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   // Hands-free prefetch: the next question is requested as soon as an answer is evaluated, so its
   // video renders while the interviewer gives feedback and it can start the moment she finishes.
   const prefetchRef = useRef<Promise<InterviewQuestionResponse | null> | null>(null);
+  // The prefetch waits until the feedback starts playing: generating the next question (Gemma) and
+  // rendering its video while the feedback's first clip is still rendering makes both slower on one GPU.
+  const deferredPrefetchRef = useRef<{ run: () => void; timer: ReturnType<typeof setTimeout> } | null>(null);
+  const prefetchAfterFeedbackStarts = (fetchNext: () => Promise<InterviewQuestionResponse | null>) => {
+    discardPrefetch();
+    const run = () => {
+      if (deferredPrefetchRef.current?.run !== run) return;
+      clearTimeout(deferredPrefetchRef.current.timer);
+      deferredPrefetchRef.current = null;
+      if (!endedRef.current) prefetchRef.current = fetchNext();
+    };
+    deferredPrefetchRef.current = { run, timer: setTimeout(run, 8000) };   // in case speech never starts
+  };
   const discardPrefetch = () => {
+    if (deferredPrefetchRef.current) {
+      clearTimeout(deferredPrefetchRef.current.timer);
+      deferredPrefetchRef.current = null;
+    }
     const stale = prefetchRef.current;
     prefetchRef.current = null;
     stale
@@ -405,11 +422,14 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
       if (res.spoken_feedback) sayAsInterviewer(res.spoken_feedback, "feedback", res.avatar_job_ids ?? []);
       // Ask for the follow-up question now: its clips queue right behind the feedback clips
       if (handsFreeRef.current && session) {
-        discardPrefetch();
-        prefetchRef.current = ragApi
-          .getInterviewQuestion(session.session_id, studentId, targetRole, level, skills,
-            questionContext({ question: questionData.question, answer: answer.trim(), missing: res.missing_concepts ?? [] }))
-          .catch(() => null);
+        const context = questionContext({ question: questionData.question, answer: answer.trim(), missing: res.missing_concepts ?? [] });
+        const fetchNext = () =>
+          ragApi.getInterviewQuestion(session.session_id, studentId, targetRole, level, skills, context).catch(() => null);
+        if (res.spoken_feedback) prefetchAfterFeedbackStarts(fetchNext);
+        else {
+          discardPrefetch();
+          prefetchRef.current = fetchNext();
+        }
       }
     } catch (err) {
       // No made-up scores: a fabricated 4.8/5 would mislead the candidate about their readiness
@@ -439,10 +459,9 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
       }
       sayAsInterviewer(res.reply, "feedback", res.avatar_job_ids ?? []);
       if (handsFreeRef.current && session) {
-        discardPrefetch();
-        prefetchRef.current = ragApi
-          .getInterviewQuestion(session.session_id, studentId, targetRole, level, skills, questionContext())
-          .catch(() => null);
+        prefetchAfterFeedbackStarts(() =>
+          ragApi.getInterviewQuestion(session.session_id, studentId, targetRole, level, skills, questionContext()).catch(() => null)
+        );
       }
     } catch (err) {
       setEvaluationError(`${err instanceof Error ? err.message : "Elena couldn't reply."} Your answer is kept. Try sending it again.`);
@@ -499,7 +518,7 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
   }, []);
 
   if (report) {
-    return <InterviewReport report={report} role={targetRole} level={level} delivery={deliveryByTurn} onRestart={onExit} />;
+    return <InterviewReport report={report} role={targetRole} level={level} delivery={deliveryByTurn} onRestart={onExit} studentId={studentId} />;
   }
 
   const current = questionData ? deliveryByTurn[questionData.turn_id] : undefined;
@@ -592,7 +611,10 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
               avatarJobIds={speech.jobIds}
               interviewState={interviewState}
               onSpeechEnd={handleSpeechEnd}
-              onSpeechStart={() => setInterviewState("speaking")}
+              onSpeechStart={() => {
+                setInterviewState("speaking");
+                deferredPrefetchRef.current?.run();
+              }}
               topic={questionData.topic}
               difficulty={questionData.difficulty}
             />
@@ -685,7 +707,9 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
             <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-ink pb-3">
               <div className="flex items-center gap-2">
                 <span className="border border-ink bg-sun px-2.5 py-1 text-xs font-bold text-ink">
-                  {scored ? `Question #${questionData.question_number} • ${questionData.topic}` : questionData.topic}
+                  {scored
+                    ? `${questionData.follow_up ? "Follow-up" : "Question"} #${questionData.question_number} • ${questionData.topic}`
+                    : questionData.topic}
                 </span>
                 {scored && (
                   <span className="border border-ink bg-lavender px-2 py-1 text-xs font-bold text-ink">
