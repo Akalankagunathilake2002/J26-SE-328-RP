@@ -78,6 +78,8 @@ class InterviewTurn(Base):
     # From the question-bank item the question was generated from; the evaluator grades against them
     reference_answer = Column(Text, nullable=True)
     rubric_criteria = Column(JSONB, nullable=True)
+    # Set on a follow-up question: the role question whose answer it probes (interview_flow.follow_up)
+    follow_up_of = Column(UUID(as_uuid=True), ForeignKey("interview_turns.id", ondelete="SET NULL"), nullable=True)
     technical_accuracy_score = Column(Numeric(3, 2), nullable=True)
     relevance_score = Column(Numeric(3, 2), nullable=True)
     explanation_quality_score = Column(Numeric(3, 2), nullable=True)
