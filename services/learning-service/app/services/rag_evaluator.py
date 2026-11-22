@@ -1,240 +1,296 @@
-import os
+"""Golden-dataset RAG benchmark: three conditions answer the same 40 questions, and every number is measured.
+
+  baseline   the LLM answers from its own knowledge (no retrieval)
+  naive      dense vector search only, top 3 chunks
+  advanced   the production pipeline: hybrid search (dense + keyword, RRF), cross-encoder re-ranking and
+             compression, top 4 chunks (learning_rag.retrieve_context)
+
+All three answer with the same prompt, so only the retrieval differs. Per answer:
+  context_precision  1 / rank of the first chunk from the question's ground-truth document (0 if absent)
+  context_recall     share of the question's ground-truth keywords present in the retrieved context
+  faithfulness       LLM judge: share of the answer's factual claims supported by the retrieved context
+                     (none for the baseline, which has no context to be faithful to)
+  answer_relevance   LLM judge: how fully the answer addresses the question, 1-5 scaled to 0-1
+  latency_ms, prompt_tokens (characters / 4)
+Significance: paired sign-flip permutation test on per-question faithfulness, advanced vs naive.
+The judge is the same local LLM that writes the answers (a known bias of LLM-as-judge; see method_notes).
+"""
+import asyncio
 import json
-import re
+import os
+import random
 import time
-from typing import Dict, Any, List, Optional
+import uuid
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, List, Optional
+
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models.learning import RagBenchmarkRun
+from app.schemas.learning import BenchmarkRunStatus, ComparativeBenchmarkMatrixResponse, RAGTriadMetrics
+from app.services.learning_rag import LLMUnavailable, learning_rag_service
 from app.services.vector_store import vector_store_service
-from app.services.reranker import reranker_service
-from app.services.learning_rag import learning_rag_service
-from app.schemas.learning import (
-    RAGTriadMetrics,
-    ComparativeBenchmarkMatrixResponse,
-    LearningQueryRequest
+
+STRATEGIES = {
+    "baseline": "Baseline (Direct LLM / No Retrieval)",
+    "naive_rag": "Naive RAG (Dense Vector Search Only)",
+    "advanced_rag": "Advanced RAG (Hybrid RRF + Re-Ranker + Compression)",
+}
+PERMUTATIONS = 10_000
+STALE_RUN = timedelta(hours=3)       # a "running" run older than this died with its process
+METHOD_NOTES = (
+    "Same answer prompt for all three conditions; only retrieval differs. Precision: 1/rank of the ground-truth "
+    "document in the retrieved chunks. Recall: share of ground-truth keywords in the retrieved context. "
+    "Faithfulness and relevance are judged by the same local LLM that writes the answers (LLM-as-judge, which "
+    "can favour its own outputs). p-value: paired sign-flip permutation test, advanced vs naive faithfulness."
 )
+
+
+def _tokens(text: str) -> int:
+    return max(1, len(text) // 4)
+
+
+def context_precision(titles: List[str], ground_truth_title: str) -> float:
+    """1 / rank of the first retrieved chunk from the ground-truth document; 0 if none was retrieved."""
+    target = ground_truth_title.lower().strip()
+    for rank, title in enumerate(titles, 1):
+        t = (title or "").lower().strip()
+        if t and (t == target or target in t or t in target):
+            return round(1.0 / rank, 4)
+    return 0.0
+
+
+def context_recall(context: str, keywords: List[str]) -> Optional[float]:
+    """Share of the ground-truth keywords that appear in the retrieved context."""
+    if not keywords:
+        return None
+    ctx = context.lower()
+    return round(sum(1 for k in keywords if k.lower() in ctx) / len(keywords), 4)
+
+
+def permutation_p_value(diffs: List[float], n: int = PERMUTATIONS, seed: int = 7) -> Optional[float]:
+    """Two-sided paired sign-flip permutation test of mean(diffs) = 0."""
+    if len(diffs) < 3:
+        return None
+    observed = abs(sum(diffs) / len(diffs))
+    rng = random.Random(seed)
+    extreme = 0
+    for _ in range(n):
+        if abs(sum(d if rng.random() < 0.5 else -d for d in diffs) / len(diffs)) >= observed - 1e-12:
+            extreme += 1
+    return round((extreme + 1) / (n + 1), 4)
+
+
+def _mean(values: List[Optional[float]]) -> Optional[float]:
+    v = [x for x in values if x is not None]
+    return round(sum(v) / len(v), 4) if v else None
 
 
 class RAGEvaluatorService:
     def __init__(self):
         self._dataset_cache: Optional[List[Dict[str, Any]]] = None
+        self._tasks: set = set()          # running benchmark tasks (asyncio keeps only weak references)
 
     def load_golden_dataset(self) -> List[Dict[str, Any]]:
-        if self._dataset_cache is not None:
-            return self._dataset_cache
-
-        dataset_path = os.path.join(
-            os.path.dirname(__file__), "..", "..", "data", "evaluation", "golden_dataset.json"
-        )
-        if not os.path.exists(dataset_path):
-            raise FileNotFoundError(f"Golden dataset not found at: {dataset_path}")
-
-        with open(dataset_path, "r", encoding="utf-8") as f:
-            self._dataset_cache = json.load(f)
-
+        if self._dataset_cache is None:
+            path = os.path.join(os.path.dirname(__file__), "..", "..", "data", "evaluation", "golden_dataset.json")
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"Golden dataset not found at: {path}")
+            with open(path, "r", encoding="utf-8") as f:
+                self._dataset_cache = json.load(f)
         return self._dataset_cache
 
-    @staticmethod
-    def calculate_faithfulness(answer: str, context_text: str) -> float:
-        """
-        Faithfulness (Groundedness): Measures the proportion of claims in the generated
-        answer that are directly supported by the retrieved context (Zero-Hallucination verification).
-        """
-        if not answer or not context_text:
-            return 0.1
-
-        # Extract technical terms and statements
-        words = re.findall(r'\b[a-zA-Z0-9_\-\.]{3,}\b', answer.lower())
-        stop_words = {"the", "and", "for", "with", "that", "this", "from", "are", "have", "can", "will", "based"}
-        informative_words = [w for w in words if w not in stop_words]
-
-        if not informative_words:
-            return 0.5
-
-        context_lower = context_text.lower()
-        supported_count = sum(1 for w in informative_words if w in context_lower)
-        grounded_ratio = supported_count / len(informative_words)
-
-        # Scale groundedness with baseline bonus for structured technical citations
-        score = min(1.0, max(0.0, (grounded_ratio * 0.7) + 0.3))
-        return round(score, 4)
-
-    @staticmethod
-    def calculate_answer_relevance(query: str, answer: str) -> float:
-        """
-        Answer Relevance: Measures semantic alignment between student question and generated answer,
-        penalizing tangential drift.
-        """
-        q_tokens = set(re.findall(r'\b[a-zA-Z0-9_\-]{3,}\b', query.lower()))
-        a_tokens = set(re.findall(r'\b[a-zA-Z0-9_\-]{3,}\b', answer.lower()))
-
-        if not q_tokens or not a_tokens:
-            return 0.5
-
-        overlap = len(q_tokens & a_tokens)
-        jaccard = overlap / len(q_tokens | a_tokens)
-        token_coverage = overlap / len(q_tokens)
-
-        relevance = (token_coverage * 0.6) + (jaccard * 0.4) + 0.35
-        return round(min(1.0, max(0.2, relevance)), 4)
-
-    @staticmethod
-    def calculate_context_precision(retrieved_chunks: List[Dict[str, Any]], ground_truth_title: str) -> float:
-        """
-        Context Precision (MRR): Assesses whether the ground-truth curriculum document appears at Rank #1.
-        Score = 1.0 / rank of first ground truth match.
-        """
-        if not retrieved_chunks:
-            return 0.0
-
-        target_title_lower = ground_truth_title.lower()
-        for rank, chunk in enumerate(retrieved_chunks, 1):
-            chunk_title = chunk.get("title", "").lower()
-            if target_title_lower in chunk_title or chunk_title in target_title_lower:
-                return round(1.0 / rank, 4)
-
-        return 0.25  # Sub-optimal topic match
-
-    @staticmethod
-    def calculate_context_recall(context_text: str, ground_truth_keywords: List[str]) -> float:
-        """
-        Context Recall: Verifies that all required ground-truth factual keywords were retrieved.
-        """
-        if not ground_truth_keywords:
-            return 1.0
-
-        ctx_lower = context_text.lower()
-        matched = sum(1 for kw in ground_truth_keywords if kw.lower() in ctx_lower)
-        return round(matched / len(ground_truth_keywords), 4)
-
-    async def evaluate_single_item(
-        self,
-        session: AsyncSession,
-        item: Dict[str, Any]
-    ) -> Dict[str, Any]:
-        """Runs single-item ablation across Baseline, Naive RAG, and Advanced RAG."""
-        query = item["query"]
-        target_role = item["target_role"]
-        gt_title = item["ground_truth_doc_title"]
-        gt_keywords = item["ground_truth_keywords"]
-
-        req = LearningQueryRequest(
-            student_id="eval_runner",
-            target_role=target_role,
-            current_skills=[],
-            learning_priority=item.get("topic"),
-            question=query
-        )
-
-        # 1. Baseline: Direct LLM (No retrieval)
-        baseline_res = await learning_rag_service.execute_baseline(req)
-        baseline_answer = baseline_res["answer"]
-        b_faithfulness = 0.42  # Unverified external generation
-        b_relevance = self.calculate_answer_relevance(query, baseline_answer)
-        b_precision = 0.0
-        b_recall = 0.0
-        b_latency = baseline_res["latency_ms"]
-        b_tokens = max(1, len(query) // 4 + len(baseline_answer) // 4)
-
-        # 2. Naive RAG: Dense Vector Search only
+    # ------------------------------------------------------------ one question, three conditions
+    async def _answer(self, question: str, role: str, context: Optional[str]) -> Dict[str, Any]:
+        system = (f"You are a learning assistant for a student preparing for a {role} career. "
+                  "Answer the question clearly and accurately in under 200 words.")
+        if context is not None:
+            system += f"\nUse only the context below and say if it doesn't cover the question.\n\nCONTEXT:\n{context}"
         t0 = time.perf_counter()
-        naive_chunks = await vector_store_service.search_dense_chunks(session, query, target_role, limit=3)
-        naive_context = "\n".join(c["content"] for c in naive_chunks)
-        naive_latency = round((time.perf_counter() - t0) * 1000, 2)
-        n_faithfulness = self.calculate_faithfulness(item["expert_reference_answer"], naive_context)
-        n_relevance = round(b_relevance + 0.15, 4)
-        n_precision = self.calculate_context_precision(naive_chunks, gt_title)
-        n_recall = self.calculate_context_recall(naive_context, gt_keywords)
-        n_tokens = max(1, len(naive_context) // 4)
+        text = ""
+        async for piece in learning_rag_service.stream_text(system, f"Question: {question}", max_tokens=400,
+                                                            temperature=0.0):
+            text += piece
+        return {"answer": text.strip(), "generation_ms": round((time.perf_counter() - t0) * 1000, 1),
+                "prompt_tokens": _tokens(system + question)}
 
-        # 3. Advanced RAG: Hybrid RRF + Re-Ranker + Context Compression
-        adv_res = await learning_rag_service.execute_rag(session, req)
-        adv_chunks = [c.dict() if hasattr(c, "dict") else c for c in adv_res.retrieved_chunks]
-        adv_context = "\n".join(c.get("content_preview", "") for c in adv_chunks)
-        a_faithfulness = self.calculate_faithfulness(adv_res.answer, adv_context)
-        a_relevance = self.calculate_answer_relevance(query, adv_res.answer)
-        a_precision = self.calculate_context_precision(adv_chunks, gt_title)
-        a_recall = self.calculate_context_recall(adv_context, gt_keywords)
-        a_latency = adv_res.total_latency_ms
-        a_tokens = max(1, len(adv_context) // 4)
+    async def _judge(self, question: str, answer: str, context: Optional[str]) -> Dict[str, Optional[float]]:
+        """LLM-as-judge: claims supported by the context, and relevance to the question."""
+        if not answer:
+            return {"faithfulness": None, "answer_relevance": None}
+        task = ("Rate how fully the ANSWER addresses the QUESTION: relevance 1 (off-topic) to 5 (complete).\n")
+        if context is not None:
+            task += ("List the ANSWER's factual claims and count how many are directly supported by the CONTEXT.\n")
+        system = ("You are a strict evaluator of a retrieval-augmented answer.\n" + task +
+                  "Return JSON: {\"relevance\": integer 1-5"
+                  + (", \"claims_total\": integer, \"claims_supported\": integer" if context is not None else "")
+                  + "}.")
+        user = (f"QUESTION: {question}\n\nANSWER: {answer}"
+                + (f"\n\nCONTEXT:\n{context}" if context is not None else ""))
+        try:
+            data = await learning_rag_service.generate_json(system, user, max_tokens=300, temperature=0.0)
+        except LLMUnavailable:
+            return {"faithfulness": None, "answer_relevance": None}
+        relevance = None
+        try:
+            relevance = round((min(5, max(1, int(data.get("relevance")))) - 1) / 4, 4)
+        except (TypeError, ValueError):
+            pass
+        faithfulness = None
+        if context is not None:
+            try:
+                total, supported = int(data.get("claims_total")), int(data.get("claims_supported"))
+                if total > 0:
+                    faithfulness = round(min(supported, total) / total, 4)
+            except (TypeError, ValueError):
+                pass
+        return {"faithfulness": faithfulness, "answer_relevance": relevance}
 
-        return {
-            "id": item["id"],
-            "query": query,
-            "baseline": {
-                "faithfulness": b_faithfulness,
-                "answer_relevance": b_relevance,
-                "context_precision": b_precision,
-                "context_recall": b_recall,
-                "latency_ms": b_latency,
-                "tokens": b_tokens
-            },
-            "naive_rag": {
-                "faithfulness": n_faithfulness,
-                "answer_relevance": min(1.0, n_relevance),
-                "context_precision": n_precision,
-                "context_recall": n_recall,
-                "latency_ms": naive_latency + 120.0,
-                "tokens": n_tokens
-            },
-            "advanced_rag": {
-                "faithfulness": min(1.0, max(0.92, a_faithfulness)),
-                "answer_relevance": min(1.0, max(0.90, a_relevance)),
-                "context_precision": min(1.0, max(0.88, a_precision)),
-                "context_recall": min(1.0, max(0.94, a_recall)),
-                "latency_ms": a_latency,
-                "tokens": a_tokens
-            }
-        }
+    async def evaluate_single_item(self, session: AsyncSession, item: Dict[str, Any]) -> Dict[str, Any]:
+        """Runs the three conditions on one golden question and measures each answer."""
+        query, role = item["query"], item["target_role"]
+        gt_title, keywords = item["ground_truth_doc_title"], item["ground_truth_keywords"]
+        out: Dict[str, Any] = {"id": item["id"], "query": query}
 
-    async def run_full_benchmark_matrix(self, session: AsyncSession) -> ComparativeBenchmarkMatrixResponse:
-        """Runs the complete 40-item golden benchmark evaluation matrix."""
-        dataset = self.load_golden_dataset()
+        # Baseline: no retrieval
+        gen = await self._answer(query, role, None)
+        out["baseline"] = {**await self._judge(query, gen["answer"], None), "context_precision": None,
+                           "context_recall": None, "latency_ms": gen["generation_ms"],
+                           "tokens": gen["prompt_tokens"], "answer": gen["answer"]}
 
-        # Compute empirical benchmarks
-        baseline_metrics = RAGTriadMetrics(
-            strategy_name="Baseline (Direct LLM / No Retrieval)",
-            faithfulness=0.4820,
-            answer_relevance=0.7240,
-            context_precision=0.0000,
-            context_recall=0.0000,
-            average_latency_ms=1420.50,
-            prompt_tokens=312
-        )
+        # Naive RAG: dense search only, top 3
+        t0 = time.perf_counter()
+        chunks = await vector_store_service.search_dense_chunks(session, query, role, limit=3)
+        retrieval_ms = (time.perf_counter() - t0) * 1000
+        context = "\n\n".join(f"[Source {i}: {c['title']}]\n{c['content']}" for i, c in enumerate(chunks, 1))
+        gen = await self._answer(query, role, context)
+        out["naive_rag"] = {**await self._judge(query, gen["answer"], context),
+                            "context_precision": context_precision([c["title"] for c in chunks], gt_title),
+                            "context_recall": context_recall(context, keywords),
+                            "latency_ms": round(retrieval_ms + gen["generation_ms"], 1),
+                            "tokens": gen["prompt_tokens"], "answer": gen["answer"],
+                            "retrieved_titles": [c["title"] for c in chunks]}
 
-        naive_metrics = RAGTriadMetrics(
-            strategy_name="Naive RAG (Dense Vector Search Only)",
-            faithfulness=0.7640,
-            answer_relevance=0.8120,
-            context_precision=0.6850,
-            context_recall=0.7180,
-            average_latency_ms=895.30,
-            prompt_tokens=845
-        )
+        # Advanced RAG: the production retrieval (hybrid + re-ranker + compression)
+        t0 = time.perf_counter()
+        ctx = await learning_rag_service.retrieve_context(session, query, role)
+        retrieval_ms = (time.perf_counter() - t0) * 1000
+        gen = await self._answer(query, role, ctx["context"])
+        titles = [c["title"] for c in ctx["items"]]
+        out["advanced_rag"] = {**await self._judge(query, gen["answer"], ctx["context"]),
+                               "context_precision": context_precision(titles, gt_title),
+                               "context_recall": context_recall(ctx["context"], keywords),
+                               "latency_ms": round(retrieval_ms + gen["generation_ms"], 1),
+                               "tokens": gen["prompt_tokens"], "answer": gen["answer"],
+                               "retrieved_titles": titles,
+                               "compression_saved_percent": ctx.get("tokens_saved_percent")}
+        return out
 
-        advanced_metrics = RAGTriadMetrics(
-            strategy_name="Advanced RAG (Hybrid RRF + Re-Ranker + Compression)",
-            faithfulness=0.9680,
-            answer_relevance=0.9460,
-            context_precision=0.9240,
-            context_recall=0.9520,
-            average_latency_ms=642.10,
-            prompt_tokens=520
-        )
+    # ------------------------------------------------------------ full benchmark runs
+    @staticmethod
+    def summarise(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
+        summary = {}
+        for key in STRATEGIES:
+            r = [row[key] for row in rows if key in row]
+            summary[key] = {m: _mean([x.get(m) for x in r]) for m in
+                            ("faithfulness", "answer_relevance", "context_precision", "context_recall",
+                             "latency_ms", "tokens")}
+        diffs = [row["advanced_rag"]["faithfulness"] - row["naive_rag"]["faithfulness"] for row in rows
+                 if row["advanced_rag"].get("faithfulness") is not None
+                 and row["naive_rag"].get("faithfulness") is not None]
+        return {"summary": summary, "faithfulness_pairs": len(diffs), "p_value": permutation_p_value(diffs),
+                "compression_saved_percent": _mean([row["advanced_rag"].get("compression_saved_percent")
+                                                    for row in rows])}
 
+    async def start_run(self, session: AsyncSession) -> BenchmarkRunStatus:
+        """Starts a full run in the background (about a minute per question with the local LLM), unless one
+        is already running."""
+        now = datetime.now(timezone.utc)
+        running = (await session.execute(select(RagBenchmarkRun).where(RagBenchmarkRun.status == "running"))
+                   ).scalars().all()
+        for run in running:
+            if run.started_at and now - run.started_at > STALE_RUN:
+                run.status, run.error, run.finished_at = "failed", "Interrupted (service restarted)", now
+            else:
+                return self._status(run)
+        run = RagBenchmarkRun(status="running", items_total=len(self.load_golden_dataset()), items_done=0)
+        session.add(run)
+        await session.commit()
+        task = asyncio.create_task(self._run(run.id))
+        self._tasks.add(task)
+        task.add_done_callback(self._tasks.discard)
+        return self._status(run)
+
+    async def _run(self, run_id: uuid.UUID):
+        from app.core.database import AsyncSessionLocal
+        rows: List[Dict[str, Any]] = []
+        async with AsyncSessionLocal() as session:
+            run = await session.get(RagBenchmarkRun, run_id)
+            try:
+                for item in self.load_golden_dataset():
+                    rows.append(await self.evaluate_single_item(session, item))
+                    run.items_done = len(rows)
+                    run.results = {"rows": rows}
+                    await session.commit()
+                run.results = {**self.summarise(rows), "rows": rows}
+                run.status = "done"
+            except Exception as e:
+                run.status, run.error = "failed", f"{type(e).__name__}: {e}"[:2000]
+                print(f"[Warning] RAG benchmark run failed: {e}")
+            run.finished_at = datetime.now(timezone.utc)
+            await session.commit()
+
+    @staticmethod
+    def _status(run: Optional[RagBenchmarkRun]) -> BenchmarkRunStatus:
+        if run is None:
+            return BenchmarkRunStatus(status="none")
+        return BenchmarkRunStatus(run_id=str(run.id), status=run.status, items_done=run.items_done or 0,
+                                  items_total=run.items_total or 0,
+                                  started_at=run.started_at.isoformat() if run.started_at else None,
+                                  finished_at=run.finished_at.isoformat() if run.finished_at else None,
+                                  error=run.error)
+
+    async def latest_status(self, session: AsyncSession) -> BenchmarkRunStatus:
+        run = (await session.execute(select(RagBenchmarkRun).order_by(RagBenchmarkRun.started_at.desc()).limit(1))
+               ).scalar_one_or_none()
+        return self._status(run)
+
+    async def latest_matrix(self, session: AsyncSession) -> Optional[ComparativeBenchmarkMatrixResponse]:
+        """The most recent completed run, or None if the benchmark hasn't been run yet."""
+        run = (await session.execute(select(RagBenchmarkRun).where(RagBenchmarkRun.status == "done")
+                                     .order_by(RagBenchmarkRun.finished_at.desc()).limit(1))).scalar_one_or_none()
+        if not run or not run.results or "summary" not in run.results:
+            return None
+        res = run.results
+        s = res["summary"]
+
+        def metrics(key: str) -> RAGTriadMetrics:
+            m = s[key]
+            return RAGTriadMetrics(strategy_name=STRATEGIES[key], faithfulness=m["faithfulness"],
+                                   answer_relevance=m["answer_relevance"] or 0.0,
+                                   context_precision=m["context_precision"] or 0.0,
+                                   context_recall=m["context_recall"] or 0.0,
+                                   average_latency_ms=m["latency_ms"] or 0.0, prompt_tokens=int(m["tokens"] or 0))
+
+        adv, naive = s["advanced_rag"], s["naive_rag"]
+        parts = []
+        for label, metric in (("faithfulness", "faithfulness"), ("context precision", "context_precision"),
+                              ("context recall", "context_recall"), ("answer relevance", "answer_relevance")):
+            if adv[metric] is not None and naive[metric] is not None:
+                parts.append(f"{label} {adv[metric] * 100:.1f}% vs {naive[metric] * 100:.1f}%")
+        p = res.get("p_value")
+        conclusion = (f"Advanced RAG vs naive dense retrieval on {len(res['rows'])} golden questions: "
+                      + "; ".join(parts) + ". "
+                      + (f"Faithfulness difference: p = {p} (paired permutation test, "
+                         f"{res['faithfulness_pairs']} questions)." if p is not None else
+                         "Too few judged answers for a significance test."))
         return ComparativeBenchmarkMatrixResponse(
-            dataset_name="40-Item Multi-Track Golden Evaluation Corpus",
-            sample_size=len(dataset),
-            baseline_direct_llm=baseline_metrics,
-            naive_rag_dense=naive_metrics,
-            advanced_rag_hybrid_rerank=advanced_metrics,
-            p_value_statistical_significance=0.0018,
-            research_conclusion=(
-                "Empirical evaluation demonstrates that Two-Stage Hybrid RRF with Cross-Relevance Re-Ranking "
-                "improves Faithfulness by +26.7% over Naive RAG and +100.8% over Baseline Direct LLM. "
-                "Context Compression reduces prompt token footprint by 38.5%, effectively resolving the "
-                "'Lost in the Middle' context degradation phenomenon with statistical significance (p < 0.01)."
-            )
-        )
+            sample_size=len(res["rows"]), baseline_direct_llm=metrics("baseline"), naive_rag_dense=metrics("naive_rag"),
+            advanced_rag_hybrid_rerank=metrics("advanced_rag"), p_value_statistical_significance=p,
+            research_conclusion=conclusion, run_id=str(run.id),
+            run_finished_at=run.finished_at.isoformat() if run.finished_at else None,
+            compression_saved_percent=res.get("compression_saved_percent"), method_notes=METHOD_NOTES)
 
 
 rag_evaluator_service = RAGEvaluatorService()

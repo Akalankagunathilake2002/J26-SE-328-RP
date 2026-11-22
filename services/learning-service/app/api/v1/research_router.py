@@ -8,6 +8,7 @@ from app.models.learning import LearningExperimentLog
 from app.schemas.learning import (
     BenchmarkRequest,
     BenchmarkComparisonResponse,
+    BenchmarkRunStatus,
     ComparativeBenchmarkMatrixResponse,
     LearningQueryRequest,
     RetrievalAblationResponse,
@@ -162,16 +163,25 @@ async def run_benchmark_comparison(
         raise HTTPException(status_code=500, detail=f"Benchmark execution error: {str(e)}")
 
 
-@router.get("/benchmark-matrix", response_model=ComparativeBenchmarkMatrixResponse)
-async def get_benchmark_matrix(
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    Returns the comprehensive 40-item RAG Triad research evaluation matrix
-    comparing Baseline (Direct LLM), Naive RAG (Dense Only), and Advanced RAG (Hybrid RRF + Re-Ranker).
-    """
+@router.get("/benchmark-matrix", response_model=Optional[ComparativeBenchmarkMatrixResponse])
+async def get_benchmark_matrix(db: AsyncSession = Depends(get_db)):
+    """The latest completed golden-dataset benchmark (Baseline vs Naive RAG vs Advanced RAG), measured by
+    POST /research/benchmark-matrix/run. null if it hasn't been run yet."""
     from app.services.rag_evaluator import rag_evaluator_service
-    return await rag_evaluator_service.run_full_benchmark_matrix(session=db)
+    return await rag_evaluator_service.latest_matrix(db)
+
+
+@router.post("/benchmark-matrix/run", response_model=BenchmarkRunStatus)
+async def run_benchmark_matrix(db: AsyncSession = Depends(get_db)):
+    """Starts a full benchmark run in the background (needs the LLM; roughly a minute per question)."""
+    from app.services.rag_evaluator import rag_evaluator_service
+    return await rag_evaluator_service.start_run(db)
+
+
+@router.get("/benchmark-matrix/status", response_model=BenchmarkRunStatus)
+async def benchmark_matrix_status(db: AsyncSession = Depends(get_db)):
+    from app.services.rag_evaluator import rag_evaluator_service
+    return await rag_evaluator_service.latest_status(db)
 
 
 @router.get("/golden-dataset")
@@ -200,7 +210,11 @@ async def evaluate_single_query(
     if not matched:
         raise HTTPException(status_code=404, detail=f"Golden dataset item {request.item_id} not found.")
 
-    return await rag_evaluator_service.evaluate_single_item(session=db, item=matched)
+    from app.services.learning_rag import LLMUnavailable
+    try:
+        return await rag_evaluator_service.evaluate_single_item(session=db, item=matched)
+    except LLMUnavailable as e:
+        raise HTTPException(status_code=503, detail=str(e))
 
 
 @router.get("/experiments")

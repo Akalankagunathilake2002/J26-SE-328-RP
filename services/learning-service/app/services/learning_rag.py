@@ -267,6 +267,33 @@ class LearningRAGService:
         except Exception as e:
             raise LLMUnavailable(f"The language model didn't respond: {e}") from e
 
+    async def stream_text(self, system_prompt: str, user_prompt: str, max_tokens: int = 800,
+                          temperature: float | None = None):
+        """Plain-text reply in pieces as it's written: streamed from the local LLM; other providers
+        return it in one piece. Raises LLMUnavailable if nothing can be generated."""
+        temperature = settings.LLM_TEMPERATURE if temperature is None else temperature
+        messages = [{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}]
+        try:
+            if self._llm == "local":
+                from app.services.local_llm import local_llm
+                async for piece in local_llm.chat_stream(messages, temperature=temperature, max_tokens=max_tokens):
+                    yield piece
+                return
+            if self._llm == "gemini" and self._gemini_client:
+                from google.genai import types
+                yield self._gemini_client.models.generate_content(
+                    model=settings.LLM_MODEL or "gemini-2.5-flash", contents=f"{system_prompt}\n\n{user_prompt}",
+                    config=types.GenerateContentConfig(temperature=temperature)).text
+                return
+            if self._llm:
+                from langchain_core.messages import SystemMessage, HumanMessage
+                yield (await self._llm.ainvoke([SystemMessage(content=system_prompt),
+                                                HumanMessage(content=user_prompt)])).content
+                return
+        except Exception as e:
+            raise LLMUnavailable(f"The language model didn't respond: {e}") from e
+        raise LLMUnavailable("No LLM is configured (LLM_PROVIDER)")
+
     async def _generate_response(
         self,
         system_prompt: str,

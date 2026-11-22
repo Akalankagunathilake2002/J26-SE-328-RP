@@ -53,6 +53,35 @@ class LocalLLM:
         # Reasoning models wrap their thinking in <think>…</think>; only the answer is wanted
         return re.sub(r"<think>.*?</think>", "", text, flags=re.S).strip()
 
+    async def chat_stream(self, messages: List[Dict[str, str]], temperature: float = 0.3,
+                          max_tokens: int = 700):
+        """Yields the reply in pieces as the model writes it (OpenAI-style server-sent events)."""
+        try:
+            async with httpx.AsyncClient(headers=settings.model_host_headers,
+                                         timeout=httpx.Timeout(settings.LOCAL_LLM_TIMEOUT, connect=10.0)) as client:
+                payload = {"model": await self._model(client), "messages": messages, "stream": True,
+                           "temperature": temperature, "max_tokens": max_tokens,
+                           "chat_template_kwargs": {"enable_thinking": settings.LOCAL_LLM_THINKING}}
+                async with client.stream("POST", f"{self.base}/v1/chat/completions", json=payload) as res:
+                    if res.status_code != 200:
+                        self._model_id = None
+                        raise LocalLLMError(f"Local LLM error ({res.status_code}): {(await res.aread())[:300]!r}")
+                    async for line in res.aiter_lines():
+                        if not line.startswith("data:"):
+                            continue
+                        data = line[5:].strip()
+                        if data == "[DONE]":
+                            break
+                        try:
+                            delta = json.loads(data)["choices"][0].get("delta", {}).get("content")
+                        except (json.JSONDecodeError, KeyError, IndexError):
+                            continue
+                        if delta:
+                            yield delta
+        except httpx.HTTPError as e:
+            self._model_id = None
+            raise LocalLLMError(f"Local LLM unreachable at {self.base}: {e}") from e
+
     async def chat_json(self, system: str, user: str, temperature: float = 0.2,
                         max_tokens: int = 900) -> Dict[str, Any]:
         """Asks for a JSON object and extracts it even if the model adds prose or code fences."""
