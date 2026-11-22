@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FileUp, Loader2, Play, X, Plus, CheckCircle2, AlertCircle, Camera, Sparkles } from "lucide-react";
 import { ragApi, type CVProfile, type RoleInfo } from "@/lib/ragApi";
+import SearchSelect from "./SearchSelect";
 
 const LEVELS = ["Entry Level", "Mid Level", "Senior Level"];
 // Planned length; Elena moves to the closing questions when the time is nearly used
@@ -196,48 +197,37 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
           </div>
         )}
         <div className="grid gap-4 sm:grid-cols-3">
-          <label className="space-y-1.5">
-            <span className="block text-xs font-bold uppercase text-muted">Job role</span>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full border-2 border-ink bg-white px-3 py-2.5 text-sm font-bold text-ink shadow-[2px_2px_0_var(--color-ink)] focus:outline-none"
-            >
-              {roles.map((r) => (
-                <option key={r.role} value={r.role}>
-                  {r.role} ({r.questions} questions){profile?.suggested_role === r.role ? " · suggested" : ""}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="space-y-1.5">
-            <span className="block text-xs font-bold uppercase text-muted">Experience level</span>
-            <select
+          <div className="space-y-1.5">
+            <label htmlFor="setup-role" className="block text-xs font-bold uppercase text-muted">Job role</label>
+            <SearchSelect
+              inputId="setup-role"
+              value={role || null}
+              onChange={setRole}
+              placeholder="Search roles…"
+              options={roles.map((r) => ({
+                value: r.role,
+                label: `${r.role}${profile?.suggested_role === r.role ? " · suggested" : ""}`,
+              }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="setup-level" className="block text-xs font-bold uppercase text-muted">Experience level</label>
+            <SearchSelect
+              inputId="setup-level"
               value={level}
-              onChange={(e) => setLevel(e.target.value)}
-              className="w-full border-2 border-ink bg-white px-3 py-2.5 text-sm font-bold text-ink shadow-[2px_2px_0_var(--color-ink)] focus:outline-none"
-            >
-              {LEVELS.map((l) => (
-                <option key={l} value={l}>
-                  {l}{roleInfo ? ` (${roleInfo.levels[l] ?? 0} questions)` : ""}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label className="space-y-1.5">
-            <span className="block text-xs font-bold uppercase text-muted">Interview length</span>
-            <select
+              onChange={setLevel}
+              options={LEVELS.map((l) => ({ value: l, label: l }))}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="setup-duration" className="block text-xs font-bold uppercase text-muted">Interview length</label>
+            <SearchSelect
+              inputId="setup-duration"
               value={duration}
-              onChange={(e) => setDuration(Number(e.target.value))}
-              className="w-full border-2 border-ink bg-white px-3 py-2.5 text-sm font-bold text-ink shadow-[2px_2px_0_var(--color-ink)] focus:outline-none"
-            >
-              {DURATIONS.map((m) => (
-                <option key={m} value={m}>
-                  About {m} minutes
-                </option>
-              ))}
-            </select>
-          </label>
+              onChange={setDuration}
+              options={DURATIONS.map((m) => ({ value: m, label: `About ${m} minutes` }))}
+            />
+          </div>
         </div>
         <p className="text-xs text-muted">
           Like a real interview: Elena welcomes you and gets to know you, asks role questions while time allows,

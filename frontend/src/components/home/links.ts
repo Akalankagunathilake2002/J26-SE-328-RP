@@ -5,4 +5,5 @@ export const navLinks = [
   { label: "Market Pulse", href: "/market-pulse" },
   { label: "Skill Analysis", href: "/skill-analysis" },
   { label: "Mock Interview", href: "/mock-interview" },
+  { label: "Edu Assistant", href: "/edu-assistant" },
 ] as const;

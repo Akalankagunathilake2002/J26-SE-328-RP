@@ -1,6 +1,8 @@
 // RAG API Client for Academic-to-Industry Skill Bridge Platform
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+// Empty by default: the browser calls /api/v1/... on this app's origin and next.config.ts forwards it to
+// API_GATEWAY_URL. Set NEXT_PUBLIC_API_URL only to call a backend directly (it must then allow CORS).
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "";
 
 export interface LearningQueryPayload {
   student_id: string;
