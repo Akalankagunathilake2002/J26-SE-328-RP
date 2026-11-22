@@ -508,6 +508,10 @@ ROLE_PAGES = (  # (folder under role-pages, role, topic, source, licence, conten
      "CC BY 4.0", ".devsite-article-body", "nav, aside, .devsite-article-meta, .devsite-page-rating"),
     ("eeoc", "HR Manager", "Employment Law & HR Practice (US)", "U.S. Equal Employment Opportunity Commission",
      "Public Domain", "article", "nav, aside, form, .rdf-meta"),
+    # User-contributed notes are left out: only the manual text is CC BY 3.0
+    ("php-manual", "Backend Developer / Full-Stack Developer", "PHP", "PHP Manual (PHP Documentation Group)",
+     "CC BY 3.0", "#layout-content", "nav, aside, form, #usernotes, .change-language, .edit-bug, .manualnavbar, "
+     ".page-tools"),
     # OPM's <main> wraps menus and the "Resources For" sidebar around the content
     ("opm", "HR Manager", "Employment Law & HR Practice (US)", "U.S. Office of Personnel Management",
      "Public Domain", "main", "nav, header, footer, aside, form, [class*=nav], [class*=menu], [class*=sidebar], "
@@ -619,6 +623,8 @@ licence and URL; the text was converted to plain markdown (markup and link targe
 - Google Search Central documentation, (c) Google, CC BY 4.0 - https://developers.google.com/search
 - U.S. Web Design System, PlainLanguage.gov, 18F Content Guide and 18F Brand (GSA), public domain / CC0
 - U.S. EEOC and OPM guidance pages, U.S. government works in the public domain (U.S. law context)
+- PHP Manual, (c) 1997-2026 the PHP Documentation Group, CC BY 3.0 or later (user-contributed notes excluded) -
+  https://www.php.net/manual/en/copyright.php
 """
 
 if __name__ == "__main__":
