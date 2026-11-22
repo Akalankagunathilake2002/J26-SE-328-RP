@@ -5,6 +5,7 @@ import { Send, RefreshCw, Sparkles, GraduationCap, AlertTriangle, Bookmark, Chec
 import SimpleMarkdown from "./SimpleMarkdown";
 import { LessonCard, QuizCard, BloomChip, LEVELS, levelLabel } from "./SkillaroLesson";
 import { ragApi, type EduChatMessage, type EduLesson, type LessonLevel, type LearningTopic, type SourceCitation } from "@/lib/ragApi";
+import SearchSelect from "./SearchSelect";
 
 interface PersonalizedLearningViewProps {
   studentId: string;
@@ -170,14 +171,66 @@ export default function PersonalizedLearningView({
   const bubble = (role: "user" | "assistant", children: React.ReactNode) => (
     <div className={`flex ${role === "user" ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-[85%] border-2 border-ink p-3 text-sm text-ink shadow-[2px_2px_0_var(--color-ink)] ${
-          role === "user" ? "bg-lime/50" : "bg-white"
+        className={`max-w-[85%] border-2 border-ink text-ink shadow-[2px_2px_0_var(--color-ink)] ${
+          role === "user" ? "bg-lime/50 p-3 text-sm" : "bg-white px-4 py-3.5 text-[0.95rem]"
         }`}
       >
+        {role === "assistant" && (
+          <span className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-brand-blue">
+            <Sparkles className="size-3.5" aria-hidden="true" /> Skillaro
+          </span>
+        )}
         {children}
       </div>
     </div>
   );
+
+  // Sources the reply actually names count as sources; the rest were only retrieved, so they're shown as
+  // related reading (e.g. when the curriculum doesn't cover the question and Skillaro says so)
+  const sourceChips = (sources: SourceCitation[], reply: string) => {
+    const unique = sources.filter((s, i) => sources.findIndex((x) => x.title === s.title) === i);
+    const text = reply.toLowerCase();
+    const cited = unique.filter((s) => text.includes(s.title.toLowerCase()));
+    const related = unique.filter((s) => !cited.includes(s));
+    const chip = (s: SourceCitation, strong: boolean) => {
+      const label = (
+        <>
+          <BookOpen className="size-3 shrink-0" aria-hidden="true" />
+          <span className="truncate">{s.title}</span>
+        </>
+      );
+      const style = `inline-flex max-w-full items-center gap-1.5 border px-2 py-1 text-[11.5px] font-semibold ${
+        strong ? "border-ink bg-sand text-ink" : "border-ink/30 bg-white text-muted"
+      }`;
+      return s.url ? (
+        <a key={s.title} href={s.url} target="_blank" rel="noopener noreferrer" className={`${style} hover:border-ink hover:text-ink`}>
+          {label}
+        </a>
+      ) : (
+        <span key={s.title} className={style}>{label}</span>
+      );
+    };
+    return (
+      <div className="space-y-2 border-t border-ink/15 pt-2.5">
+        {cited.length > 0 && (
+          <div className="space-y-1.5">
+            <p className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-muted">
+              <Bookmark className="size-3" aria-hidden="true" /> Sources
+            </p>
+            <div className="flex flex-wrap gap-1.5">{cited.map((s) => chip(s, true))}</div>
+          </div>
+        )}
+        {related.length > 0 && (
+          <details className="group">
+            <summary className="cursor-pointer list-none text-[11px] font-bold uppercase tracking-wider text-muted hover:text-ink">
+              <span className="group-open:hidden">Show</span><span className="hidden group-open:inline">Hide</span> related reading ({related.length})
+            </summary>
+            <div className="mt-1.5 flex flex-wrap gap-1.5">{related.map((s) => chip(s, false))}</div>
+          </details>
+        )}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
@@ -228,14 +281,14 @@ export default function PersonalizedLearningView({
                       <p className="whitespace-pre-line">{item.content}</p>
                     ) : (
                       <div className="space-y-3">
-                        <SimpleMarkdown text={item.content} className="leading-relaxed" />
-                        {item.suggested && item.suggested.length > 0 && topicChips(item.suggested)}
-                        {item.sources && item.sources.length > 0 && (
-                          <p className="flex items-start gap-1 text-[11px] text-muted">
-                            <Bookmark className="mt-0.5 size-3 shrink-0" />
-                            {item.sources.map((s) => s.title).join(" · ")}
-                          </p>
+                        <SimpleMarkdown text={item.content} className="leading-[1.7]" />
+                        {item.suggested && item.suggested.length > 0 && (
+                          <div className="space-y-1.5">
+                            <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Learn next</p>
+                            {topicChips(item.suggested)}
+                          </div>
                         )}
+                        {item.sources && item.sources.length > 0 && sourceChips(item.sources, item.content)}
                       </div>
                     )
                   )}
@@ -354,20 +407,15 @@ export default function PersonalizedLearningView({
               <label htmlFor="skillaro-topic" className="flex items-center gap-2 font-condensed text-base font-bold uppercase tracking-wider text-ink">
                 <BookOpen className="size-4" /> All topics ({suggestedTopics.length})
               </label>
-              <select
-                id="skillaro-topic"
-                value=""
-                onChange={(e) => e.target.value && teach(e.target.value)}
+              {/* A picker, not a setting: it starts each lesson and shows the placeholder again */}
+              <SearchSelect
+                inputId="skillaro-topic"
+                value={null}
+                onChange={(topic) => teach(topic)}
                 disabled={!!busy}
-                className="w-full border-2 border-ink bg-white px-2 py-2 text-sm font-bold text-ink focus:outline-none"
-              >
-                <option value="">Choose a topic to learn…</option>
-                {suggestedTopics.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+                placeholder="Search or choose a topic to learn…"
+                options={suggestedTopics.map((t) => ({ value: t, label: t }))}
+              />
             </div>
           )}
 

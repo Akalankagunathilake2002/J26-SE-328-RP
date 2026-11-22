@@ -1,3 +1,4 @@
+import { EduAssistantFab } from "@/components/home/EduAssistantFab";
 import { Footer } from "@/components/home/Footer";
 import { Hero } from "@/components/home/Hero";
 import { IndustrySection, PracticeSection, ProveSection, StandSection } from "@/components/home/FeatureSections";
@@ -17,6 +18,7 @@ export default function HomePage() {
         <PracticeSection />
       </main>
       <Footer />
+      <EduAssistantFab />
     </>
   );
 }

@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { LiveAvatarSession } from "@heygen/liveavatar-web-sdk";
 import { Volume2, VolumeX, RotateCcw, Sparkles, ShieldCheck, Radio, Mic, Video, Loader2 } from "lucide-react";
 import { ragApi, apiUrl } from "@/lib/ragApi";
+import SearchSelect from "./SearchSelect";
 
 // "live": photorealistic LiveAvatar video stream (lip-sync, blinking, head & hand gestures)
 // "local": local avatar engine (LivePortrait head motion + blinks, MuseTalk lip-sync) rendering
@@ -678,23 +679,20 @@ export default function AIInterviewerAvatar({
         {mode === "fallback" && availableVoices.length > 0 && (
           <div className="flex items-center gap-1 text-xs">
             <span className="font-bold text-muted hidden sm:inline">Voice:</span>
-            <select
-              value={selectedVoice?.name || ""}
-              onChange={(e) => {
-                const found = availableVoices.find((v) => v.name === e.target.value);
+            <SearchSelect
+              size="sm"
+              ariaLabel="Interviewer voice"
+              className="min-w-40"
+              value={selectedVoice?.name ?? null}
+              onChange={(name) => {
+                const found = availableVoices.find((v) => v.name === name);
                 if (found) setSelectedVoice(found);
               }}
-              className="border border-ink bg-white px-2 py-1 text-xs font-medium text-ink shadow-[2px_2px_0_var(--color-ink)] focus:outline-none"
-            >
-              {availableVoices
+              options={availableVoices
                 .filter((v) => v.lang.startsWith("en"))
                 .slice(0, 6)
-                .map((v) => (
-                  <option key={v.name} value={v.name}>
-                    {v.name.slice(0, 22)}
-                  </option>
-                ))}
-            </select>
+                .map((v) => ({ value: v.name, label: v.name.slice(0, 22) }))}
+            />
           </div>
         )}
 

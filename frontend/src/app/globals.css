@@ -121,3 +121,55 @@ body {
       linear-gradient(var(--color-pink), var(--color-pink)) 0 0 / 100% 13px no-repeat;
   }
 }
+
+/* Mock interview and Edu Assistant pages: Space Grotesk throughout and no italics, like the Admin Portal.
+   Headings in title case and bold; small labels keep their caps. The navbar and other pages are unchanged. */
+.mi-type .font-display,
+.mi-type .font-condensed,
+.mi-type .font-script {
+  font-family: var(--font-sans);
+}
+.mi-type :is(h1, h2, h3).font-display {
+  text-transform: none;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.mi-type .font-condensed {
+  letter-spacing: 0.02em;
+}
+.mi-type .italic,
+.mi-type em,
+.mi-type i {
+  font-style: normal;
+}
+
+/* Floating Edu Assistant on the home page */
+@keyframes edu-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes edu-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+@keyframes edu-pop {
+  0% { transform: translateY(8px) scale(0.96); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes edu-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+@keyframes edu-wave {
+  0%, 60%, 100% { transform: rotate(0deg); }
+  10%, 30% { transform: rotate(16deg); }
+  20%, 40% { transform: rotate(-8deg); }
+}
+.edu-bob { animation: edu-bob 3.2s ease-in-out infinite; }
+.edu-ring { animation: edu-ring 2.4s ease-out infinite; }
+.edu-pop { animation: edu-pop 0.28s ease-out both; }
+.edu-dot { animation: edu-dot 1.2s ease-in-out infinite; }
+.edu-wave { animation: edu-wave 2.6s ease-in-out infinite; transform-origin: 70% 70%; }
+@media (prefers-reduced-motion: reduce) {
+  .edu-bob, .edu-ring, .edu-pop, .edu-dot, .edu-wave { animation: none; }
+}
