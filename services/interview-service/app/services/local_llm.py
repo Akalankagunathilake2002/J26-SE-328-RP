@@ -35,7 +35,8 @@ class LocalLLM:
     async def chat(self, messages: List[Dict[str, str]], temperature: float = 0.3,
                    max_tokens: int = 700) -> str:
         try:
-            async with httpx.AsyncClient(timeout=httpx.Timeout(settings.LOCAL_LLM_TIMEOUT, connect=5.0)) as client:
+            async with httpx.AsyncClient(headers=settings.model_host_headers,
+                                         timeout=httpx.Timeout(settings.LOCAL_LLM_TIMEOUT, connect=10.0)) as client:
                 payload = {"model": await self._model(client), "messages": messages,
                            "temperature": temperature, "max_tokens": max_tokens,
                            # Models with a thinking mode (Gemma 4, Qwen3) otherwise spend most of the

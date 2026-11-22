@@ -23,9 +23,13 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "interview_db"
 
+    # "require" for a hosted database (Neon, Supabase, ...) that only accepts TLS connections
+    POSTGRES_SSL: str = ""
+
     @property
     def async_database_url(self) -> str:
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        ssl = f"?ssl={self.POSTGRES_SSL}" if self.POSTGRES_SSL else ""
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}{ssl}"
 
     # AI Configuration
     # "local" = OpenAI-compatible server on the host Mac (mlx_lm.server, Huggingbay/start-llm.sh)
@@ -37,6 +41,17 @@ class Settings(BaseSettings):
     LOCAL_LLM_URL: str = "http://host.docker.internal:8082"
     LOCAL_LLM_TIMEOUT: float = 170.0          # under the gateway's 180 s proxy timeout
     LOCAL_LLM_THINKING: bool = False          # thinking mode: much slower, rarely better here
+    # Set when the LLM (and avatar engine) run on another machine behind scripts/model-host/model_gateway.py,
+    # e.g. the developer's Mac reached through a tunnel from a hosted server
+    MODEL_HOST_KEY: str = ""
+
+    @property
+    def model_host_headers(self) -> dict:
+        return {"Authorization": f"Bearer {self.MODEL_HOST_KEY}"} if self.MODEL_HOST_KEY else {}
+
+    # Threads per ONNX model (embedder, re-ranker, answer scorer); 0 = onnxruntime's default (all cores).
+    # Cap it on a shared host so one request doesn't starve the others.
+    ONNX_THREADS: int = 0
 
     # Embeddings ("local" = fastembed ONNX model inside this container, no API key)
     EMBEDDING_PROVIDER: Literal["openai", "gemini", "local", "mock"] = "gemini"

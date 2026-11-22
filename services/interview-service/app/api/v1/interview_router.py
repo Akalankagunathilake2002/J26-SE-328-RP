@@ -229,7 +229,7 @@ async def get_avatar_job(job_id: str):
 async def _proxy_video(url: str, request: Request) -> StreamingResponse:
     # Forward Range so browsers can seek; Safari will not play MP4 without 206 responses.
     headers = {"Range": request.headers["range"]} if "range" in request.headers else {}
-    client = httpx.AsyncClient(timeout=httpx.Timeout(10.0, read=60.0))
+    client = httpx.AsyncClient(headers=settings.model_host_headers, timeout=httpx.Timeout(10.0, read=60.0))
     try:
         upstream = await client.send(client.build_request("GET", url, headers=headers), stream=True)
     except httpx.HTTPError as e:
