@@ -13,15 +13,18 @@ Everything is grounded in the curriculum through the same retrieval as the learn
 import random
 import re
 import time
-from typing import Any, Dict, List, Optional
+import uuid
+from datetime import datetime, timedelta, timezone
+from typing import Any, AsyncIterator, Dict, List, Optional
 
-from sqlalchemy import or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.learning import LearningDocument
+from app.models.learning import EduLessonCache, EduMastery, EduReviewItem, LearningDocument
 from app.schemas.learning import (
     EduChatRequest, EduChatResponse, GradeAnswerRequest, GradeAnswerResponse, LessonRequest, LessonResponse,
-    LessonSection, MultipleChoiceQuestion, OpenQuestion, QuizRequest, QuizResponse,
+    LessonSection, MasteryEntry, MasteryRecordRequest, MasteryResponse, MultipleChoiceQuestion, OpenQuestion,
+    QuizRequest, QuizResponse, ReviewAnswerResponse, ReviewItem,
 )
 from app.services.learning_rag import LLMUnavailable, learning_rag_service
 
@@ -62,6 +65,8 @@ STAGES: Dict[str, Dict[str, Any]] = {
 }
 
 HISTORY_TURNS = 6           # earlier chat messages sent to the model
+MASTERY_PERCENT = 60        # best MCQ score that counts a stage as mastered
+REVIEW_DAYS = [1, 3, 7]     # spaced repetition: a missed question returns after 1, then 3, then 7 days
 
 
 def _clean(text: Any) -> str:
@@ -91,20 +96,18 @@ def _match_topics(names: List[Any], available: List[str], limit: int = 3) -> Lis
     return out[:limit]
 
 
-async def chat(db: AsyncSession, req: EduChatRequest) -> EduChatResponse:
-    t0 = time.perf_counter()
-    history = req.history[-HISTORY_TURNS:]
+def _chat_query(req: EduChatRequest) -> str:
     # Short follow-ups ("why?", "give an example") are retrieved with the previous question for context
+    history = req.history[-HISTORY_TURNS:]
     last_user = next((m.content for m in reversed(history) if m.role == "user"), "")
     query = req.message if len(req.message.split()) > 5 else f"{last_user} {req.message}"
-    if req.current_topic:
-        query = f"{req.current_topic}: {query}"
-    ctx = await learning_rag_service.retrieve_context(db, query, req.target_role)
-    topics = await role_topics(db, req.target_role)
+    return f"{req.current_topic}: {query}" if req.current_topic else query
 
+
+def _chat_persona(req: EduChatRequest) -> str:
     # The account name falls back to an e-mail address, which isn't a name to greet
     name = req.student_name.split()[0] if req.student_name and "@" not in req.student_name else ""
-    system = (
+    return (
         f"You are {ASSISTANT}, a warm, encouraging Edu Assistant and tutor for a student preparing for a "
         f"{req.target_role or 'software'} career. Talk like a friendly teacher in a chat: short paragraphs, "
         "simple words, an example when it helps, and a question back to the student when it moves the "
@@ -116,32 +119,109 @@ async def chat(db: AsyncSession, req: EduChatRequest) -> EduChatResponse:
         + "\n\nGround facts in the curriculum context below and mention the source title when you use it. "
         "If the context doesn't cover the question, say so briefly and answer from general knowledge, "
         "labelled as such.\n"
-        f"Curriculum topics you can teach as full lessons: {', '.join(topics[:40])}.\n"
+    )
+
+
+def _conversation(req: EduChatRequest) -> str:
+    convo = "\n".join(f"{'Student' if m.role == 'user' else ASSISTANT}: {m.content[:1500]}"
+                      for m in req.history[-HISTORY_TURNS:])
+    return (f"Conversation so far:\n{convo}\n\n" if convo else "") + f"Student: {req.message}"
+
+
+def _fallback_reply(ctx: Dict[str, Any]) -> str:
+    top = ctx["items"][0] if ctx["items"] else None
+    return (f"I can't reach my language model right now, but here is what the curriculum says in "
+            f"**{top['title']}**:\n\n{top['content'][:700]}" if top else
+            "I can't reach my language model right now and found nothing on that in the curriculum. "
+            "Try again in a moment.")
+
+
+async def chat_stream(db: AsyncSession, req: EduChatRequest) -> AsyncIterator[Dict[str, Any]]:
+    """The chat reply as it's written: {"type": "delta", "text"} events, then one {"type": "done"} event
+    with the sources and up to 3 topics to learn next (curriculum topics of the retrieved passages)."""
+    t0 = time.perf_counter()
+    ctx = await learning_rag_service.retrieve_context(db, _chat_query(req), req.target_role)
+    system = (_chat_persona(req)
+              + "Reply in markdown (**bold**, lists, `code`), with no preamble.\n\n"
+              + f"CURRICULUM CONTEXT:\n{ctx['context']}")
+    reply = ""
+    try:
+        async for piece in learning_rag_service.stream_text(system, _conversation(req), max_tokens=800,
+                                                            temperature=0.4):
+            reply += piece
+            yield {"type": "delta", "text": piece}
+    except LLMUnavailable as e:
+        print(f"[Warning] Edu chat without LLM: {e}")
+    if not reply.strip():
+        reply = _fallback_reply(ctx)
+        yield {"type": "delta", "text": reply}
+    current = (req.current_topic or "").lower()
+    suggested: List[str] = []
+    for item in ctx["items"]:
+        topic = item.get("topic")
+        if topic and topic.lower() != current and topic not in suggested:
+            suggested.append(topic)
+    yield {"type": "done", "reply": reply, "suggested_topics": suggested[:3],
+           "sources": [s.model_dump() for s in ctx["sources"]],
+           "latency_ms": round((time.perf_counter() - t0) * 1000, 1)}
+
+
+async def chat(db: AsyncSession, req: EduChatRequest) -> EduChatResponse:
+    t0 = time.perf_counter()
+    ctx = await learning_rag_service.retrieve_context(db, _chat_query(req), req.target_role)
+    topics = await role_topics(db, req.target_role)
+    system = (
+        _chat_persona(req)
+        + f"Curriculum topics you can teach as full lessons: {', '.join(topics[:40])}.\n"
         "Return JSON: {\"reply\": string (markdown allowed: **bold**, lists, `code`), "
         "\"suggested_topics\": up to 3 topic names copied exactly from that list that would help next "
         "(empty if none fit)}.\n\n"
         f"CURRICULUM CONTEXT:\n{ctx['context']}"
     )
-    convo = "\n".join(f"{'Student' if m.role == 'user' else ASSISTANT}: {m.content[:1500]}" for m in history)
-    user = (f"Conversation so far:\n{convo}\n\n" if convo else "") + f"Student: {req.message}"
     try:
-        data = await learning_rag_service.generate_json(system, user, max_tokens=800, temperature=0.4)
+        data = await learning_rag_service.generate_json(system, _conversation(req), max_tokens=800, temperature=0.4)
         reply = _clean(data.get("reply"))
         suggested = _match_topics(data.get("suggested_topics") or [], topics)
     except LLMUnavailable as e:
         print(f"[Warning] Edu chat without LLM: {e}")
         reply, suggested = "", []
     if not reply:
-        top = ctx["items"][0] if ctx["items"] else None
-        reply = (f"I can't reach my language model right now, but here is what the curriculum says in "
-                 f"**{top['title']}**:\n\n{top['content'][:700]}" if top else
-                 "I can't reach my language model right now and found nothing on that in the curriculum. "
-                 "Try again in a moment.")
+        reply = _fallback_reply(ctx)
     return EduChatResponse(reply=reply, suggested_topics=suggested, sources=ctx["sources"],
                            latency_ms=round((time.perf_counter() - t0) * 1000, 1))
 
 
+def _cache_key(req: LessonRequest):
+    return (req.target_role or "all")[:100], req.topic.strip().lower()[:100], req.level
+
+
 async def lesson(db: AsyncSession, req: LessonRequest) -> LessonResponse:
+    """A lesson for one stage, reused from the cache when this role, topic and stage were taught before
+    (lessons take 25-30 s to write); fresh=True writes and caches a new one."""
+    t0 = time.perf_counter()
+    role, topic, level = _cache_key(req)
+    cached = (await db.execute(select(EduLessonCache).where(
+        EduLessonCache.target_role == role, EduLessonCache.topic == topic, EduLessonCache.level == level)
+    )).scalar_one_or_none()
+    if cached and not req.fresh:
+        return LessonResponse(**{**cached.lesson, "topic": req.topic, "cached": True,
+                                 "latency_ms": round((time.perf_counter() - t0) * 1000, 1)})
+    response = await _write_lesson(db, req)
+    data = response.model_dump(exclude={"latency_ms", "cached"})
+    if cached:
+        cached.lesson, cached.created_at = data, datetime.now(timezone.utc)
+    else:
+        db.add(EduLessonCache(target_role=role, topic=topic, level=level, lesson=data))
+    try:
+        await db.commit()
+    except Exception as e:      # two students asking at once: the other one's lesson is cached
+        await db.rollback()
+        print(f"[Warning] Lesson not cached: {e}")
+    response.latency_ms = round((time.perf_counter() - t0) * 1000, 1)
+    return response
+
+
+async def _write_lesson(db: AsyncSession, req: LessonRequest) -> LessonResponse:
     t0 = time.perf_counter()
     stage = STAGES[req.level]
     ctx = await learning_rag_service.retrieve_context(
@@ -285,3 +365,78 @@ def _count(items: List[str]) -> Dict[str, int]:
     for i in items:
         out[i] = out.get(i, 0) + 1
     return out
+
+
+# ---------------------------------------------------------------- mastery and spaced repetition
+def _iso(t: Optional[datetime]) -> Optional[str]:
+    return t.isoformat() if t else None
+
+
+async def record_mastery(db: AsyncSession, req: MasteryRecordRequest) -> MasteryResponse:
+    """Saves a finished check and schedules each missed question for review in REVIEW_DAYS[0] days."""
+    db.add(EduMastery(student_id=req.student_id, topic=req.topic, level=req.level, mcq_correct=req.mcq_correct,
+                      mcq_total=req.mcq_total, open_score=req.open_score))
+    due = datetime.now(timezone.utc) + timedelta(days=REVIEW_DAYS[0])
+    for q in req.missed_mcqs:
+        db.add(EduReviewItem(student_id=req.student_id, topic=req.topic, level=req.level,
+                             question=q.model_dump(), box=0, due_at=due))
+    await db.commit()
+    return await mastery(db, req.student_id)
+
+
+async def mastery(db: AsyncSession, student_id: str) -> MasteryResponse:
+    """Best result per topic and stage, and how many review questions are due now."""
+    rows = (await db.execute(select(EduMastery).where(EduMastery.student_id == student_id)
+                             .order_by(EduMastery.completed_at.asc()))).scalars().all()
+    best: Dict[tuple, Dict[str, Any]] = {}
+    for r in rows:
+        pct = round(100 * r.mcq_correct / r.mcq_total) if r.mcq_total else (round(r.open_score or 0))
+        e = best.setdefault((r.topic, r.level), {"attempts": 0, "best": 0, "open": None, "last": r.completed_at})
+        e["attempts"] += 1
+        e["best"] = max(e["best"], pct)
+        e["open"] = r.open_score if r.open_score is not None else e["open"]
+        e["last"] = r.completed_at
+    entries = [MasteryEntry(topic=t, level=lvl, attempts=e["attempts"], best_percent=e["best"],
+                            open_score=e["open"], mastered=e["best"] >= MASTERY_PERCENT, last_at=_iso(e["last"]))
+               for (t, lvl), e in sorted(best.items(), key=lambda kv: kv[1]["last"], reverse=True)]
+    due = await db.scalar(select(func.count(EduReviewItem.id)).where(
+        EduReviewItem.student_id == student_id, EduReviewItem.done.is_(False),
+        EduReviewItem.due_at <= datetime.now(timezone.utc)))
+    return MasteryResponse(student_id=student_id, entries=entries, reviews_due=due or 0)
+
+
+async def due_reviews(db: AsyncSession, student_id: str, limit: int = 10) -> List[ReviewItem]:
+    rows = (await db.execute(select(EduReviewItem).where(
+        EduReviewItem.student_id == student_id, EduReviewItem.done.is_(False),
+        EduReviewItem.due_at <= datetime.now(timezone.utc)).order_by(EduReviewItem.due_at.asc()).limit(limit)
+    )).scalars().all()
+    return [ReviewItem(id=str(r.id), topic=r.topic, level=r.level, question=MultipleChoiceQuestion(**r.question),
+                       box=r.box, due_at=_iso(r.due_at)) for r in rows]
+
+
+def next_box(box: int, correct: bool):
+    """Leitner step: right moves the question to the next interval (done after the last), wrong starts over.
+    Returns (box, days until due, done)."""
+    if not correct:
+        return 0, REVIEW_DAYS[0], False
+    box += 1
+    if box >= len(REVIEW_DAYS):
+        return box, None, True
+    return box, REVIEW_DAYS[box], False
+
+
+async def answer_review(db: AsyncSession, review_id: str, correct: bool) -> Optional[ReviewAnswerResponse]:
+    try:
+        item = await db.get(EduReviewItem, uuid.UUID(review_id))
+    except ValueError:
+        return None
+    if not item:
+        return None
+    now = datetime.now(timezone.utc)
+    item.box, days, item.done = next_box(item.box, correct)
+    item.last_reviewed_at = now
+    if days is not None:
+        item.due_at = now + timedelta(days=days)
+    await db.commit()
+    return ReviewAnswerResponse(id=review_id, done=item.done, box=item.box,
+                                next_due_at=None if item.done else _iso(item.due_at))

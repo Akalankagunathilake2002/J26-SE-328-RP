@@ -97,7 +97,8 @@ class RetrievalAblationResponse(BaseModel):
 # Quantitative RAG Triad Benchmarking
 class RAGTriadMetrics(BaseModel):
     strategy_name: str
-    faithfulness: float = Field(..., description="Proportion of claims grounded in retrieved context (0.0 to 1.0)")
+    # None for the no-retrieval baseline: there is no context for its claims to be grounded in
+    faithfulness: Optional[float] = Field(None, description="Proportion of claims grounded in retrieved context (0.0 to 1.0)")
     answer_relevance: float = Field(..., description="Query-Answer alignment score (0.0 to 1.0)")
     context_precision: float = Field(..., description="Proportion of relevant chunks in top ranks (MRR/P@1)")
     context_recall: float = Field(..., description="Proportion of required ground-truth facts retrieved")
@@ -111,8 +112,24 @@ class ComparativeBenchmarkMatrixResponse(BaseModel):
     baseline_direct_llm: RAGTriadMetrics
     naive_rag_dense: RAGTriadMetrics
     advanced_rag_hybrid_rerank: RAGTriadMetrics
-    p_value_statistical_significance: float = 0.0018
+    # Paired permutation test, advanced vs naive RAG on per-query faithfulness (None if not computable)
+    p_value_statistical_significance: Optional[float] = None
     research_conclusion: str
+    # The run these numbers come from (rag_benchmark_runs)
+    run_id: Optional[str] = None
+    run_finished_at: Optional[str] = None
+    compression_saved_percent: Optional[float] = None
+    method_notes: Optional[str] = None
+
+
+class BenchmarkRunStatus(BaseModel):
+    run_id: Optional[str] = None
+    status: str                       # none, running, done, failed
+    items_done: int = 0
+    items_total: int = 0
+    started_at: Optional[str] = None
+    finished_at: Optional[str] = None
+    error: Optional[str] = None
 
 
 # Upstream Integration Contract (Skill-Gap Analysis Team)
@@ -188,6 +205,8 @@ class LessonRequest(BaseModel):
     current_skills: List[str] = Field(default_factory=list)
     topic: str = Field(..., min_length=2, max_length=100)
     level: LessonLevel = "beginner"
+    # Write a new lesson instead of reusing the cached one for this role, topic and stage
+    fresh: bool = False
 
 
 class LessonSection(BaseModel):
@@ -206,6 +225,7 @@ class LessonResponse(BaseModel):
     example: Optional[str] = None
     sources: List[SourceCitation] = []
     latency_ms: float
+    cached: bool = False
 
 
 class QuizRequest(BaseModel):
@@ -255,3 +275,52 @@ class GradeAnswerResponse(BaseModel):
     verdict: Literal["excellent", "good", "partial", "needs_work"]
     feedback: str
     model_answer: str
+
+
+
+# ---------------------------------------------------------------- Skillaro mastery and spaced repetition
+class MasteryRecordRequest(BaseModel):
+    student_id: str
+    topic: str = Field(..., min_length=2, max_length=100)
+    level: LessonLevel
+    mcq_correct: int = Field(..., ge=0)
+    mcq_total: int = Field(..., ge=0)
+    open_score: Optional[float] = Field(None, ge=0, le=100)
+    # Questions answered wrongly: scheduled for review after 1, 3 and 7 days
+    missed_mcqs: List[MultipleChoiceQuestion] = Field(default_factory=list, max_length=10)
+
+
+class MasteryEntry(BaseModel):
+    topic: str
+    level: LessonLevel
+    attempts: int
+    best_percent: int                 # best MCQ score, 0-100
+    open_score: Optional[float] = None
+    mastered: bool                    # best MCQ score at least 60%
+    last_at: str
+
+
+class MasteryResponse(BaseModel):
+    student_id: str
+    entries: List[MasteryEntry]
+    reviews_due: int = 0
+
+
+class ReviewItem(BaseModel):
+    id: str
+    topic: str
+    level: LessonLevel
+    question: MultipleChoiceQuestion
+    box: int
+    due_at: str
+
+
+class ReviewAnswerRequest(BaseModel):
+    correct: bool
+
+
+class ReviewAnswerResponse(BaseModel):
+    id: str
+    done: bool
+    box: int
+    next_due_at: Optional[str] = None
