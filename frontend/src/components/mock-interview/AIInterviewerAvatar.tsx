@@ -32,6 +32,8 @@ interface AIInterviewerAvatarProps {
   onSpeechStart?: () => void;
   topic?: string;
   difficulty?: string;
+  /** Receives the interviewer's <video> elements (for recording the interview) */
+  onPlayers?: (players: (HTMLVideoElement | null)[]) => void;
 }
 
 export default function AIInterviewerAvatar({
@@ -43,6 +45,7 @@ export default function AIInterviewerAvatar({
   onSpeechStart,
   topic = "General Technical",
   difficulty = "Entry Level",
+  onPlayers,
 }: AIInterviewerAvatarProps) {
   const [mode, setMode] = useState<AvatarMode>("connecting");
   const [fallbackReason, setFallbackReason] = useState("");
@@ -71,6 +74,10 @@ export default function AIInterviewerAvatar({
   const currentJobsRef = useRef<string[]>([]);                 // clips of the speech in progress
   const speakTokenRef = useRef(0);
   const video2Ref = useRef<HTMLVideoElement | null>(null);     // second player for gapless swaps
+  useEffect(() => {
+    onPlayers?.([videoRef.current, video2Ref.current]);
+    return () => onPlayers?.([]);
+  }, [onPlayers]);
   const activeIdxRef = useRef(0);
 
   useEffect(() => {

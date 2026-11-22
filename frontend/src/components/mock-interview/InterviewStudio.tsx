@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   Mic,
   MicOff,
@@ -25,6 +25,8 @@ import {
 import AIInterviewerAvatar from "./AIInterviewerAvatar";
 import CandidateWebcam from "./CandidateWebcam";
 import InterviewReport from "./InterviewReport";
+import RecordingPanel from "./RecordingPanel";
+import { InterviewRecorder, type Recording } from "@/lib/interviewRecorder";
 import { useDeliveryAnalysis, type DeliveryMetrics } from "./useDeliveryAnalysis";
 import type { InterviewProfile } from "./InterviewSetup";
 import {
@@ -117,7 +119,51 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
     jobIds: [],
     kind: "question",
   });
+  // ---------------------------------------------------------------- whole-interview recording (opt-in)
+  const recorderRef = useRef<InterviewRecorder | null>(null);
+  const [recState, setRecState] = useState<"off" | "recording" | "finalising" | "done">("off");
+  const [recording, setRecording] = useState<Recording | null>(null);
+  const [recNote, setRecNote] = useState("");
+  const playersRef = useRef<(HTMLVideoElement | null)[]>([]);
+  const onPlayers = useCallback((els: (HTMLVideoElement | null)[]) => {
+    playersRef.current = els;
+  }, []);
+  const captionRef = useRef("");
+  const camRef = useRef<HTMLVideoElement | null>(null);
+  useEffect(() => {
+    camRef.current = videoEl;
+  }, [videoEl]);
+
+  // Recording starts with the interview (Elena's welcome) and stops when the report is shown
+  useEffect(() => {
+    if (!profile.record || !startedAt || recorderRef.current) return;
+    const rec = new InterviewRecorder({
+      interviewer: () => playersRef.current,
+      candidate: () => camRef.current,
+      caption: () => captionRef.current,
+      candidateName: studentName,
+      title: `${targetRole} · ${level} mock interview`,
+    });
+    recorderRef.current = rec;
+    rec
+      .start()
+      .then(({ micCaptured }) => {
+        setRecState("recording");
+        if (!micCaptured) setRecNote("your microphone couldn't be recorded");
+      })
+      .catch((e) => {
+        recorderRef.current = null;
+        setRecNote(`recording couldn't start: ${e instanceof Error ? e.message : e}`);
+      });
+  }, [profile.record, startedAt, studentName, targetRole, level]);
+
+  useEffect(() => {
+    recorderRef.current?.setMicEnabled(micOn);
+  }, [micOn, recState]);
+
+
   const sayAsInterviewer = (text: string, kind: SpeechKind, jobIds: string[] = []) => {
+    captionRef.current = text;
     setSpeech({ text, kind, jobIds });
     setSpeakRequest((n) => n + 1);
   };
@@ -499,6 +545,14 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
     stopLevelMeter();
     analysis.stopCollecting();
     discardPrefetch();
+    const rec = recorderRef.current;
+    if (rec) {
+      setRecState("finalising");
+      rec.stop().then((r) => {
+        setRecording(r);
+        setRecState("done");
+      });
+    }
     try {
       setReport(await ragApi.endInterview(session.session_id));
     } catch (err) {
@@ -515,10 +569,26 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
     discardRecordingRef.current = true;
     const r = mediaRecorderRef.current;
     if (r && r.state !== "inactive") r.stop();
+    // Leaving mid-interview: the whole-interview recording is thrown away, never uploaded
+    if (recorderRef.current?.active) recorderRef.current.discard();
   }, []);
 
   if (report) {
-    return <InterviewReport report={report} role={targetRole} level={level} delivery={deliveryByTurn} onRestart={onExit} studentId={studentId} />;
+    return (
+      <div className="space-y-6">
+        {profile.record && (
+          <RecordingPanel
+            recording={recording}
+            finalising={recState === "finalising"}
+            autoUpload={profile.saveToDrive}
+            fileName={`Skillaro interview - ${targetRole} - ${new Date(startedAt ?? 0).toISOString().slice(0, 16).replace("T", " ").replace(":", "-")}`}
+            description={`Skillaro mock interview: ${targetRole} (${level}). Session ${session?.session_id ?? ""}.`}
+            note={recNote}
+          />
+        )}
+        <InterviewReport report={report} role={targetRole} level={level} delivery={deliveryByTurn} onRestart={onExit} studentId={studentId} />
+      </div>
+    );
   }
 
   const current = questionData ? deliveryByTurn[questionData.turn_id] : undefined;
@@ -541,6 +611,11 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
             <span className="border border-ink bg-lime px-2 py-0.5 text-xs font-bold text-ink">{level}</span>
             {profile.analysisConsent && (
               <span className="border border-ink bg-cyan px-2 py-0.5 text-xs font-bold text-ink">Delivery analysis on</span>
+            )}
+            {recState === "recording" && (
+              <span className="flex items-center gap-1 border border-ink bg-white px-2 py-0.5 text-xs font-bold text-red-600" title="This interview is being recorded in your browser">
+                <span className="size-2 animate-pulse rounded-full bg-red-600" /> REC
+              </span>
             )}
           </div>
           <h2 className="font-display text-2xl uppercase tracking-wide text-ink mt-1">AI Mock Interview Studio</h2>
@@ -606,6 +681,7 @@ export default function InterviewStudio({ studentId, profile, onExit }: Intervie
           {/* Interviewer + candidate */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
             <AIInterviewerAvatar
+              onPlayers={onPlayers}
               currentTextToSpeak={speech.text || questionData.question}
               speakRequest={speakRequest}
               avatarJobIds={speech.jobIds}
