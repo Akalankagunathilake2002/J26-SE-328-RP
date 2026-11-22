@@ -1,10 +1,20 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Send, RefreshCw, Sparkles, GraduationCap, AlertTriangle, Bookmark, CheckCircle2, BookOpen } from "lucide-react";
+import { Send, RefreshCw, Sparkles, GraduationCap, AlertTriangle, Bookmark, CheckCircle2, BookOpen, Repeat, Target } from "lucide-react";
 import SimpleMarkdown from "./SimpleMarkdown";
-import { LessonCard, QuizCard, BloomChip, LEVELS, levelLabel } from "./SkillaroLesson";
-import { ragApi, type EduChatMessage, type EduLesson, type LessonLevel, type LearningTopic, type SourceCitation } from "@/lib/ragApi";
+import { LessonCard, QuizCard, BloomChip, ReviewQuestion, LEVELS, levelLabel } from "./SkillaroLesson";
+import {
+  ragApi,
+  type EduChatMessage,
+  type EduLesson,
+  type EduMastery,
+  type EduMCQ,
+  type EduReviewItem,
+  type LessonLevel,
+  type LearningTopic,
+  type SourceCitation,
+} from "@/lib/ragApi";
 import SearchSelect from "./SearchSelect";
 
 interface PersonalizedLearningViewProps {
@@ -13,10 +23,21 @@ interface PersonalizedLearningViewProps {
   targetRole: string;
   skills: string[];
   learningPriority: string;
+  /** A concept to teach straight away (e.g. "Learn this" from an interview report) */
+  initialLearn?: string;
 }
 
 type ChatItem =
-  | { id: number; kind: "text"; role: "user" | "assistant"; content: string; suggested?: string[]; sources?: SourceCitation[] }
+  | {
+      id: number;
+      kind: "text";
+      role: "user" | "assistant";
+      content: string;
+      suggested?: string[];
+      sources?: SourceCitation[];
+      /** Still being written (streamed) */
+      streaming?: boolean;
+    }
   | { id: number; kind: "lesson"; lesson: EduLesson }
   | { id: number; kind: "quiz"; topic: string; level: LessonLevel; keyPoints: string[] }
   | { id: number; kind: "error"; content: string; retry: () => void };
@@ -33,6 +54,7 @@ export default function PersonalizedLearningView({
   targetRole,
   skills,
   learningPriority,
+  initialLearn,
 }: PersonalizedLearningViewProps) {
   const [topics, setTopics] = useState<LearningTopic[]>([]);
   const [items, setItems] = useState<ChatItem[]>([]);
@@ -40,8 +62,11 @@ export default function PersonalizedLearningView({
   const [busy, setBusy] = useState<"" | "chat" | "lesson">("");
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [activeLevel, setActiveLevel] = useState<LessonLevel>("beginner");
-  // Stages finished per topic, with the MCQ score
+  // Stages finished per topic, with the best MCQ score (saved on the server, so it lasts between visits)
   const [progress, setProgress] = useState<Record<string, Partial<Record<LessonLevel, string>>>>({});
+  const [mastery, setMastery] = useState<EduMastery | null>(null);
+  const [reviews, setReviews] = useState<EduReviewItem[] | null>(null);
+  const [interviewGaps, setInterviewGaps] = useState<string[]>([]);
   const nextId = useRef(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -81,7 +106,33 @@ export default function PersonalizedLearningView({
     return [...counts.keys()].sort((a, b) => score(b) - score(a));
   }, [topics, skills, learningPriority]);
 
-  const push = (item: NewChatItem) => setItems((xs) => [...xs, { ...item, id: nextId.current++ } as ChatItem]);
+  const push = (item: NewChatItem) => {
+    const id = nextId.current++;
+    setItems((xs) => [...xs, { ...item, id } as ChatItem]);
+    return id;
+  };
+  const update = (id: number, patch: Partial<Extract<ChatItem, { kind: "text" }>>) =>
+    setItems((xs) => xs.map((x) => (x.id === id && x.kind === "text" ? { ...x, ...patch } : x)));
+
+  const applyMastery = useCallback((m: EduMastery) => {
+    setMastery(m);
+    const p: Record<string, Partial<Record<LessonLevel, string>>> = {};
+    for (const e of m.entries) p[e.topic] = { ...p[e.topic], [e.level]: `${e.best_percent}%` };
+    setProgress(p);
+  }, []);
+
+  // Saved progress, due reviews and the concepts the student's mock interviews showed were missing
+  useEffect(() => {
+    ragApi.getMastery(studentId).then(applyMastery).catch(() => {});
+    ragApi.getDueReviews(studentId).then(setReviews).catch(() => setReviews(null));
+    ragApi
+      .getInterviewProgress(studentId)
+      .then((p) => {
+        const gaps = [...p.recurring_gaps, ...p.missed_concepts].map((g) => g.concept);
+        setInterviewGaps(gaps.filter((g, i) => gaps.indexOf(g) === i).slice(0, 5));
+      })
+      .catch(() => setInterviewGaps([]));
+  }, [studentId, applyMastery]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -98,19 +149,32 @@ export default function PersonalizedLearningView({
     push({ kind: "text", role: "user", content: message });
     setInput("");
     setBusy("chat");
+    let replyId: number | null = null;
+    let written = "";
     try {
-      const res = await ragApi.eduChat({
-        student_id: studentId,
-        target_role: targetRole,
-        current_skills: skills,
-        learning_priority: learningPriority,
-        student_name: studentName,
-        message,
-        history,
-        current_topic: activeTopic ?? undefined,
-      });
-      push({ kind: "text", role: "assistant", content: res.reply, suggested: res.suggested_topics, sources: res.sources });
+      // The reply appears as Skillaro writes it, instead of after the whole answer is ready
+      const res = await ragApi.eduChatStream(
+        {
+          student_id: studentId,
+          target_role: targetRole,
+          current_skills: skills,
+          learning_priority: learningPriority,
+          student_name: studentName,
+          message,
+          history,
+          current_topic: activeTopic ?? undefined,
+        },
+        (piece) => {
+          written += piece;
+          if (replyId == null) replyId = push({ kind: "text", role: "assistant", content: written, streaming: true });
+          else update(replyId, { content: written });
+        }
+      );
+      const final = { content: res.reply, suggested: res.suggested_topics, sources: res.sources, streaming: false };
+      if (replyId == null) push({ kind: "text", role: "assistant", ...final });
+      else update(replyId, final);
     } catch (e) {
+      if (replyId != null) setItems((xs) => xs.filter((x) => x.id !== replyId));
       push({
         kind: "error",
         content: `${e instanceof Error ? e.message : "Skillaro didn't respond."} Check that the learning service and the local LLM are running.`,
@@ -122,30 +186,65 @@ export default function PersonalizedLearningView({
   };
 
   // ---------------------------------------------------------------- lessons
-  const teach = async (topic: string, level: LessonLevel = "beginner") => {
+  const teach = async (topic: string, level: LessonLevel = "beginner", fresh = false) => {
     if (busy) return;
+    topic = topic.trim().slice(0, 100);
     setActiveTopic(topic);
     setActiveLevel(level);
-    push({ kind: "text", role: "user", content: `Teach me ${topic} (${levelLabel(level).toLowerCase()})` });
+    push({
+      kind: "text",
+      role: "user",
+      content: fresh ? `Explain ${topic} again, differently (${levelLabel(level).toLowerCase()})` : `Teach me ${topic} (${levelLabel(level).toLowerCase()})`,
+    });
     setBusy("lesson");
     try {
-      const lesson = await ragApi.eduLesson({ student_id: studentId, target_role: targetRole, current_skills: skills, topic, level });
+      const lesson = await ragApi.eduLesson({ student_id: studentId, target_role: targetRole, current_skills: skills, topic, level, fresh });
       push({ kind: "lesson", lesson });
       push({ kind: "quiz", topic, level, keyPoints: lesson.key_points });
     } catch (e) {
       push({
         kind: "error",
         content: `${e instanceof Error ? e.message : "Skillaro couldn't prepare the lesson."}`,
-        retry: () => teach(topic, level),
+        retry: () => teach(topic, level, fresh),
       });
     } finally {
       setBusy("");
     }
   };
 
-  const markFinished = useCallback((topic: string, level: LessonLevel, correct: number, total: number) => {
-    setProgress((p) => ({ ...p, [topic]: { ...p[topic], [level]: total ? `${correct}/${total}` : "done" } }));
-  }, []);
+  const markFinished = useCallback(
+    (topic: string, level: LessonLevel, correct: number, total: number, missed: EduMCQ[], openScore: number | null) => {
+      setProgress((p) => ({ ...p, [topic]: { ...p[topic], [level]: total ? `${correct}/${total}` : "done" } }));
+      ragApi
+        .recordMastery({
+          student_id: studentId,
+          topic,
+          level,
+          mcq_correct: correct,
+          mcq_total: total,
+          open_score: openScore,
+          missed_mcqs: missed.slice(0, 10),
+        })
+        .then(applyMastery)
+        .catch(() => {});        // the local tick stays; progress just isn't saved this time
+    },
+    [studentId, applyMastery]
+  );
+
+  const answerReview = (item: EduReviewItem, correct: boolean) => {
+    ragApi.answerReview(item.id, correct).catch(() => {});
+    // Leave the answered card visible briefly so the explanation can be read
+    setTimeout(() => setReviews((rs) => rs?.filter((r) => r.id !== item.id) ?? null), 2500);
+  };
+
+  // "Learn this" from an interview report: teach that concept once, when the page opens
+  const learnedRef = useRef(false);
+  useEffect(() => {
+    if (!initialLearn || learnedRef.current) return;
+    learnedRef.current = true;
+    teach(initialLearn);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialLearn]);
 
   const review = (topic: string, level: LessonLevel) => {
     const idx = items.findLastIndex((x) => x.kind === "lesson" && x.lesson.topic === topic && x.lesson.level === level);
@@ -282,6 +381,7 @@ export default function PersonalizedLearningView({
                     ) : (
                       <div className="space-y-3">
                         <SimpleMarkdown text={item.content} className="leading-[1.7]" />
+                        {item.streaming && <span className="inline-block h-4 w-2 animate-pulse bg-ink/60" aria-hidden="true" />}
                         {item.suggested && item.suggested.length > 0 && (
                           <div className="space-y-1.5">
                             <p className="text-[11px] font-bold uppercase tracking-wider text-muted">Learn next</p>
@@ -292,7 +392,9 @@ export default function PersonalizedLearningView({
                       </div>
                     )
                   )}
-                {item.kind === "lesson" && <LessonCard lesson={item.lesson} />}
+                {item.kind === "lesson" && (
+                  <LessonCard lesson={item.lesson} onRewrite={() => teach(item.lesson.topic, item.lesson.level, true)} />
+                )}
                 {item.kind === "quiz" && (
                   <QuizCard
                     studentId={studentId}
@@ -300,7 +402,7 @@ export default function PersonalizedLearningView({
                     topic={item.topic}
                     level={item.level}
                     keyPoints={item.keyPoints}
-                    onFinished={(c, t) => markFinished(item.topic, item.level, c, t)}
+                    onFinished={(c, t, missed, open) => markFinished(item.topic, item.level, c, t, missed, open)}
                     onContinue={(lvl) => teach(item.topic, lvl)}
                     onReview={() => review(item.topic, item.level)}
                   />
@@ -316,7 +418,7 @@ export default function PersonalizedLearningView({
               </div>
             ))}
 
-            {busy &&
+            {busy && !(busy === "chat" && items.some((x) => x.kind === "text" && x.streaming)) &&
               bubble(
                 "assistant",
                 <p className="flex items-center gap-2 text-muted">
@@ -401,6 +503,87 @@ export default function PersonalizedLearningView({
               <p className="text-xs text-muted">Pick a topic to start. Each topic has three stages, each covering two levels of Bloom&apos;s taxonomy.</p>
             )}
           </div>
+
+          {reviews && reviews.length > 0 && (
+            <div className="space-y-3 border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
+              <h3 className="flex items-center gap-2 font-condensed text-base font-bold uppercase tracking-wider text-ink">
+                <Repeat className="size-4" /> Review ({reviews.length} due)
+              </h3>
+              <p className="text-xs text-muted">
+                Questions you missed before, asked again after 1, 3 and 7 days. Right answers move on; a wrong one starts over.
+              </p>
+              <ReviewQuestion
+                key={reviews[0].id}
+                topic={reviews[0].topic}
+                question={reviews[0].question}
+                onAnswered={(correct) => answerReview(reviews[0], correct)}
+              />
+            </div>
+          )}
+
+          {interviewGaps.length > 0 && (
+            <div className="space-y-2 border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
+              <h3 className="flex items-center gap-2 font-condensed text-base font-bold uppercase tracking-wider text-ink">
+                <Target className="size-4" /> From your mock interviews
+              </h3>
+              <p className="text-xs text-muted">Concepts your answers missed:</p>
+              <div className="flex flex-col gap-1.5">
+                {interviewGaps.map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => teach(g)}
+                    disabled={!!busy}
+                    className="border border-ink bg-sand px-2.5 py-1.5 text-left text-xs font-bold text-ink hover:bg-butter disabled:opacity-50"
+                  >
+                    Learn: {g}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {mastery && mastery.entries.length > 0 && (
+            <div className="space-y-2 border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">
+              <h3 className="flex items-center gap-2 font-condensed text-base font-bold uppercase tracking-wider text-ink">
+                <GraduationCap className="size-4" /> Skill tree
+              </h3>
+              <ul className="space-y-2">
+                {[...new Set(mastery.entries.map((e) => e.topic))].slice(0, 8).map((topic) => (
+                  <li key={topic} className="space-y-1">
+                    <button
+                      onClick={() => {
+                        const done = LEVELS.filter((l) => mastery.entries.some((e) => e.topic === topic && e.level === l.level && e.mastered));
+                        const nextStage = LEVELS.find((l) => !done.includes(l)) ?? LEVELS[LEVELS.length - 1];
+                        teach(topic, nextStage.level);
+                      }}
+                      disabled={!!busy}
+                      className="text-left text-xs font-bold text-ink hover:underline disabled:opacity-50"
+                    >
+                      {topic}
+                    </button>
+                    <div className="flex gap-1">
+                      {LEVELS.map((l) => {
+                        const e = mastery.entries.find((x) => x.topic === topic && x.level === l.level);
+                        return (
+                          <span
+                            key={l.level}
+                            title={e ? `${l.label}: best ${e.best_percent}% in ${e.attempts} attempt(s)` : `${l.label}: not started`}
+                            className={`flex-1 border border-ink px-1 py-0.5 text-center text-[10px] font-bold ${
+                              e?.mastered ? "bg-lime" : e ? "bg-butter" : "bg-cream text-muted"
+                            }`}
+                          >
+                            {l.label.slice(0, 3)}
+                            {e ? ` ${e.best_percent}%` : ""}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-[10px] text-muted">Green: passed (60%+). Yellow: tried, worth another go.</p>
+            </div>
+          )}
 
           {suggestedTopics.length > SUGGESTIONS && (
             <div className="space-y-2 border-2 border-ink bg-white p-4 shadow-[4px_4px_0_var(--color-ink)]">

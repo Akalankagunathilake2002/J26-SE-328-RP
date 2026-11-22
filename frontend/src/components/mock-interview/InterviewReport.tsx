@@ -1,8 +1,9 @@
 "use client";
 
-import React from "react";
-import { Award, RotateCcw, CheckCircle2, AlertCircle, Eye, Smile, Gauge, MessageSquare } from "lucide-react";
-import type { DeliveryTelemetry, InterviewReport as Report } from "@/lib/ragApi";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Award, RotateCcw, CheckCircle2, AlertCircle, Eye, Smile, Gauge, MessageSquare, TrendingUp, GraduationCap } from "lucide-react";
+import { ragApi, type DeliveryTelemetry, type InterviewProgress, type InterviewReport as Report } from "@/lib/ragApi";
 
 interface InterviewReportProps {
   report: Report;
@@ -11,6 +12,77 @@ interface InterviewReportProps {
   /** Delivery cues measured in the browser for each answered turn */
   delivery: Record<string, DeliveryTelemetry>;
   onRestart: () => void;
+  /** Loads this student's earlier interviews for the progress section */
+  studentId?: string;
+}
+
+/** Opens Skillaro with a lesson on a concept the interview showed was missing */
+const learnHref = (concept: string, role: string) =>
+  `/edu-assistant?learn=${encodeURIComponent(concept)}&role=${encodeURIComponent(role)}`;
+
+function LearnLink({ concept, role }: { concept: string; role: string }) {
+  return (
+    <Link
+      href={learnHref(concept, role)}
+      className="ml-1.5 shrink-0 border border-ink bg-cyan/40 px-1.5 text-[10px] font-bold uppercase text-ink hover:bg-cyan"
+    >
+      Learn this
+    </Link>
+  );
+}
+
+function ProgressSection({ progress, role }: { progress: InterviewProgress; role: string }) {
+  const history = progress.interviews.slice(-8);
+  return (
+    <section className="border-2 border-ink bg-white p-5 shadow-[5px_5px_0_var(--color-ink)] space-y-4">
+      <h3 className="font-condensed text-lg font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+        <TrendingUp className="size-5" /> Your progress across interviews
+      </h3>
+      <div className="flex items-end gap-2 h-28" aria-label="Overall score per interview">
+        {history.map((h) => (
+          <div key={h.session_id} className="flex flex-1 flex-col items-center gap-1 min-w-0">
+            <span className="text-[10px] font-bold text-ink">{h.overall_score.toFixed(1)}</span>
+            <div
+              className="w-full max-w-10 border-2 border-ink bg-lime"
+              style={{ height: `${Math.max(6, ((h.overall_score - 1) / 4) * 80)}px` }}
+              title={`${h.target_role} · ${h.experience_level}`}
+            />
+            <span className="text-[10px] text-muted truncate w-full text-center">
+              {h.date ? new Date(h.date).toLocaleDateString(undefined, { month: "short", day: "numeric" }) : ""}
+            </span>
+          </div>
+        ))}
+      </div>
+      {progress.trend != null && (
+        <p className="text-sm text-ink">
+          Overall score {progress.trend >= 0 ? "up" : "down"} <b>{Math.abs(progress.trend).toFixed(2)}</b> points (out of 5)
+          since your first interview.
+        </p>
+      )}
+      {progress.recurring_gaps.length > 0 && (
+        <div className="space-y-1.5">
+          <p className="text-xs font-bold uppercase text-muted">Missed in more than one interview</p>
+          <ul className="space-y-1 text-xs text-ink">
+            {progress.recurring_gaps.map((g) => (
+              <li key={g.concept} className="flex items-start gap-1.5">
+                <AlertCircle className="mt-0.5 size-3.5 shrink-0 text-pink" />
+                <span className="flex-1">
+                  {g.concept} <span className="text-muted">({g.interviews} interviews)</span>
+                </span>
+                <LearnLink concept={g.concept} role={role} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {progress.weakest_topics.length > 0 && (
+        <p className="text-xs text-muted">
+          Weakest topics so far:{" "}
+          {progress.weakest_topics.slice(0, 3).map((t) => `${t.topic} (${t.average.toFixed(1)})`).join(", ")}
+        </p>
+      )}
+    </section>
+  );
 }
 
 const pct = (x?: number | null) => (x == null ? "–" : `${Math.round(x * 100)}%`);
@@ -44,8 +116,13 @@ function DeliveryRow({ d }: { d?: DeliveryTelemetry }) {
   return <p className="text-[11px] font-semibold text-muted">Delivery: {items.join(" · ")}</p>;
 }
 
-export default function InterviewReport({ report, role, level, delivery, onRestart }: InterviewReportProps) {
+export default function InterviewReport({ report, role, level, delivery, onRestart, studentId }: InterviewReportProps) {
   const answered = report.turns.filter((t) => t.evaluated);
+  const [progress, setProgress] = useState<InterviewProgress | null>(null);
+  useEffect(() => {
+    if (!studentId) return;
+    ragApi.getInterviewProgress(studentId).then(setProgress).catch(() => setProgress(null));
+  }, [studentId, report.session_id]);
   const all = Object.values(delivery);
   const avg = {
     eye: mean(all.map((d) => d.eye_contact_ratio)),
@@ -118,12 +195,14 @@ export default function InterviewReport({ report, role, level, delivery, onResta
         </div>
       )}
 
+      {progress && progress.interviews.length >= 2 && <ProgressSection progress={progress} role={role} />}
+
       <section className="space-y-4">
         {report.turns.map((t, i) => (
           <div key={t.turn_id} className="border-2 border-ink bg-white p-5 shadow-[4px_4px_0_var(--color-ink)] space-y-3">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="border border-ink bg-sun px-2.5 py-1 text-xs font-bold text-ink">
-                Question {i + 1} · {t.topic}
+                {t.follow_up ? "Follow-up" : "Question"} {i + 1} · {t.topic}
               </span>
               {t.evaluated ? (
                 <span className="text-xs font-bold text-ink">
@@ -148,7 +227,11 @@ export default function InterviewReport({ report, role, level, delivery, onResta
                 {t.missing_concepts.length > 0 && (
                   <ul className="space-y-1 text-xs text-ink">
                     {t.missing_concepts.slice(0, 3).map((s) => (
-                      <li key={s} className="flex gap-1.5"><AlertCircle className="mt-0.5 size-3.5 shrink-0 text-pink" />{s}</li>
+                      <li key={s} className="flex items-start gap-1.5">
+                        <AlertCircle className="mt-0.5 size-3.5 shrink-0 text-pink" />
+                        <span className="flex-1">{s}</span>
+                        <LearnLink concept={s} role={role} />
+                      </li>
                     ))}
                   </ul>
                 )}

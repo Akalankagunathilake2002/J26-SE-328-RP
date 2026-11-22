@@ -90,7 +90,8 @@ export interface RetrievalAblationData {
 
 export interface RAGTriadMetrics {
   strategy_name: string;
-  faithfulness: number;
+  /** null for the no-retrieval baseline (no context to be faithful to) */
+  faithfulness: number | null;
   answer_relevance: number;
   context_precision: number;
   context_recall: number;
@@ -98,14 +99,51 @@ export interface RAGTriadMetrics {
   prompt_tokens: number;
 }
 
+/** A measured run of the golden-dataset benchmark (rag_evaluator.py in the learning service) */
 export interface ComparativeBenchmarkMatrixData {
   dataset_name: string;
   sample_size: number;
   baseline_direct_llm: RAGTriadMetrics;
   naive_rag_dense: RAGTriadMetrics;
   advanced_rag_hybrid_rerank: RAGTriadMetrics;
-  p_value_statistical_significance: number;
+  /** Paired permutation test on faithfulness, advanced vs naive; null if too few judged answers */
+  p_value_statistical_significance: number | null;
   research_conclusion: string;
+  run_id?: string | null;
+  run_finished_at?: string | null;
+  compression_saved_percent?: number | null;
+  method_notes?: string | null;
+}
+
+export interface BenchmarkRunStatus {
+  run_id?: string | null;
+  status: "none" | "running" | "done" | "failed";
+  items_done: number;
+  items_total: number;
+  started_at?: string | null;
+  finished_at?: string | null;
+  error?: string | null;
+}
+
+/** One condition's measurements for one golden question */
+export interface GoldenConditionResult {
+  faithfulness: number | null;
+  answer_relevance: number | null;
+  context_precision: number | null;
+  context_recall: number | null;
+  latency_ms: number;
+  tokens: number;
+  answer: string;
+  retrieved_titles?: string[];
+  compression_saved_percent?: number | null;
+}
+
+export interface GoldenItemEvaluation {
+  id: string;
+  query: string;
+  baseline: GoldenConditionResult;
+  naive_rag: GoldenConditionResult;
+  advanced_rag: GoldenConditionResult;
 }
 
 export interface GoldenDatasetItem {
@@ -142,6 +180,8 @@ export interface InterviewQuestionResponse {
   context_or_reason?: string;
   /** Local-avatar sentence clips already rendering for this question, in playback order */
   avatar_job_ids?: string[];
+  /** Probes a concept the previous answer missed */
+  follow_up?: boolean;
 }
 
 export interface EvaluationResponse {
@@ -274,6 +314,7 @@ export interface InterviewReport {
     turn_id: string;
     question: string;
     topic: string;
+    follow_up?: boolean;
     transcript: string | null;
     evaluated: boolean;
     technical_accuracy: number | null;
@@ -286,12 +327,43 @@ export interface InterviewReport {
   }[];
 }
 
+/** Scores across a student's interviews and the concepts they keep missing */
+export interface InterviewProgress {
+  student_id: string;
+  interviews: {
+    session_id: string;
+    date: string | null;
+    target_role: string;
+    experience_level: string;
+    answered: number;
+    technical_accuracy: number;
+    overall_score: number;
+  }[];
+  /** Overall score change from the first to the latest interview (1-5 scale) */
+  trend: number | null;
+  /** Concepts missed in two or more interviews */
+  recurring_gaps: { concept: string; interviews: number }[];
+  missed_concepts: { concept: string; interviews: number }[];
+  weakest_topics: { topic: string; average: number; answers: number }[];
+}
+
 // ---------------------------------------------------------------- Skillaro Edu Assistant
 export type LessonLevel = "beginner" | "intermediate" | "advanced";
 
 export interface EduChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+export interface EduChatPayload {
+  student_id: string;
+  target_role: string;
+  current_skills: string[];
+  learning_priority?: string;
+  student_name?: string;
+  message: string;
+  history: EduChatMessage[];
+  current_topic?: string;
 }
 
 export interface EduChatResponse {
@@ -314,6 +386,8 @@ export interface EduLesson {
   example?: string | null;
   sources: SourceCitation[];
   latency_ms: number;
+  /** Served from the lesson cache */
+  cached?: boolean;
 }
 
 export interface EduMCQ {
@@ -337,6 +411,37 @@ export interface EduQuiz {
   open_questions: EduOpenQuestion[];
   latency_ms: number;
 }
+
+export interface EduMasteryEntry {
+  topic: string;
+  level: LessonLevel;
+  attempts: number;
+  best_percent: number;
+  open_score: number | null;
+  mastered: boolean;
+  last_at: string | null;
+}
+
+export interface EduMastery {
+  student_id: string;
+  entries: EduMasteryEntry[];
+  reviews_due: number;
+}
+
+/** A missed quiz question scheduled for spaced review (1, 3, then 7 days) */
+export interface EduReviewItem {
+  id: string;
+  topic: string;
+  level: LessonLevel;
+  question: EduMCQ;
+  box: number;
+  due_at: string;
+}
+
+export type EduChatStreamEvent =
+  | { type: "delta"; text: string }
+  | ({ type: "done" } & EduChatResponse)
+  | { type: "error"; detail: string };
 
 export interface EduGrade {
   score: number;
@@ -371,17 +476,49 @@ export const apiUrl = (path: string) => (path.startsWith("http") ? path : `${API
 
 export const ragApi = {
   /** One turn of the Skillaro chat */
-  async eduChat(payload: {
-    student_id: string;
-    target_role: string;
-    current_skills: string[];
-    learning_priority?: string;
-    student_name?: string;
-    message: string;
-    history: EduChatMessage[];
-    current_topic?: string;
-  }): Promise<EduChatResponse> {
+  async eduChat(payload: EduChatPayload): Promise<EduChatResponse> {
     return postJson("/api/v1/learning/edu/chat", payload, "Skillaro chat error");
+  },
+
+  /** The chat reply as it's written: calls onDelta with each piece, resolves with the final reply */
+  async eduChatStream(
+    payload: EduChatPayload,
+    onDelta: (text: string) => void,
+    signal?: AbortSignal
+  ): Promise<EduChatResponse> {
+    const res = await fetch(`${API_BASE}/api/v1/learning/edu/chat/stream`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "text/event-stream" },
+      body: JSON.stringify(payload),
+      signal,
+    });
+    if (!res.ok || !res.body) throw await apiError(res, "Skillaro chat error");
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    let final: EduChatResponse | null = null;
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let cut: number;
+      while ((cut = buffer.indexOf("\n\n")) !== -1) {
+        const block = buffer.slice(0, cut);
+        buffer = buffer.slice(cut + 2);
+        const data = block
+          .split("\n")
+          .filter((l) => l.startsWith("data:"))
+          .map((l) => l.slice(5).trim())
+          .join("");
+        if (!data) continue;
+        const event = JSON.parse(data) as EduChatStreamEvent;
+        if (event.type === "delta") onDelta(event.text);
+        else if (event.type === "error") throw new Error(event.detail);
+        else if (event.type === "done") final = event;
+      }
+    }
+    if (!final) throw new Error("Skillaro's reply was cut off. Please try again.");
+    return final;
   },
 
   async eduLesson(payload: {
@@ -390,6 +527,7 @@ export const ragApi = {
     current_skills: string[];
     topic: string;
     level: LessonLevel;
+    fresh?: boolean;
   }): Promise<EduLesson> {
     return postJson("/api/v1/learning/edu/lesson", payload, "Skillaro lesson error");
   },
@@ -415,6 +553,35 @@ export const ragApi = {
     answer: string;
   }): Promise<EduGrade> {
     return postJson("/api/v1/learning/edu/grade", payload, "Skillaro marking error");
+  },
+
+  /** Saves a finished quiz; missed MCQs are scheduled for spaced review */
+  async recordMastery(payload: {
+    student_id: string;
+    topic: string;
+    level: LessonLevel;
+    mcq_correct: number;
+    mcq_total: number;
+    open_score?: number | null;
+    missed_mcqs: EduMCQ[];
+  }): Promise<EduMastery> {
+    return postJson("/api/v1/learning/edu/mastery", payload, "Skillaro progress error");
+  },
+
+  async getMastery(studentId: string): Promise<EduMastery> {
+    const res = await fetch(`${API_BASE}/api/v1/learning/edu/mastery/${encodeURIComponent(studentId)}`);
+    if (!res.ok) throw await apiError(res, "Skillaro progress error");
+    return res.json();
+  },
+
+  async getDueReviews(studentId: string): Promise<EduReviewItem[]> {
+    const res = await fetch(`${API_BASE}/api/v1/learning/edu/reviews/${encodeURIComponent(studentId)}`);
+    if (!res.ok) throw await apiError(res, "Skillaro review error");
+    return res.json();
+  },
+
+  async answerReview(reviewId: string, correct: boolean): Promise<{ id: string; done: boolean; box: number; next_due_at: string | null }> {
+    return postJson(`/api/v1/learning/edu/reviews/${encodeURIComponent(reviewId)}/answer`, { correct }, "Skillaro review error");
   },
 
   async askLearning(payload: LearningQueryPayload): Promise<LearningResponse> {
@@ -461,11 +628,22 @@ export const ragApi = {
     return res.json();
   },
 
-  async fetchBenchmarkMatrix(): Promise<ComparativeBenchmarkMatrixData> {
+  /** The latest measured benchmark run, or null if it hasn't been run yet */
+  async fetchBenchmarkMatrix(): Promise<ComparativeBenchmarkMatrixData | null> {
     const res = await fetch(`${API_BASE}/api/v1/research/benchmark-matrix`);
-    if (!res.ok) {
-      throw new Error(`Benchmark Matrix API error: ${res.statusText}`);
-    }
+    if (!res.ok) throw await apiError(res, "Benchmark matrix error");
+    return res.json();
+  },
+
+  async startBenchmarkRun(): Promise<BenchmarkRunStatus> {
+    const res = await fetch(`${API_BASE}/api/v1/research/benchmark-matrix/run`, { method: "POST" });
+    if (!res.ok) throw await apiError(res, "Benchmark run error");
+    return res.json();
+  },
+
+  async getBenchmarkStatus(): Promise<BenchmarkRunStatus> {
+    const res = await fetch(`${API_BASE}/api/v1/research/benchmark-matrix/status`);
+    if (!res.ok) throw await apiError(res, "Benchmark status error");
     return res.json();
   },
 
@@ -477,19 +655,19 @@ export const ragApi = {
     return res.json();
   },
 
-  async evaluateGoldenQuery(itemId: string): Promise<any> {
+  async evaluateGoldenQuery(itemId: string): Promise<GoldenItemEvaluation> {
     const res = await fetch(`${API_BASE}/api/v1/research/evaluate-query`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ item_id: itemId }),
     });
-    if (!res.ok) {
-      throw new Error(`Evaluate query error: ${res.statusText}`);
-    }
+    if (!res.ok) throw await apiError(res, "Evaluate query error");
     return res.json();
   },
 
-  async submitUpstreamProfile(payload: UpstreamProfilePayload): Promise<any> {
+  async submitUpstreamProfile(
+    payload: UpstreamProfilePayload
+  ): Promise<{ message?: string; recommended_learning_modules?: string[]; [key: string]: unknown }> {
     const res = await fetch(`${API_BASE}/api/v1/upstream/student-profile`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -626,6 +804,12 @@ export const ragApi = {
     return res.json();
   },
 
+  async getInterviewProgress(studentId: string): Promise<InterviewProgress> {
+    const res = await fetch(`${API_BASE}/api/v1/interview/progress/${encodeURIComponent(studentId)}`);
+    if (!res.ok) throw await apiError(res, "Interview progress error");
+    return res.json();
+  },
+
   async getAvatarConfig(): Promise<AvatarConfig> {
     const res = await fetch(`${API_BASE}/api/v1/interview/avatar/config`);
     if (!res.ok) {
@@ -656,8 +840,10 @@ export const ragApi = {
     });
   },
 
-  async getAvatarJob(jobId: string): Promise<AvatarJob> {
-    const res = await fetch(`${API_BASE}/api/v1/interview/avatar/jobs/${encodeURIComponent(jobId)}`);
+  /** A clip's status; with waitSeconds the server holds the request until it is done or failed */
+  async getAvatarJob(jobId: string, waitSeconds = 0): Promise<AvatarJob> {
+    const wait = waitSeconds > 0 ? `?wait=${waitSeconds}` : "";
+    const res = await fetch(`${API_BASE}/api/v1/interview/avatar/jobs/${encodeURIComponent(jobId)}${wait}`);
     if (!res.ok) {
       throw await apiError(res, "Avatar job error");
     }
