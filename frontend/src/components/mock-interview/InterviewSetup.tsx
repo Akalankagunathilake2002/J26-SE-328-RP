@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { FileUp, Loader2, Play, X, Plus, CheckCircle2, AlertCircle, Camera, Sparkles } from "lucide-react";
+import { FileUp, Loader2, Play, X, Plus, CheckCircle2, AlertCircle, Camera, Sparkles, CircleDot } from "lucide-react";
 import { ragApi, type CVProfile, type RoleInfo } from "@/lib/ragApi";
+import { connectDrive, driveAvailable, preloadDrive } from "@/lib/googleDrive";
+import { recordingSupported } from "@/lib/interviewRecorder";
 import SearchSelect from "./SearchSelect";
 
 const LEVELS = ["Entry Level", "Mid Level", "Senior Level"];
@@ -17,6 +19,10 @@ export interface InterviewProfile {
   summary: string;
   analysisConsent: boolean;
   durationMinutes: number;
+  /** Record the whole interview (video of both sides) in the browser */
+  record: boolean;
+  /** Upload the recording to the candidate's Google Drive at the end (access granted at Start) */
+  saveToDrive: boolean;
 }
 
 interface InterviewSetupProps {
@@ -39,6 +45,16 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
   const [level, setLevel] = useState("Entry Level");
   const [duration, setDuration] = useState(25);
   const [consent, setConsent] = useState(false);
+  const [record, setRecord] = useState(false);
+  const [saveToDrive, setSaveToDrive] = useState(true);
+  const [starting, setStarting] = useState(false);
+  const [driveError, setDriveError] = useState("");
+  const [canRecord, setCanRecord] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCanRecord(recordingSupported());          // browser-only check, after hydration
+    preloadDrive();                              // so Google's window opens straight from the Start click
+  }, []);
   const [dragOver, setDragOver] = useState(false);
   const fileInput = useRef<HTMLInputElement | null>(null);
 
@@ -242,7 +258,7 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
 
       {/* Step 3: consent + start */}
       <section className="border-2 border-ink bg-white p-5 sm:p-6 shadow-[5px_5px_0_var(--color-ink)] space-y-4">
-        <h3 className="font-condensed text-lg font-bold uppercase tracking-wider text-ink">3 · Delivery feedback (optional)</h3>
+        <h3 className="font-condensed text-lg font-bold uppercase tracking-wider text-ink">3 · Delivery feedback and recording (optional)</h3>
         <label className="flex cursor-pointer items-start gap-3">
           <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} className="mt-1 size-4 accent-brand-blue" />
           <span className="text-sm text-ink">
@@ -256,9 +272,55 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
           </span>
         </label>
 
+        {canRecord && (
+          <div className="space-y-2 border-t-2 border-ink/15 pt-4">
+            <label className="flex cursor-pointer items-start gap-3">
+              <input type="checkbox" checked={record} onChange={(e) => setRecord(e.target.checked)} className="mt-1 size-4 accent-brand-blue" />
+              <span className="text-sm text-ink">
+                <span className="flex items-center gap-1.5 font-bold"><CircleDot className="size-4 text-pink" /> Record this interview</span>
+                <span className="mt-1 block text-xs text-muted">
+                  Records you and Elena (camera, microphone and her questions as captions) so you can watch it back. The
+                  recording is made in this browser and goes only to your own Google Drive or your computer: Skillaro&apos;s
+                  servers never receive it. A red REC badge shows while it records.
+                </span>
+              </span>
+            </label>
+            {record && driveAvailable() && (
+              <label className="ml-7 flex cursor-pointer items-start gap-2 text-sm text-ink">
+                <input type="checkbox" checked={saveToDrive} onChange={(e) => setSaveToDrive(e.target.checked)} className="mt-1 size-4 accent-brand-blue" />
+                <span>
+                  Save it to my Google Drive (folder &ldquo;Skillaro Interviews&rdquo;)
+                  <span className="block text-xs text-muted">
+                    Google asks once for access. Skillaro can only see the files it creates, not the rest of your Drive.
+                  </span>
+                </span>
+              </label>
+            )}
+            {driveError && (
+              <p className="ml-7 flex items-center gap-1.5 text-xs font-bold text-ink">
+                <AlertCircle className="size-3.5" /> {driveError} Try again, or untick Google Drive to download the recording instead.
+              </p>
+            )}
+          </div>
+        )}
+
         <button
-          disabled={!ready}
-          onClick={() =>
+          disabled={!ready || starting}
+          onClick={async () => {
+            const drive = canRecord && record && saveToDrive && driveAvailable();
+            if (drive) {
+              // Google's consent window has to open from this click
+              setStarting(true);
+              setDriveError("");
+              try {
+                await connectDrive();
+              } catch (e) {
+                setDriveError(e instanceof Error ? e.message : "Google Drive access wasn't granted.");
+                setStarting(false);
+                return;
+              }
+              setStarting(false);
+            }
             onStart({
               name: candidateName,
               role,
@@ -267,11 +329,13 @@ export default function InterviewSetup({ candidateName, onStart }: InterviewSetu
               summary: profile?.summary || "",
               analysisConsent: consent,
               durationMinutes: duration,
-            })
-          }
+              record: canRecord && record,
+              saveToDrive: drive,
+            });
+          }}
           className="hard-shadow flex w-full items-center justify-center gap-2 bg-lime py-3.5 font-condensed text-base font-bold uppercase tracking-wider text-ink transition-transform hover:-translate-y-0.5 disabled:opacity-50"
         >
-          {analysing ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
+          {analysing || starting ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
           Start interview{role ? ` · ${role}` : ""}
         </button>
         {!profile && !skipCv && (
