@@ -97,6 +97,7 @@ services:
       LLM_PROVIDER: ${LEARNING_LLM_PROVIDER:-local}
       LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
       LOCAL_LLM_URL: ${LOCAL_LLM_URL:-http://host.docker.internal:8082}
+      MODEL_HOST_KEY: ${MODEL_HOST_KEY:-}             # when the LLM runs elsewhere (scripts/model-host)
       LOCAL_LLM_TIMEOUT: 110                  # under the gateway's 120 s for /api/v1/learning/
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
@@ -125,6 +126,7 @@ services:
       LLM_PROVIDER: ${INTERVIEW_LLM_PROVIDER:-local}
       LLM_MODEL: ${LLM_MODEL:-gemini-2.5-flash}
       LOCAL_LLM_URL: ${LOCAL_LLM_URL:-http://host.docker.internal:8082}
+      MODEL_HOST_KEY: ${MODEL_HOST_KEY:-}             # when the LLM runs elsewhere (scripts/model-host)
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
       EMBEDDING_PROVIDER: ${INTERVIEW_EMBEDDING_PROVIDER:-local}

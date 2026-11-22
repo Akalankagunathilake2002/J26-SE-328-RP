@@ -7,6 +7,21 @@ from app.core.config import settings
 
 SERVICE_ROOT = Path(__file__).resolve().parents[2]
 
+# Texts per ONNX call. Batches are padded to their longest text, and attention memory grows with the
+# square of that length: on the 25,560-chunk corpus, batches of 32 peaked at 3.4 GB and took 2.3x as
+# long as one text at a time (327 MB). Measured 19 Oct 2026 (scripts/training, onnxruntime CPU).
+EMBED_BATCH = 1
+
+
+def onnx_session_options():
+    """Options for every ONNX model in the service: ONNX_THREADS caps threads on a shared host."""
+    import onnxruntime as ort
+    options = ort.SessionOptions()
+    if settings.ONNX_THREADS:
+        options.intra_op_num_threads = settings.ONNX_THREADS
+        options.inter_op_num_threads = 1
+    return options
+
 
 class EmbeddingError(Exception):
     pass
@@ -24,9 +39,10 @@ class OnnxEmbedder:
         self._tokenizer = Tokenizer.from_file(str(model_dir / "tokenizer.json"))
         self._tokenizer.enable_truncation(meta["max_length"])
         self._tokenizer.enable_padding()
-        self._session = ort.InferenceSession(str(model_dir / "model.onnx"), providers=["CPUExecutionProvider"])
+        self._session = ort.InferenceSession(str(model_dir / "model.onnx"), onnx_session_options(),
+                                             providers=["CPUExecutionProvider"])
 
-    def embed(self, texts: List[str], batch_size: int = 32):
+    def embed(self, texts: List[str], batch_size: int = EMBED_BATCH):
         for start in range(0, len(texts), batch_size):
             enc = self._tokenizer.encode_batch(texts[start:start + batch_size])
             feed = {"input_ids": [e.ids for e in enc], "attention_mask": [e.attention_mask for e in enc],
@@ -104,7 +120,7 @@ class EmbeddingService:
             if self.provider == "local":
                 # Small batches keep ONNX Runtime's memory arena from growing with long documents
                 return [self._normalise(np.asarray(v, dtype=np.float32))
-                        for v in self._client.embed(texts, batch_size=32)]
+                        for v in self._client.embed(texts, batch_size=EMBED_BATCH)]
             if self.provider == "gemini":
                 from google.genai import types
                 results = []

@@ -117,7 +117,7 @@ class LocalAvatarService:
     async def config(self) -> Dict[str, Any]:
         name = settings.LOCAL_AVATAR_NAME
         try:
-            async with httpx.AsyncClient(timeout=3.0) as client:
+            async with httpx.AsyncClient(headers=settings.model_host_headers, timeout=3.0) as client:
                 res = await client.get(f"{self.base}/api/avatars")
             res.raise_for_status()
             names = [a.get("name") for a in res.json()]
@@ -139,7 +139,7 @@ class LocalAvatarService:
         """
         job_ids: List[str] = []
         try:
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(headers=settings.model_host_headers, timeout=10.0) as client:
                 for chunk in split_for_streaming(text):
                     payload = {"avatar": settings.LOCAL_AVATAR_NAME, "text": chunk,
                                "voice": settings.LOCAL_AVATAR_VOICE, "decoder": settings.LOCAL_AVATAR_DECODER,
@@ -154,7 +154,7 @@ class LocalAvatarService:
 
     async def cancel(self, job_ids: List[str]) -> None:
         """Drop clips nobody will watch (e.g. the candidate moved on) so the current one renders next."""
-        async with httpx.AsyncClient(timeout=5.0) as client:
+        async with httpx.AsyncClient(headers=settings.model_host_headers, timeout=5.0) as client:
             for job_id in job_ids:
                 try:
                     await client.post(f"{self.base}/api/jobs/{job_id}/cancel")
@@ -163,7 +163,7 @@ class LocalAvatarService:
 
     async def job(self, job_id: str) -> Dict[str, Any]:
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
+            async with httpx.AsyncClient(headers=settings.model_host_headers, timeout=5.0) as client:
                 res = await client.get(f"{self.base}/api/jobs/{job_id}")
         except httpx.HTTPError as e:
             raise AvatarServiceError(f"Local avatar engine unreachable: {e}", status_code=503)

@@ -51,7 +51,9 @@ class AnswerScorer:
             self._inputs = meta["inputs"]
             self._tokenizer = Tokenizer.from_file(str(self.model_dir / "tokenizer.json"))
             self._tokenizer.enable_truncation(meta["max_length"])
-            self._session = ort.InferenceSession(str(self.model_dir / "model.onnx"), providers=["CPUExecutionProvider"])
+            from app.services.embedding_service import onnx_session_options
+            self._session = ort.InferenceSession(str(self.model_dir / "model.onnx"), onnx_session_options(),
+                                                 providers=["CPUExecutionProvider"])
 
     def trained_score(self, question: str, reference: str, answer: str) -> float:
         """0-5 from the fine-tuned cross-encoder (about 30 ms on CPU)."""
