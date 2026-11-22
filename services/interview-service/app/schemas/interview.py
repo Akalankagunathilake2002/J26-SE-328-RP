@@ -62,6 +62,7 @@ class InterviewQuestionResponse(BaseModel):
     difficulty: str
     context_or_reason: str
     rubric_criteria: List[str]
+    follow_up: bool = False                  # probes a concept the previous answer missed
     # Local-avatar clips for this question, one per sentence group, in playback order
     avatar_job_ids: List[str] = []
 

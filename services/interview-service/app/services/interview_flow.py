@@ -4,7 +4,9 @@ The server decides each turn's phase from the turns so far and the time used, so
 keeps to its planned length (chosen at setup, 25 minutes by default) without the frontend counting:
 
   intro    "Hi, welcome... tell me about yourself", then one follow-up on what they said (not scored)
-  core     scored role questions (interview_rag.py); at least INTERVIEW_MIN_QUESTIONS, at most MAX
+  core     scored role questions (interview_rag.py); at least INTERVIEW_MIN_QUESTIONS, at most MAX.
+           A weak answer that missed a concept can get one follow-up on that concept, as a real
+           interviewer would probe, before moving to a new question (counts as a core question)
   closing  "Do you have any questions for me?"; the reply to their answer is the goodbye
 """
 import uuid
@@ -22,6 +24,8 @@ from app.services.interview_rag import interview_rag_service
 
 CLOSING_RESERVE_S = 150          # time kept for the closing question, their answer and the goodbye
 DEFAULT_CORE_CYCLE_S = 210       # one role question: asked, answered, evaluated, feedback spoken
+FOLLOW_UP_BELOW = 3.5            # technical accuracy (1-5) under which a missed concept is probed
+MAX_FOLLOW_UPS = 2               # per interview, so most of the time goes to new topics
 
 
 def intro_turns_planned(duration_minutes: int) -> int:
@@ -91,6 +95,53 @@ async def _follow_up_text(session: InterviewSession) -> str:
     )
     return (await interview_rag_service.complete(prompt, temperature=0.5)
             or f"Thank you. What interests you most about working as a {session.target_role}?")
+
+
+def follow_up_concept(technical_accuracy: Optional[float], missing_concepts: Optional[List[str]],
+                      is_follow_up: bool, follow_ups_so_far: int) -> Optional[str]:
+    """The concept to probe after the last role answer, or None to move on to a new question.
+    Never two follow-ups in a row, and at most MAX_FOLLOW_UPS per interview."""
+    if (technical_accuracy is None or is_follow_up or follow_ups_so_far >= MAX_FOLLOW_UPS
+            or technical_accuracy >= FOLLOW_UP_BELOW):
+        return None
+    concepts = [c.strip() for c in (missing_concepts or []) if c and c.strip()]
+    return concepts[0] if concepts else None
+
+
+async def follow_up(db: AsyncSession, session: InterviewSession) -> Optional[InterviewQuestionResponse]:
+    """A follow-up on the concept the last role answer missed, if it was weak (see follow_up_concept)."""
+    core = (await db.execute(
+        select(InterviewTurn).where(InterviewTurn.session_id == session.id, InterviewTurn.phase == "core")
+        .order_by(InterviewTurn.created_at.asc())
+    )).scalars().all()
+    if not core:
+        return None
+    last = core[-1]
+    score = float(last.technical_accuracy_score) if last.technical_accuracy_score is not None else None
+    concept = follow_up_concept(score, last.missing_concepts, last.follow_up_of is not None,
+                                sum(1 for t in core if t.follow_up_of is not None))
+    if not concept:
+        return None
+    prompt = (
+        f"You are {settings.INTERVIEWER_NAME}, interviewing a candidate for a {session.experience_level} "
+        f"{session.target_role} position. You asked: {last.question}\n"
+        f"They answered: {(last.transcript or '')[:1200]}\n"
+        f"Their answer didn't cover: {concept}.\n\n"
+        "Ask ONE short follow-up question that gives them a chance to explain that point, the way a "
+        "supportive interviewer probes. Don't say their answer was wrong and don't give the answer away. "
+        "It will be spoken aloud: plain conversational sentences, no lists or quotes, under 35 words."
+    )
+    text = (await interview_rag_service.complete(prompt, temperature=0.4)
+            or f"Let me follow up on that. Could you explain {concept}?")
+    turn = InterviewTurn(session_id=session.id, phase="core", question=text, topic=last.topic,
+                         difficulty=last.difficulty, reference_answer=last.reference_answer,
+                         rubric_criteria=last.rubric_criteria, follow_up_of=last.id)
+    db.add(turn)
+    await db.commit()
+    return InterviewQuestionResponse(
+        turn_id=str(turn.id), session_id=str(session.id), phase="core", question=text, topic=last.topic,
+        difficulty=last.difficulty, rubric_criteria=last.rubric_criteria or [], follow_up=True,
+        context_or_reason=f"Follow-up: your last answer didn't cover {concept}.")
 
 
 async def create_turn(db: AsyncSession, session: InterviewSession, phase: str) -> InterviewQuestionResponse:

@@ -39,6 +39,13 @@ def _validated(data: dict) -> dict:
     return out
 
 
+def overall_score(technical_accuracy: float, clarity: float, explanation_quality: float) -> float:
+    """Weighted answer score (1-5): 70% technical accuracy, 15% clarity, 15% explanation quality. Camera
+    cues (eye contact, smiling, head movement) are reported as delivery feedback but never scored: webcam
+    gaze estimates are noisy and penalise candidates with poor lighting, glasses or a disability."""
+    return round(technical_accuracy * 0.70 + clarity * 0.15 + explanation_quality * 0.15, 2)
+
+
 def _speakable(text: str) -> str:
     """Strip markdown the voice would read out or stumble on (`code`, **bold**, # headings)."""
     return re.sub(r"\s+", " ", re.sub(r"[`*_#>]+", "", text or "")).strip()
@@ -167,11 +174,7 @@ class EvaluationRAGService:
         if comm_additions:
             eval_data["communication_feedback"] += " Delivery: " + " ".join(comm_additions)
 
-        # Compute weighted overall score (70% technical accuracy, 15% clarity, 15% communication/engagement)
-        tech_score = eval_data["technical_accuracy"]
-        clarity_score = eval_data["clarity"]
-        eye_boost = (eye_ratio * 5.0) if eye_ratio is not None else clarity_score
-        overall_score = round((tech_score * 0.70) + (clarity_score * 0.15) + (eye_boost * 0.15), 2)
+        score = overall_score(eval_data["technical_accuracy"], eval_data["clarity"], eval_data["explanation_quality"])
 
         # 4. Persist scores to interview_turns
         turn.technical_accuracy_score = eval_data["technical_accuracy"]
@@ -210,7 +213,7 @@ class EvaluationRAGService:
             words_per_minute=wpm,
             eye_contact_ratio=eye_contact,
             pacing_assessment=pacing_note,
-            overall_score=overall_score,
+            overall_score=score,
             spoken_feedback=_speakable(eval_data.get("spoken_feedback") or "")
             or _speakable(_first_sentences(eval_data["technical_feedback"])),
             scoring_method=scoring_method,
@@ -292,7 +295,7 @@ class EvaluationRAGService:
                     raw = raw[7:]
                 if raw.endswith("```"):
                     raw = raw[:-3]
-                return json.loads(raw.strip())
+                return _validated(json.loads(raw.strip()))
             except Exception as e:
                 print(f"[Warning] Gemini Evaluation failed: {e}.")
 
@@ -309,7 +312,7 @@ class EvaluationRAGService:
                     raw = raw[7:]
                 if raw.endswith("```"):
                     raw = raw[:-3]
-                return json.loads(raw.strip())
+                return _validated(json.loads(raw.strip()))
             except Exception as e:
                 print(f"[Warning] LLM Evaluation failed: {e}.")
 

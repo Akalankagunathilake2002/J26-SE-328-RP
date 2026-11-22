@@ -129,14 +129,16 @@ async def get_question(
     With the local avatar, rendering the spoken video starts here, so it overlaps with the
     candidate reading the question card instead of starting when the frontend asks.
     """
-    interview = await db.get(InterviewSession, parse_uuid(request.session_id, "interview session"))
+    session_id = parse_uuid(request.session_id, "interview session")     # 404 before touching the database
+    interview = await db.get(InterviewSession, session_id)
     if not interview:
         raise HTTPException(status_code=404, detail="Unknown interview session")
     phase = await interview_flow.plan(db, interview)
     if phase == "done":
         raise HTTPException(status_code=409, detail="The interview has ended.")
     if phase == "core":
-        question = await interview_rag_service.generate_interview_question(session=db, request=request)
+        question = (await interview_flow.follow_up(db, interview)
+                    or await interview_rag_service.generate_interview_question(session=db, request=request))
     else:
         question = await interview_flow.create_turn(db, interview, phase)
     if local_avatar_service.enabled:
@@ -216,12 +218,13 @@ async def cancel_avatar_clips(request: AvatarCancelRequest):
 
 
 @router.get("/avatar/jobs/{job_id}", response_model=AvatarJobResponse)
-async def get_avatar_job(job_id: str):
-    """Progress of a local-avatar clip; `video_url` is set once it is ready to play."""
+async def get_avatar_job(job_id: str, wait: float = 0.0):
+    """Progress of a local-avatar clip; `video_url` is set once it is ready to play. `wait` (seconds, up
+    to 25) holds the request until the clip is done or failed."""
     if not job_id.isalnum() or len(job_id) > 64:
         raise HTTPException(status_code=404, detail="Unknown avatar job")
     try:
-        return AvatarJobResponse(**await local_avatar_service.job(job_id))
+        return AvatarJobResponse(**await local_avatar_service.job(job_id, wait=wait))
     except AvatarServiceError as e:
         raise HTTPException(status_code=e.status_code, detail=str(e))
 
@@ -352,6 +355,7 @@ async def get_session_report(
             "turn_id": str(t.id),
             "question": t.question,
             "topic": t.topic,
+            "follow_up": t.follow_up_of is not None,
             "transcript": t.transcript,
             "evaluated": evaluated,
             "technical_accuracy": t_tech,
@@ -382,3 +386,19 @@ async def get_session_report(
         },
         "turns": turn_summaries
     }
+
+
+@router.get("/progress/{student_id}")
+async def get_progress(student_id: str, limit: int = 20, db: AsyncSession = Depends(get_db)):
+    """Scores across a student's past interviews (oldest first) and the concepts they keep missing."""
+    from app.services.progress import summarise_progress
+    sessions = (await db.execute(
+        select(InterviewSession).where(InterviewSession.student_id == student_id)
+        .order_by(InterviewSession.created_at.desc()).limit(max(1, min(limit, 50)))
+    )).scalars().all()
+    ids = [s.id for s in sessions]
+    turns = (await db.execute(
+        select(InterviewTurn).where(InterviewTurn.session_id.in_(ids), InterviewTurn.phase == "core",
+                                    InterviewTurn.technical_accuracy_score.isnot(None))
+    )).scalars().all() if ids else []
+    return summarise_progress(student_id, list(reversed(sessions)), turns)

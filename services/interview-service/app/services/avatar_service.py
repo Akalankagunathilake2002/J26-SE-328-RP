@@ -1,4 +1,6 @@
+import asyncio
 import re
+import time
 from typing import Dict, Any, List
 import httpx
 from app.core.config import settings
@@ -77,12 +79,25 @@ def is_safe_video_name(name: str) -> bool:
     return bool(_VIDEO_NAME.match(name)) and ".." not in name
 
 
-def split_for_streaming(text: str, max_words: int = 25) -> List[str]:
-    """First sentence alone (plays soonest), then sentences grouped up to ~max_words per clip."""
+def _short_opening(sentence: str, max_words: int) -> List[str]:
+    """Splits a long first sentence at a clause break (comma, semicolon, colon or dash) so the first clip
+    is short: rendering takes ~2.5x the speech length, so a 30-word opener kept the candidate waiting."""
+    words = sentence.split()
+    if len(words) <= max_words:
+        return [sentence]
+    for i in range(min(max_words, len(words) - 4), 3, -1):     # latest break that leaves both parts >= 4 words
+        if re.search(r"[,;:\u2014-]$", words[i - 1]):
+            return [" ".join(words[:i]), " ".join(words[i:])]
+    return [sentence]
+
+
+def split_for_streaming(text: str, max_words: int = 25, first_max_words: int = 12) -> List[str]:
+    """A short first clip (plays soonest), then sentences grouped up to ~max_words per clip."""
     sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", " ".join(text.split())) if s.strip()]
     if not sentences:
         return []
-    chunks, current = [sentences[0]], []
+    opening = _short_opening(sentences[0], first_max_words)
+    chunks, current = [opening[0]], opening[1:]
     for s in sentences[1:]:
         if current and len(" ".join(current + [s]).split()) > max_words:
             chunks.append(" ".join(current))
@@ -161,10 +176,19 @@ class LocalAvatarService:
                 except httpx.HTTPError:
                     pass                          # best effort; a running clip just finishes
 
-    async def job(self, job_id: str) -> Dict[str, Any]:
+    async def job(self, job_id: str, wait: float = 0.0) -> Dict[str, Any]:
+        """A clip's status. With wait > 0 the call holds until the clip is done or failed, or the wait
+        runs out (long-poll), so the browser doesn't poll through the gateway and tunnel every second."""
+        deadline = time.monotonic() + max(0.0, min(wait, 25.0))
         try:
             async with httpx.AsyncClient(headers=settings.model_host_headers, timeout=5.0) as client:
-                res = await client.get(f"{self.base}/api/jobs/{job_id}")
+                while True:
+                    res = await client.get(f"{self.base}/api/jobs/{job_id}")
+                    if res.status_code != 200 or time.monotonic() >= deadline:
+                        break
+                    if res.json().get("status") in ("done", "error", "cancelled"):
+                        break
+                    await asyncio.sleep(0.4)
         except httpx.HTTPError as e:
             raise AvatarServiceError(f"Local avatar engine unreachable: {e}", status_code=503)
         if res.status_code == 404:
