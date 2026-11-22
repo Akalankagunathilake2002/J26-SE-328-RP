@@ -93,3 +93,47 @@ Environment: venv `/Volumes/Dilmith Ext/datasets/train-venv` (torch 2.14, senten
 `HF_HOME=/Volumes/Dilmith Ext/hf-cache`; everything downloads to the external drive. Docker:
 `docker compose -p skill-bridge -f infrastructure/docker-compose.yml -f ~/.skillbridge-local/docker-compose.override.yml`.
 Do not commit or push. Keep progress checks rare; report at the end of each stage.
+
+## Interview question search with the fine-tuned embedder (22 November 2026)
+
+`eval_interview_retrieval.py` measures the interview service's use of the embedder: query
+"<role> <level> <topic>" against the role's bank items (title, topic, question and expected answer, as
+`ingest_rubrics.py` embeds them); relevant = same role and topic. 355 bank items, 10 roles, 352 queries.
+
+| Embedder | MRR@10 | Hit@1 | Precision@5 | Level match@5 |
+|---|---|---|---|---|
+| bge-small-en-v1.5 (original) | 0.846 | 0.776 | 0.190 | 0.187 |
+| fine-tuned (`models/embedder`) | 0.838 | 0.767 | 0.188 | 0.185 |
+
+Difference −0.008 MRR, p = 0.41 (paired permutation test): no measurable change either way, so the
+fine-tuned model is fine for both services and the interview service gains nothing from it. Almost every topic has a
+single question (352 queries for 355 items), so precision@5 can't go much above 0.2. A useful interview test
+needs several questions per topic or graded relevance. Results: `/Volumes/Dilmith Ext/datasets/results/interview-retrieval-eval.json`.
+
+## Human grades for non-technical roles (tooling ready, grades needed)
+
+Technical scoring was checked against human graders (Mohler); behavioural and competency answers (HR,
+marketing, finance, design, writing) were not, as there is no public graded set. `export_grading_sheet.py
+export` writes recent LLM-graded answers of those roles to a CSV with empty human columns; two people grade
+independently with the LLM columns hidden; `export_grading_sheet.py score sheet.csv sheet2.csv` gives
+human–LLM and human–human agreement (Pearson, Spearman, QWK, MAE). The sheet holds candidate transcripts:
+share it only with the graders and delete it afterwards. Aim for 100+ answers across the roles.
+
+## Next: larger retrieval fine-tune (prepared, not run)
+
+The 1,000-passage run used 1,000 of the 4,000+ chunks. A full run needs about 3–4 h of Gemma for the questions
+(about 3 per chunk) plus about 1 h of training on this Mac; keep Gemma free of interviews meanwhile.
+
+```bash
+"$VENV/bin/python" scripts/training/make_retrieval_pairs.py 4000      # Gemma writes questions (resumable)
+"$VENV/bin/python" scripts/training/train_retrieval.py                 # same settings as above
+# compare test MRR@10 with the 0.544 above before deploying; then re-ingest both services
+```
+
+## Next: more material for thin roles (needs approval of sources)
+
+Roles with few curriculum documents get weaker lessons and fewer interview questions. Candidate openly licensed sources
+to review before adding: MDN Web Docs (CC-BY-SA, frontend), the Kubernetes and Docker docs (CC-BY 4.0,
+DevOps), OpenStax Principles of Marketing / Principles of Finance / Organizational Behavior (CC-BY 4.0, for
+the marketing, finance and HR roles). Check each licence and attribution requirement before ingesting; nothing has
+been downloaded.
