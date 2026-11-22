@@ -26,3 +26,5 @@ licence and URL; the text was converted to plain markdown (markup and link targe
 - Google Search Central documentation, (c) Google, CC BY 4.0 - https://developers.google.com/search
 - U.S. Web Design System, PlainLanguage.gov, 18F Content Guide and 18F Brand (GSA), public domain / CC0
 - U.S. EEOC and OPM guidance pages, U.S. government works in the public domain (U.S. law context)
+- PHP Manual, (c) 1997-2026 the PHP Documentation Group, CC BY 3.0 or later (user-contributed notes excluded) -
+  https://www.php.net/manual/en/copyright.php

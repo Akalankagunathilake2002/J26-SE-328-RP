@@ -35,6 +35,20 @@ PAGES = {
     "eeoc": [f"https://www.eeoc.gov/{p}" for p in (
         "prohibited-employment-policiespractices", "harassment", "retaliation", "pregnancy-discrimination",
         "disability-discrimination")],
+    # PHP manual (CC BY 3.0 or later, PHP Documentation Group): language, OOP, security, web features, PDO
+    "php-manual": [f"https://www.php.net/manual/en/{p}.php" for p in (
+        "language.types.intro", "language.types.type-juggling", "language.types.declarations", "language.types.array",
+        "language.types.string", "language.variables.scope", "language.constants", "language.operators.comparison",
+        "control-structures.match", "functions.arguments", "functions.arrow", "language.oop5.basic",
+        "language.oop5.properties", "language.oop5.visibility", "language.oop5.inheritance", "language.oop5.interfaces",
+        "language.oop5.traits", "language.oop5.abstract", "language.oop5.static", "language.oop5.magic",
+        "language.oop5.autoload", "language.namespaces.rationale", "class.exception", "language.generators.overview",
+        "language.attributes.overview", "language.enumerations.overview", "language.references.whatare",
+        "session.examples.basic", "features.cookies", "features.file-upload.post-method", "features.http-auth",
+        "security.intro", "security.database.sql-injection", "security.filesystem", "security.variables",
+        "pdo.prepared-statements", "pdo.connections", "pdo.transactions", "faq.passwords", "function.password-hash",
+        "function.htmlspecialchars", "filter.examples.validation", "migration80.new-features",
+        "migration81.new-features", "migration82.new-features")],
     "opm": [f"https://www.opm.gov/policy-data-oversight/{p}/" for p in (
         "performance-management", "performance-management/performance-management-cycle",
         "human-capital-management")],
