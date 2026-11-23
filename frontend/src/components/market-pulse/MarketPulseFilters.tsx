@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, ChevronDown, Filter, Monitor, type LucideIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import Form from "next/form";
 import { useState, type ReactNode } from "react";
 
@@ -11,13 +11,14 @@ type MarketPulseFiltersProps = {
   sectors: string[];
   role: string;
   sector: string;
+  view: string; // kept in the URL, so applying filters stays on the same view
 };
 
 /**
  * Industry and role filters. Choosing an industry narrows the role list to that industry's roles.
- * Applying them updates the URL (?role=…&sector=…), and the page shows that selection.
+ * Applying them updates the URL (?sector=…&role=…), and the page shows that selection.
  */
-export function MarketPulseFilters({ roles, sectors, role, sector }: MarketPulseFiltersProps) {
+export function MarketPulseFilters({ roles, sectors, role, sector, view }: MarketPulseFiltersProps) {
   const [selectedRole, setSelectedRole] = useState(role);
   const [selectedSector, setSelectedSector] = useState(sector);
   const roleOptions = selectedSector ? roles.filter((r) => r.sectors.includes(selectedSector)) : roles;
@@ -29,44 +30,30 @@ export function MarketPulseFilters({ roles, sectors, role, sector }: MarketPulse
   }
 
   return (
-    <Form action="/market-pulse" scroll={false}>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {/* An "all" choice has no name, so it is left out of the URL. */}
-        <Select
-          label="Industry"
-          Icon={Monitor}
-          name={selectedSector ? "sector" : undefined}
-          value={selectedSector}
-          onChange={chooseSector}
-        >
-          <option value="">All industries</option>
-          {sectors.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </Select>
-        <Select
-          label="Job role"
-          Icon={Briefcase}
-          name={selectedRole ? "role" : undefined}
-          value={selectedRole}
-          onChange={setSelectedRole}
-        >
-          <option value="">All roles</option>
-          {roleOptions.map((option) => (
-            <option key={option.role} value={option.role}>
-              {option.role} ({option.ads})
-            </option>
-          ))}
-        </Select>
-      </div>
+    <Form action="/market-pulse" scroll={false} aria-label="Filter job ads" className="flex flex-wrap items-center gap-2">
+      {view !== "overview" && <input type="hidden" name="view" value={view} />}
+      {/* An "all" choice has no name, so it is left out of the URL. */}
+      <Select label="Industry" name={selectedSector ? "sector" : undefined} value={selectedSector} onChange={chooseSector}>
+        <option value="">All industries</option>
+        {sectors.map((name) => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))}
+      </Select>
+      <Select label="Job role" name={selectedRole ? "role" : undefined} value={selectedRole} onChange={setSelectedRole} wide>
+        <option value="">All roles</option>
+        {roleOptions.map((option) => (
+          <option key={option.role} value={option.role}>
+            {option.role} ({option.ads})
+          </option>
+        ))}
+      </Select>
       <button
         type="submit"
-        className="mt-4 flex w-full items-center justify-center gap-2.5 rounded-xl border-2 border-ink bg-sun px-6 py-3.5 text-base font-black text-ink shadow-[3px_3px_0px_#000] transition-all hover:-translate-y-0.5 hover:bg-butter sm:text-lg"
+        className="h-10 rounded-lg bg-[#17161d] px-4 text-sm font-bold text-[#d0ffa4] transition-colors hover:bg-[#2b2935] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#17161d]"
       >
-        <Filter className="size-5" aria-hidden="true" />
-        Apply filters
+        Apply
       </button>
     </Form>
   );
@@ -74,29 +61,26 @@ export function MarketPulseFilters({ roles, sectors, role, sector }: MarketPulse
 
 type SelectProps = {
   label: string;
-  Icon: LucideIcon;
   name: string | undefined;
   value: string;
   onChange: (value: string) => void;
+  wide?: boolean;
   children: ReactNode;
 };
 
-function Select({ label, Icon, name, value, onChange, children }: SelectProps) {
+function Select({ label, name, value, onChange, wide = false, children }: SelectProps) {
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ink">{label}</span>
-      <span className="relative block">
-        <Icon aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-ink/70" />
-        <select
-          name={name}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-          className="w-full cursor-pointer appearance-none truncate rounded-xl border-2 border-ink bg-white py-3 pl-11 pr-10 text-sm font-semibold text-ink shadow-[2px_2px_0px_#000] transition-colors hover:bg-cream"
-        >
-          {children}
-        </select>
-        <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2" />
-      </span>
+    <label className={`relative block min-w-0 ${wide ? "w-full sm:w-60" : "w-full sm:w-44"}`}>
+      <span className="sr-only">{label}</span>
+      <select
+        name={name}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-10 w-full cursor-pointer appearance-none truncate rounded-lg border border-[#dddce5] bg-white pl-3 pr-9 text-sm text-[#17161d] transition-colors hover:border-[#c4c2d0] focus:border-[#17161d] focus:outline-none focus:ring-2 focus:ring-[#17161d]/10"
+      >
+        {children}
+      </select>
+      <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 size-4 -translate-y-1/2 text-[#6b6979]" />
     </label>
   );
 }
