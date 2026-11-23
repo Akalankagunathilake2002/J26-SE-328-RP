@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { FacebookIcon, LinkedInIcon, MailIcon, MapPinIcon, PhoneIcon, TwitterIcon } from "@/components/icons";
 
-// Footer content follows the design. The links have no pages yet.
+// Footer content follows the original design. The links have no pages yet.
 const columns = [
   { title: "Home", links: ["Features", "Our Testimonials", "FAQ"] },
   { title: "About Us", links: ["Our Mission", "Our Vision", "Awards and Recognitions", "History", "Teachers"] },
@@ -11,43 +11,42 @@ const columns = [
   { title: "Contact Us", links: ["Information", "Map & Direction"] },
 ];
 
+// A contact with no text yet (the email) isn't shown.
 const contacts = [
   { Icon: MailIcon, label: "Email", text: "" },
   { Icon: PhoneIcon, label: "Phone", text: "+91 91813 23 2309" },
   { Icon: MapPinIcon, label: "Location", text: "Somewhere in the World" },
-];
+].filter((contact) => contact.text);
 
 const legal = ["Terms of Service", "Privacy Policy", "Cookie Policy"];
 
 const socials = [
-  { label: "Facebook", Icon: FacebookIcon },
-  { label: "Twitter", Icon: TwitterIcon },
-  { label: "LinkedIn", Icon: LinkedInIcon },
+  { label: "Facebook", Icon: FacebookIcon, tone: "bg-[#efe8ff] text-[#4a2fd0]" },
+  { label: "Twitter", Icon: TwitterIcon, tone: "bg-[#ffdcee] text-[#a3135a]" },
+  { label: "LinkedIn", Icon: LinkedInIcon, tone: "bg-[#dbeeff] text-[#0b4a80]" },
 ];
 
+/** Compact site footer, shared by the home page and the other pages. */
 export function Footer() {
   return (
-    <footer className="mt-24 rounded-t-[16px] lg:mt-[191px] border-x-2 border-t-2 border-ink bg-periwinkle font-nav text-white">
-      <div className="mx-auto max-w-[1440px] px-6 pb-[70px] pt-[93px] lg:px-[113px]">
-        <div className="flex flex-col gap-12 lg:flex-row lg:justify-between">
-          <div>
+    <footer className="mt-12 border-t border-[#e6e2da] bg-white font-nav text-[#141413]">
+      <div className="mx-auto max-w-[1240px] px-4 pb-[18px] pt-8 sm:px-8">
+        <div className="flex flex-wrap justify-between gap-7">
+          <div className="max-w-[360px] flex-[1_1_280px]">
             <Image
               src="/brand/skillaro-logo.png"
               alt="Skillaro — Align your skills. Shape your career"
-              width={147}
-              height={50}
-              className="-ml-[6px] bg-white"
+              width={120}
+              height={41}
+              className="h-[41px] w-[120px] object-contain"
             />
-            <p className="mt-[20px] max-w-[460px] text-[19px] leading-[30.5px]">
-              We believe in the power of play to foster creativity, problem-solving skills, and
-              imagination.
+            <p className="mt-2 text-sm leading-[1.55] text-[#5c5a55]">
+              We believe in the power of play to foster creativity, problem-solving skills, and imagination.
             </p>
-            <ul className="mt-[48px] flex flex-col gap-[22px]">
+            <ul className="mt-3 flex flex-col gap-1.5 text-[13.5px] text-[#3d3b36]">
               {contacts.map(({ Icon, label, text }) => (
-                <li key={label} className="flex items-center gap-[10px] text-[19px]">
-                  <span className="grid size-[42px] place-items-center rounded-[6px] border-2 border-[#5f6189] bg-[#dbe3ff] text-lime">
-                    <Icon className="size-[24px]" />
-                  </span>
+                <li key={label} className="flex items-center gap-2">
+                  <Icon className="size-[15px] shrink-0 text-[#5b3df5]" />
                   <span className="sr-only">{label}: </span>
                   {text}
                 </li>
@@ -55,14 +54,17 @@ export function Footer() {
             </ul>
           </div>
 
-          <nav aria-label="Footer" className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4 lg:grid-cols-[repeat(4,128px)] lg:gap-x-[33.5px]">
+          <nav
+            aria-label="Footer"
+            className="grid flex-[2_1_480px] grid-cols-2 gap-5 sm:grid-cols-[repeat(auto-fit,minmax(110px,1fr))]"
+          >
             {columns.map((column) => (
               <div key={column.title}>
-                <h2 className="text-[20px] font-medium">{column.title}</h2>
-                <ul className="mt-[23px] flex flex-col gap-[14px] text-[19px] leading-[30px]">
+                <h2 className="text-sm font-semibold">{column.title}</h2>
+                <ul className="mt-2 flex flex-col gap-[5px] text-[13.5px]">
                   {column.links.map((link) => (
                     <li key={link}>
-                      <Link href="#" className="hover:underline">
+                      <Link href="#" className="text-[#5c5a55] hover:text-[#141413] hover:underline">
                         {link}
                       </Link>
                     </li>
@@ -73,25 +75,25 @@ export function Footer() {
           </nav>
         </div>
 
-        <div className="mt-[56px] flex flex-col gap-6 border-y border-ink py-[29px] sm:flex-row sm:items-center sm:justify-between">
-          <ul className="flex flex-wrap items-center text-[19px]">
-            {legal.map((item, i) => (
-              <li key={item} className={i > 0 ? "border-l-2 border-white pl-[22px] ml-[22px]" : ""}>
-                <Link href="#" className="hover:underline">
+        <div className="mt-[22px] flex flex-wrap items-center justify-between gap-3 border-t border-[#efebe4] pt-3.5 text-[13.5px]">
+          <ul className="flex flex-wrap gap-x-[18px] gap-y-1.5">
+            {legal.map((item) => (
+              <li key={item}>
+                <Link href="#" className="text-[#5c5a55] hover:text-[#141413] hover:underline">
                   {item}
                 </Link>
               </li>
             ))}
           </ul>
-          <ul className="flex gap-[10px]">
-            {socials.map(({ label, Icon }) => (
+          <ul className="flex gap-2">
+            {socials.map(({ label, Icon, tone }) => (
               <li key={label}>
                 <Link
                   href="#"
                   aria-label={label}
-                  className="grid size-[58px] place-items-center rounded-[8px] border-2 border-white bg-lime text-white"
+                  className={`grid size-11 place-items-center rounded-full transition-transform hover:-translate-y-0.5 ${tone}`}
                 >
-                  <Icon className="size-[30px]" />
+                  <Icon className="size-[17px]" />
                 </Link>
               </li>
             ))}

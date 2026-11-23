@@ -72,7 +72,7 @@ export function EduAssistantFab() {
             <li key={text}>
               <Link
                 href="/edu-assistant"
-                className="flex items-center gap-2 border-2 border-ink bg-white px-3 py-2 text-sm font-semibold text-ink shadow-[3px_3px_0_var(--color-ink)] transition-transform hover:-translate-y-0.5 hover:bg-butter focus-visible:bg-butter focus-visible:outline-none"
+                className="flex items-center gap-2 rounded-full border border-[#e6e2da] bg-white px-3.5 py-2 text-sm font-semibold text-ink shadow-[0_10px_24px_-14px_rgba(40,30,10,0.5)] transition-transform hover:-translate-y-0.5 hover:bg-[#efe8ff] focus-visible:bg-[#efe8ff] focus-visible:outline-none"
               >
                 <Icon className="size-4 shrink-0" aria-hidden="true" /> {text}
               </Link>
@@ -84,7 +84,7 @@ export function EduAssistantFab() {
       {showBubble && (
         <div
           key={hovered ? "hover" : index}
-          className="edu-pop relative max-w-[250px] border-2 border-ink bg-white px-4 py-3 pr-8 text-sm font-semibold text-ink shadow-[3px_3px_0_var(--color-ink)]"
+          className="edu-pop relative max-w-[250px] rounded-2xl border border-[#e6e2da] bg-white px-4 py-3 pr-8 text-sm font-semibold text-ink shadow-[0_14px_32px_-16px_rgba(40,30,10,0.45)]"
           role="status"
           aria-live="polite"
         >
@@ -110,7 +110,7 @@ export function EduAssistantFab() {
           {/* Bubble tail pointing at the button */}
           <span
             aria-hidden="true"
-            className="absolute -bottom-[9px] right-6 size-4 rotate-45 border-b-2 border-r-2 border-ink bg-white"
+            className="absolute -bottom-[8.5px] right-6 size-4 rotate-45 border-b border-r border-[#e6e2da] bg-white"
           />
         </div>
       )}
@@ -118,13 +118,13 @@ export function EduAssistantFab() {
       <Link
         href="/edu-assistant"
         aria-label="Open the Skillaro Edu Assistant"
-        className="edu-bob relative grid size-16 place-items-center rounded-full border-2 border-ink bg-sun shadow-[4px_4px_0_var(--color-ink)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-brand-blue/40"
+        className="edu-bob relative grid size-16 place-items-center rounded-full bg-[#6d4aff] shadow-[0_14px_30px_-10px_rgba(109,74,255,0.75)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6d4aff]/35"
       >
-        <span aria-hidden="true" className="edu-ring absolute inset-0 rounded-full border-2 border-pink" />
-        <Bot className="size-8 text-ink" aria-hidden="true" />
+        <span aria-hidden="true" className="edu-ring absolute inset-0 rounded-full border-2 border-[#b9a6ff]" />
+        <Bot className="size-8 text-white" aria-hidden="true" />
         <span
           aria-hidden="true"
-          className="edu-wave absolute -right-1 -top-1 grid size-6 place-items-center rounded-full border-2 border-ink bg-pink"
+          className="edu-wave absolute -right-1 -top-1 grid size-6 place-items-center rounded-full bg-pink ring-2 ring-white"
         >
           <Sparkles className="size-3.5 text-ink" />
         </span>
