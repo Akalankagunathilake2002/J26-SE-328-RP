@@ -1,150 +1,87 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import {
-  ArrowRightIcon,
-  ArrowUpRightIcon,
-  BookIcon,
-  MessageIcon,
-  SparkleDoodle,
-  SquiggleDoodle,
-  StarIcon,
-  TargetIcon,
-  TrendingUpIcon,
-  UserIcon,
-} from "@/components/icons";
+import { ArrowRightIcon } from "@/components/icons";
 
-const journey = [
-  { label: "Your Evidence", labelX: 47, dotX: 56, dot: "bg-pink" },
-  { label: "Your Skills", labelX: 180, dotX: 201, dot: "bg-brand-blue" },
-  { label: "Industry Demand", labelX: 292, dotX: 347, dot: "bg-lime", star: true },
-  { label: "Your Career Path", labelX: 442, dotX: 495, dot: "bg-lime" },
-];
+import { HeroVideo } from "./HeroVideo";
+import { JourneySteps } from "./JourneySteps";
 
 const benefits = [
-  { label: "Know what's in demand", Icon: TrendingUpIcon },
-  { label: "Understand your strengths", Icon: UserIcon },
-  { label: "Identify skill gaps", Icon: TargetIcon },
-  { label: "Learn what matters", Icon: BookIcon },
-  { label: "Practice & get feedback", Icon: MessageIcon },
+  { label: "Know what's in demand", tone: "bg-[#efe8ff] text-[#3b2394]" },
+  { label: "Understand your strengths", tone: "bg-[#fff0bf] text-[#5c4200]" },
+  { label: "Identify skill gaps", tone: "bg-[#ffdcee] text-[#7a1048]" },
+  { label: "Learn what matters", tone: "bg-[#d5f5e3] text-[#145a36]" },
+  { label: "Practice & get feedback", tone: "bg-[#dbeeff] text-[#0b4a80]" },
 ];
 
+/** Video hero: the background video runs up under the floating header (the negative top margin equals
+ *  the header's height: two rows on small screens, one row from lg). The journey card overlaps its bottom edge. */
 export function Hero() {
   return (
-    <section className="hero-grid relative overflow-hidden border-b-[3px] border-ink">
-      {/* Bookmark ribbon */}
-      <span
-        aria-hidden="true"
-        className="absolute left-5 top-0 h-[60px] w-[53px] bg-white [clip-path:polygon(0_0,100%_0,100%_100%,50%_68%,0_100%)]"
-      />
+    <>
+      <section className="relative isolate -mt-[115px] flex min-h-[640px] items-center overflow-hidden bg-[#0d0b1a] text-white sm:min-h-[680px] lg:-mt-[75px] lg:min-h-[min(780px,94vh)]">
+        <HeroVideo />
+        {/* Darkens the video so the text stays readable: most at the top (under the header) and at the bottom. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(to_bottom,rgba(13,11,26,0.78)_0%,rgba(13,11,26,0.5)_38%,rgba(13,11,26,0.55)_70%,rgba(13,11,26,0.9)_100%)]"
+        />
 
-      <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-12 px-5 pb-16 pt-24 lg:h-[728px] lg:flex-row lg:items-start lg:justify-between lg:gap-8 lg:pb-0 lg:pl-[72px] lg:pr-[92px] lg:pt-[153px]">
-        <div className="w-full max-w-[600px]">
-          <div className="flex items-center gap-5">
-            <p className="border-2 border-ink bg-pink px-[15px] py-[2px] font-condensed text-[17px] font-semibold uppercase leading-[23px] tracking-[0.01em]">
-              AI-Powered Career Readiness Platform
-            </p>
-            <SquiggleDoodle className="w-[30px] text-lime" />
-          </div>
+        <div className="mx-auto w-full max-w-[1100px] px-4 pb-32 pt-[150px] text-center sm:px-8 lg:pt-[120px]">
+          <p className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3.5 py-1.5 text-[13.5px] font-bold backdrop-blur-sm">
+            <span aria-hidden="true" className="size-2 rounded-full bg-lime" />
+            AI-Powered Career Readiness Platform
+          </p>
 
-          <h1 className="mt-[18px] font-display text-[40px] uppercase leading-[1.15] text-white text-block-shadow sm:text-[48px] lg:text-[46px] lg:leading-[68px] xl:text-[53px]">
-            <span className="block">Bridge what</span>
-            <span className="block">you know</span>
-            <span className="block text-[#ffe030]">with what</span>
-            <span className="block text-[#ffe030]">industry needs.</span>
+          <h1 className="mx-auto mt-[18px] max-w-[900px] font-editorial text-[clamp(40px,5.6vw,74px)] font-semibold leading-[1.04] tracking-[-0.02em] [text-shadow:0_2px_24px_rgba(0,0,0,0.35)]">
+            Bridge what you know with <em className="text-lime">what industry needs.</em>
           </h1>
 
-          <p className="mt-[25px] max-w-[460px] text-[18px] font-medium leading-[27px] text-white">
-            Understand your skills, discover the gaps, and get a personalized path to become career
-            ready.
+          <p className="mx-auto mt-4 max-w-[580px] text-[19px] text-white/85">
+            Understand your skills, discover the gaps, and get a personalized path to become career ready.
           </p>
 
           <Link
             href="#how-it-works"
-            className="hard-shadow mt-[22px] inline-flex h-[56px] items-center gap-3 bg-lime px-[30px] text-[20px] font-medium transition-transform hover:-translate-y-0.5"
+            className="mt-7 inline-flex min-h-[52px] items-center gap-2.5 rounded-full bg-[#6d4aff] px-7 text-[17px] font-bold text-white shadow-[0_14px_30px_-12px_rgba(109,74,255,0.9)] transition hover:-translate-y-0.5 hover:bg-[#5f3cf5] active:translate-y-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/40"
           >
             Explore How It Works
-            <ArrowRightIcon className="size-5" />
+            <ArrowRightIcon className="size-[18px]" strokeWidth={2.4} />
           </Link>
         </div>
+      </section>
 
-        <HeroVisual />
-      </div>
-    </section>
-  );
-}
+      <div className="relative z-10 mx-auto -mt-20 max-w-[1100px] px-4 sm:px-8">
+        <div className="grid items-center gap-6 rounded-[24px] border border-[#e6e2da] bg-white p-5 shadow-[0_28px_60px_-34px_rgba(40,30,10,0.55)] sm:p-7 md:grid-cols-[minmax(0,320px)_1fr] md:gap-8">
+          <Image
+            src="/photos/students-group.png"
+            alt="Four students laughing together on their way to class"
+            width={900}
+            height={648}
+            sizes="320px"
+            className="mx-auto h-auto w-full max-w-[320px] drop-shadow-[0_14px_18px_rgba(40,30,10,0.18)]"
+          />
 
-/** Students above the "smart way" card. Drawn at desktop size and scaled down on smaller screens. */
-function HeroVisual() {
-  return (
-    <div className="hero-visual relative shrink-0 lg:-mt-[46px]">
-      <div className="absolute left-0 top-0 h-[575px] w-[612px] origin-top-left scale-(--visual-scale)">
-        <Image
-          src="/illustrations/hero-students.png"
-          alt="Four students with a book, a tablet, a laptop and a coffee cup"
-          width={547}
-          height={249}
-          className="absolute left-[14px] top-0"
-          loading="eager"
-        />
+          <div className="min-w-0">
+            {/* Evidence → career path journey, played step by step */}
+            <JourneySteps />
 
-        {/* Stacked paper layers behind the card */}
-        <div className="absolute left-[42px] top-[309px] h-[266px] w-[541px] bg-ink" />
-        <div className="absolute left-[31px] top-[296px] h-[266px] w-[540px] border-[2.5px] border-ink bg-cyan" />
-
-        <div className="absolute left-0 top-[251px] h-[300px] w-[553px] border-[2.5px] border-ink bg-cream">
-          {/* Notebook binding dots */}
-          <div className="absolute left-[12px] top-[20px] flex flex-col gap-[17.4px]">
-            {Array.from({ length: 8 }, (_, i) => (
-              <span key={i} className="size-[8.6px] rounded-full bg-ink" />
-            ))}
+            <div className="mt-[18px] border-t border-[#f0ece5] pt-4">
+              <p className="font-editorial text-[22px] font-semibold leading-[1.2]">
+                The smart way <em className="text-brand-blue">to move forward.</em>
+              </p>
+              <p className="mt-1.5 text-sm text-[#5c5a55]">We bring everything together and show you the right steps.</p>
+              <ul className="mt-3.5 flex flex-wrap gap-2 text-[13.5px] font-bold">
+                {benefits.map(({ label, tone }) => (
+                  <li key={label} className={`rounded-full px-3 py-[7px] ${tone}`}>
+                    {label}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-
-          {/* Evidence → career path journey */}
-          <ol>
-            {journey.map((step) => (
-              <li key={step.label}>
-                <span
-                  className="absolute top-[21px] whitespace-nowrap text-[11px] font-semibold"
-                  style={{ left: step.labelX }}
-                >
-                  {step.label}
-                </span>
-                <span
-                  className={`absolute top-[59px] z-10 grid -translate-x-1/2 place-items-center rounded-full border-2 border-ink ${step.dot} ${step.star ? "size-[22px]" : "size-[17px]"}`}
-                  style={{ left: step.dotX }}
-                >
-                  {step.star && <StarIcon className="size-3" strokeWidth={2.5} />}
-                </span>
-              </li>
-            ))}
-          </ol>
-          <span className="absolute left-[56px] top-[67px] h-[2px] w-[439px] bg-ink" />
-
-          <div className="absolute left-[47px] top-[110px] w-[225px]">
-            <p className="text-[19px] font-semibold leading-[27px]">
-              The smart way
-              <br />
-              <span className="text-brand-blue">to move forward.</span>
-            </p>
-            <p className="mt-[13px] text-[13.5px] leading-[18px] text-muted">
-              We bring everything together and show you the right steps.
-            </p>
-            <ArrowUpRightIcon className="mt-[22px] ml-[7px] size-[18px] text-brand-blue" />
-          </div>
-
-          <ul className="absolute left-[292px] top-[98px] flex h-[177px] w-[237px] flex-col gap-[10px] border-[2.5px] border-ink bg-periwinkle px-[13px] pt-[14px] text-[14px] font-semibold leading-[18px] text-white shadow-[5px_6px_0_var(--color-ink)]">
-            {benefits.map(({ label, Icon }) => (
-              <li key={label} className="flex items-start gap-[13px]">
-                <Icon className="mt-px size-[17px] shrink-0" />
-                <span className="w-[165px]">{label}</span>
-              </li>
-            ))}
-          </ul>
         </div>
-
-        <SparkleDoodle className="absolute left-[578px] top-[514px] w-[34px] text-lime" />
       </div>
-    </div>
+    </>
   );
 }
