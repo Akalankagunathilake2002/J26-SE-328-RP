@@ -15,6 +15,7 @@ client = TestClient(app)
 @pytest.fixture
 def data_dir(tmp_path, monkeypatch):
     monkeypatch.setenv("SKILLBRIDGE_DATA_DIR", str(tmp_path))
+    monkeypatch.delenv("SKILLBRIDGE_DATABASE_URL", raising=False)  # these tests read the profile file
     return tmp_path
 
 

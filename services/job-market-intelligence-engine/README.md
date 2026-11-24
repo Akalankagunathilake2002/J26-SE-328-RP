@@ -158,6 +158,27 @@ Measured so far ([evaluation report](../../ml/c01-skill-ner/reports/evaluation.m
   and teamwork skills") where SSKS has short names. That is why `lexicon` stays the default.
 - The comparison that matters, on hand-labelled topjobs ads, is still to be done (see below).
 
+## Role profiles for C03 (the Readiness Engine)
+
+After every load, the sync publishes what each job role needs, per career level, into the contract
+tables C03 reads (`Skillaro_DB_Contract_v2`): `role_profiles`, `role_profile_requirements`,
+`role_profile_education`, `role_profile_experience`, `role_profile_certifications` and
+`requirement_evidence`. By hand: `python -m app.database.role_profiles`. The rules are at the top of
+`app/database/role_profiles.py`; in short:
+
+- Only roles with an `ssks_role_id` in `config/role_taxonomy.yaml` are published (the contract needs
+  a role id). Career level comes from the title's seniority.
+- `demand_weight` = ads asking for the skill ÷ ads with readable text for that role and level.
+  Skills get an SSKS id from the lexicon or an exact/alias SSKS match (`SKILLBRIDGE_SSKS_URL`);
+  otherwise they are UNMAPPED. Proficiency is never invented.
+- Degrees go to education (`SLQF_1`…`SLQF_12`), professional qualifications and licences to
+  certifications, "2–3 years" to experience (median of the minimums).
+- Fewer than 3 readable ads: DRAFT. Versions are immutable; a new one is written only when the
+  content changes, and the previous published one becomes ARCHIVED.
+
+First run on Neon (24 Nov 2026): 11 published and 16 draft profiles for 10 roles, 581 requirements
+(229 with an SSKS skill id).
+
 ## Database (PostgreSQL)
 
 With `SKILLBRIDGE_DATABASE_URL` set, every run ends by loading the data into the database
@@ -193,6 +214,8 @@ The Market Pulse page gets its data from this service, through the API gateway:
 |---|---|
 | `GET /jobs/health` | service status |
 | `GET /jobs/market-pulse` | skill demand per job role and sector, totals, and the job sites with their status |
+
+With `SKILLBRIDGE_DATABASE_URL` set, `/jobs/market-pulse` is built from the database tables (`app/database/market_pulse.py`, the same `build_profile` as the file, so the numbers match) and says `"data_source": "database"`. It is cached for `MARKET_PULSE_CACHE_SECONDS` (600), warmed at start-up and refreshed in the background. Without the variable, or if the database can't be reached, it reads `data/processed/skill_profile.json` (`"data_source": "file"`).
 
 In Docker the service runs on port 8003 (`JOB_MARKET_INTELLIGENCE_PORT`) and is reached at
 http://localhost:8080/jobs/ (API docs at `/jobs/docs`). The API container mounts only

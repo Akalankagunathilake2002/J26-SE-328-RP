@@ -178,12 +178,12 @@ def run(
     log.info("data quality report in %s", write_report(storage, names, sector_names))
     extraction = extraction_from_settings(settings, storage)
     log.info("skill profile per job role in %s", write_profile(storage, names, extraction=extraction)[0])
-    if settings.database_url:
-        load_database(settings.database_url, storage, names)
+    if settings.database_url and load_database(settings.database_url, storage, names):
+        publish_profiles(settings, storage, names)
     return exit_code
 
 
-def load_database(url: str, storage: Storage, sites: list[str]) -> None:
+def load_database(url: str, storage: Storage, sites: list[str]) -> bool:
     """Load into PostgreSQL. A failure is logged, never fatal: the files are complete, and the next
     run loads everything again."""
     try:
@@ -192,13 +192,29 @@ def load_database(url: str, storage: Storage, sites: list[str]) -> None:
         from app.database.loader import connect, load
     except ImportError as exc:
         log.error("database not updated: %s (pip install -e \".[db]\")", exc)
-        return
+        return False
     try:
         result = load(connect(url), storage, sites)
     except (SQLAlchemyError, ImportError) as exc:  # the driver is imported when connecting
         log.error("database not updated (%s); the next run will load everything", type(exc).__name__)
-        return
+        return False
     log.info("database: %d ads and %d skill mentions loaded", result.ads, result.skill_mentions)
+    return True
+
+
+def publish_profiles(settings, storage: Storage, sites: list[str]) -> None:
+    """Publish the role profiles C03 reads (app/database/role_profiles.py). Never fatal."""
+    try:
+        from sqlalchemy.exc import SQLAlchemyError
+
+        from app.database.loader import connect
+        from app.database.role_profiles import publish_role_profiles, summary
+
+        result = publish_role_profiles(connect(settings.database_url), sites, settings.ssks_url, storage.processed_dir)
+    except (SQLAlchemyError, ImportError) as exc:
+        log.error("role profiles not published (%s); the next run tries again", type(exc).__name__)
+        return
+    log.info(summary(result))
 
 
 def log_result(site: str, result: CollectResult) -> None:

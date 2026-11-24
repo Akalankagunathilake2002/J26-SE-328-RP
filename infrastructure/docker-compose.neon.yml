@@ -1,0 +1,30 @@
+# Opt-in: run Auth, C01 (Market Pulse API and daily sync) and C02 against the shared Neon database `skillaro`.
+# Every other service keeps using the local postgres container until its code matches the v2 tables.
+#
+#   cd infrastructure
+#   docker compose -f docker-compose.yml -f docker-compose.neon.yml up --build
+#
+# Needs NEON_HOST and the NEON_<SCHEMA>_PASSWORD values in infrastructure/.env (made by neon/setup.sh).
+# Each service logs in as its own <schema>_svc login, so its tables are in its own schema.
+
+services:
+  auth-service:
+    environment:
+      DATABASE_URL: postgresql+asyncpg://auth_svc:${NEON_AUTH_PASSWORD:?Set NEON_AUTH_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?ssl=require
+
+  evidence-based-skill-profile:
+    environment:
+      DATABASE_URL: postgresql+asyncpg://skill_profile_svc:${NEON_SKILL_PROFILE_PASSWORD:?Set NEON_SKILL_PROFILE_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?ssl=require
+
+  # C01 Market Pulse: built from the job_market tables (falls back to skill_profile.json if Neon is down)
+  job-market-intelligence-engine:
+    environment:
+      SKILLBRIDGE_DATABASE_URL: postgresql+psycopg://job_market_svc:${NEON_JOB_MARKET_PASSWORD:?Set NEON_JOB_MARKET_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?sslmode=require
+
+  # C01's sync still runs only with: --profile job-market-sync
+  # After loading the ads it publishes the role profiles C03 reads (app/database/role_profiles.py);
+  # SSKS (local) gives the skills their canonical ids.
+  job-market-sync:
+    environment:
+      SKILLBRIDGE_SSKS_URL: http://shared-skill-knowledge:8005/ssks
+      SKILLBRIDGE_DATABASE_URL: postgresql+psycopg://job_market_svc:${NEON_JOB_MARKET_PASSWORD:?Set NEON_JOB_MARKET_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?sslmode=require

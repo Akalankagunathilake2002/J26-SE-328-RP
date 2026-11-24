@@ -35,6 +35,7 @@ class Role:
     name: str
     patterns: tuple[re.Pattern[str], ...]
     sectors: frozenset[str] = field(default_factory=frozenset)  # empty: ads from any sector
+    ssks_role_id: str | None = None  # canonical SSKS role (RL-xxxxxx), set by hand in the taxonomy
 
     def matches(self, title: str, sectors: Iterable[str]) -> bool:
         if self.sectors and not self.sectors.intersection(sectors):
@@ -68,6 +69,7 @@ class RoleTaxonomy:
                 name=item["role"],
                 patterns=_compile(item["patterns"]),
                 sectors=frozenset(item.get("sectors") or ()),
+                ssks_role_id=item.get("ssks_role_id"),
             )
             for item in data["roles"]
         ]

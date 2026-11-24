@@ -5,37 +5,47 @@
 # Patterns are case-insensitive regular expressions searched in the job title.
 # The first matching role wins, so list specific roles before general ones.
 # `sectors` (optional) limits a role to ads from those sectors.
+# `ssks_role_id` (optional) is the role's canonical id in the Shared Skill Knowledge Service. Only roles
+# with one are published to C03 as role profiles (app/database/role_profiles.py); the contract needs it.
 # Titles that match no role keep their own (cleaned) title and are marked as unmapped in the
 # skill profile, so this list can be extended.
 
 roles:
   # --- HR ----------------------------------------------------------------------------------
   - role: HR Manager
+    ssks_role_id: RL-000018  # SSKS: human resources manager
     patterns:
       - '\b(hr|human resources?)\b.*\b(manager|head|lead)\b'
       - '\b(manager|head)\b.*\b(hr|human resources?)\b'
   - role: Recruitment / Talent Acquisition
+    ssks_role_id: RL-000002  # SSKS: recruitment consultant
     patterns: ['recruit', 'talent acquisition', 'head ?hunt', 'sourcing specialist']
   - role: Payroll
     patterns: ['payroll']
   - role: Training & Development
     patterns: ['\btraining\b', 'learning (and|&) development', '\bl ?& ?d\b']
   - role: HR Assistant
+    ssks_role_id: RL-000035  # SSKS: Human Resources Assistants, Except Payroll and Timekeeping
     patterns: ['\b(hr|human resources?)\b.*\b(assistant|clerk|intern|trainee)\b', '\b(assistant|intern|trainee)\b.*\b(hr|human resources?)\b']
   - role: HR Executive / Officer
+    ssks_role_id: RL-000016  # SSKS: human resources officer
     patterns: ['\b(hr|human resources?)\b', 'personnel', 'employee relations']
 
   # --- IT ----------------------------------------------------------------------------------
   - role: QA / Test Engineer
+    ssks_role_id: RL-000003  # SSKS: software tester
     sectors: [IT]
     patterns: ['\b(qa|quality assurance|test(ing)?|sdet)\b']
   - role: DevOps / Cloud Engineer
+    ssks_role_id: RL-000007  # SSKS: cloud engineer
     sectors: [IT]
     patterns: ['devops', '\bcloud\b', '\bsre\b', 'site reliability']
   - role: Data Analyst / Scientist
+    ssks_role_id: RL-000017  # SSKS: data analyst
     sectors: [IT, Management]
     patterns: ['\bdata\b', 'business intelligence', '\bbi\b', 'machine learning', '\bai\b']
   - role: Business Analyst
+    ssks_role_id: RL-000010  # SSKS: business analyst
     patterns: ['business (systems )?analyst']
   - role: UI/UX / Graphic Designer
     sectors: [IT]
@@ -44,6 +54,7 @@ roles:
     sectors: [IT]
     patterns: ['network', 'system(s)? (administrator|admin|engineer)', 'it support', 'help ?desk', 'technical support', 'infrastructure']
   - role: Software Engineer / Developer
+    ssks_role_id: RL-000030  # SSKS: Software Developers
     sectors: [IT]
     patterns: ['software', 'developer', 'programmer', '\b(full|back|front) ?-?end\b', '\bmobile\b.*\bengineer\b', '\b(java|python|php|\.net|react|node)\b']
   - role: GIS Specialist
@@ -57,6 +68,7 @@ roles:
   - role: Management Trainee
     patterns: ['management trainee']
   - role: Project Manager / Coordinator
+    ssks_role_id: RL-000014  # SSKS: project manager
     patterns: ['project (manager|management|coordinator|lead)', 'programme manager', 'scrum master']
   - role: General Manager / Director
     sectors: [Management]
