@@ -62,7 +62,7 @@ export function MarketPulseSidebar({ view, query, counts, syncedAgo, syncedOn, s
 
   return (
     <aside aria-label="Market Pulse" className="bg-[#17161d] text-[#d9d7e3] lg:w-[250px] lg:shrink-0">
-      <div className="flex flex-col gap-4 px-3 py-4 lg:sticky lg:top-0 lg:h-[calc(100vh-4rem)] lg:gap-5 lg:overflow-y-auto lg:py-5">
+      <div className="flex flex-col gap-4 px-3 py-4 lg:sticky lg:top-[86px] lg:max-h-[calc(100vh-86px)] lg:gap-5 lg:overflow-y-auto lg:py-5">
         <div className="flex items-center gap-2.5 px-2">
           <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-[#d0ffa4] text-[#17161d]">
             <Activity className="size-[18px]" strokeWidth={2.2} aria-hidden="true" />

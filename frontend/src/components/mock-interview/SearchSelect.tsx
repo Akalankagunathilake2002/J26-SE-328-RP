@@ -3,7 +3,7 @@
 import { useId } from "react";
 import Select, { type StylesConfig } from "react-select";
 
-// Searchable dropdown (Select2-style: type to filter, keyboard navigation) in the site's ink-border style.
+// Searchable dropdown (Select2-style: type to filter, keyboard navigation) in the site's soft style.
 // Used for every dropdown in the mock interview and the Edu Assistant.
 
 export interface SelectOption<V extends string | number = string> {
@@ -45,26 +45,26 @@ export default function SearchSelect<V extends string | number>({
     control: (base, state) => ({
       ...base,
       minHeight: small ? 30 : 42,
-      borderRadius: 0,
-      border: `${small ? 1 : 2}px solid var(--color-ink)`,
-      boxShadow: state.isFocused ? "3px 3px 0 var(--color-ink)" : "2px 2px 0 var(--color-ink)",
-      backgroundColor: state.isDisabled ? "var(--color-cream)" : "white",
+      borderRadius: small ? 10 : 12,
+      border: `1px solid ${state.isFocused ? "#6d4aff" : "#e4dfd5"}`,
+      boxShadow: state.isFocused ? "0 0 0 4px rgb(109 74 255 / 0.15)" : "0 6px 14px -10px rgb(40 30 10 / 0.4)",
+      backgroundColor: state.isDisabled ? "#f4f2ee" : "white",
       cursor: "pointer",
       fontSize: small ? 12 : 14,
       fontWeight: small ? 500 : 700,
-      "&:hover": { borderColor: "var(--color-ink)" },
+      "&:hover": { borderColor: state.isFocused ? "#6d4aff" : "#c9bfff" },
     }),
     valueContainer: (base) => ({ ...base, padding: small ? "0 6px" : "2px 10px" }),
     singleValue: (base) => ({ ...base, color: "var(--color-ink)" }),
     placeholder: (base) => ({ ...base, color: "var(--color-muted)" }),
     input: (base) => ({ ...base, color: "var(--color-ink)" }),
     indicatorSeparator: () => ({ display: "none" }),
-    dropdownIndicator: (base) => ({ ...base, color: "var(--color-ink)", padding: small ? 4 : 8 }),
+    dropdownIndicator: (base) => ({ ...base, color: "#8a877f", padding: small ? 4 : 8 }),
     menu: (base) => ({
       ...base,
-      borderRadius: 0,
-      border: "2px solid var(--color-ink)",
-      boxShadow: "4px 4px 0 var(--color-ink)",
+      borderRadius: 14,
+      border: "1px solid #e4dfd5",
+      boxShadow: "0 18px 36px -20px rgb(40 30 10 / 0.5)",
       marginTop: 4,
       overflow: "hidden",
     }),
@@ -76,8 +76,8 @@ export default function SearchSelect<V extends string | number>({
       fontSize: small ? 12 : 14,
       fontWeight: state.isSelected ? 700 : 500,
       color: "var(--color-ink)",
-      backgroundColor: state.isSelected ? "var(--color-lime)" : state.isFocused ? "var(--color-butter)" : "white",
-      "&:active": { backgroundColor: "var(--color-lime)" },
+      backgroundColor: state.isSelected ? "#efe8ff" : state.isFocused ? "#f6f3ff" : "white",
+      "&:active": { backgroundColor: "#e4dcff" },
     }),
     noOptionsMessage: (base) => ({ ...base, fontSize: 12, color: "var(--color-muted)" }),
   };

@@ -60,7 +60,7 @@ function Field({ label, name, type = "text", autoComplete, defaultValue, hint, e
         defaultValue={defaultValue}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className={`h-12 border-2 bg-white px-4 text-[16px] outline-none transition-shadow focus:shadow-[3px_3px_0_var(--color-ink)] ${error ? "border-[#c4231b]" : "border-ink"}`}
+        className={`h-12 rounded-xl border bg-[#faf9f6] px-4 text-[16px] outline-none transition-[border-color,box-shadow,background-color] focus:bg-white focus:ring-4 ${error ? "border-[#c4231b] focus:ring-[#c4231b]/15" : "border-[#e4dfd5] focus:border-[#6d4aff] focus:ring-[#6d4aff]/15"}`}
       />
       {error ? (
         <p id={`${name}-error`} className="text-[14px] font-medium text-[#c4231b]">
@@ -80,7 +80,7 @@ function Field({ label, name, type = "text", autoComplete, defaultValue, hint, e
 function FormMessage({ state }: { state: AuthFormState }) {
   if (!state?.message) return null;
   return (
-    <p role="alert" className="border-2 border-ink bg-pink/40 px-4 py-3 text-[15px] font-medium">
+    <p role="alert" className="rounded-xl border border-[#f5c2d6] bg-[#ffeef5] px-4 py-3 text-[15px] font-medium text-[#7a1048]">
       {state.message}
     </p>
   );
@@ -91,7 +91,7 @@ function SubmitButton({ pending, label, pendingLabel }: { pending: boolean; labe
     <button
       type="submit"
       disabled={pending}
-      className="hard-shadow mt-2 inline-flex h-14 items-center justify-center gap-3 bg-lime text-[18px] font-semibold transition-transform hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0"
+      className="mt-2 inline-flex h-14 items-center justify-center gap-3 rounded-full bg-[#6d4aff] text-[17px] font-bold text-white shadow-[0_14px_30px_-12px_rgba(109,74,255,0.9)] transition hover:-translate-y-0.5 hover:bg-[#5f3cf5] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6d4aff]/30 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0"
     >
       {pending ? pendingLabel : label}
       {!pending && <ArrowRightIcon className="size-5" />}

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Aladin, Barlow_Condensed, Outfit, Shojumaru, Space_Grotesk } from "next/font/google";
+import { figtree, fraunces } from "@/components/home/fonts";
+
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -37,10 +39,12 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  const fonts = [spaceGrotesk, outfit, shojumaru, aladin, barlowCondensed];
+  // Fraunces (headings) and Figtree (text) give every page the home page look; the older fonts stay loaded
+  // for anything that still names them directly.
+  const fonts = [fraunces, figtree, spaceGrotesk, outfit, shojumaru, aladin, barlowCondensed];
   return (
     <html lang="en" className={`${fonts.map((font) => font.variable).join(" ")} antialiased`}>
-      <body className="min-h-full font-sans">{children}</body>
+      <body className="min-h-full bg-page font-sans text-[#141413]">{children}</body>
     </html>
   );
 }

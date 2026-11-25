@@ -5,10 +5,12 @@ import { logout } from "@/app/actions/auth";
 import { getCurrentUser } from "@/lib/auth";
 
 import { navLinks } from "./links";
+import { MobileNav, NavPendingPill } from "./NavClient";
 import { StickyHeader } from "./StickyHeader";
 
-/** "classic" is the original neo-brutal look. "soft" (the home page) is a floating rounded bar that stays
- *  at the top while the page scrolls. Only the styling differs: the links, layout and behaviour are the same. */
+/** "soft" (the default on every page) is a floating rounded bar that stays at the top while the page
+ *  scrolls; the current page's link is a purple pill. "classic" is the original neo-brutal look, kept in
+ *  case a page needs it. Only the styling differs: the links, layout and behaviour are the same. */
 const looks = {
   classic: {
     header: "relative z-20 bg-white border-b-[3px] border-ink",
@@ -17,7 +19,7 @@ const looks = {
     avatar: "border-2 border-ink bg-[#ffe03a]",
     admin: "hard-shadow-sm rounded bg-lime text-ink",
     login: "h-10 hard-shadow-sm bg-lime hover:-translate-y-0.5",
-    mobileNav: "border-t-2 border-ink",
+    mobileNav: "border-t-2 border-ink py-2",
     list: "gap-[26px] text-[15.5px]",
     link: "underline-offset-4 hover:underline",
   },
@@ -33,15 +35,18 @@ const looks = {
     admin: "rounded-full bg-[#d5f5e3] text-[#145a36]",
     login:
       "h-11 rounded-[14px] bg-[#5b3df5] text-white shadow-[0_10px_22px_-12px_rgba(91,61,245,0.9)] hover:bg-[#4a2fd0] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#5b3df5]/30",
-    mobileNav: "border-t border-[#ebe8e1]",
-    list: "gap-7 text-[15.5px] xl:gap-10 xl:text-[16.5px]",
-    link: "text-[#6b6979] transition-colors hover:text-[#141413] aria-[current=page]:text-[#141413]",
+    // Each link is a pill (the current page's is purple). The pill padding plus the smaller gap add up to
+    // the old spacing (28 px, 40 px from xl), and the list's negative margin keeps the text where it was,
+    // so the header is no wider or taller than before. py-0.5 on the phone row offsets the pill's height.
+    mobileNav: "border-t border-[#ebe8e1] py-0.5",
+    list: "-mx-3 gap-1 text-[15.5px] xl:-mx-4 xl:gap-2 xl:text-[16.5px]",
+    link: "relative isolate inline-flex items-center rounded-full px-3 py-1.5 text-[#6b6979] transition-colors hover:bg-[#f1eee8] hover:text-[#141413] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6d4aff]/25 aria-[current=page]:bg-[#efe8ff] aria-[current=page]:text-[#4a2fd0] xl:px-4",
   },
 };
 
 export async function Navbar({
   currentPath = "/",
-  variant = "classic",
+  variant = "soft",
 }: {
   currentPath?: string;
   variant?: keyof typeof looks;
@@ -104,9 +109,11 @@ export async function Navbar({
           </div>
         </div>
 
-        <nav aria-label="Main" className={`overflow-x-auto px-4 py-2 lg:hidden ${look.mobileNav}`}>
-          <NavList currentPath={currentPath} listClass={look.list} linkClass={look.link} />
-        </nav>
+        {/* The list is as wide as its links (w-max), so the row's end padding (pr-7, which also covers the
+            list's negative margin) leaves space after the last link when scrolled all the way. */}
+        <MobileNav currentPath={currentPath} className={`overflow-x-auto pl-4 pr-7 lg:hidden ${look.mobileNav}`}>
+          <NavList currentPath={currentPath} listClass={`w-max ${look.list}`} linkClass={look.link} />
+        </MobileNav>
       </div>
     </Shell>
   );
@@ -114,7 +121,7 @@ export async function Navbar({
 
 function NavList({ currentPath, listClass, linkClass }: { currentPath: string; listClass: string; linkClass: string }) {
   return (
-    <ul className={`flex items-center whitespace-nowrap font-medium ${listClass}`}>
+    <ul className={`nav-links flex items-center whitespace-nowrap font-medium ${listClass}`}>
       {navLinks.map((link) => (
         <li key={link.href}>
           <Link
@@ -122,6 +129,7 @@ function NavList({ currentPath, listClass, linkClass }: { currentPath: string; l
             className={linkClass}
             aria-current={link.href === currentPath ? "page" : undefined}
           >
+            <NavPendingPill />
             {link.label}
           </Link>
         </li>

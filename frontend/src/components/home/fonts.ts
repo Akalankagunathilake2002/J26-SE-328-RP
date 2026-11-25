@@ -1,7 +1,7 @@
 import { Figtree, Fraunces } from "next/font/google";
 
-// Fonts for the home page only; the rest of the site keeps the root layout's fonts.
-// Used through the font-editorial and font-body utilities in globals.css.
+// The site's fonts (loaded in the root layout): Fraunces for headings, Figtree for text.
+// Used through font-editorial / font-body, and font-sans / font-display / font-script map to them too (globals.css).
 
 export const fraunces = Fraunces({
   variable: "--font-fraunces",
