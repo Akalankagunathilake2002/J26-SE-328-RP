@@ -15,7 +15,11 @@ export default async function RegisterPage({ searchParams }: PageProps<"/registe
 
   return (
     <AuthLayout
-      title="Join Skillaro"
+      title={
+        <>
+          Join <em className="text-[#6d4aff]">Skillaro</em>
+        </>
+      }
       subtitle="Create an account to see how your skills match what industry needs."
       footer={
         <>

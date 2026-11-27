@@ -2,7 +2,7 @@
 
 @theme {
   --color-ink: #0d0d0d;
-  --color-page: #f7f6ee;
+  --color-page: #f4f2ee;
   --color-cream: #fff9f2;
   --color-sand: #f5ecd8;
   --color-pink: #eba0ff;
@@ -19,12 +19,14 @@
 }
 
 @theme inline {
-  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  /* Site-wide home page look: Figtree for text, Fraunces for headings. The older font names
+     (display, script, condensed) point at these too, so every page changes without code changes. */
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
   --font-nav: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-shojumaru), ui-serif, serif;
-  --font-script: var(--font-aladin), ui-serif, serif;
-  --font-condensed: var(--font-barlow-condensed), ui-sans-serif, system-ui, sans-serif;
-  /* Home page only (fonts loaded in components/home/fonts.ts) */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-script: var(--font-fraunces), Georgia, serif;
+  --font-condensed: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
+  /* Fonts loaded in the root layout (components/home/fonts.ts) */
   --font-editorial: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-figtree), ui-sans-serif, system-ui, sans-serif;
 }
@@ -35,49 +37,34 @@ body {
 }
 
 @layer components {
-  /* Purple hero background with a square grid. */
+  /* Soft purple gradient band (was a grid with hard lines). */
   .hero-grid {
-    background-color: #4f52ec;
+    background-color: #5b3df5;
     background-image:
-      linear-gradient(to bottom, rgb(55 60 110 / 0.35) 1px, transparent 1px),
-      linear-gradient(to right, rgb(55 60 110 / 0.35) 1px, transparent 1px),
-      linear-gradient(to bottom, #4f52ec 0%, #8083f7 50%, #c69afc 100%);
-    background-size:
-      30.6px 30.6px,
-      30.6px 30.6px,
-      100% 100%;
+      radial-gradient(circle at 15% 20%, rgb(255 255 255 / 0.16), transparent 40%),
+      radial-gradient(circle at 85% 80%, rgb(208 255 164 / 0.18), transparent 42%),
+      linear-gradient(135deg, #4a2fd0 0%, #6d4aff 55%, #b86bff 100%);
   }
 
-  /* Solid white or yellow letters with a block shadow to the bottom left (hero headline). */
+  /* Headline glow (was a stacked black block shadow). */
   .text-block-shadow {
-    text-shadow:
-      -1px 1px 0 var(--color-ink),
-      -2px 2px 0 var(--color-ink),
-      -3px 3px 0 var(--color-ink),
-      -4px 4px 0 var(--color-ink),
-      -5px 5px 0 var(--color-ink),
-      -6px 6px 0 var(--color-ink);
+    text-shadow: 0 2px 22px rgb(0 0 0 / 0.25);
   }
 
-  /* Bordered element with a hard black shadow, used for buttons, tags and cards. */
+  /* Soft card / button outline (was a 2px black border with a hard offset shadow). */
   .hard-shadow {
-    border: 2px solid var(--color-ink);
-    box-shadow: 5px 5px 0 var(--color-ink);
+    border: 1px solid #e4dfd5;
+    box-shadow: 0 16px 34px -22px rgb(40 30 10 / 0.5);
   }
 
   .hard-shadow-sm {
-    border: 2px solid var(--color-ink);
-    box-shadow: 3px 3px 0 var(--color-ink);
+    border: 1px solid #e4dfd5;
+    box-shadow: 0 8px 18px -12px rgb(40 30 10 / 0.45);
   }
 }
 
-/* Mock interview and Edu Assistant pages: Space Grotesk throughout and no italics, like the Admin Portal.
+/* Mock interview and Edu Assistant pages: no italics, like the Admin Portal (fonts come from the site-wide theme).
    Headings in title case and bold; small labels keep their caps. The navbar and other pages are unchanged. */
-.mi-type .font-display,
-.mi-type .font-condensed,
-.mi-type .font-script {
-  font-family: var(--font-sans);
-}
 .mi-type :is(h1, h2, h3).font-display {
   text-transform: none;
   font-weight: 700;
@@ -196,4 +183,70 @@ body {
 .blob-drift { animation: blob-drift 18s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   .wave-bar, .dash-flow, .blob-drift { animation: none; }
+}
+
+/* Log in and register pages: rows of photos slide sideways behind the form (components/auth/PhotoRibbons.tsx).
+   Each row holds its tiles twice, so moving it by half its width loops without a jump. */
+@keyframes ribbon-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes ribbon-right {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
+}
+.ribbon-track { animation: ribbon-left var(--ribbon-speed, 70s) linear infinite; will-change: transform; }
+.ribbon-track[data-dir="right"] { animation-name: ribbon-right; }
+.photo-ribbons[data-paused] .ribbon-track { animation-play-state: paused; }
+/* Still for reduced motion (also before the page's script runs), unless the visitor pressed play. */
+@media (prefers-reduced-motion: reduce) {
+  .photo-ribbons:not([data-playing]) .ribbon-track { animation-play-state: paused; }
+}
+
+/* ───────────────────────── Site-wide soft theme ─────────────────────────
+   Every page now follows the home page look. These rules sit outside Tailwind's layers, so they win over
+   the old neo-brutal utility classes without changing any component code (and so without changing any
+   behaviour): thick black outlines become thin light borders, hard offset shadows become soft blurred
+   ones, and stamped display headings become normal-case Fraunces. */
+
+/* Outlines: border-ink (black) → light warm grey, and 2px → 1px. */
+.border-ink { border-color: #e4dfd5; }
+.hover\:border-ink:hover, .focus\:border-ink:focus { border-color: #c9bfff; }
+.border-ink.border-2 { border-width: 1px; }
+.border-ink.border-t-2 { border-top-width: 1px; }
+.border-ink.border-b-2 { border-bottom-width: 1px; }
+.border-ink.border-l-2 { border-left-width: 1px; }
+.border-ink.border-r-2 { border-right-width: 1px; }
+@media (min-width: 48rem) { .border-ink.md\:border-r-2 { border-right-width: 1px; } }
+.border-ink.border-\[2\.5px\], .border-ink.border-\[3px\] { border-width: 1px; }
+@media (min-width: 40rem) { .border-ink.sm\:border-\[2\.5px\] { border-width: 1px; } }
+/* Dashed drop zones stay visible. */
+.border-ink.border-dashed { border-color: #c9c1b3; border-width: 1.5px; }
+
+/* Hard offset shadows (e.g. shadow-[4px_4px_0_var(--color-ink)], shadow-[2px_2px_0px_#000]) → soft. */
+[class*="px_0_var(--color-ink)]"],
+[class*="px_0px_#000]"],
+[class*="px_0px_#0d0d0d]"],
+[class*="px_0px_#ef4444]"] {
+  box-shadow: 0 14px 30px -20px rgb(40 30 10 / 0.45) !important;
+}
+[class*="shadow-[1px_1px_0"],
+[class*="shadow-[2px_2px_0"] {
+  box-shadow: 0 6px 14px -10px rgb(40 30 10 / 0.4) !important;
+}
+
+/* Display headings: Fraunces in normal case (they were stamped capitals). */
+.font-display {
+  text-transform: none;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+.font-script { font-style: italic; }
+
+/* Header links (Navbar / NavClient): while a link's page is loading, that link shows as selected and the
+   page you are leaving is no longer highlighted. */
+.nav-links a:has([data-pending]) { color: #4a2fd0; }
+.nav-links:has([data-pending]) [aria-current="page"]:not(:has([data-pending])) {
+  background-color: transparent;
+  color: #6b6979;
 }

@@ -1,41 +1,43 @@
 import type { ReactNode } from "react";
 
 import { Navbar } from "@/components/home/Navbar";
-import { SparkleDoodle } from "@/components/icons";
+
+import { PhotoRibbons } from "./PhotoRibbons";
 
 type AuthLayoutProps = {
-  title: string;
+  title: ReactNode;
   subtitle: string;
   children: ReactNode;
   footer: ReactNode;
 };
 
-/** Shared frame for the login and register pages, in the style of the home page hero. */
+/** Shared full-screen frame for the log in and register pages: rows of student photos slide sideways across a
+ *  dark purple background (PhotoRibbons) and the form sits in a white card in the middle. Like the home hero,
+ *  the page runs up under the floating header; the negative margin is the header's height. */
 export function AuthLayout({ title, subtitle, children, footer }: AuthLayoutProps) {
   return (
     <>
-      <Navbar />
-      <main className="hero-grid relative min-h-[calc(100vh-64px)] px-4 pb-24 pt-16">
-        <span
+      {/* No main link is the current page on the log in and register pages. */}
+      <Navbar currentPath="" />
+      <main className="relative isolate -mt-[115px] flex min-h-svh items-center justify-center overflow-hidden bg-[#241a5e] px-4 pb-20 pt-[140px] font-body sm:pb-16 lg:-mt-[75px] lg:pt-[110px]">
+        <PhotoRibbons />
+        {/* Darkens the middle so the photos behind the card don't compete with the form. */}
+        <div
           aria-hidden="true"
-          className="absolute left-5 top-0 h-[60px] w-[53px] bg-white [clip-path:polygon(0_0,100%_0,100%_100%,50%_68%,0_100%)]"
+          className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_46%_60%_at_50%_55%,rgba(36,26,94,0.82)_0%,rgba(36,26,94,0.35)_60%,rgba(36,26,94,0.1)_100%)]"
         />
-        <div className="mx-auto w-full max-w-[480px]">
-          <h1 className="font-display text-[38px] uppercase leading-[1.15] text-white text-block-shadow sm:text-[46px]">
+
+        <div className="w-full max-w-[480px] rounded-[28px] bg-white px-6 pb-8 pt-9 shadow-[0_50px_90px_-40px_rgba(0,0,0,0.75)] sm:px-9">
+          <p className="inline-flex items-center gap-2 rounded-full border border-[#e4dcff] bg-[#f7f4ff] px-3.5 py-1.5 text-[13px] font-bold text-[#4a2fd0]">
+            <span aria-hidden="true" className="size-2 rounded-full bg-[#6d4aff]" />
+            AI-Powered Career Readiness Platform
+          </p>
+          <h1 className="mt-3.5 font-editorial text-[clamp(36px,4vw,44px)] font-semibold leading-[1.04] tracking-[-0.02em]">
             {title}
           </h1>
-          <p className="mt-3 text-[18px] font-medium text-white">{subtitle}</p>
-
-          <div className="relative mt-8">
-            {/* Stacked paper layers behind the card, as on the home page */}
-            <div aria-hidden="true" className="absolute inset-0 translate-x-[22px] translate-y-[22px] bg-ink" />
-            <div aria-hidden="true" className="absolute inset-0 translate-x-[12px] translate-y-[12px] border-[2.5px] border-ink bg-cyan" />
-            <div className="relative border-[2.5px] border-ink bg-cream px-6 py-8 sm:px-8">
-              {children}
-              <p className="mt-6 text-center text-[15px]">{footer}</p>
-            </div>
-            <SparkleDoodle aria-hidden="true" className="absolute -bottom-12 -right-10 w-[34px] text-lime" />
-          </div>
+          <p className="mb-6 mt-2 text-[16.5px] leading-normal text-[#5c5a55]">{subtitle}</p>
+          {children}
+          <p className="mt-6 text-center text-[15px] text-[#5c5a55]">{footer}</p>
         </div>
       </main>
     </>

@@ -15,7 +15,11 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
 
   return (
     <AuthLayout
-      title="Welcome back"
+      title={
+        <>
+          Welcome <em className="text-[#6d4aff]">back</em>
+        </>
+      }
       subtitle={next === "/" ? "Log in to continue building your career readiness." : "Log in to continue to that page."}
       footer={
         <>
