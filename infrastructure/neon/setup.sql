@@ -487,6 +487,9 @@ GRANT USAGE ON SCHEMA job_market TO readiness_svc;
 GRANT SELECT ON job_market.role_profiles, job_market.role_profile_requirements, job_market.role_profile_education, job_market.role_profile_experience, job_market.role_profile_certifications, job_market.requirement_evidence TO readiness_svc;
 RESET ROLE;
 
+-- Added after the v2 design (not generated): company job posts and applications.
+\ir migrations/2026-11-28-company-job-posts.sql
+
 -- ================================================================ skill_profile  (login skill_profile_svc)
 SET ROLE skill_profile_svc;
 CREATE TABLE IF NOT EXISTS skill_profile.user_profiles (

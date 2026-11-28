@@ -16,9 +16,11 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://skill_profile_svc:${NEON_SKILL_PROFILE_PASSWORD:?Set NEON_SKILL_PROFILE_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?ssl=require
 
-  # C01 Market Pulse: built from the job_market tables (falls back to skill_profile.json if Neon is down)
+  # C01 Market Pulse: built from the job_market tables (falls back to skill_profile.json if Neon is down).
+  # Company job posts and applications live in the same schema; SSKS gives a post's skills their canonical ids.
   job-market-intelligence-engine:
     environment:
+      SKILLBRIDGE_SSKS_URL: http://shared-skill-knowledge:8005/ssks
       SKILLBRIDGE_DATABASE_URL: postgresql+psycopg://job_market_svc:${NEON_JOB_MARKET_PASSWORD:?Set NEON_JOB_MARKET_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?sslmode=require
 
   # C01's sync still runs only with: --profile job-market-sync
