@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from typing import Sequence
-from sqlalchemy import select
+import uuid
+from sqlalchemy import String, cast, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,7 +12,7 @@ from app.models.relationships import (
     SkillDomain,
     RoleDomain,
 )
-from app.repositories.core import ConflictError
+from app.repositories.base import ConflictError, commit_or_conflict, delete_and_commit
 from app.schemas.relationships import (
     SkillRelationshipCreate,
     SkillRelationshipUpdate,
@@ -23,7 +24,7 @@ class SkillRelationshipRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, relationship_id: str) -> SkillRelationship | None:
+    async def get_by_id(self, relationship_id: uuid.UUID) -> SkillRelationship | None:
         return await self.session.get(SkillRelationship, relationship_id)
 
     async def find_existing(
@@ -56,117 +57,64 @@ class SkillRelationshipRepository:
             stmt = stmt.where(SkillRelationship.relationship_type == relationship_type)
         if verification_status:
             stmt = stmt.where(SkillRelationship.verification_status == verification_status)
-        if search:
+        if search and search.strip():
             term = f"%{search.strip()}%"
             stmt = stmt.where(
-                (SkillRelationship.relationship_id.ilike(term))
-                | (SkillRelationship.source_skill_id.ilike(term))
-                | (SkillRelationship.target_skill_id.ilike(term))
-                | (SkillRelationship.relationship_type.ilike(term))
+                cast(SkillRelationship.relationship_id, String).ilike(term)
+                | SkillRelationship.source_skill_id.ilike(term)
+                | SkillRelationship.target_skill_id.ilike(term)
+                | SkillRelationship.relationship_type.ilike(term)
             )
-        stmt = stmt.order_by(SkillRelationship.created_at.desc(), SkillRelationship.relationship_id).limit(limit).offset(offset)
+        stmt = (
+            stmt.order_by(SkillRelationship.created_at.desc(), SkillRelationship.relationship_id)
+            .limit(limit)
+            .offset(offset)
+        )
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
-    async def generate_next_relationship_id(self) -> str:
-        # Find highest existing REL sequence number and increment.
-        stmt = select(SkillRelationship.relationship_id).where(SkillRelationship.relationship_id.like("REL-%"))
-        result = await self.session.execute(stmt)
-        ids = result.scalars().all()
-        max_num = 0
-        for rid in ids:
-            num_part = rid[4:]
-            if num_part.isdigit():
-                max_num = max(max_num, int(num_part))
-        return f"REL-{max_num + 1:06d}"
+    async def create(
+        self,
+        data: SkillRelationshipCreate,
+        reviewed_by: uuid.UUID | None = None,
+        relationship_id: uuid.UUID | None = None,
+    ) -> SkillRelationship:
+        rel = SkillRelationship(
+            relationship_id=relationship_id or uuid.uuid4(),
+            source_skill_id=data.source_skill_id,
+            target_skill_id=data.target_skill_id,
+            relationship_type=data.relationship_type,
+            verification_status=data.verification_status,
+            source_id=data.source_id,
+            evidence_note=data.evidence_note,
+            evidence_description=data.evidence_description,
+            evidence_url=data.evidence_url,
+            reviewed_by=reviewed_by,
+        )
+        return await commit_or_conflict(self.session, rel, refresh_targets=(rel,))
 
-    async def create(self, data: SkillRelationshipCreate, relationship_id: str | None = None) -> SkillRelationship:
-        # Create with given ID or generate with retry loop against concurrent inserts.
-        if relationship_id:
-            rel = SkillRelationship(
-                relationship_id=relationship_id,
-                source_skill_id=data.source_skill_id,
-                target_skill_id=data.target_skill_id,
-                relationship_type=data.relationship_type,
-                verification_status=data.verification_status,
-                source_id=data.source_id,
-                evidence_note=data.evidence_note,
-            )
-            self.session.add(rel)
-            try:
-                await self.session.commit()
-                await self.session.refresh(rel)
-                return rel
-            except IntegrityError as exc:
-                await self.session.rollback()
-                raise ConflictError from exc
-            except Exception:
-                await self.session.rollback()
-                raise
-
-        max_attempts = 10
-        for attempt in range(max_attempts):
-            candidate_id = await self.generate_next_relationship_id()
-            rel = SkillRelationship(
-                relationship_id=candidate_id,
-                source_skill_id=data.source_skill_id,
-                target_skill_id=data.target_skill_id,
-                relationship_type=data.relationship_type,
-                verification_status=data.verification_status,
-                source_id=data.source_id,
-                evidence_note=data.evidence_note,
-            )
-            self.session.add(rel)
-            try:
-                await self.session.commit()
-                await self.session.refresh(rel)
-                return rel
-            except IntegrityError as exc:
-                await self.session.rollback()
-                if attempt == max_attempts - 1:
-                    raise ConflictError from exc
-                continue
-            except Exception:
-                await self.session.rollback()
-                raise
-
-    async def update(self, rel: SkillRelationship, data: SkillRelationshipUpdate) -> SkillRelationship:
-        if data.relationship_type is not None:
-            rel.relationship_type = data.relationship_type
-        if data.verification_status is not None:
-            rel.verification_status = data.verification_status
-        if data.source_id is not None:
-            rel.source_id = data.source_id
-        if data.evidence_note is not None:
-            rel.evidence_note = data.evidence_note
+    async def update(
+        self,
+        rel: SkillRelationship,
+        data: SkillRelationshipUpdate,
+        reviewed_by: uuid.UUID | None = None,
+    ) -> SkillRelationship:
+        for field, value in data.model_dump(exclude_unset=True).items():
+            setattr(rel, field, value)
+        if reviewed_by is not None:
+            rel.reviewed_by = reviewed_by
         rel.updated_at = datetime.now(timezone.utc)
-
-        self.session.add(rel)
-        try:
-            await self.session.commit()
-            await self.session.refresh(rel)
-            return rel
-        except IntegrityError as exc:
-            await self.session.rollback()
-            raise ConflictError from exc
-        except Exception:
-            await self.session.rollback()
-            raise
+        return await commit_or_conflict(self.session, rel, refresh_targets=(rel,))
 
     async def delete(self, rel: SkillRelationship) -> None:
-        try:
-            await self.session.delete(rel)
-            await self.session.commit()
-        except Exception:
-            await self.session.rollback()
-            raise
+        await delete_and_commit(self.session, rel)
 
 
 class CandidateRelationshipRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_by_id(self, candidate_relationship_id: str) -> CandidateSkillRelationship | None:
+    async def get_by_id(self, candidate_relationship_id: uuid.UUID) -> CandidateSkillRelationship | None:
         return await self.session.get(CandidateSkillRelationship, candidate_relationship_id)
 
     async def get_pending_duplicate(
@@ -199,28 +147,20 @@ class CandidateRelationshipRepository:
             stmt = stmt.where(CandidateSkillRelationship.proposed_relationship_type == proposed_relationship_type)
         if review_status:
             stmt = stmt.where(CandidateSkillRelationship.review_status == review_status)
-        stmt = stmt.order_by(CandidateSkillRelationship.created_at.desc(), CandidateSkillRelationship.candidate_relationship_id).limit(limit).offset(offset)
+        stmt = (
+            stmt.order_by(
+                CandidateSkillRelationship.created_at.desc(),
+                CandidateSkillRelationship.candidate_relationship_id,
+            )
+            .limit(limit)
+            .offset(offset)
+        )
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
-    async def generate_next_candidate_relationship_id(self) -> str:
-        # Find the highest existing CR sequence number and increment it.
-        stmt = select(CandidateSkillRelationship.candidate_relationship_id).where(
-            CandidateSkillRelationship.candidate_relationship_id.like("CR-%")
-        )
-        result = await self.session.execute(stmt)
-        ids = result.scalars().all()
-        max_num = 0
-        for cid in ids:
-            num_part = cid[3:]
-            if num_part.isdigit():
-                max_num = max(max_num, int(num_part))
-        return f"CR-{max_num + 1:06d}"
-
     async def create(self, data: CandidateRelationshipCreate) -> CandidateSkillRelationship:
-        candidate_id = await self.generate_next_candidate_relationship_id()
         candidate = CandidateSkillRelationship(
-            candidate_relationship_id=candidate_id,
+            candidate_relationship_id=uuid.uuid4(),
             source_skill_id=data.source_skill_id,
             target_skill_id=data.target_skill_id,
             proposed_relationship_type=data.proposed_relationship_type,
@@ -228,55 +168,39 @@ class CandidateRelationshipRepository:
             review_status="PENDING",
             source_id=data.source_id,
             review_note=data.review_note,
+            evidence_description=data.evidence_description,
+            evidence_url=data.evidence_url,
         )
-        self.session.add(candidate)
-        try:
-            await self.session.commit()
-            await self.session.refresh(candidate)
-            return candidate
-        except IntegrityError as exc:
-            await self.session.rollback()
-            raise ConflictError from exc
-        except Exception:
-            await self.session.rollback()
-            raise
+        return await commit_or_conflict(self.session, candidate, refresh_targets=(candidate,))
 
     async def reject(
         self,
         candidate: CandidateSkillRelationship,
         review_note: str | None = None,
-        reviewed_by: str | None = None,
+        reviewed_by: uuid.UUID | None = None,
     ) -> CandidateSkillRelationship:
         candidate.review_status = "REJECTED"
         if review_note is not None:
             candidate.review_note = review_note
         if reviewed_by is not None:
-            candidate.reviewed_by = reviewed_by
+            candidate.reviewed_by = str(reviewed_by)
         candidate.reviewed_at = datetime.now(timezone.utc)
-        self.session.add(candidate)
-        try:
-            await self.session.commit()
-            await self.session.refresh(candidate)
-            return candidate
-        except Exception:
-            await self.session.rollback()
-            raise
+        return await commit_or_conflict(self.session, candidate, refresh_targets=(candidate,))
 
     async def approve_and_create_canonical(
         self,
         candidate: CandidateSkillRelationship,
-        canonical_relationship_id: str,
         source_skill_id: str,
         target_skill_id: str,
         relationship_type: str,
         review_note: str | None = None,
         evidence_description: str | None = None,
         evidence_url: str | None = None,
-        reviewed_by: str | None = None,
+        reviewed_by: uuid.UUID | None = None,
     ) -> tuple[CandidateSkillRelationship, SkillRelationship]:
-        # Atomically promote the refined candidate relationship to canonical and mark it approved.
+        canonical_id = uuid.uuid4()
         canonical_rel = SkillRelationship(
-            relationship_id=canonical_relationship_id,
+            relationship_id=canonical_id,
             source_skill_id=source_skill_id,
             target_skill_id=target_skill_id,
             relationship_type=relationship_type,
@@ -287,31 +211,33 @@ class CandidateRelationshipRepository:
             evidence_url=evidence_url,
             reviewed_by=reviewed_by,
         )
-        candidate.source_skill_id = source_skill_id
-        candidate.target_skill_id = target_skill_id
-        candidate.proposed_relationship_type = relationship_type
-        candidate.review_status = "APPROVED"
-        if review_note is not None:
-            candidate.review_note = review_note
-        candidate.evidence_description = evidence_description
-        candidate.evidence_url = evidence_url
-        candidate.reviewed_by = reviewed_by
-        candidate.canonical_relationship_id = canonical_relationship_id
-        candidate.reviewed_at = datetime.now(timezone.utc)
-
         self.session.add(canonical_rel)
-        self.session.add(candidate)
         try:
+            # Flush parent canonical relationship before mutating candidate FK so SQLite/Postgres FK checks pass.
+            await self.session.flush()
+            candidate.source_skill_id = source_skill_id
+            candidate.target_skill_id = target_skill_id
+            candidate.proposed_relationship_type = relationship_type
+            candidate.review_status = "APPROVED"
+            if review_note is not None:
+                candidate.review_note = review_note
+            candidate.evidence_description = evidence_description
+            candidate.evidence_url = evidence_url
+            candidate.reviewed_by = str(reviewed_by) if reviewed_by is not None else None
+            candidate.canonical_relationship_id = canonical_id
+            candidate.reviewed_at = datetime.now(timezone.utc)
+            self.session.add(candidate)
             await self.session.commit()
-            await self.session.refresh(candidate)
-            await self.session.refresh(canonical_rel)
-            return candidate, canonical_rel
         except IntegrityError as exc:
             await self.session.rollback()
             raise ConflictError from exc
         except Exception:
             await self.session.rollback()
             raise
+
+        await self.session.refresh(candidate)
+        await self.session.refresh(canonical_rel)
+        return candidate, canonical_rel
 
 
 class DomainAssociationRepository:
@@ -337,29 +263,13 @@ class DomainAssociationRepository:
         return result.scalars().first()
 
     async def add_skill_domain(self, skill_id: str, domain_id: str) -> SkillDomain:
-        # Return existing association if present, otherwise create a new one.
         existing = await self.get_skill_domain(skill_id, domain_id)
         if existing:
             return existing
-        assoc = SkillDomain(skill_id=skill_id, domain_id=domain_id)
-        self.session.add(assoc)
-        try:
-            await self.session.commit()
-            return assoc
-        except IntegrityError as exc:
-            await self.session.rollback()
-            raise ConflictError from exc
-        except Exception:
-            await self.session.rollback()
-            raise
+        return await commit_or_conflict(self.session, SkillDomain(skill_id=skill_id, domain_id=domain_id))
 
     async def delete_skill_domain(self, assoc: SkillDomain) -> None:
-        try:
-            await self.session.delete(assoc)
-            await self.session.commit()
-        except Exception:
-            await self.session.rollback()
-            raise
+        await delete_and_commit(self.session, assoc)
 
     async def get_role_domains(self, role_id: str) -> Sequence[Domain]:
         stmt = (
@@ -380,26 +290,10 @@ class DomainAssociationRepository:
         return result.scalars().first()
 
     async def add_role_domain(self, role_id: str, domain_id: str) -> RoleDomain:
-        # Return existing association if present, otherwise create a new one.
         existing = await self.get_role_domain(role_id, domain_id)
         if existing:
             return existing
-        assoc = RoleDomain(role_id=role_id, domain_id=domain_id)
-        self.session.add(assoc)
-        try:
-            await self.session.commit()
-            return assoc
-        except IntegrityError as exc:
-            await self.session.rollback()
-            raise ConflictError from exc
-        except Exception:
-            await self.session.rollback()
-            raise
+        return await commit_or_conflict(self.session, RoleDomain(role_id=role_id, domain_id=domain_id))
 
     async def delete_role_domain(self, assoc: RoleDomain) -> None:
-        try:
-            await self.session.delete(assoc)
-            await self.session.commit()
-        except Exception:
-            await self.session.rollback()
-            raise
+        await delete_and_commit(self.session, assoc)

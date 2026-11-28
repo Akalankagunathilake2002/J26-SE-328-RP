@@ -1,9 +1,8 @@
-import unicodedata
 from difflib import SequenceMatcher
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.models.core import Skill, Role
-from app.models.aliases import SkillAlias, RoleAlias
+
+from app.core.text import normalize_name
+from app.repositories.aliases import RoleAliasRepository, SkillAliasRepository
+from app.repositories.core import RoleRepository, SkillRepository
 from app.schemas.normalization import (
     BulkNormalizeRequest,
     BulkNormalizeResponse,
@@ -11,70 +10,55 @@ from app.schemas.normalization import (
     SuggestedMatch,
 )
 
-def normalize_name(value: str) -> str:
-    # Standardize text by normalizing unicode, lowercasing, and collapsing spaces.
-    return " ".join(unicodedata.normalize("NFKC", value).casefold().split())
 
 class NormalizationService:
-    def __init__(self, session: AsyncSession):
-        self.session = session
+    def __init__(
+        self,
+        skill_repo: SkillRepository,
+        role_repo: RoleRepository,
+        skill_alias_repo: SkillAliasRepository,
+        role_alias_repo: RoleAliasRepository,
+    ):
+        self.skill_repo = skill_repo
+        self.role_repo = role_repo
+        self.skill_alias_repo = skill_alias_repo
+        self.role_alias_repo = role_alias_repo
 
     async def normalize_skills(self, request: BulkNormalizeRequest) -> BulkNormalizeResponse:
-        # Match a batch of skill names against canonical skills and verified aliases.
         return await self._normalize_entities(
             items=request.items,
-            model_cls=Skill,
-            alias_cls=SkillAlias,
+            entity_repo=self.skill_repo,
+            alias_repo=self.skill_alias_repo,
             id_attr="skill_id",
-            name_attr="preferred_name",
         )
 
     async def normalize_roles(self, request: BulkNormalizeRequest) -> BulkNormalizeResponse:
-        # Match a batch of role names against canonical roles and verified aliases.
         return await self._normalize_entities(
             items=request.items,
-            model_cls=Role,
-            alias_cls=RoleAlias,
+            entity_repo=self.role_repo,
+            alias_repo=self.role_alias_repo,
             id_attr="role_id",
-            name_attr="preferred_name",
         )
 
     async def _normalize_entities(
         self,
         items: list[str],
-        model_cls,
-        alias_cls,
+        entity_repo,
+        alias_repo,
         id_attr: str,
-        name_attr: str,
     ) -> BulkNormalizeResponse:
-        # Load canonical entities and index them by ID and normalized name.
-        canonical_result = await self.session.execute(select(model_cls))
-        canonicals = canonical_result.scalars().all()
+        id_name_pairs = await entity_repo.list_id_name_pairs(active_only=True)
+        canonical_by_id = {cid: cname for cid, cname in id_name_pairs}
+        canonical_by_norm = {normalize_name(cname): (cid, cname) for cid, cname in id_name_pairs}
 
-        canonical_by_id = {getattr(c, id_attr): getattr(c, name_attr) for c in canonicals}
-        canonical_by_norm = {
-            normalize_name(getattr(c, name_attr)): (getattr(c, id_attr), getattr(c, name_attr))
-            for c in canonicals
-        }
-
-        # Deduplicate input items to minimize lookup overhead.
         unique_inputs = list(dict.fromkeys(items))
         norm_map = {item: normalize_name(item) for item in unique_inputs}
+        unmatched_norms = {norm for norm in norm_map.values() if norm not in canonical_by_norm}
 
-        unmatched_norms = {
-            norm for norm in norm_map.values() if norm not in canonical_by_norm
-        }
-
-        # Look up unmatched inputs against verified aliases.
-        alias_by_norm = {}
+        alias_by_norm: dict[str, tuple[str, str]] = {}
         if unmatched_norms:
-            alias_result = await self.session.execute(
-                select(alias_cls).where(
-                    alias_cls.normalized_alias.in_(unmatched_norms),
-                    alias_cls.verification_status == "VERIFIED",
-                )
-            )
-            for alias in alias_result.scalars().all():
+            verified_aliases = await alias_repo.get_verified_by_normalized_aliases(unmatched_norms)
+            for alias in verified_aliases:
                 target_id = getattr(alias, id_attr)
                 target_name = canonical_by_id.get(target_id)
                 if target_name:
@@ -86,7 +70,6 @@ class NormalizationService:
         for item in unique_inputs:
             norm = norm_map[item]
             if norm in canonical_by_norm:
-                # Exact match on canonical preferred name.
                 cid, cname = canonical_by_norm[norm]
                 cached_results[item] = NormalizeResultItem(
                     input_name=item,
@@ -97,7 +80,6 @@ class NormalizationService:
                     suggestions=[],
                 )
             elif norm in alias_by_norm:
-                # Match found through a verified alias.
                 cid, cname = alias_by_norm[norm]
                 cached_results[item] = NormalizeResultItem(
                     input_name=item,
@@ -108,7 +90,6 @@ class NormalizationService:
                     suggestions=[],
                 )
             else:
-                # Find fuzzy suggestions with at least 80% similarity.
                 suggestions: list[SuggestedMatch] = []
                 for c_norm, (cid, cname) in canonical_norms:
                     score = SequenceMatcher(None, norm, c_norm).ratio()
@@ -142,6 +123,4 @@ class NormalizationService:
                         suggestions=[],
                     )
 
-        # Preserve the original request order, including duplicates.
-        ordered_results = [cached_results[item] for item in items]
-        return BulkNormalizeResponse(results=ordered_results)
+        return BulkNormalizeResponse(results=[cached_results[item] for item in items])

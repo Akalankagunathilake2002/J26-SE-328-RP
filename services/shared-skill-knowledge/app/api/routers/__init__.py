@@ -7,7 +7,9 @@ from app.api.routers.relationships import router as relationships_router
 from app.api.routers.candidate_relationships import router as candidate_relationships_router
 from app.api.routers.skill_domains import router as skill_domains_router
 from app.api.routers.role_domains import router as role_domains_router
-from app.api.routers.snapshots import router as snapshots_router
+from app.api.routers.aliases import router as aliases_router
+from app.api.routers.sources import router as sources_router
+from app.api.routers.embeddings import router as embeddings_router
 
 __all__ = [
     "domains_router",
@@ -19,5 +21,7 @@ __all__ = [
     "candidate_relationships_router",
     "skill_domains_router",
     "role_domains_router",
-    "snapshots_router",
+    "aliases_router",
+    "sources_router",
+    "embeddings_router",
 ]

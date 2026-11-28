@@ -1,13 +1,16 @@
 from typing import Annotated, Literal
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints, model_validator
-from app.schemas.core import SkillType, SkillNature
+import uuid
+from pydantic import BaseModel, ConfigDict, StringConstraints, model_validator
+from app.schemas.core import SkillType, SkillNature, Id50, Name255
 
 CandidateEntityType = Literal["SKILL", "ROLE"]
 CandidateReviewStatus = Literal["PENDING", "APPROVED", "REJECTED"]
 ReviewAction = Literal["APPROVE", "REJECT"]
+AliasVerificationStatus = Literal["VERIFIED", "UNVERIFIED"]
 
 SubmittedName = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)]
+
 
 class CandidateEntityCreate(BaseModel):
     entity_type: CandidateEntityType
@@ -22,8 +25,11 @@ class CandidateEntityCreate(BaseModel):
     def validate_role_fields(self):
         if self.entity_type == "ROLE":
             if self.proposed_skill_type is not None or self.proposed_skill_nature is not None:
-                raise ValueError("Skill-specific fields (proposed_skill_type, proposed_skill_nature) cannot be set for ROLE candidates")
+                raise ValueError(
+                    "Skill-specific fields (proposed_skill_type, proposed_skill_nature) cannot be set for ROLE candidates"
+                )
         return self
+
 
 class CandidateEntityReview(BaseModel):
     action: ReviewAction
@@ -31,8 +37,9 @@ class CandidateEntityReview(BaseModel):
     skill_type: SkillType | None = None
     skill_nature: SkillNature | None = None
 
+
 class CandidateEntityOut(BaseModel):
-    candidate_entity_id: str
+    candidate_entity_id: uuid.UUID
     entity_type: CandidateEntityType
     submitted_name: str
     normalized_name: str
@@ -46,6 +53,25 @@ class CandidateEntityOut(BaseModel):
     matched_entity_id: str | None = None
     created_at: datetime
     reviewed_at: datetime | None = None
+    reviewed_by: uuid.UUID | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
+
+class CandidateMergeAsAliasRequest(BaseModel):
+    target_entity_id: Id50
+    alias_text: Name255 | None = None
+    verification_status: AliasVerificationStatus = "VERIFIED"
+    source_id: uuid.UUID | None = None
+    review_note: str | None = None
+    retire_previous_canonical: bool = True
+
+
+class CandidateMergeAsAliasResponse(BaseModel):
+    candidate: CandidateEntityOut
+    alias_id: uuid.UUID
+    target_entity_id: str
+    alias_text: str
+    normalized_alias: str
+    verification_status: AliasVerificationStatus
+    retired_entity_id: str | None = None
