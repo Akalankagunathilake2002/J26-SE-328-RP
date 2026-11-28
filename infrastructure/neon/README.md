@@ -43,6 +43,19 @@ One PostgreSQL database, `skillaro`, with one schema per component, as agreed in
 
 `infrastructure/.env` is ignored by git. Never commit it or paste its values anywhere.
 
+### Changes after the v2 design
+
+`setup.sql` also runs the files in `migrations/` (each is safe to run again). To add one to a database that
+was set up before it, run it as the owner:
+
+```bash
+psql "$NEON_OWNER_URL" -X -f infrastructure/neon/migrations/2026-11-28-company-job-posts.sql
+```
+
+| File | What it adds |
+|---|---|
+| `2026-11-28-company-job-posts.sql` | C01: company details and admin review columns on `companies`, `apply_url` on `company_vacancies`, and the new `vacancy_applications` and `application_cvs` tables (students' job applications) |
+
 ## Run Auth, C01 and C02 on Neon
 
 These three already match the v2 tables. `docker-compose.neon.yml` points them at Neon; every other

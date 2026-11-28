@@ -53,6 +53,8 @@ services:
     environment:
       JOB_MARKET_INTELLIGENCE_PORT: ${JOB_MARKET_INTELLIGENCE_PORT:-8003}
       SKILLBRIDGE_DATA_DIR: /service/data
+      # Company job posts check each caller's login here (they also need a database: docker-compose.neon.yml)
+      SKILLBRIDGE_AUTH_URL: http://auth-service:8006/auth
     volumes:
       # Only the processed data (no personal details), read-only. Ads are collected by
       # job-market-sync below or on the host: see services/job-market-intelligence-engine/README.md.

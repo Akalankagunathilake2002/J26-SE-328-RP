@@ -14,6 +14,7 @@ dependencies = [
     "fastapi>=0.115",  # the Market Pulse API (app/main.py)
     "uvicorn[standard]>=0.30",
     "SQLAlchemy>=2.0",  # the PostgreSQL loader (app/database/)
+    "python-multipart>=0.0.9",  # CV uploads for company job posts (app/companies/)
 ]
 
 [project.optional-dependencies]

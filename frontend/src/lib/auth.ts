@@ -44,10 +44,16 @@ async function errorFrom(response: Response): Promise<AuthServiceError> {
   return new AuthServiceError("Something went wrong. Please try again.");
 }
 
-export async function registerAccount(fullName: string, email: string, password: string): Promise<void> {
+/** Creates an account. "company" accounts (role hr) post jobs for their company. */
+export async function registerAccount(
+  fullName: string,
+  email: string,
+  password: string,
+  accountType: "student" | "company" = "student",
+): Promise<void> {
   const response = await callAuthService("/auth/register", {
     method: "POST",
-    body: JSON.stringify({ full_name: fullName, email, password }),
+    body: JSON.stringify({ full_name: fullName, email, password, account_type: accountType }),
   });
   if (!response.ok) throw await errorFrom(response);
 }
@@ -90,6 +96,13 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
 export async function requireUser(currentPath: string): Promise<User> {
   const user = await getCurrentUser();
   if (!user) redirect(loginPath(currentPath));
+  return user;
+}
+
+/** A company (HR) account; anyone else is sent to login, or home when logged in with another kind of account. */
+export async function requireCompanyUser(currentPath: string): Promise<User> {
+  const user = await requireUser(currentPath);
+  if (user.role !== "hr") redirect("/");
   return user;
 }
 

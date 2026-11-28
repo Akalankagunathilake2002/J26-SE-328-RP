@@ -8,7 +8,7 @@ user. Passwords are hashed with Argon2; logins return a signed JWT access token.
 | Endpoint | Description |
 |---|---|
 | `GET /health` | Service status (`/auth/health` through the gateway) |
-| `POST /auth/register` | Create an account (`full_name`, `email`, `password`) |
+| `POST /auth/register` | Create an account (`full_name`, `email`, `password`, optional `account_type`: `student`, the default, gets role `user`; `company` gets role `hr` and posts jobs through C01) |
 | `POST /auth/login` | Exchange `email` + `password` for an access token |
 | `GET /auth/me` | The current user (`Authorization: Bearer <token>`) |
 

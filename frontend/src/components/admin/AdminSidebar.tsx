@@ -9,10 +9,12 @@ import {
   Clock,
   ExternalLink,
   Box,
+  Building2,
 } from "lucide-react";
 
 interface AdminSidebarProps {
   pendingCount?: number;
+  companyPendingCount?: number; // companies waiting for verification (company job posts)
 }
 
 const navItems = [
@@ -35,9 +37,16 @@ const navItems = [
     description: "Entity & relationship proposals",
     showBadge: true,
   },
+  {
+    href: "/admin/companies",
+    label: "Companies",
+    icon: Building2,
+    description: "Verify companies that post jobs",
+    companyBadge: true,
+  },
 ];
 
-export function AdminSidebar({ pendingCount = 0 }: AdminSidebarProps) {
+export function AdminSidebar({ pendingCount = 0, companyPendingCount = 0 }: AdminSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -87,6 +96,11 @@ export function AdminSidebar({ pendingCount = 0 }: AdminSidebarProps) {
                       {item.showBadge && pendingCount > 0 && (
                         <span className="flex size-5.5 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-[#FFB4D6] text-[11px] font-black text-ink">
                           {pendingCount}
+                        </span>
+                      )}
+                      {item.companyBadge && companyPendingCount > 0 && (
+                        <span className="flex size-5.5 shrink-0 items-center justify-center rounded-full border-2 border-ink bg-[#FFE66D] text-[11px] font-black text-ink">
+                          {companyPendingCount}
                         </span>
                       )}
                     </Link>

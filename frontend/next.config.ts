@@ -13,6 +13,8 @@ const nextConfig: NextConfig = {
   experimental: {
     // Forwarded requests time out after 30 s by default; a Skillaro lesson from the local LLM can take longer
     proxyTimeout: 300_000,
+    // Job applications send a CV (a PDF up to 2 MB) through a Server Action; the default limit is 1 MB
+    serverActions: { bodySizeLimit: "3mb" },
   },
 };
 

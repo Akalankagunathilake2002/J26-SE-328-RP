@@ -39,8 +39,10 @@ const looks = {
     // the old spacing (28 px, 40 px from xl), and the list's negative margin keeps the text where it was,
     // so the header is no wider or taller than before. py-0.5 on the phone row offsets the pill's height.
     mobileNav: "border-t border-[#ebe8e1] py-0.5",
-    list: "-mx-3 gap-1 text-[15.5px] xl:-mx-4 xl:gap-2 xl:text-[16.5px]",
-    link: "relative isolate inline-flex items-center rounded-full px-3 py-1.5 text-[#6b6979] transition-colors hover:bg-[#f1eee8] hover:text-[#141413] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6d4aff]/25 aria-[current=page]:bg-[#efe8ff] aria-[current=page]:text-[#4a2fd0] xl:px-4",
+    // Seven links since Jobs was added (28 Nov 2026): one size from 1280 px (the panel stops growing at 1400 px,
+    // so a larger size would push the user's name onto two lines), and a little smaller between 1024 and 1279 px.
+    list: "-mx-3 gap-1 text-[15.5px] lg:max-xl:-mx-2 lg:max-xl:gap-0.5 lg:max-xl:text-[14.5px]",
+    link: "relative isolate inline-flex items-center rounded-full px-3 py-1.5 text-[#6b6979] transition-colors hover:bg-[#f1eee8] hover:text-[#141413] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#6d4aff]/25 aria-[current=page]:bg-[#efe8ff] aria-[current=page]:text-[#4a2fd0] lg:max-xl:px-2",
   },
 };
 
@@ -58,7 +60,7 @@ export async function Navbar({
   return (
     <Shell className={`font-nav ${look.header}`}>
       <div className={look.panel}>
-        <div className="mx-auto grid h-[61px] max-w-[1440px] grid-cols-[1fr_auto] items-center gap-6 px-4 lg:grid-cols-[1fr_auto_1fr] lg:px-7">
+        <div className="mx-auto grid h-[61px] max-w-[1440px] grid-cols-[1fr_auto] items-center gap-6 px-4 lg:grid-cols-[1fr_auto_1fr] lg:px-7 lg:max-xl:gap-3">
           <Link href="/" aria-label="Skillaro home" className="justify-self-start">
             <Image
               src="/brand/skillaro-logo.png"
@@ -66,7 +68,7 @@ export async function Navbar({
               width={141}
               height={48}
               loading="eager"
-              className={look.logo}
+              className={`${look.logo} lg:max-xl:h-auto lg:max-xl:w-[118px]`}
             />
           </Link>
 
@@ -76,14 +78,16 @@ export async function Navbar({
 
           <div className="justify-self-end">
             {user ? (
-              <div className="flex items-center gap-3 text-[16px] font-medium">
+              <div className="flex items-center gap-3 text-[16px] font-medium lg:max-xl:gap-2">
                 <span
                   aria-hidden="true"
+                  title={user.full_name}
                   className={`grid size-8 place-items-center rounded-full text-[14px] font-bold ${look.avatar}`}
                 >
                   {user.full_name.charAt(0).toUpperCase()}
                 </span>
-                <span className="hidden sm:inline">{user.full_name}</span>
+                {/* Hidden on phones and on desktops below 1440 px (the links need the room); screen readers still get it. */}
+                <span className="sr-only whitespace-nowrap sm:not-sr-only lg:max-[1440px]:sr-only">{user.full_name}</span>
                 {user.role === "admin" && (
                   <Link
                     href="/admin"
@@ -93,7 +97,7 @@ export async function Navbar({
                   </Link>
                 )}
                 <form action={logout}>
-                  <button type="submit" className="ml-2 text-[15px] underline underline-offset-4 hover:text-brand-blue">
+                  <button type="submit" className="ml-2 text-[15px] whitespace-nowrap underline lg:max-xl:ml-0 underline-offset-4 hover:text-brand-blue">
                     Log out
                   </button>
                 </form>
