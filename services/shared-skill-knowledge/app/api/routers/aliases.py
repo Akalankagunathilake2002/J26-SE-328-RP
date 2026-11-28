@@ -1,7 +1,11 @@
 import uuid
 from fastapi import APIRouter, Depends, Query, status
 
-from app.api.dependencies import ADMIN_ROLES, READ_ROLES, get_alias_service, require_roles
+from app.api.dependencies import (
+    get_alias_service,
+    require_admin,
+    require_authenticated_user,
+)
 from app.core.security import Principal
 from app.schemas.aliases import (
     AliasCreate,
@@ -24,7 +28,7 @@ async def list_aliases_for_skill(
     verification_status: AliasVerificationStatus | None = None,
     search: str | None = None,
     service: AliasService = Depends(get_alias_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.list_skill_aliases(
         caller_role=principal.role,
@@ -41,7 +45,7 @@ async def create_skill_alias(
     skill_id: str,
     data: AliasCreate,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.create_skill_alias(skill_id, data)
 
@@ -54,7 +58,7 @@ async def list_aliases_for_role(
     verification_status: AliasVerificationStatus | None = None,
     search: str | None = None,
     service: AliasService = Depends(get_alias_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.list_role_aliases(
         caller_role=principal.role,
@@ -71,7 +75,7 @@ async def create_role_alias(
     role_id: str,
     data: AliasCreate,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.create_role_alias(role_id, data)
 
@@ -84,7 +88,7 @@ async def list_skill_aliases(
     verification_status: AliasVerificationStatus | None = None,
     search: str | None = None,
     service: AliasService = Depends(get_alias_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.list_skill_aliases(
         caller_role=principal.role,
@@ -100,7 +104,7 @@ async def list_skill_aliases(
 async def get_skill_alias(
     alias_id: uuid.UUID,
     service: AliasService = Depends(get_alias_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.get_skill_alias(alias_id, caller_role=principal.role)
 
@@ -110,7 +114,7 @@ async def update_skill_alias(
     alias_id: uuid.UUID,
     data: AliasUpdate,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.update_skill_alias(alias_id, data)
 
@@ -120,7 +124,7 @@ async def verify_skill_alias(
     alias_id: uuid.UUID,
     data: AliasVerifyRequest,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.verify_skill_alias(alias_id, data)
 
@@ -129,7 +133,7 @@ async def verify_skill_alias(
 async def delete_skill_alias(
     alias_id: uuid.UUID,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     await service.delete_skill_alias(alias_id)
 
@@ -142,7 +146,7 @@ async def list_role_aliases(
     verification_status: AliasVerificationStatus | None = None,
     search: str | None = None,
     service: AliasService = Depends(get_alias_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.list_role_aliases(
         caller_role=principal.role,
@@ -158,7 +162,7 @@ async def list_role_aliases(
 async def get_role_alias(
     alias_id: uuid.UUID,
     service: AliasService = Depends(get_alias_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.get_role_alias(alias_id, caller_role=principal.role)
 
@@ -168,7 +172,7 @@ async def update_role_alias(
     alias_id: uuid.UUID,
     data: AliasUpdate,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.update_role_alias(alias_id, data)
 
@@ -178,7 +182,7 @@ async def verify_role_alias(
     alias_id: uuid.UUID,
     data: AliasVerifyRequest,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.verify_role_alias(alias_id, data)
 
@@ -187,6 +191,6 @@ async def verify_role_alias(
 async def delete_role_alias(
     alias_id: uuid.UUID,
     service: AliasService = Depends(get_alias_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     await service.delete_role_alias(alias_id)

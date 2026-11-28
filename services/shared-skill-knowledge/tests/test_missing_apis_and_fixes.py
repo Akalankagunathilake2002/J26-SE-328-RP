@@ -421,18 +421,21 @@ async def test_embeddings_crud_and_validation(client: AsyncClient, admin_headers
     assert up.json()["embedding_dimension"] == 384
     assert len(up.json()["embedding"]) == 384
 
-    # Summary vs full vector list
-    summary_list = await client.get("/ssks/embeddings/skills", headers=service_headers)
+    # Internal service credential cannot access embeddings endpoints
+    assert (await client.get("/ssks/embeddings/skills", headers=service_headers)).status_code == 403
+
+    # Summary vs full vector list (admin only)
+    summary_list = await client.get("/ssks/embeddings/skills", headers=admin_headers)
     assert summary_list.status_code == 200
     assert "embedding" not in summary_list.json()[0]
 
-    full_list = await client.get("/ssks/embeddings/skills?include_vector=true", headers=service_headers)
+    full_list = await client.get("/ssks/embeddings/skills?include_vector=true", headers=admin_headers)
     assert full_list.status_code == 200
     assert len(full_list.json()[0]["embedding"]) == 384
 
     # Delete embedding
     assert (await client.delete(f"/ssks/embeddings/skills/{sk_id}", headers=admin_headers)).status_code == 204
-    assert (await client.get(f"/ssks/embeddings/skills/{sk_id}", headers=service_headers)).status_code == 404
+    assert (await client.get(f"/ssks/embeddings/skills/{sk_id}", headers=admin_headers)).status_code == 404
 
 
 @pytest.mark.anyio

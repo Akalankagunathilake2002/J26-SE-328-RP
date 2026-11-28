@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import AliasChoices, Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -15,6 +16,10 @@ class Settings(BaseSettings):
     jwt_issuer: str | None = None
     jwt_audience: str | None = None
     auth_url: str | None = None
+    internal_service_key: str = Field(
+        default="",
+        validation_alias=AliasChoices("INTERNAL_SERVICE_KEY", "SSKS_INTERNAL_SERVICE_KEY"),
+    )
 
 
 @lru_cache

@@ -1,17 +1,18 @@
 from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config.settings import Settings, get_settings
 from app.core.security import (
     ROLE_ADMIN,
     ROLE_HR,
-    ROLE_SERVICE,
     ROLE_USER,
+    SUPPORTED_ROLES,
     Principal,
     resolve_principal,
+    verify_internal_service_key,
 )
 from app.db.session import get_session
 from app.repositories.aliases import RoleAliasRepository, SkillAliasRepository
@@ -41,18 +42,26 @@ from app.services.relationships import (
 from app.services.sources import SourceService
 
 _bearer = HTTPBearer(auto_error=False)
+_internal_service_key_primary = APIKeyHeader(name="X-Internal-Service-Key", auto_error=False)
+_internal_service_key_alt = APIKeyHeader(name="X-Service-Key", auto_error=False)
 
-READ_ROLES = (ROLE_USER, ROLE_HR, ROLE_ADMIN, ROLE_SERVICE)
-CANDIDATE_SUBMIT_ROLES = (ROLE_HR, ROLE_ADMIN, ROLE_SERVICE)
-CANDIDATE_QUEUE_ROLES = (ROLE_HR, ROLE_ADMIN)
-ADMIN_ROLES = (ROLE_ADMIN,)
+_HR_OR_ADMIN_ROLES = frozenset({ROLE_HR, ROLE_ADMIN})
 
 
-async def get_current_principal(
-    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
-    settings: Annotated[Settings, Depends(get_settings)],
+def get_internal_service_key(
+    key1: Annotated[str | None, Depends(_internal_service_key_primary)],
+    key2: Annotated[str | None, Depends(_internal_service_key_alt)],
+) -> str | None:
+    """Extract internal service credential from primary or alias header."""
+    if key1 is not None:
+        return key1
+    return key2
+
+
+async def _authenticate_bearer(
+    credentials: HTTPAuthorizationCredentials | None,
+    settings: Settings,
 ) -> Principal:
-    """Authenticate caller from the Bearer JWT and return its verified principal."""
     if not credentials or credentials.scheme.lower() != "bearer" or not credentials.credentials.strip():
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -62,45 +71,93 @@ async def get_current_principal(
     return await resolve_principal(credentials.credentials, settings)
 
 
-def require_roles(*allowed_roles: str):
-    """Build a FastAPI dependency enforcing that the caller holds one of allowed_roles."""
-    allowed_set = frozenset(role.strip().upper() for role in allowed_roles)
-
-    async def _require_role(
-        principal: Annotated[Principal, Depends(get_current_principal)],
-    ) -> Principal:
-        if principal.role not in allowed_set:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Insufficient permissions (required roles: {', '.join(sorted(allowed_set))})",
-            )
-        return principal
-
-    return _require_role
-
-
-async def require_service_access(
-    principal: Annotated[Principal, Depends(get_current_principal)],
+async def get_current_principal(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    service_key: Annotated[str | None, Depends(get_internal_service_key)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> Principal:
-    """Restrict access to internal SERVICE or ADMIN principals."""
-    if principal.role not in (ROLE_SERVICE, ROLE_ADMIN):
+    """Authenticate human caller from Bearer JWT or reject internal service caller with 403."""
+    if service_key is not None:
+        verify_internal_service_key(service_key, settings)
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Service or admin authorization required",
+            detail="Internal services are not authorized for this operation",
         )
+
+    return await _authenticate_bearer(credentials, settings)
+
+
+def _enforce_roles(principal: Principal, allowed_roles: frozenset[str], detail: str) -> Principal:
+    if principal.role not in allowed_roles:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=detail)
     return principal
 
 
-async def require_reviewer(
+async def require_authenticated_user(
     principal: Annotated[Principal, Depends(get_current_principal)],
 ) -> Principal:
-    """Restrict candidate review operations to authenticated HR or ADMIN principals."""
-    if principal.role not in (ROLE_HR, ROLE_ADMIN):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Reviewer authorization required (HR or ADMIN role)",
-        )
-    return principal
+    """Allow any authenticated human role: user, hr, or admin."""
+    return _enforce_roles(principal, SUPPORTED_ROLES, "Authenticated user role required")
+
+
+async def require_hr_or_admin(
+    principal: Annotated[Principal, Depends(get_current_principal)],
+) -> Principal:
+    """Allow hr or admin human roles for candidate queue and review operations."""
+    return _enforce_roles(principal, _HR_OR_ADMIN_ROLES, "HR or admin authorization required")
+
+
+async def require_admin(
+    principal: Annotated[Principal, Depends(get_current_principal)],
+) -> Principal:
+    """Allow admin human role only for canonical knowledge management."""
+    return _enforce_roles(principal, frozenset({ROLE_ADMIN}), "Admin authorization required")
+
+
+async def _authenticate_human_or_service(
+    credentials: HTTPAuthorizationCredentials | None,
+    service_key: str | None,
+    settings: Settings,
+    allowed_human_roles: frozenset[str],
+    forbidden_detail: str,
+) -> Principal | None:
+    # Keep internal service credential validation isolated from human JWT auth.
+    if service_key is not None:
+        verify_internal_service_key(service_key, settings)
+        return None
+
+    principal = await _authenticate_bearer(credentials, settings)
+    return _enforce_roles(principal, allowed_human_roles, forbidden_detail)
+
+
+async def require_authenticated_user_or_service(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    service_key: Annotated[str | None, Depends(get_internal_service_key)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> Principal | None:
+    """Allow authenticated human callers or verified internal services for normalization."""
+    return await _authenticate_human_or_service(
+        credentials,
+        service_key,
+        settings,
+        SUPPORTED_ROLES,
+        "Authenticated user role required",
+    )
+
+
+async def require_hr_admin_or_service(
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
+    service_key: Annotated[str | None, Depends(get_internal_service_key)],
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> Principal | None:
+    """Allow hr/admin callers or verified internal services to submit candidate entities."""
+    return await _authenticate_human_or_service(
+        credentials,
+        service_key,
+        settings,
+        _HR_OR_ADMIN_ROLES,
+        "HR or admin authorization required",
+    )
 
 
 def get_core_service(session: AsyncSession = Depends(get_session)) -> CoreService:

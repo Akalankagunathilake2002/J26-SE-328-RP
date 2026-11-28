@@ -16,6 +16,7 @@ if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 os.environ.setdefault("JWT_SECRET", "test-secret-that-is-at-least-32-characters-long")
+os.environ.setdefault("INTERNAL_SERVICE_KEY", "test-internal-service-key-at-least-32-chars-long")
 
 from app.config.settings import get_settings
 
@@ -52,7 +53,7 @@ app.dependency_overrides[get_session] = override_get_session
 
 def make_jwt(
     *,
-    role: str | None = "USER",
+    role: str | None = "user",
     user_id: uuid.UUID | str | None = None,
     secret: str | None = None,
     issuer: str | None = None,
@@ -88,27 +89,26 @@ def auth_headers(role: str, user_id: uuid.UUID | None = None) -> dict[str, str]:
 ADMIN_UUID = uuid.UUID("11111111-1111-1111-1111-111111111111")
 HR_UUID = uuid.UUID("22222222-2222-2222-2222-222222222222")
 USER_UUID = uuid.UUID("33333333-3333-3333-3333-333333333333")
-SERVICE_UUID = uuid.UUID("44444444-4444-4444-4444-444444444444")
 
 
 @pytest.fixture
 def admin_headers() -> dict[str, str]:
-    return auth_headers("ADMIN", ADMIN_UUID)
+    return auth_headers("admin", ADMIN_UUID)
 
 
 @pytest.fixture
 def hr_headers() -> dict[str, str]:
-    return auth_headers("HR", HR_UUID)
+    return auth_headers("hr", HR_UUID)
 
 
 @pytest.fixture
 def user_headers() -> dict[str, str]:
-    return auth_headers("USER", USER_UUID)
+    return auth_headers("user", USER_UUID)
 
 
 @pytest.fixture
 def service_headers() -> dict[str, str]:
-    return auth_headers("SERVICE", SERVICE_UUID)
+    return {"X-Internal-Service-Key": get_settings().internal_service_key}
 
 
 @pytest.fixture

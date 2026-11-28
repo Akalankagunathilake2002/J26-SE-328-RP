@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends, Query, status
 
-from app.api.dependencies import ADMIN_ROLES, READ_ROLES, get_core_service, require_roles
+from app.api.dependencies import (
+    get_core_service,
+    require_admin,
+    require_authenticated_user,
+)
 from app.schemas.core import EntityStatus, RoleCreate, RoleOut, RoleUpdate
 from app.services.core import CoreService
 
@@ -15,7 +19,7 @@ async def list_roles(
     domain_id: str | None = None,
     search: str | None = None,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.list_roles(
         limit=limit,
@@ -30,7 +34,7 @@ async def list_roles(
 async def get_role(
     role_id: str,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.get_role(role_id)
 
@@ -39,7 +43,7 @@ async def get_role(
 async def create_role(
     data: RoleCreate,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.create_role(data)
 
@@ -49,7 +53,7 @@ async def update_role(
     role_id: str,
     data: RoleUpdate,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.update_role(role_id, data)
 
@@ -58,6 +62,6 @@ async def update_role(
 async def retire_role(
     role_id: str,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.retire_role(role_id)

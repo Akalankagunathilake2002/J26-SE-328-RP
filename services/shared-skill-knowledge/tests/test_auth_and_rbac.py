@@ -73,11 +73,12 @@ async def test_jwt_validation_failures_return_401(client: AsyncClient):
     assert (
         await client.get("/ssks/skills/", headers={"Authorization": f"Bearer {bad_sub}"})
     ).status_code == 401
-    # Unsupported role
-    bad_role = make_jwt(role="SUPERUSER")
-    assert (
-        await client.get("/ssks/skills/", headers={"Authorization": f"Bearer {bad_role}"})
-    ).status_code == 401
+    # Unsupported role (including deprecated 'service' JWT role)
+    for invalid_role in ("SUPERUSER", "service", "SERVICE"):
+        bad_role = make_jwt(role=invalid_role)
+        assert (
+            await client.get("/ssks/skills/", headers={"Authorization": f"Bearer {bad_role}"})
+        ).status_code == 401
 
 
 @pytest.mark.anyio
@@ -279,8 +280,8 @@ async def test_unconfigured_jwt_secret_fails_closed(monkeypatch):
 
 
 @pytest.mark.anyio
-async def test_rbac_matrix_across_user_hr_service_admin(
-    client: AsyncClient, user_headers, hr_headers, service_headers, admin_headers
+async def test_rbac_matrix_across_user_hr_admin(
+    client: AsyncClient, user_headers, hr_headers, admin_headers
 ):
     async with TestingSessionLocal() as session:
         session.add(Domain(domain_id="DOM-IT", code="IT", name="IT"))
@@ -335,29 +336,32 @@ async def test_rbac_matrix_across_user_hr_service_admin(
         )
         await session.commit()
 
-    for hdrs in (user_headers, service_headers):
-        assert (await client.get("/ssks/skills/", headers=hdrs)).status_code == 200
-        assert (await client.get("/ssks/roles/", headers=hdrs)).status_code == 200
-        assert (await client.get("/ssks/domains/", headers=hdrs)).status_code == 200
-        assert (await client.get("/ssks/sources", headers=hdrs)).status_code == 200
-        assert (await client.get("/ssks/skills/SK-1/external-ids", headers=hdrs)).status_code == 200
-        assert (
-            await client.post("/ssks/normalize/skills", headers=hdrs, json={"items": ["Python"]})
-        ).status_code == 200
+    # user: can read published knowledge and normalize, cannot see unverified or manage/review
+    assert (await client.get("/ssks/skills/", headers=user_headers)).status_code == 200
+    assert (await client.get("/ssks/roles/", headers=user_headers)).status_code == 200
+    assert (await client.get("/ssks/domains/", headers=user_headers)).status_code == 200
+    assert (await client.get("/ssks/sources", headers=user_headers)).status_code == 200
+    assert (await client.get("/ssks/skills/SK-1/external-ids", headers=user_headers)).status_code == 200
+    assert (
+        await client.post("/ssks/normalize/skills", headers=user_headers, json={"items": ["Python"]})
+    ).status_code == 200
+    assert (
+        await client.post("/ssks/normalize/roles", headers=user_headers, json={"items": ["Backend Engineer"]})
+    ).status_code == 200
 
-        rels = await client.get("/ssks/relationships", headers=hdrs)
-        assert rels.status_code == 200
-        assert all(r["verification_status"] == "VERIFIED" for r in rels.json())
-        assert (
-            await client.get("/ssks/relationships?verification_status=UNVERIFIED", headers=hdrs)
-        ).status_code == 403
+    rels = await client.get("/ssks/relationships", headers=user_headers)
+    assert rels.status_code == 200
+    assert all(r["verification_status"] == "VERIFIED" for r in rels.json())
+    assert (
+        await client.get("/ssks/relationships?verification_status=UNVERIFIED", headers=user_headers)
+    ).status_code == 403
 
-        s_aliases = await client.get("/ssks/skills/SK-1/aliases", headers=hdrs)
-        assert s_aliases.status_code == 200
-        assert [a["alias_text"] for a in s_aliases.json()] == ["Py3"]
-        assert (
-            await client.get("/ssks/skills/SK-1/aliases?verification_status=UNVERIFIED", headers=hdrs)
-        ).status_code == 403
+    s_aliases = await client.get("/ssks/skills/SK-1/aliases", headers=user_headers)
+    assert s_aliases.status_code == 200
+    assert [a["alias_text"] for a in s_aliases.json()] == ["Py3"]
+    assert (
+        await client.get("/ssks/skills/SK-1/aliases?verification_status=UNVERIFIED", headers=user_headers)
+    ).status_code == 403
 
     assert (
         await client.post(
@@ -384,6 +388,7 @@ async def test_rbac_matrix_across_user_hr_service_admin(
         )
     ).status_code == 403
 
+    # hr: user permissions + unverified views + candidate submission/queue/review, blocked from admin CRUD
     assert (
         await client.get("/ssks/skills/SK-1/aliases?verification_status=UNVERIFIED", headers=hr_headers)
     ).status_code == 200
@@ -413,37 +418,31 @@ async def test_rbac_matrix_across_user_hr_service_admin(
         )
     ).status_code == 403
 
-    svc_cand = await client.post(
+    hr_cand = await client.post(
         "/ssks/candidates/entities",
-        headers=service_headers,
+        headers=hr_headers,
         json={"entity_type": "SKILL", "submitted_name": "Terraform", "proposed_skill_type": "SOFTWARE_OR_TOOL"},
     )
-    assert svc_cand.status_code == 201
-    svc_cand_id = svc_cand.json()["candidate_entity_id"]
-    assert (await client.get("/ssks/candidates/entities", headers=service_headers)).status_code == 403
-    assert (
-        await client.patch(
-            f"/ssks/candidates/entities/{svc_cand_id}/review",
-            headers=service_headers,
-            json={"action": "APPROVE"},
-        )
-    ).status_code == 403
+    assert hr_cand.status_code == 201
+    hr_cand_id = hr_cand.json()["candidate_entity_id"]
+    assert (await client.get("/ssks/candidates/entities", headers=hr_headers)).status_code == 200
+    assert (await client.get(f"/ssks/candidates/entities/{hr_cand_id}", headers=hr_headers)).status_code == 200
     assert (
         await client.post(
-            f"/ssks/candidates/entities/{svc_cand_id}/merge-as-alias",
+            f"/ssks/candidates/entities/{hr_cand_id}/merge-as-alias",
             headers=hr_headers,
             json={"target_entity_id": "SK-1"},
         )
     ).status_code == 403
-    assert (await client.get("/ssks/embeddings/skills", headers=service_headers)).status_code == 200
     assert (
-        await client.put(
-            "/ssks/embeddings/skills/SK-1",
-            headers=service_headers,
-            json={"embedding_model": "m", "embedding_text_hash": "a" * 64, "embedding": [0.1] * 384},
+        await client.patch(
+            f"/ssks/candidates/entities/{hr_cand_id}/review",
+            headers=hr_headers,
+            json={"action": "APPROVE"},
         )
-    ).status_code == 403
+    ).status_code == 200
 
+    # admin: full management permissions including embeddings and merge-as-alias
     assert (
         await client.put(
             "/ssks/embeddings/skills/SK-1",
@@ -451,7 +450,133 @@ async def test_rbac_matrix_across_user_hr_service_admin(
             json={"embedding_model": "m", "embedding_text_hash": "a" * 64, "embedding": [0.1] * 384},
         )
     ).status_code == 200
-    assert (await client.get("/ssks/embeddings/skills/SK-1", headers=service_headers)).status_code == 200
+    assert (await client.get("/ssks/embeddings/skills", headers=admin_headers)).status_code == 200
+    assert (await client.get("/ssks/embeddings/skills/SK-1", headers=admin_headers)).status_code == 200
+
+
+@pytest.mark.anyio
+async def test_internal_service_key_permissions_and_fail_closed(
+    client: AsyncClient, service_headers, monkeypatch
+):
+    async with TestingSessionLocal() as session:
+        session.add(Skill(skill_id="SK-10", preferred_name="Python", skill_type="PROGRAMMING_LANGUAGE"))
+        session.add(Role(role_id="RL-10", preferred_name="Data Engineer"))
+        await session.commit()
+
+    # 1. Valid internal credential can normalize skills and roles, preserving contract fields
+    norm_skills = await client.post(
+        "/ssks/normalize/skills",
+        headers=service_headers,
+        json={"items": ["Python", "NonExistentSkillXYZ"]},
+    )
+    assert norm_skills.status_code == 200
+    skill_results = norm_skills.json()["results"]
+    assert len(skill_results) == 2
+    for item in skill_results:
+        assert {"status", "matching_method", "canonical_id", "preferred_name", "suggestions"} <= set(item.keys())
+    assert skill_results[0]["canonical_id"] == "SK-10"
+    assert skill_results[0]["preferred_name"] == "Python"
+    assert skill_results[0]["status"] == "MATCHED"
+
+    norm_roles = await client.post(
+        "/ssks/normalize/roles",
+        headers=service_headers,
+        json={"items": ["Data Engineer"]},
+    )
+    assert norm_roles.status_code == 200
+    role_item = norm_roles.json()["results"][0]
+    assert role_item["canonical_id"] == "RL-10"
+    assert role_item["preferred_name"] == "Data Engineer"
+    assert {"status", "matching_method", "canonical_id", "preferred_name", "suggestions"} <= set(role_item.keys())
+
+    # 2. Valid internal credential can submit candidate entities
+    cand_res = await client.post(
+        "/ssks/candidates/entities",
+        headers=service_headers,
+        json={
+            "entity_type": "SKILL",
+            "submitted_name": "Polars",
+            "proposed_skill_type": "SOFTWARE_OR_TOOL",
+            "source_component": "C01",
+        },
+    )
+    assert cand_res.status_code == 201
+    cand_id = cand_res.json()["candidate_entity_id"]
+    secret_val = service_headers["X-Internal-Service-Key"]
+    assert secret_val not in cand_res.text
+
+    # 3. Internal credential cannot list/review candidates or merge aliases
+    assert (await client.get("/ssks/candidates/entities", headers=service_headers)).status_code == 403
+    assert (await client.get(f"/ssks/candidates/entities/{cand_id}", headers=service_headers)).status_code == 403
+    assert (
+        await client.patch(
+            f"/ssks/candidates/entities/{cand_id}/review",
+            headers=service_headers,
+            json={"action": "APPROVE"},
+        )
+    ).status_code == 403
+    assert (
+        await client.post(
+            f"/ssks/candidates/entities/{cand_id}/merge-as-alias",
+            headers=service_headers,
+            json={"target_entity_id": "SK-10"},
+        )
+    ).status_code == 403
+
+    # 4. Internal credential cannot modify canonical knowledge or bypass unrelated restricted endpoints
+    assert (
+        await client.post(
+            "/ssks/skills/",
+            headers=service_headers,
+            json={"preferred_name": "Go", "skill_type": "PROGRAMMING_LANGUAGE"},
+        )
+    ).status_code == 403
+    assert (
+        await client.patch("/ssks/skills/SK-10", headers=service_headers, json={"description": "blocked"})
+    ).status_code == 403
+    assert (await client.post("/ssks/skills/SK-10/retire", headers=service_headers)).status_code == 403
+    assert (
+        await client.post("/ssks/skills/SK-10/aliases", headers=service_headers, json={"alias_text": "Blocked"})
+    ).status_code == 403
+    assert (await client.get("/ssks/embeddings/skills", headers=service_headers)).status_code == 403
+    assert (
+        await client.put(
+            "/ssks/embeddings/skills/SK-10",
+            headers=service_headers,
+            json={"embedding_model": "m", "embedding_text_hash": "a" * 64, "embedding": [0.1] * 384},
+        )
+    ).status_code == 403
+
+    # 5. Missing, blank, or invalid internal credentials are rejected
+    assert (await client.post("/ssks/normalize/skills", json={"items": ["Python"]})).status_code == 401
+    assert (
+        await client.post(
+            "/ssks/normalize/skills",
+            headers={"X-Internal-Service-Key": ""},
+            json={"items": ["Python"]},
+        )
+    ).status_code == 401
+    bad_key_res = await client.post(
+        "/ssks/candidates/entities",
+        headers={"X-Internal-Service-Key": "wrong-key-that-does-not-match-configured-secret"},
+        json={"entity_type": "SKILL", "submitted_name": "BadAuthSkill", "proposed_skill_type": "SOFTWARE_OR_TOOL"},
+    )
+    assert bad_key_res.status_code == 401
+    assert secret_val not in bad_key_res.text
+
+    # 6. Unconfigured or too-short INTERNAL_SERVICE_KEY fails closed (503)
+    for bad_cfg in ("", "too-short"):
+        monkeypatch.setenv("INTERNAL_SERVICE_KEY", bad_cfg)
+        get_settings.cache_clear()
+        res = await client.post(
+            "/ssks/normalize/skills",
+            headers={"X-Internal-Service-Key": "some-attempt-key-at-least-32-chars-long"},
+            json={"items": ["Python"]},
+        )
+        assert res.status_code == 503
+
+    monkeypatch.setenv("INTERNAL_SERVICE_KEY", secret_val)
+    get_settings.cache_clear()
 
 
 @pytest.mark.anyio
