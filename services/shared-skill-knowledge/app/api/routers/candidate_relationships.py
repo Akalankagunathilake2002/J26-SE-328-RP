@@ -1,13 +1,22 @@
+import uuid
 from fastapi import APIRouter, Depends, Query, status
+
+from app.api.dependencies import (
+    CANDIDATE_QUEUE_ROLES,
+    CANDIDATE_SUBMIT_ROLES,
+    get_candidate_relationship_service,
+    require_reviewer,
+    require_roles,
+)
+from app.core.security import Principal
 from app.schemas.relationships import (
     CandidateRelationshipCreate,
-    CandidateRelationshipReview,
     CandidateRelationshipOut,
-    SkillRelationshipType,
+    CandidateRelationshipReview,
     CandidateRelationshipReviewStatus,
+    SkillRelationshipType,
 )
 from app.services.relationships import CandidateRelationshipService
-from app.api.dependencies import get_candidate_relationship_service, verify_reviewer
 
 router = APIRouter(prefix="/candidates/relationships", tags=["candidate-relationships"])
 
@@ -21,6 +30,7 @@ router = APIRouter(prefix="/candidates/relationships", tags=["candidate-relation
 async def submit_candidate_relationship(
     data: CandidateRelationshipCreate,
     service: CandidateRelationshipService = Depends(get_candidate_relationship_service),
+    _=Depends(require_roles(*CANDIDATE_SUBMIT_ROLES)),
 ):
     return await service.submit_candidate(data)
 
@@ -38,6 +48,7 @@ async def list_candidate_relationships(
     proposed_relationship_type: SkillRelationshipType | None = Query(None, alias="relationship_type"),
     review_status: CandidateRelationshipReviewStatus | None = None,
     service: CandidateRelationshipService = Depends(get_candidate_relationship_service),
+    _=Depends(require_roles(*CANDIDATE_QUEUE_ROLES)),
 ):
     return await service.list_candidates(
         limit=limit,
@@ -55,8 +66,9 @@ async def list_candidate_relationships(
     summary="Get a candidate skill relationship by ID",
 )
 async def get_candidate_relationship(
-    candidate_relationship_id: str,
+    candidate_relationship_id: uuid.UUID,
     service: CandidateRelationshipService = Depends(get_candidate_relationship_service),
+    _=Depends(require_roles(*CANDIDATE_QUEUE_ROLES)),
 ):
     return await service.get_candidate(candidate_relationship_id)
 
@@ -67,9 +79,13 @@ async def get_candidate_relationship(
     summary="Review candidate skill relationship (approve or reject)",
 )
 async def review_candidate_relationship(
-    candidate_relationship_id: str,
+    candidate_relationship_id: uuid.UUID,
     review_data: CandidateRelationshipReview,
     service: CandidateRelationshipService = Depends(get_candidate_relationship_service),
-    reviewer_id: str = Depends(verify_reviewer),
+    reviewer: Principal = Depends(require_reviewer),
 ):
-    return await service.review_candidate(candidate_relationship_id, review_data, reviewer_id=reviewer_id)
+    return await service.review_candidate(
+        candidate_relationship_id,
+        review_data,
+        reviewer_id=reviewer.user_id,
+    )

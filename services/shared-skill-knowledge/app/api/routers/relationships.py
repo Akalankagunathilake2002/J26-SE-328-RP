@@ -1,12 +1,16 @@
+import uuid
 from fastapi import APIRouter, Depends, Query, status
+
+from app.api.dependencies import ADMIN_ROLES, READ_ROLES, get_relationship_service, require_roles
+from app.core.security import Principal
 from app.schemas.relationships import (
+    RelationshipVerificationStatus,
     SkillRelationshipCreate,
-    SkillRelationshipUpdate,
     SkillRelationshipOut,
     SkillRelationshipType,
+    SkillRelationshipUpdate,
 )
 from app.services.relationships import RelationshipService
-from app.api.dependencies import get_relationship_service
 
 router = APIRouter(prefix="/relationships", tags=["relationships"])
 
@@ -15,13 +19,14 @@ router = APIRouter(prefix="/relationships", tags=["relationships"])
     "",
     response_model=SkillRelationshipOut,
     status_code=status.HTTP_201_CREATED,
-    summary="Create a verified skill relationship",
+    summary="Create a canonical skill relationship",
 )
 async def create_relationship(
     data: SkillRelationshipCreate,
     service: RelationshipService = Depends(get_relationship_service),
+    admin: Principal = Depends(require_roles(*ADMIN_ROLES)),
 ):
-    return await service.create_relationship(data)
+    return await service.create_relationship(data, reviewer_id=admin.user_id)
 
 
 @router.get(
@@ -35,11 +40,13 @@ async def list_relationships(
     source_skill_id: str | None = None,
     target_skill_id: str | None = None,
     relationship_type: SkillRelationshipType | None = None,
-    verification_status: str | None = None,
+    verification_status: RelationshipVerificationStatus | None = None,
     search: str | None = None,
     service: RelationshipService = Depends(get_relationship_service),
+    principal: Principal = Depends(require_roles(*READ_ROLES)),
 ):
     return await service.list_relationships(
+        caller_role=principal.role,
         limit=limit,
         offset=offset,
         source_skill_id=source_skill_id,
@@ -56,10 +63,11 @@ async def list_relationships(
     summary="Get a skill relationship by ID",
 )
 async def get_relationship(
-    relationship_id: str,
+    relationship_id: uuid.UUID,
     service: RelationshipService = Depends(get_relationship_service),
+    principal: Principal = Depends(require_roles(*READ_ROLES)),
 ):
-    return await service.get_relationship(relationship_id)
+    return await service.get_relationship(relationship_id, caller_role=principal.role)
 
 
 @router.patch(
@@ -68,11 +76,12 @@ async def get_relationship(
     summary="Update permitted fields of a skill relationship",
 )
 async def update_relationship(
-    relationship_id: str,
+    relationship_id: uuid.UUID,
     data: SkillRelationshipUpdate,
     service: RelationshipService = Depends(get_relationship_service),
+    admin: Principal = Depends(require_roles(*ADMIN_ROLES)),
 ):
-    return await service.update_relationship(relationship_id, data)
+    return await service.update_relationship(relationship_id, data, reviewer_id=admin.user_id)
 
 
 @router.delete(
@@ -81,7 +90,8 @@ async def update_relationship(
     summary="Delete a skill relationship",
 )
 async def delete_relationship(
-    relationship_id: str,
+    relationship_id: uuid.UUID,
     service: RelationshipService = Depends(get_relationship_service),
+    _=Depends(require_roles(*ADMIN_ROLES)),
 ):
     await service.delete_relationship(relationship_id)

@@ -11,33 +11,54 @@ SkillType = Literal[
     "OTHER_SKILL",
 ]
 SkillNature = Literal["TECHNICAL", "BEHAVIOURAL", "OTHER"]
+EntityStatus = Literal["ACTIVE", "INACTIVE", "RETIRED"]
 
 Id50 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
 Name255 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=255)]
-Status50 = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=50)]
+
 
 class DomainBase(BaseModel):
     name: Name255
     code: Id50
     description: str | None = None
-    status: Status50 = "ACTIVE"
+    status: EntityStatus = "ACTIVE"
+
 
 class DomainCreate(DomainBase):
     domain_id: Id50 | None = None
 
+
+class DomainUpdate(BaseModel):
+    name: Name255 | None = None
+    code: Id50 | None = None
+    description: str | None = None
+    status: EntityStatus | None = None
+
+
 class DomainOut(DomainBase):
     domain_id: str
     model_config = ConfigDict(from_attributes=True)
+
 
 class SkillBase(BaseModel):
     preferred_name: Name255
     description: str | None = None
     skill_type: SkillType
     skill_nature: SkillNature | None = None
-    status: Status50 = "ACTIVE"
+    status: EntityStatus = "ACTIVE"
+
 
 class SkillCreate(SkillBase):
     skill_id: Id50 | None = None
+
+
+class SkillUpdate(BaseModel):
+    preferred_name: Name255 | None = None
+    description: str | None = None
+    skill_type: SkillType | None = None
+    skill_nature: SkillNature | None = None
+    status: EntityStatus | None = None
+
 
 class SkillOut(SkillBase):
     skill_id: str
@@ -45,13 +66,22 @@ class SkillOut(SkillBase):
     updated_at: datetime
     model_config = ConfigDict(from_attributes=True)
 
+
 class RoleBase(BaseModel):
     preferred_name: Name255
     description: str | None = None
-    status: Status50 = "ACTIVE"
+    status: EntityStatus = "ACTIVE"
+
 
 class RoleCreate(RoleBase):
     role_id: Id50 | None = None
+
+
+class RoleUpdate(BaseModel):
+    preferred_name: Name255 | None = None
+    description: str | None = None
+    status: EntityStatus | None = None
+
 
 class RoleOut(RoleBase):
     role_id: str

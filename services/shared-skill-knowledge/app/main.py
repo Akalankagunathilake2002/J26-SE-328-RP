@@ -1,26 +1,31 @@
 import contextlib
 from fastapi import FastAPI, APIRouter
-from app.api.routers import (
-    domains_router,
-    skills_router,
-    roles_router,
-    normalization_router,
-    candidates_router,
-    relationships_router,
-    candidate_relationships_router,
-    skill_domains_router,
-    role_domains_router,
-    snapshots_router,
-)
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.api.routers import (
+    aliases_router,
+    candidate_relationships_router,
+    candidates_router,
+    domains_router,
+    embeddings_router,
+    normalization_router,
+    relationships_router,
+    role_domains_router,
+    roles_router,
+    skill_domains_router,
+    skills_router,
+    sources_router,
+)
 from app.config.settings import get_settings
+from app.db.session import dispose_engine
+
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
-    from app.db.session import dispose_engine, create_tables
-    await create_tables()
+    # Startup must never execute DDL or alter the shared Neon schema.
     yield
     await dispose_engine()
+
 
 def create_app() -> FastAPI:
     settings = get_settings()
@@ -30,7 +35,7 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
         docs_url="/ssks/docs",
         redoc_url=None,
-        openapi_url="/ssks/openapi.json"
+        openapi_url="/ssks/openapi.json",
     )
 
     # Enable CORS for local development and gateway routing.
@@ -57,10 +62,13 @@ def create_app() -> FastAPI:
     ssks_router.include_router(candidate_relationships_router)
     ssks_router.include_router(skill_domains_router)
     ssks_router.include_router(role_domains_router)
-    ssks_router.include_router(snapshots_router)
+    ssks_router.include_router(aliases_router)
+    ssks_router.include_router(sources_router)
+    ssks_router.include_router(embeddings_router)
 
     app.include_router(ssks_router)
 
     return app
+
 
 app = create_app()

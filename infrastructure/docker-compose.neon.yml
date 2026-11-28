@@ -1,4 +1,4 @@
-# Opt-in: run Auth, C01 (Market Pulse API and daily sync) and C02 against the shared Neon database `skillaro`.
+# Opt-in: run Auth, SSKS, C01 (Market Pulse API and daily sync) and C02 against the shared Neon database `skillaro`.
 # Every other service keeps using the local postgres container until its code matches the v2 tables.
 #
 #   cd infrastructure
@@ -11,6 +11,14 @@ services:
   auth-service:
     environment:
       DATABASE_URL: postgresql+asyncpg://auth_svc:${NEON_AUTH_PASSWORD:?Set NEON_AUTH_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?ssl=require
+
+  shared-skill-knowledge:
+    environment:
+      DATABASE_URL: postgresql+asyncpg://ssks_svc:${NEON_SSKS_PASSWORD:?Set NEON_SSKS_PASSWORD in infrastructure/.env}@${NEON_HOST:?Set NEON_HOST in infrastructure/.env}/skillaro?ssl=require
+      DB_SCHEMA: ssks
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in infrastructure/.env}
+      JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
+      AUTH_URL: http://auth-service:8006/auth
 
   evidence-based-skill-profile:
     environment:

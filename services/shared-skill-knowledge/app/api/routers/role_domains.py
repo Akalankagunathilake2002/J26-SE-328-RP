@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, status
+
+from app.api.dependencies import ADMIN_ROLES, READ_ROLES, get_domain_association_service, require_roles
 from app.schemas.core import DomainOut
 from app.schemas.relationships import RoleDomainAssociationOut
 from app.services.relationships import DomainAssociationService
-from app.api.dependencies import get_domain_association_service
 
 router = APIRouter(prefix="/roles", tags=["roles", "domains"])
 
@@ -15,6 +16,7 @@ router = APIRouter(prefix="/roles", tags=["roles", "domains"])
 async def list_role_domains(
     role_id: str,
     service: DomainAssociationService = Depends(get_domain_association_service),
+    _=Depends(require_roles(*READ_ROLES)),
 ):
     return await service.list_role_domains(role_id)
 
@@ -29,6 +31,7 @@ async def associate_role_domain(
     role_id: str,
     domain_id: str,
     service: DomainAssociationService = Depends(get_domain_association_service),
+    _=Depends(require_roles(*ADMIN_ROLES)),
 ):
     assoc = await service.associate_role_domain(role_id, domain_id)
     return RoleDomainAssociationOut(role_id=assoc.role_id, domain_id=assoc.domain_id)
@@ -43,5 +46,6 @@ async def remove_role_domain(
     role_id: str,
     domain_id: str,
     service: DomainAssociationService = Depends(get_domain_association_service),
+    _=Depends(require_roles(*ADMIN_ROLES)),
 ):
     await service.remove_role_domain(role_id, domain_id)
