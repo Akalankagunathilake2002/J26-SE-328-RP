@@ -1,7 +1,11 @@
 import uuid
 from fastapi import APIRouter, Depends, Query, status
 
-from app.api.dependencies import ADMIN_ROLES, READ_ROLES, get_relationship_service, require_roles
+from app.api.dependencies import (
+    get_relationship_service,
+    require_admin,
+    require_authenticated_user,
+)
 from app.core.security import Principal
 from app.schemas.relationships import (
     RelationshipVerificationStatus,
@@ -24,7 +28,7 @@ router = APIRouter(prefix="/relationships", tags=["relationships"])
 async def create_relationship(
     data: SkillRelationshipCreate,
     service: RelationshipService = Depends(get_relationship_service),
-    admin: Principal = Depends(require_roles(*ADMIN_ROLES)),
+    admin: Principal = Depends(require_admin),
 ):
     return await service.create_relationship(data, reviewer_id=admin.user_id)
 
@@ -43,7 +47,7 @@ async def list_relationships(
     verification_status: RelationshipVerificationStatus | None = None,
     search: str | None = None,
     service: RelationshipService = Depends(get_relationship_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.list_relationships(
         caller_role=principal.role,
@@ -65,7 +69,7 @@ async def list_relationships(
 async def get_relationship(
     relationship_id: uuid.UUID,
     service: RelationshipService = Depends(get_relationship_service),
-    principal: Principal = Depends(require_roles(*READ_ROLES)),
+    principal: Principal = Depends(require_authenticated_user),
 ):
     return await service.get_relationship(relationship_id, caller_role=principal.role)
 
@@ -79,7 +83,7 @@ async def update_relationship(
     relationship_id: uuid.UUID,
     data: SkillRelationshipUpdate,
     service: RelationshipService = Depends(get_relationship_service),
-    admin: Principal = Depends(require_roles(*ADMIN_ROLES)),
+    admin: Principal = Depends(require_admin),
 ):
     return await service.update_relationship(relationship_id, data, reviewer_id=admin.user_id)
 
@@ -92,6 +96,6 @@ async def update_relationship(
 async def delete_relationship(
     relationship_id: uuid.UUID,
     service: RelationshipService = Depends(get_relationship_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     await service.delete_relationship(relationship_id)

@@ -1,6 +1,10 @@
 from fastapi import APIRouter, Depends, Query, status
 
-from app.api.dependencies import ADMIN_ROLES, READ_ROLES, get_core_service, require_roles
+from app.api.dependencies import (
+    get_core_service,
+    require_admin,
+    require_authenticated_user,
+)
 from app.schemas.core import EntityStatus, SkillCreate, SkillNature, SkillOut, SkillType, SkillUpdate
 from app.services.core import CoreService
 
@@ -17,7 +21,7 @@ async def list_skills(
     domain_id: str | None = None,
     search: str | None = None,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.list_skills(
         limit=limit,
@@ -34,7 +38,7 @@ async def list_skills(
 async def get_skill(
     skill_id: str,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.get_skill(skill_id)
 
@@ -43,7 +47,7 @@ async def get_skill(
 async def create_skill(
     data: SkillCreate,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.create_skill(data)
 
@@ -53,7 +57,7 @@ async def update_skill(
     skill_id: str,
     data: SkillUpdate,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.update_skill(skill_id, data)
 
@@ -62,6 +66,6 @@ async def update_skill(
 async def retire_skill(
     skill_id: str,
     service: CoreService = Depends(get_core_service),
-    _=Depends(require_roles(*ADMIN_ROLES)),
+    _=Depends(require_admin),
 ):
     return await service.retire_skill(skill_id)

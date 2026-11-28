@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 import hashlib
+import hmac
 import time
 import uuid
 
@@ -10,12 +11,12 @@ from fastapi import HTTPException, status
 
 from app.config.settings import Settings
 
-ROLE_ADMIN = "ADMIN"
-ROLE_HR = "HR"
-ROLE_USER = "USER"
-ROLE_SERVICE = "SERVICE"
-SUPPORTED_ROLES = frozenset({ROLE_ADMIN, ROLE_HR, ROLE_USER, ROLE_SERVICE})
+ROLE_USER = "user"
+ROLE_HR = "hr"
+ROLE_ADMIN = "admin"
+SUPPORTED_ROLES = frozenset({ROLE_USER, ROLE_HR, ROLE_ADMIN})
 
+MIN_SECRET_LENGTH = 32
 _ROLE_CACHE_TTL_SECONDS = 30.0
 _MAX_CACHE_SIZE = 1024
 _role_cache: dict[str, tuple[float, uuid.UUID, str]] = {}
@@ -23,7 +24,7 @@ _role_cache: dict[str, tuple[float, uuid.UUID, str]] = {}
 
 @dataclass(frozen=True)
 class Principal:
-    """Authenticated caller identity derived from a verified JWT and Auth profile."""
+    """Authenticated human caller identity derived from a verified JWT and Auth profile."""
 
     user_id: uuid.UUID
     role: str
@@ -42,12 +43,29 @@ def clear_role_cache() -> None:
 
 
 def normalize_role(raw_role: object) -> str:
+    # Auth service stores and returns lowercase role values: user, hr, admin.
     if not isinstance(raw_role, str) or not raw_role.strip():
         raise TokenValidationError("Missing valid role")
-    role = raw_role.strip().upper()
+    role = raw_role.strip().lower()
     if role not in SUPPORTED_ROLES:
         raise TokenValidationError(f"Unsupported role: {role}")
     return role
+
+
+def verify_internal_service_key(provided_key: str, settings: Settings) -> None:
+    """Validate an internal service credential using constant-time comparison; fail closed."""
+    expected = settings.internal_service_key.strip()
+    if len(expected) < MIN_SECRET_LENGTH:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Internal service authentication is not configured",
+        )
+    candidate = provided_key.strip()
+    if not candidate or not hmac.compare_digest(candidate.encode("utf-8"), expected.encode("utf-8")):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid internal service credential",
+        )
 
 
 def _decode_jwt_payload(token: str, settings: Settings) -> dict:

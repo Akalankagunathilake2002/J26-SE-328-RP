@@ -2,12 +2,10 @@ import uuid
 from fastapi import APIRouter, Depends, Query, status
 
 from app.api.dependencies import (
-    ADMIN_ROLES,
-    CANDIDATE_QUEUE_ROLES,
-    CANDIDATE_SUBMIT_ROLES,
     get_candidate_service,
-    require_reviewer,
-    require_roles,
+    require_admin,
+    require_hr_admin_or_service,
+    require_hr_or_admin,
 )
 from app.core.security import Principal
 from app.schemas.candidates import (
@@ -33,7 +31,7 @@ router = APIRouter(prefix="/candidates", tags=["candidates"])
 async def submit_candidate_entity(
     data: CandidateEntityCreate,
     service: CandidateService = Depends(get_candidate_service),
-    _=Depends(require_roles(*CANDIDATE_SUBMIT_ROLES)),
+    _=Depends(require_hr_admin_or_service),
 ):
     return await service.create_candidate(data)
 
@@ -49,7 +47,7 @@ async def list_candidate_entities(
     entity_type: CandidateEntityType | None = None,
     review_status: CandidateReviewStatus | None = None,
     service: CandidateService = Depends(get_candidate_service),
-    _=Depends(require_roles(*CANDIDATE_QUEUE_ROLES)),
+    _=Depends(require_hr_or_admin),
 ):
     return await service.list_candidates(
         limit=limit,
@@ -67,7 +65,7 @@ async def list_candidate_entities(
 async def get_candidate_entity(
     candidate_entity_id: uuid.UUID,
     service: CandidateService = Depends(get_candidate_service),
-    _=Depends(require_roles(*CANDIDATE_QUEUE_ROLES)),
+    _=Depends(require_hr_or_admin),
 ):
     return await service.get_candidate(candidate_entity_id)
 
@@ -81,7 +79,7 @@ async def review_candidate_entity(
     candidate_entity_id: uuid.UUID,
     review_data: CandidateEntityReview,
     service: CandidateService = Depends(get_candidate_service),
-    reviewer: Principal = Depends(require_reviewer),
+    reviewer: Principal = Depends(require_hr_or_admin),
 ):
     return await service.review_candidate(
         candidate_entity_id,
@@ -99,7 +97,7 @@ async def merge_candidate_as_alias(
     candidate_entity_id: uuid.UUID,
     data: CandidateMergeAsAliasRequest,
     service: CandidateService = Depends(get_candidate_service),
-    admin: Principal = Depends(require_roles(*ADMIN_ROLES)),
+    admin: Principal = Depends(require_admin),
 ):
     return await service.merge_candidate_as_alias(
         candidate_entity_id,

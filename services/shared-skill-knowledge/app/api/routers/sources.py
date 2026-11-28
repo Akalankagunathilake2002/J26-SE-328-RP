@@ -1,7 +1,7 @@
 import uuid
 from fastapi import APIRouter, Depends, Query
 
-from app.api.dependencies import READ_ROLES, get_source_service, require_roles
+from app.api.dependencies import get_source_service, require_authenticated_user
 from app.schemas.sources import KnowledgeSourceOut, RoleExternalIdOut, SkillExternalIdOut
 from app.services.sources import SourceService
 
@@ -14,7 +14,7 @@ async def list_knowledge_sources(
     offset: int = Query(0, ge=0),
     search: str | None = None,
     service: SourceService = Depends(get_source_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.list_sources(limit=limit, offset=offset, search=search)
 
@@ -23,7 +23,7 @@ async def list_knowledge_sources(
 async def get_knowledge_source(
     source_id: uuid.UUID,
     service: SourceService = Depends(get_source_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.get_source(source_id)
 
@@ -35,7 +35,7 @@ async def list_external_ids_for_skill(
     offset: int = Query(0, ge=0),
     source_id: uuid.UUID | None = None,
     service: SourceService = Depends(get_source_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.list_skill_external_ids(
         limit=limit, offset=offset, skill_id=skill_id, source_id=source_id
@@ -49,7 +49,7 @@ async def list_external_ids_for_role(
     offset: int = Query(0, ge=0),
     source_id: uuid.UUID | None = None,
     service: SourceService = Depends(get_source_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.list_role_external_ids(
         limit=limit, offset=offset, role_id=role_id, source_id=source_id
@@ -63,7 +63,7 @@ async def list_skill_external_ids(
     skill_id: str | None = None,
     source_id: uuid.UUID | None = None,
     service: SourceService = Depends(get_source_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.list_skill_external_ids(
         limit=limit, offset=offset, skill_id=skill_id, source_id=source_id
@@ -77,7 +77,7 @@ async def list_role_external_ids(
     role_id: str | None = None,
     source_id: uuid.UUID | None = None,
     service: SourceService = Depends(get_source_service),
-    _=Depends(require_roles(*READ_ROLES)),
+    _=Depends(require_authenticated_user),
 ):
     return await service.list_role_external_ids(
         limit=limit, offset=offset, role_id=role_id, source_id=source_id

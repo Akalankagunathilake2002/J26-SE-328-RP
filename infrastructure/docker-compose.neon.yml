@@ -19,6 +19,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in infrastructure/.env}
       JWT_ALGORITHM: ${JWT_ALGORITHM:-HS256}
       AUTH_URL: http://auth-service:8006/auth
+      # Shared credential (>=32 chars) for internal callers (C01/C02) via X-Internal-Service-Key.
+      INTERNAL_SERVICE_KEY: ${SSKS_INTERNAL_SERVICE_KEY:-}
 
   evidence-based-skill-profile:
     environment:

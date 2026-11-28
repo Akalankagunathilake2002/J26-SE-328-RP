@@ -262,9 +262,40 @@ SSKS remains the authoritative source. A local cache in C03 is a copy used for p
 
 The current implementation includes core entity endpoints, normalization, candidate workflows, relationship management, domain associations, and snapshot export and validation.
 
+### Authentication, Human RBAC, and Internal Service Auth
+
+SSKS verifies human callers via `Authorization: Bearer <jwt>` (signed with `JWT_SECRET`, resolving missing `role` claims via `AUTH_URL/me`) using the authoritative Auth roles:
+
+- `user`: Read published canonical knowledge, read verified aliases/relationships, and call skill/role normalization.
+- `hr`: All `user` permissions, plus view unverified aliases/relationships, submit candidate entities, view candidate queues, and approve/reject candidates.
+- `admin`: Full SSKS management permissions (canonical CRUD/retire, alias/relationship CRUD & verification, merge-as-alias, domain associations, embeddings).
+
+#### Internal Service-to-Service Authentication (C01 & C02)
+
+Automated internal services (such as C01 and C02) authenticate without impersonating human HR/Admin accounts by sending a dedicated shared credential header:
+
+- **Header:** `X-Internal-Service-Key: <key>`
+- **Environment variable:** `INTERNAL_SERVICE_KEY` (or `SSKS_INTERNAL_SERVICE_KEY` in `infrastructure/.env`), minimum 32 characters. Fails closed (`503` if unconfigured, `401` if invalid).
+- **Permitted endpoints (least privilege):**
+  - `POST /ssks/normalize/skills`
+  - `POST /ssks/normalize/roles`
+  - `POST /ssks/candidates/entities`
+- **Denied:** Candidate review, candidate queues, merge-as-alias, canonical CRUD/retire, alias verification, embeddings, and all administrative operations.
+
+Example request from C01/C02:
+
+```http
+POST /ssks/normalize/skills HTTP/1.1
+Host: shared-skill-knowledge:8005
+X-Internal-Service-Key: <SSKS_INTERNAL_SERVICE_KEY>
+Content-Type: application/json
+
+{"items": ["Python", "PostgreSQL"]}
+```
+
 Important boundaries:
 
-- **Reviewer Authorization:** Reviewer identity is verified server-side through the `X-Reviewer-Id` header on review endpoints. Full OAuth2/JWT token verification and centralized RBAC integration remain future enhancements.
+- **Authorization Model:** Health (`GET /ssks/health`) is public. All other endpoints require a valid Bearer JWT or (for normalization and candidate entity submission only) a valid `X-Internal-Service-Key`.
 - **Consumer Cache Synchronization (C03):** SSKS exports immutable, version-fingerprinted snapshots (`vYYYYMMDD-{hash}`) on demand. The Readiness Engine (C03) maintains an independent local cache in PostgreSQL. Automatic cache push/invalidation (e.g. webhooks or event bus) is not currently implemented; C03 must synchronize via periodic snapshot validation (`/ssks/snapshots/validate`) or manual snapshot import scripts.
 - **Test Suite Environment:** The automated test suite executes on SQLite + aiosqlite for fast, isolated verification. Live PostgreSQL schema migrations are managed via idempotent SQL migrations in `migrations/003_refine_and_verify_candidate_relationships.sql` and `app/db/session.py`.
 - **Snapshot Scope:** The snapshot schema exports canonical skills, verified aliases, active domains, and verified canonical relationships. Role snapshots are not currently included in the snapshot export schema.
