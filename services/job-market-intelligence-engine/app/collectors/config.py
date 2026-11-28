@@ -10,6 +10,8 @@ Environment variables (or a git-ignored ``.env`` file in the service folder):
   Not set: skills are not linked to SSKS IDs.
 - ``SKILLBRIDGE_DATABASE_URL``: PostgreSQL to load the ads into (see app/database/loader.py).
   Not set: data stays in files only.
+- ``SKILLBRIDGE_AUTH_URL``: the Auth Service, e.g. http://auth-service:8006/auth. Company job posts
+  (app/companies/) check each caller's login through its /me. Not set: those endpoints answer 503.
 """
 
 from __future__ import annotations
@@ -39,6 +41,7 @@ class Settings:
     ner_model: Path | None = None
     ssks_url: str | None = None
     database_url: str | None = None
+    auth_url: str | None = None
 
 
 def load_settings(env: Mapping[str, str] | None = None, env_file: Path = DEFAULT_ENV_FILE) -> Settings:
@@ -55,6 +58,7 @@ def load_settings(env: Mapping[str, str] | None = None, env_file: Path = DEFAULT
         ner_model=Path(ner_model) if ner_model else None,
         ssks_url=values.get("SKILLBRIDGE_SSKS_URL") or None,
         database_url=values.get("SKILLBRIDGE_DATABASE_URL") or None,
+        auth_url=(values.get("SKILLBRIDGE_AUTH_URL") or "").rstrip("/") or None,
     )
 
 

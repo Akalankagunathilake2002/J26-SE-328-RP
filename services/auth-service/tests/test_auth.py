@@ -75,3 +75,15 @@ def test_me_returns_the_logged_in_user(client, registered_user):
 def test_me_rejects_missing_or_invalid_tokens(client):
     assert client.get("/auth/me").status_code == 401
     assert client.get("/auth/me", headers={"Authorization": "Bearer not-a-token"}).status_code == 401
+
+
+def test_register_a_company_account(client):
+    body = {"full_name": "Ishara Fernando", "email": "hr@company.example", "password": "s3cure-pass", "account_type": "company"}
+
+    response = client.post("/auth/register", json=body)
+
+    assert response.status_code == 201
+    assert response.json()["role"] == "hr"
+    student = client.post("/auth/register", json={**body, "email": "student@example.com", "account_type": "student"})
+    assert student.json()["role"] == "user"
+    assert client.post("/auth/register", json={**body, "email": "x@example.com", "account_type": "admin"}).status_code == 422

@@ -41,13 +41,17 @@ export async function login(_state: AuthFormState, formData: FormData): Promise<
     return { message: messageFor(error), values: { email } };
   }
 
-  // Redirect admin users to the admin dashboard and standard users to their destination.
+  // Redirect admin users to the admin dashboard, company accounts to their portal and standard users to their destination.
   const user = await getCurrentUser();
   if (user?.role === "admin") {
     redirect("/admin");
   }
+  const next = safeNextPath(read(formData, "next"));
+  if (user?.role === "hr" && !next.startsWith("/company")) {
+    redirect("/company");
+  }
 
-  redirect(safeNextPath(read(formData, "next")));
+  redirect(next);
 }
 
 export async function register(_state: AuthFormState, formData: FormData): Promise<AuthFormState> {

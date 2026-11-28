@@ -12,6 +12,10 @@ class EmailAlreadyRegisteredError(Exception):
     pass
 
 
+# Role of each kind of account a person can register. Admins are made by hand.
+ROLES = {"student": "user", "company": "hr"}
+
+
 class AuthService:
     """Registers users, checks credentials and issues access tokens."""
 
@@ -19,11 +23,11 @@ class AuthService:
         self.repository = repository
         self.settings = settings
 
-    async def register(self, full_name: str, email: str, password: str) -> User:
+    async def register(self, full_name: str, email: str, password: str, account_type: str = "student") -> User:
         email = email.lower()
         if await self.repository.get_by_email(email) is not None:
             raise EmailAlreadyRegisteredError(email)
-        user = User(full_name=full_name, email=email, password_hash=hash_password(password), role="user")
+        user = User(full_name=full_name, email=email, password_hash=hash_password(password), role=ROLES[account_type])
         try:
             return await self.repository.add(user)
         except IntegrityError as exc:  # registered concurrently

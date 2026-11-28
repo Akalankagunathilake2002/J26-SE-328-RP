@@ -222,6 +222,28 @@ http://localhost:8080/jobs/ (API docs at `/jobs/docs`). The API container mounts
 `data/processed/`, read-only. Ads are collected by the daily sync or with the commands above, and
 a refresh of the page shows the new data.
 
+## Company job posts
+
+Companies post their own vacancies on Skillaro; students see them on the Jobs page (`/jobs`, a link in the site
+header) and apply on Skillaro. The code is `app/companies/` (endpoints listed at the top of `api.py`); the frontend
+pages are `/company/*`, `/admin/companies` and `/jobs` (tabs All jobs and My applications).
+
+1. A company account (Auth Service `account_type: company`, role `hr`) adds its company: `PENDING`.
+2. It posts a job. `POST /jobs/company/skills` finds the skills, education, minimum years and certificates
+   in the description with the same lexicon as Market Pulse; the company marks each skill Required or Preferred.
+   The skills are the vacancy's `VACANCY` role profile (`demand_weight` 1.0 Required, 0.5 Preferred, the
+   lexicon's SSKS ids), so C03 can use it later. Each save writes a new profile version (v1, v2 …).
+3. An admin verifies the company (`/admin/companies`). A job is live when it is published, its company is
+   verified and its closing date hasn't passed.
+4. A student applies: phone, education, an optional note, a PDF CV (up to 2 MB) and consent. The company sees
+   only that, for its own jobs: no skill profile and no readiness score. Opening an application marks it Seen;
+   the company can shortlist or mark it Not selected, and the student sees each status. Withdrawing deletes it.
+
+Needs `SKILLBRIDGE_DATABASE_URL` (the tables come from `infrastructure/neon/setup.sql`, see
+`infrastructure/neon/migrations/2026-11-28-company-job-posts.sql`) and `SKILLBRIDGE_AUTH_URL` (C01 checks each
+caller's token with the Auth Service's `/auth/me`; no JWT secret is shared). Without them these endpoints
+answer 503. Tests: `tests/test_companies.py` (SQLite, fake logins).
+
 ## Progress
 
 One branch per step (`Akalanka-Job-market-intelligence-engine/<step>`), merged into `main`

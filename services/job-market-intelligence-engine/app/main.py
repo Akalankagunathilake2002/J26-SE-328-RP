@@ -10,6 +10,8 @@ With SKILLBRIDGE_DATABASE_URL set, the profile is built from the database (the j
 loader fills; see app/database/market_pulse.py) and kept for MARKET_PULSE_CACHE_SECONDS. Without it,
 or if the database can't be reached, it is read from data/processed/skill_profile.json.
 Collection runs separately (python -m app.collectors.run). Nothing from raw/ is served.
+
+Company job posts (companies post jobs, admins verify companies, students apply) are in app/companies/api.py.
 """
 
 from __future__ import annotations
@@ -26,6 +28,7 @@ from fastapi import APIRouter, FastAPI, HTTPException
 from pydantic import BaseModel
 
 from app.collectors.config import load_settings, load_sites
+from app.companies.api import router as company_router
 
 log = logging.getLogger(__name__)
 
@@ -211,3 +214,4 @@ app = FastAPI(
     openapi_url="/jobs/openapi.json",
 )
 app.include_router(router)
+app.include_router(company_router)

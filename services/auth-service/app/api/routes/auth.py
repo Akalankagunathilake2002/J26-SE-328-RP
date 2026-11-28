@@ -11,7 +11,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/register", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def register(request: RegisterRequest, service: AuthServiceDep) -> User:
     try:
-        return await service.register(request.full_name, request.email, request.password)
+        return await service.register(request.full_name, request.email, request.password, request.account_type)
     except EmailAlreadyRegisteredError:
         raise HTTPException(
             status.HTTP_409_CONFLICT, "An account with this email already exists"

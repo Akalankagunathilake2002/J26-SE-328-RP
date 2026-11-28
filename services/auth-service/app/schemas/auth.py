@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -8,6 +9,8 @@ class RegisterRequest(BaseModel):
     full_name: str = Field(min_length=2, max_length=120)
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
+    # "company": an employer account (role hr) that posts jobs through C01; it needs an admin to verify the company
+    account_type: Literal["student", "company"] = "student"
 
     @field_validator("full_name")
     @classmethod

@@ -27,6 +27,11 @@ export default async function RegisterPage({ searchParams }: PageProps<"/registe
           <Link href={loginPath(next)} className="font-semibold text-brand-blue underline underline-offset-4">
             Log in
           </Link>
+          <br />
+          Hiring for a company?{" "}
+          <Link href="/company/register" className="font-semibold text-brand-blue underline underline-offset-4">
+            Create a company account
+          </Link>
         </>
       }
     >

@@ -3,6 +3,7 @@ export const navLinks = [
   { label: "Home", href: "/" },
   { label: "Skills Profile", href: "/skills-profile" },
   { label: "Market Pulse", href: "/market-pulse" },
+  { label: "Jobs", href: "/jobs" },
   { label: "Skill Analysis", href: "/skill-analysis" },
   { label: "Mock Interview", href: "/mock-interview" },
   { label: "Edu Assistant", href: "/edu-assistant" },
