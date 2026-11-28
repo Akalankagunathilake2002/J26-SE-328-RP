@@ -1,5 +1,6 @@
+import uuid
 from datetime import datetime
-from sqlalchemy import String, DateTime, ForeignKey, UniqueConstraint
+from sqlalchemy import String, DateTime, ForeignKey, UniqueConstraint, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -16,7 +17,7 @@ class KnowledgeSource(Base):
 class SkillExternalId(Base):
     __tablename__ = "skill_external_ids"
     
-    external_id_id: Mapped[str] = mapped_column(String(50), primary_key=True)
+    external_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     skill_id: Mapped[str] = mapped_column(String(50), ForeignKey("skills.skill_id", ondelete="CASCADE"), index=True)
     source_id: Mapped[str] = mapped_column(String(50), ForeignKey("knowledge_sources.source_id", ondelete="CASCADE"))
     external_identifier: Mapped[str] = mapped_column(String(255))
@@ -28,7 +29,7 @@ class SkillExternalId(Base):
 class RoleExternalId(Base):
     __tablename__ = "role_external_ids"
     
-    external_id_id: Mapped[str] = mapped_column(String(50), primary_key=True)
+    external_id: Mapped[uuid.UUID] = mapped_column(Uuid(as_uuid=True), primary_key=True, default=uuid.uuid4)
     role_id: Mapped[str] = mapped_column(String(50), ForeignKey("roles.role_id", ondelete="CASCADE"), index=True)
     source_id: Mapped[str] = mapped_column(String(50), ForeignKey("knowledge_sources.source_id", ondelete="CASCADE"))
     external_identifier: Mapped[str] = mapped_column(String(255))

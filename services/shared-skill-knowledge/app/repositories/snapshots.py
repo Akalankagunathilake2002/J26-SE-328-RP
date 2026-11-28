@@ -155,7 +155,7 @@ class SnapshotRepository:
             select(SkillExternalId, KnowledgeSource.source_code)
             .outerjoin(KnowledgeSource, SkillExternalId.source_id == KnowledgeSource.source_id)
             .where(SkillExternalId.skill_id.in_(active_skill_ids) if active_skill_ids else False)
-            .order_by(SkillExternalId.external_id_id)
+            .order_by(SkillExternalId.external_id)
         )
         ext_res = await self.session.execute(ext_stmt)
         snapshot_ext_ids: list[SnapshotExternalIdItem] = []
@@ -163,7 +163,7 @@ class SnapshotRepository:
             for ext, source_code in ext_res.all():
                 snapshot_ext_ids.append(
                     SnapshotExternalIdItem(
-                        external_id_id=ext.external_id_id,
+                        external_id=str(ext.external_id),
                         skill_id=ext.skill_id,
                         source_id=ext.source_id,
                         source_code=source_code,

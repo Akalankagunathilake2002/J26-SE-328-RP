@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from app.config.settings import get_settings
 from scripts.db_import.import_core_seed import (
-    ImportBlocked, SeedData, Snapshot, apply_plan, load_seed, normalize_alias,
+    ImportBlocked, SeedData, Snapshot, apply_plan, external_id_to_uuid, load_seed, normalize_alias,
     plan_import, run_import, DEFAULT_SEED_DIR,
 )
 
@@ -116,7 +116,7 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(plan.inserts["skills"], [])
 
     def test_external_identifier_clash_is_a_conflict(self):
-        snap = snapshot(sources={"ESCO": ("SRC-ESCO", "1")}, skill_ext={"EXT-000099": ("SK-000009", "SRC-ESCO", "uri-1")})
+        snap = snapshot(sources={"ESCO": ("SRC-ESCO", "1")}, skill_ext={external_id_to_uuid("skill_external_ids", "EXT-000099"): ("SK-000009", "SRC-ESCO", "uri-1")})
         data = make_data(entities=[entity("SK-000001")], external_ids=[ext("EXT-000001", "SK-000001")])
         plan = plan_import(data, snap)
         self.assertTrue(any("already stored" in c for c in plan.conflicts))
@@ -138,7 +138,7 @@ class PlanTests(unittest.TestCase):
         snap = snapshot(
             sources={"ESCO": ("SRC-ESCO", "1.2.1")}, skills={"SK-000001": ("python", "PROGRAMMING_LANGUAGE")},
             skill_aliases={"AL-000001": ("SK-000001", "Py")}, skill_domains={("SK-000001", "DOM-IT")},
-            skill_ext={"EXT-000001": ("SK-000001", "SRC-ESCO", "uri-1")})
+            skill_ext={external_id_to_uuid("skill_external_ids", "EXT-000001"): ("SK-000001", "SRC-ESCO", "uri-1")})
         plan = plan_import(data, snap, create_missing_sources=True)
         self.assertEqual(sum(len(v) for v in plan.inserts.values()), 0)
         self.assertFalse(plan.has_problems)
