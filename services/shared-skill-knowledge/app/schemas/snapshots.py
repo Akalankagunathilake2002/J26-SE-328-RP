@@ -66,7 +66,7 @@ class SnapshotRelationshipItem(BaseModel):
 
 
 class SnapshotExternalIdItem(BaseModel):
-    external_id_id: str
+    external_id: str
     skill_id: str
     source_id: str
     source_code: str | None = None

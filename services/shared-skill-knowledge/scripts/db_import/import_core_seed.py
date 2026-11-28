@@ -7,6 +7,7 @@ import csv
 import logging
 import re
 import unicodedata
+import uuid
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -35,6 +36,14 @@ ID_PATTERNS = {
     "aliases": re.compile(r"^AL-\d{6}$"),
     "external_ids": re.compile(r"^EXT-\d{6}$"),
 }
+
+EXTERNAL_ID_UUID_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_DNS, "ssks.skillaro.v2")
+
+
+def external_id_to_uuid(table: str, legacy_ext_id: str) -> uuid.UUID:
+    # Match the deterministic UUIDv5 scheme used by the Neon v2 migration.
+    entity_type = "skill_external_id" if table == "skill_external_ids" else "role_external_id"
+    return uuid.uuid5(EXTERNAL_ID_UUID_NAMESPACE, f"{entity_type}:{legacy_ext_id}")
 
 # Only used when knowledge_sources lacks a row that external IDs need (FK is NOT NULL)
 SOURCE_NAMES = {
@@ -406,7 +415,7 @@ def _plan_external_ids(plan: Plan, data: SeedData, snap: Snapshot, sources: dict
             continue
         seen_keys[key] = ext_id
 
-        existing = existing_by_id[table].get(ext_id)
+        existing = existing_by_id[table].get(external_id_to_uuid(table, ext_id))
         if existing is not None:
             if existing != (parent, source_id, identifier):
                 plan.conflicts.append(f"{table}: {ext_id} exists as {existing!r} but CSV differs")
@@ -419,7 +428,7 @@ def _plan_external_ids(plan: Plan, data: SeedData, snap: Snapshot, sources: dict
                 f"{table}: ({source_id}, {identifier}) already stored as {clash[0]} for {clash[1]}")
             continue
         plan.inserts[table].append({
-            "external_id_id": ext_id, parent_col: parent,
+            "external_id": external_id_to_uuid(table, ext_id), parent_col: parent,
             "source_id": source_id, "external_identifier": identifier,
         })
 
@@ -461,10 +470,10 @@ async def fetch_snapshot(session) -> Snapshot:
     snap.skill_domains = {tuple(r) for r in await session.execute(select(SkillDomain.skill_id, SkillDomain.domain_id))}
     snap.role_domains = {tuple(r) for r in await session.execute(select(RoleDomain.role_id, RoleDomain.domain_id))}
     snap.skill_ext = {r[0]: tuple(r[1:]) for r in await session.execute(select(
-        SkillExternalId.external_id_id, SkillExternalId.skill_id,
+        SkillExternalId.external_id, SkillExternalId.skill_id,
         SkillExternalId.source_id, SkillExternalId.external_identifier))}
     snap.role_ext = {r[0]: tuple(r[1:]) for r in await session.execute(select(
-        RoleExternalId.external_id_id, RoleExternalId.role_id,
+        RoleExternalId.external_id, RoleExternalId.role_id,
         RoleExternalId.source_id, RoleExternalId.external_identifier))}
     return snap
 
